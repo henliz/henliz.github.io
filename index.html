@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Henrietta's Portfolio 3D</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+      background-color: #f1e9f4;
+      color: #1e1b2e;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    .dark {
+      background-color: #1e1b2e;
+      color: #f1e9f4;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: flex-end;
+      background: transparent;
+      z-index: 10;
+    }
+
+    .toggle-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .scene {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding-top: 4rem;
+    }
+
+    canvas {
+      width: 100%;
+      height: 70vh;
+    }
+
+    .tagline {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin: 1rem 0 0.25rem;
+    }
+
+    .tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tag {
+      background-color: #e0d0ff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .dark .tag {
+      background-color: #2c2744;
+      color: #f1e9f4;
+    }
+
+    .see-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: black;
+      color: white;
+      border-radius: 999px;
+      padding: 0.75rem 1.25rem;
+      margin-top: 1rem;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: background-color 0.2s ease;
+    }
+
+    .see-btn:hover {
+      background-color: #333;
+    }
+
+    .see-btn span {
+      font-size: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .tagline {
+        font-size: 1rem;
+      }
+      .see-btn {
+        padding: 1rem;
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button class="toggle-btn" id="modeToggle">🌙</button>
+  </header>
+
+  <div class="scene" id="laptopScene">
+    <canvas id="laptopCanvas"></canvas>
+    <div class="tagline">Creating a high-fidelity prototype to end senior loneliness ☕</div>
+    <div class="tags">
+      <div class="tag">UX Design</div>
+      <div class="tag">User Research</div>
+      <div class="tag">Accessibility</div>
+    </div>
+    <a href="#" target="_blank" class="see-btn">see what I did <span>→</span></a>
+  </div>
+
+  <div class="scene" id="carScene">
+    <canvas id="carCanvas"></canvas>
+    <div class="tagline">Reclaiming Jaguar’s identity with a true rebrand 🏎️</div>
+    <div class="tags">
+      <div class="tag">Brand Design</div>
+      <div class="tag">Marketing</div>
+      <div class="tag">Visual Identity</div>
+    </div>
+    <a href="#" target="_blank" class="see-btn">see what I did <span>→</span></a>
+  </div>
+
+  <div class="scene" id="deckScene">
+    <canvas id="deckCanvas"></canvas>
+    <div class="tagline">Gameplay & Systems Programmer @Path to Menzoberranzan: An Unofficial Baldur's Gate 3 Adventure</div>
+    <div class="tags">
+      <div class="tag">Game Development</div>
+      <div class="tag">Programming</div>
+      <div class="tag">Systems Engineering</div>
+    </div>
+    <a href="#" target="_blank" class="see-btn">see what I did <span>→</span></a>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/OrbitControls.js';
+
+    const scenes = [
+      {
+        canvas: document.getElementById('laptopCanvas'),
+        model: 'https://henliz.github.io/portfolio-assets-3d/macbook.glb',
+        texture: 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png',
+        textureTargetMesh: 'Screen',
+      },
+      {
+        canvas: document.getElementById('carCanvas'),
+        model: 'https://henliz.github.io/portfolio-assets-3d/jaguar.glb'
+      },
+      {
+        canvas: document.getElementById('deckCanvas'),
+        model: 'https://henliz.github.io/portfolio-assets-3d/steamdeck.glb',
+        texture: 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png',
+        textureTargetMesh: 'screen',
+      },
+    ];
+
+    for (const { canvas, model, texture, textureTargetMesh } of scenes) {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+      camera.position.z = 3.5;
+
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+
+      const loader = new GLTFLoader();
+      const texLoader = new THREE.TextureLoader();
+
+      loader.load(model, (gltf) => {
+        const obj = gltf.scene;
+        obj.scale.set(1.5, 1.5, 1.5);
+        scene.add(obj);
+
+        if (texture && textureTargetMesh) {
+          const imageTex = texLoader.load(texture);
+          obj.traverse(child => {
+            if (child.isMesh && child.name.toLowerCase().includes(textureTargetMesh.toLowerCase())) {
+              child.material = new THREE.MeshBasicMaterial({ map: imageTex });
+            }
+          });
+        }
+      });
+
+      const light = new THREE.HemisphereLight(0xffffff, 0x000000, 1);
+      scene.add(light);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.enableZoom = false;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    }
+
+    // Dark mode toggle
+    const toggleBtn = document.getElementById('modeToggle');
+    toggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      toggleBtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+    });
+  </script>
+</body>
+</html>
