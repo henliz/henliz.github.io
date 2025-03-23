@@ -2,235 +2,234 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Henrietta's Portfolio 3D</title>
+  <title>3 Models + Screens + Scroll Corkscrew</title>
+
+  <!--
+    STYLES
+    - We set the page height to 300vh so there's enough scroll space
+    - The canvas is fixed to fill the screen
+    - We'll place an overlay for text on top if desired
+  -->
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
-    * {
-      margin: 0;
+    html, body {
+      margin: 0; 
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Montserrat', sans-serif;
+      width: 100%;
+      height: 300vh; /* 3 "pages" worth of scroll */
+      background: #f1e9f4; /* light background behind transparent canvas */
+      overflow: auto;      /* enable scrolling */
     }
 
-    body {
-      background-color: #f1e9f4;
-      color: #1e1b2e;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      overflow-x: hidden;
-    }
-
-    .dark {
-      background-color: #1e1b2e;
-      color: #f1e9f4;
-    }
-
-    header {
+    /* Our Three.js canvas: fill the viewport, behind everything else */
+    #bgCanvas {
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       width: 100%;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: flex-end;
-      background: transparent;
-      z-index: 10;
+      height: 100%;
+      z-index: 1; /* behind overlay if we add one */
+      display: block;
     }
 
-    .toggle-btn {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
-    .scene {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      text-align: center;
-      padding-top: 4rem;
-    }
-
-    canvas {
-      width: 100%;
-      height: 70vh;
-    }
-
-    .tagline {
-      font-size: 1.25rem;
-      font-weight: bold;
-      margin: 1rem 0 0.25rem;
-    }
-
-    .tags {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .tag {
-      background-color: #e0d0ff;
-      padding: 0.25rem 0.75rem;
-      border-radius: 999px;
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-
-    .dark .tag {
-      background-color: #2c2744;
-      color: #f1e9f4;
-    }
-
-    .see-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background-color: black;
-      color: white;
-      border-radius: 999px;
-      padding: 0.75rem 1.25rem;
-      margin-top: 1rem;
-      font-size: 1rem;
-      text-decoration: none;
-      transition: background-color 0.2s ease;
-    }
-
-    .see-btn:hover {
-      background-color: #333;
-    }
-
-    .see-btn span {
-      font-size: 1.25rem;
-    }
-
-    @media (max-width: 768px) {
-      .tagline {
-        font-size: 1rem;
-      }
-      .see-btn {
-        padding: 1rem;
-        font-size: 1.1rem;
-      }
+    /* Optional overlay for instructions, branding, or buttons */
+    .overlay {
+      position: relative; /* in front of the canvas */
+      z-index: 2;
+      padding: 1rem;
     }
   </style>
 </head>
 <body>
-  <header>
-    <button class="toggle-btn" id="modeToggle">🌙</button>
-  </header>
 
-  <div class="scene" id="laptopScene">
-    <canvas id="laptopCanvas"></canvas>
-    <div class="tagline">Creating a high-fidelity prototype to end senior loneliness ☕</div>
-    <div class="tags">
-      <div class="tag">UX Design</div>
-      <div class="tag">User Research</div>
-      <div class="tag">Accessibility</div>
-    </div>
-    <a href="#" target="_blank" class="see-btn">see what I did <span>→</span></a>
+  <!-- 
+    Overlay content (above the canvas).
+    This is just an example. You could place your portfolio text, 
+    "see what I did" buttons, etc. 
+  -->
+  <div class="overlay">
+    <h1>Scroll Down to See 3D Models!</h1>
+    <p>MacBook, Jaguar, and Steam Deck, each with custom textures.</p>
   </div>
 
-  <div class="scene" id="carScene">
-    <canvas id="carCanvas"></canvas>
-    <div class="tagline">Reclaiming Jaguar’s identity with a true rebrand 🏎️</div>
-    <div class="tags">
-      <div class="tag">Brand Design</div>
-      <div class="tag">Marketing</div>
-      <div class="tag">Visual Identity</div>
-    </div>
-    <a href="#" target="_blank" class="see-btn">see what I did <span>→</span></a>
-  </div>
+  <!-- The Three.js canvas -->
+  <canvas id="bgCanvas"></canvas>
 
-  <div class="scene" id="deckScene">
-    <canvas id="deckCanvas"></canvas>
-    <div class="tagline">Gameplay & Systems Programmer @Path to Menzoberranzan: An Unofficial Baldur's Gate 3 Adventure</div>
-    <div class="tags">
-      <div class="tag">Game Development</div>
-      <div class="tag">Programming</div>
-      <div class="tag">Systems Engineering</div>
-    </div>
-    <a href="#" target="_blank" class="see-btn">see what I did <span>→</span></a>
-  </div>
-
+  <!-- 
+    We'll load Three.js, plus the GLTFLoader from a CDN, using ES modules.
+    Then we write all our logic in a <script type="module"> block.
+  -->
   <script type="module">
+    /*
+      1) IMPORTS
+      - THREE: the core library
+      - GLTFLoader: to load .glb models
+    */
     import * as THREE from "https://unpkg.com/three@0.158.0/build/three.module.js";
     import { GLTFLoader } from "https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js";
-    import { OrbitControls } from "https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js";
 
-    const scenes = [
-      {
-        canvas: document.getElementById('laptopCanvas'),
-        model: 'https://cdn.jsdelivr.net/gh/henliz/portfolio-assets-3d@main/macbook.glb',
-        texture: 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png',
-        textureTargetMesh: 'Screen',
+    /*
+      2) BASIC SCENE SETUP
+      - Create a scene, camera, and renderer
+    */
+    const canvas = document.getElementById('bgCanvas');
+    const scene = new THREE.Scene();
+
+    // A PerspectiveCamera with a 70° field of view, 
+    // aspect ratio matching browser window, near/far planes at 0.1 & 1000
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+    // Start the camera at some position so we can see the models
+    camera.position.set(0, 2, 8);
+
+    // Create a WebGL renderer with alpha: true for a transparent background
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    // Make it fill the browser window
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    // Improve clarity on high DPI screens
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    /*
+      3) LIGHTING
+      - A directional light to cast strong light from above
+      - An ambient light to fill in shadows so models aren't too dark
+    */
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.position.set(5, 10, 5);
+    scene.add(dirLight);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 0.3);
+    scene.add(ambient);
+
+    /*
+      4) LOADERS (GLTF & Texture)
+      - We'll load .glb models from your GitHub/CDN
+      - We'll load .png textures from your Toyhouse URLs
+    */
+    const gltfLoader = new GLTFLoader();
+    const texLoader = new THREE.TextureLoader();
+
+    /*
+      Model + texture URLs from your original code:
+      - MacBook model: 
+          https://cdn.jsdelivr.net/gh/henliz/portfolio-assets-3d@main/macbook.glb
+      - Jaguar model:
+          https://cdn.jsdelivr.net/gh/henliz/portfolio-assets-3d@main/jaguar.glb
+      - Steam Deck model:
+          https://cdn.jsdelivr.net/gh/henliz/portfolio-assets-3d@main/steamdeck.glb
+      - MacBook "screen" texture:
+          https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png
+      - Steam Deck "screen" texture:
+          https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png
+    */
+
+    // We'll store references to each loaded model, in case we want to position them
+    let macbook, jaguar, steamdeck;
+
+    // Load MacBook
+    gltfLoader.load(
+      "https://cdn.jsdelivr.net/gh/henliz/portfolio-assets-3d@main/macbook.glb",
+      (gltf) => {
+        macbook = gltf.scene;
+        // Scale it so it's not huge
+        macbook.scale.set(1.5, 1.5, 1.5);
+        // We'll position it to the left so they're not overlapping
+        macbook.position.set(-3, 0, 0);
+        scene.add(macbook);
+
+        // Load the MacBook screen texture
+        const macbookScreenTex = texLoader.load("https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png");
+        // Replace the material on the "Screen" mesh
+        macbook.traverse((child) => {
+          // The original code checks if child.name.toLowerCase().includes('screen')
+          if (child.isMesh && child.name.toLowerCase().includes('screen')) {
+            child.material = new THREE.MeshBasicMaterial({ map: macbookScreenTex });
+          }
+        });
       },
-      {
-        canvas: document.getElementById('carCanvas'),
-        model: 'https://cdn.jsdelivr.net/gh/henliz/portfolio-assets-3d@main/jaguar.glb'
+      undefined,
+      (err) => console.error("Error loading MacBook:", err)
+    );
+
+    // Load Jaguar
+    gltfLoader.load(
+      "https://cdn.jsdelivr.net/gh/henliz/portfolio-assets-3d@main/jaguar.glb",
+      (gltf) => {
+        jaguar = gltf.scene;
+        jaguar.scale.set(1.5, 1.5, 1.5);
+        // Put it in the center
+        jaguar.position.set(0, 0, 0);
+        scene.add(jaguar);
       },
-      {
-        canvas: document.getElementById('deckCanvas'),
-        model: 'https://cdn.jsdelivr.net/gh/henliz/portfolio-assets-3d@main/steamdeck.glb',
-        texture: 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png',
-        textureTargetMesh: 'screen',
+      undefined,
+      (err) => console.error("Error loading Jaguar:", err)
+    );
+
+    // Load Steam Deck
+    gltfLoader.load(
+      "https://cdn.jsdelivr.net/gh/henliz/portfolio-assets-3d@main/steamdeck.glb",
+      (gltf) => {
+        steamdeck = gltf.scene;
+        steamdeck.scale.set(1.5, 1.5, 1.5);
+        // Position it to the right
+        steamdeck.position.set(3, 0, 0);
+        scene.add(steamdeck);
+
+        // Load the Deck screen texture
+        const deckScreenTex = texLoader.load("https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png");
+        steamdeck.traverse((child) => {
+          if (child.isMesh && child.name.toLowerCase().includes('screen')) {
+            child.material = new THREE.MeshBasicMaterial({ map: deckScreenTex });
+          }
+        });
       },
-    ];
+      undefined,
+      (err) => console.error("Error loading Steam Deck:", err)
+    );
 
-    for (const { canvas, model, texture, textureTargetMesh } of scenes) {
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-      camera.position.z = 3.5;
+    /*
+      5) SCROLL-BASED CORKSCREW ANIMATION
+      - As the user scrolls from top to bottom (0..1),
+        we'll revolve the camera around the origin, 
+        moving upward to create a spiral (corkscrew) effect.
+    */
+    window.addEventListener('scroll', () => {
+      // total scrollable space = document height - window height
+      const scrollMax = document.body.scrollHeight - window.innerHeight;
+      // fraction of scroll from 0 to 1
+      const scrollPercent = window.scrollY / scrollMax;
 
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
+      // We'll revolve around the center, do 2 full turns (4π) from top to bottom
+      const angle = scrollPercent * Math.PI * 4;
+      const radius = 8; // how wide the circle is
+      const height = 5 * scrollPercent; // how high we move by the bottom
 
-      const loader = new GLTFLoader();
-      const texLoader = new THREE.TextureLoader();
+      camera.position.x = Math.cos(angle) * radius;
+      camera.position.y = height;
+      camera.position.z = Math.sin(angle) * radius;
 
-      loader.load(model, (gltf) => {
-        const obj = gltf.scene;
-        obj.scale.set(1.5, 1.5, 1.5);
-        scene.add(obj);
+      // Always look at the center of the scene (where Jaguar is)
+      camera.lookAt(0, 0, 0);
+    });
 
-        if (texture && textureTargetMesh) {
-          const imageTex = texLoader.load(texture);
-          obj.traverse(child => {
-            if (child.isMesh && child.name.toLowerCase().includes(textureTargetMesh.toLowerCase())) {
-              child.material = new THREE.MeshBasicMaterial({ map: imageTex });
-            }
-          });
-        }
-      });
-
-      const light = new THREE.HemisphereLight(0xffffff, 0x000000, 1);
-      scene.add(light);
-
-      const controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.enableZoom = false;
-
-      function animate() {
-        requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
-      }
-
-      animate();
+    /*
+      6) ANIMATE (RENDER LOOP)
+      - Even though the camera updates on scroll,
+        we still want to render every frame so it looks smooth.
+    */
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
     }
+    animate();
 
-    // Dark mode toggle
-    const toggleBtn = document.getElementById('modeToggle');
-    toggleBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      toggleBtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+    /*
+      7) HANDLE RESIZE
+      - If the browser is resized, update camera & renderer sizes
+    */
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     });
   </script>
 </body>
 </html>
+
