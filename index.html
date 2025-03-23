@@ -159,24 +159,24 @@
   </div>
 
   <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/OrbitControls.js';
+    import * as THREE from "https://unpkg.com/three@0.158.0/build/three.module.js";
+    import { GLTFLoader } from "https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js";
+    import { OrbitControls } from "https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js";
 
     const scenes = [
       {
         canvas: document.getElementById('laptopCanvas'),
-        model: 'macbook.glb',
+        model: './macbook.glb',
         texture: 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png',
         textureTargetMesh: 'Screen',
       },
       {
         canvas: document.getElementById('carCanvas'),
-        model: 'jaguar.glb'
+        model: './jaguar.glb'
       },
       {
         canvas: document.getElementById('deckCanvas'),
-        model: 'steamdeck.glb',
+        model: './steamdeck.glb',
         texture: 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png',
         textureTargetMesh: 'screen',
       },
