@@ -130,12 +130,27 @@
     import * as THREE from "three";
     import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
     import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/controls/OrbitControls.js";
+    let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    function getScaleFactor() {
+      const width = window.innerWidth;
+        if (width <= 768) {
+         return 0.6; // Smaller on tablets and mobile
+        } else if (width <= 1024) {
+          return 0.8; // Medium size on smaller laptops
+        }
+        return 1; // Default scale for larger screens
+    }
+
 
     let mouseX = 0, mouseY = 0;
-    window.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth) - 0.5; // range approx. [-0.5, 0.5]
+   
+    if (!isTouchDevice) {
+      window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) - 0.5;
       mouseY = (e.clientY / window.innerHeight) - 0.5;
     });
+  }
 
     // Helper function: create a scene with fixed base transforms, gentle hover, and mouse tracking.
     // "basePosition" and "baseRotation" are the hard-set transforms you want.
@@ -174,6 +189,7 @@
       controls.enablePan = false;
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
+      if (isTouchDevice) controls.enabled = false; //disables ability to move model around by dragging when on touchscreen
 
       let model = null;
       const loader = new GLTFLoader();
@@ -181,6 +197,10 @@
         model = gltf.scene;
         scene.add(model);
         model.scale.set(0, 0, 0);
+
+        targetScale *= getScaleFactor();
+      model.scale.set(targetScale, targetScale, targetScale);
+
         if (reCenter) {
           const box = new THREE.Box3().setFromObject(model);
           const center = box.getCenter(new THREE.Vector3());
@@ -356,12 +376,30 @@
     window.addEventListener("resize", () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      [section1, section2, section3].forEach(section => {
-        section.camera.aspect = width / height;
-        section.camera.updateProjectionMatrix();
-        section.renderer.setSize(width, height);
-      });
+
+     [section1, section2, section3, section4].forEach(section => {
+      section.camera.aspect = width / height;
+      section.camera.updateProjectionMatrix();
+      section.renderer.setSize(width, height);
+
+      let scaleFactor = 1;
+        if (width <= 768) {
+          scaleFactor = 0.6;
+        } else if (width <= 1024) {
+          scaleFactor = 0.8;
+        }
+
+      const model = section.getModel();
+        if (model) {
+          model.scale.set(
+            section.targetScale * scaleFactor,
+            section.targetScale * scaleFactor,
+            section.targetScale * scaleFactor
+        );
+      }
     });
+    });
+
   </script>
 </body>
 </html>
