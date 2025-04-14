@@ -143,23 +143,27 @@
 
     function getScaleFactor() {
       const width = window.innerWidth;
-        if (width <= 768) {
-         return 0.6; // Smaller on tablets and mobile
-        } else if (width <= 1024) {
-          return 0.8; // Medium size on smaller laptops
-        }
-        return 1; // Default scale for larger screens
+      if (width <= 480) {
+        return 0.4; // Smaller on phones
+      } else if (width <= 768) {
+        return 0.5; // Medium size on tablets
+      } else if (width <= 1024) {
+        return 0.7; // Medium size on smaller laptops
+      }
+      return 1; // Default scale for larger screens
     }
 
 
     let mouseX = 0, mouseY = 0;
    
+    // Modify your animation loop to skip mouse tracking on touch devices
     if (!isTouchDevice) {
-      window.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth) - 0.5;
-      mouseY = (e.clientY / window.innerHeight) - 0.5;
-    });
-  }
+      // Subtle mouse tracking
+      const targetRotX = section.baseRotation.x + (-mouseY * 0.1);
+      const targetRotY = section.baseRotation.y + (mouseX * 0.1);
+      model.rotation.x = THREE.MathUtils.lerp(model.rotation.x, targetRotX, 0.05);
+      model.rotation.y = THREE.MathUtils.lerp(model.rotation.y, targetRotY, 0.05);
+    }
 
     // Helper function: create a scene with fixed base transforms, gentle hover, and mouse tracking.
     // "basePosition" and "baseRotation" are the hard-set transforms you want.
@@ -198,7 +202,15 @@
       controls.enablePan = false;
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
-      if (isTouchDevice) controls.enabled = false; //disables ability to move model around by dragging when on touchscreen
+
+// Completely disable touch interactions
+      if (isTouchDevice) {
+       controls.enabled = false;
+       // Remove all event listeners from the DOM element
+       controls.dispose();
+        // Make sure the renderer's domElement doesn't capture touch events
+        renderer.domElement.style.pointerEvents = "none";
+      }
 
       let model = null;
       const loader = new GLTFLoader();
@@ -383,31 +395,26 @@
 
     // Handle window resize.
     window.addEventListener("resize", () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const newScaleFactor = getScaleFactor();
 
-     [section1, section2, section3, section4].forEach(section => {
-      section.camera.aspect = width / height;
-      section.camera.updateProjectionMatrix();
-      section.renderer.setSize(width, height);
+  [section1, section2, section3, section4].forEach(section => {
+    section.camera.aspect = width / height;
+    section.camera.updateProjectionMatrix();
+    section.renderer.setSize(width, height);
 
-      let scaleFactor = 1;
-        if (width <= 768) {
-          scaleFactor = 0.6;
-        } else if (width <= 1024) {
-          scaleFactor = 0.8;
-        }
-
-      const model = section.getModel();
-        if (model) {
-          model.scale.set(
-            section.targetScale * scaleFactor,
-            section.targetScale * scaleFactor,
-            section.targetScale * scaleFactor
-        );
-      }
-    });
-    });
+    const model = section.getModel();
+    if (model) {
+      const baseScale = section.targetScale; // Original base scale
+      model.scale.set(
+        baseScale * newScaleFactor,
+        baseScale * newScaleFactor,
+        baseScale * newScaleFactor
+      );
+    }
+  });
+});
 
     // End of code.
   </script>
