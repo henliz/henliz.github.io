@@ -129,6 +129,18 @@
     <canvas id="canvas4"></canvas>
   </section>
 
+    <!-- Robot Section -->
+    <section class="model-section">
+      <div class="text-content">
+        <h2>AI Design @HalalMeals</h2>
+        <p>Tech-savvy taste, made for everyone.</p>
+        <a href="https://henrietta.webflow.io/halalmeals" target="_blank" rel="noopener noreferrer">
+          <button>See What I Did &rarr;</button>
+        </a>
+      </div>
+      <canvas id="canvas5"></canvas>
+    </section>
+
   <script type="module">
     import * as THREE from "three";
     import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
@@ -200,6 +212,14 @@
       };
     }
 
+    const section5_robot = createScene({
+      canvasID: "canvas5",
+      modelPath: "./models/robot.glb",
+      targetScale: 8,
+      basePosition: new THREE.Vector3(0, 0.1, -35),
+      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(25), THREE.MathUtils.degToRad(15), 0)
+    });
+
     const section1 = createScene({
       canvasID: "canvas1",
       modelPath: "./models/jaguar.glb",
@@ -259,7 +279,7 @@
     waitForModel(section3, () => addOverlay(section3, overlayURL, [4.52, 2.8], [0, 0.35, 1.06]));
     waitForModel(section2, () => addOverlay(section2, laptopOverlayURL, [29, 17], [0, 10.7, -10.5]));
 
-    const sections = [section1, section2, section3, section4];
+    const sections = [section1, section2, section3, section4, section5_robot];
     const clock = new THREE.Clock();
 
     let mouseX = 0, mouseY = 0;
