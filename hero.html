@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaotic Girlypop Portfolio</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sky-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.8;
+        }
+
+        .sky-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6rem;
+            z-index: 10;
+            position: relative;
+            max-width: 1300px;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .text-section {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .greeting {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 0rem;
+            font-size: 2.2rem;
+            color: #f1faee;
+            font-weight: 800;
+            font-family: 'Montserrat Alternates', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+        }
+
+        .greeting-line1 {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .greeting-line2 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .wave-hand {
+            font-size: 2.2rem;
+            animation: wave 3s ease-in-out infinite;
+            transform-origin: 70% 70%;
+            display: inline-block;
+            margin-left: 0.2rem;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(20deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .main-title {
+            font-family: 'Montserrat Alternates', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 700;
+            margin-bottom: 0rem;
+            margin-top: 0rem;
+            background: linear-gradient(45deg, #a8dadc, #457b9d, #f1faee, #e63946, #2a9d8f);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 4s ease infinite;
+            line-height: 1.1;
+        }
+
+        @keyframes gradientText {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: #f1faee;
+            font-weight: 400;
+            line-height: 1.4;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            margin-top: 0rem;
+            min-height: 1.8rem;
+            white-space: nowrap;
+        }
+
+        .typewriter-container {
+            display: inline-block;
+        }
+
+        .typing-text {
+            border-right: 2px solid #a8dadc;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { border-color: #a8dadc; }
+            51%, 100% { border-color: transparent; }
+        }
+
+        .company-link {
+            background: linear-gradient(45deg, #2a9d8f, #457b9d, #a8dadc);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientText 3s ease infinite;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .company-link:hover {
+            transform: translateY(-1px);
+            animation-duration: 1s;
+        }
+
+        .company-link::after {
+            content: attr(data-info);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 20, 25, 0.98);
+            color: #f1faee !important;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(168, 218, 220, 0.4);
+            backdrop-filter: blur(15px);
+            z-index: 100;
+            font-weight: 500;
+            text-shadow: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            -webkit-background-clip: unset !important;
+            -webkit-text-fill-color: #f1faee !important;
+            background-clip: unset !important;
+        }
+
+        .company-link:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #2a9d8f, #457b9d);
+            color: white;
+            box-shadow: 0 4px 15px rgba(42, 157, 143, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(42, 157, 143, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #a8dadc;
+            border: 2px solid #a8dadc;
+            box-shadow: 0 0 20px rgba(168, 218, 220, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(168, 218, 220, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(168, 218, 220, 0.5);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .social-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(168, 218, 220, 0.1);
+            border: 2px solid rgba(168, 218, 220, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 218, 220, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .social-icon:hover::before {
+            left: 100%;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px) scale(1.05);
+            border-color: rgba(168, 218, 220, 0.6);
+            background: rgba(168, 218, 220, 0.2);
+            box-shadow: 0 8px 25px rgba(168, 218, 220, 0.3);
+        }
+
+        .social-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: #a8dadc;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .social-icon:hover svg {
+            stroke: #f1faee;
+            transform: scale(1.1);
+        }
+
+        .social-tooltip {
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 20, 25, 0.98);
+            color: #f1faee;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(168, 218, 220, 0.4);
+            backdrop-filter: blur(15px);
+            z-index: 100;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .social-icon:hover .social-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        .image-section {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .floating-image-container {
+            position: relative;
+            width: 320px;
+            height: 400px;
+            animation: floatImage 8s ease-in-out infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .floating-image-container:hover {
+            transform: scale(1.02);
+        }
+
+        .floating-image-container::after {
+            content: "✨ chaotic mastermind behind the magic ✨";
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 20, 25, 0.98);
+            color: #f1faee;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(168, 218, 220, 0.4);
+            backdrop-filter: blur(15px);
+            z-index: 100;
+            font-weight: 500;
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .floating-image-container:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        @keyframes floatImage {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                filter: hue-rotate(0deg);
+            }
+            25% {
+                transform: translateY(-12px) rotate(0.8deg);
+                filter: hue-rotate(3deg);
+            }
+            50% {
+                transform: translateY(-8px) rotate(0deg);
+                filter: hue-rotate(0deg);
+            }
+            75% {
+                transform: translateY(6px) rotate(-0.5deg);
+                filter: hue-rotate(-2deg);
+            }
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(168, 218, 220, 0.3), rgba(42, 157, 143, 0.3), rgba(241, 250, 238, 0.2));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            border: 3px solid rgba(168, 218, 220, 0.4);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-placeholder::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(241, 250, 238, 0.1), transparent);
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .orbit-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .orbit {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: orbit 10s linear infinite;
+            opacity: 0.7;
+        }
+
+        .orbit-1 {
+            top: 10%;
+            left: 10%;
+            background: #a8dadc;
+            animation-delay: 0s;
+        }
+
+        .orbit-2 {
+            top: 20%;
+            right: 15%;
+            background: #2a9d8f;
+            animation-delay: 2.5s;
+        }
+
+        .orbit-3 {
+            bottom: 15%;
+            left: 20%;
+            background: #457b9d;
+            animation-delay: 5s;
+        }
+
+        .orbit-4 {
+            bottom: 25%;
+            right: 10%;
+            background: #f1faee;
+            animation-delay: 7.5s;
+        }
+
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(60px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
+        }
+
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.6;
+        }
+
+        .glitch-text::before {
+            animation: glitch1 3s infinite;
+            color: #2a9d8f;
+            z-index: -1;
+        }
+
+        .glitch-text::after {
+            animation: glitch2 3s infinite;
+            color: #a8dadc;
+            z-index: -2;
+        }
+
+        @keyframes glitch1 {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(-1px, -1px); }
+            60% { transform: translate(1px, 1px); }
+            80% { transform: translate(1px, -1px); }
+        }
+
+        @keyframes glitch2 {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(1px, 1px); }
+            40% { transform: translate(1px, -1px); }
+            60% { transform: translate(-1px, 1px); }
+            80% { transform: translate(-1px, -1px); }
+        }
+
+        @media (max-width: 768px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .floating-image-container {
+                width: 250px;
+                height: 320px;
+            }
+
+            .cta-buttons {
+                justify-content: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+
+            .company-link::after {
+                display: none;
+            }
+
+            .floating-image-container::after {
+                display: none;
+            }
+
+            .social-tooltip {
+                display: none;
+            }
+
+            .greeting {
+                font-size: 1.8rem;
+            }
+
+            .subtitle {
+                white-space: normal;
+            }
+        }
+    </style>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="hero">
+        <div class="sky-background">
+            <canvas class="sky-canvas" id="skyCanvas"></canvas>
+        </div>
+
+        <div class="hero-content">
+            <div class="text-section">
+                <div class="greeting">
+                    <div class="greeting-line1">
+                        <span>POV: the Gen Z'er is collecting</span>
+                    </div>
+                    <div class="greeting-line2">
+                        <span>careers like Barbies</span>
+                        <span class="wave-hand">👋</span>
+                    </div>
+                </div>
+
+                <h1 class="main-title">
+                    <span class="glitch-text" data-text="I'm Henrietta">I'm Henrietta</span>
+                </h1>
+
+                <p class="subtitle">
+                    What have I done? <span class="typewriter-container"><span class="typing-text" id="typingText"></span></span>
+                    <br>
+                    Founder @ <span class="company-link" data-info="AI sous chef revolutionizing meal planning" onclick="window.open('https://skrimp.ai', '_blank')">Skrimp</span> | Tech Director @ <span class="company-link" data-info="200 person indie studio, making a 100+ hour Baldur's Gate 3 expansion" onclick="window.open('https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/', '_blank')">Path to Menzoberranzan</span>
+                </p>
+
+                <div class="cta-buttons">
+                    <button class="btn btn-primary">see my chaos ✨</button>
+                    <button class="btn btn-secondary">let's conspire 💫</button>
+                </div>
+
+                <div class="social-links">
+                    <div class="social-icon" onclick="window.open('https://www.linkedin.com/in/henriettavanniekerk', '_blank')">
+                        <i data-lucide="linkedin"></i>
+                        <div class="social-tooltip">LinkedIn</div>
+                    </div>
+                    <div class="social-icon" onclick="window.open('https://github.com/henliz', '_blank')">
+                        <i data-lucide="github"></i>
+                        <div class="social-tooltip">GitHub</div>
+                    </div>
+                    <div class="social-icon" onclick="window.open('mailto:henrietta@skrimp.ai', '_blank')">
+                        <i data-lucide="mail"></i>
+                        <div class="social-tooltip">Email</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="image-section">
+                <div class="floating-image-container" onclick="window.open('https://www.linkedin.com/in/henrietta-dev', '_blank')">
+                    <div class="image-placeholder">
+                        <img src="./herogirl.jpg" alt="Henrietta" style="width: 100%; height: 100%; object-fit: cover; border-radius: 21px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div style="display: none; font-size: 5rem;">📸</div>
+                    </div>
+                    <div class="orbit-elements">
+                        <div class="orbit orbit-1"></div>
+                        <div class="orbit orbit-2"></div>
+                        <div class="orbit orbit-3"></div>
+                        <div class="orbit orbit-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from "three";
+        import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
+
+        // Three.js Sky Scene - vertex color approach
+        let scene, camera, renderer, skyMesh;
+        const clock = new THREE.Clock();
+
+        function initSkyScene() {
+            // Scene setup
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 12); // Zoom out just a tiny bit more
+
+            // Renderer
+            const canvas = document.getElementById('skyCanvas');
+            renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                alpha: true,
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Bright lighting for vertex colors
+            const ambientLight = new THREE.AmbientLight(0xffffff, 3);
+            scene.add(ambientLight);
+
+            // Load the sky model and handle vertex colors
+            const loader = new GLTFLoader();
+            loader.load('./models/skyblue.glb', function(gltf) {
+                skyMesh = gltf.scene;
+
+                // Dig deeper into the GLTF structure to find textures
+                console.log('FULL GLTF:', gltf);
+                console.log('GLTF parser:', gltf.parser);
+                console.log('GLTF parser json:', gltf.parser ? gltf.parser.json : 'no parser');
+
+                // Check the raw JSON data for textures/images
+                if (gltf.parser && gltf.parser.json) {
+                    console.log('Raw JSON textures:', gltf.parser.json.textures);
+                    console.log('Raw JSON images:', gltf.parser.json.images);
+                    console.log('Raw JSON materials:', gltf.parser.json.materials);
+                }
+
+                // Look for textures in the parser cache
+                if (gltf.parser && gltf.parser.cache) {
+                    console.log('Parser cache:', gltf.parser.cache);
+                }
+
+                // Make it bigger so we can see see
+                skyMesh.scale.set(5, 5, 5);
+                skyMesh.position.set(0, 0, 0);
+
+                // Try to manually connect textures to materials
+                skyMesh.traverse((child) => {
+                    if (child.isMesh) {
+                        console.log('Mesh found:', child.name);
+                        console.log('Original material:', child.material.name);
+                        console.log('Material map before:', child.material.map);
+
+                        // Try to find and assign textures from the GLTF data
+                        if (gltf.parser && gltf.parser.json && gltf.parser.json.textures) {
+                            // Get the first texture from the GLTF data
+                            const textureIndex = 0;
+                            if (gltf.parser.json.textures[textureIndex]) {
+                                console.log('Found texture in GLTF JSON:', gltf.parser.json.textures[textureIndex]);
+
+                                // Use the parser to load the texture
+                                gltf.parser.loadTexture(textureIndex).then(texture => {
+                                    console.log('Loaded texture:', texture);
+                                    child.material.map = texture;
+
+                                    // Make it more vibrant and saturated!
+                                    child.material.color.setHex(0xffffff); // Pure white multiplier
+                                    child.material.transparent = false;
+                                    child.material.opacity = 1;
+                                    child.material.needsUpdate = true;
+
+                                    console.log('Applied vibrant texture to material!');
+                                });
+                            }
+                        } else {
+                            console.log('No textures found in GLTF JSON, using fallback');
+                            // Fallback - solid color
+                            child.material = new THREE.MeshBasicMaterial({
+                                color: 0x87CEEB,
+                                side: THREE.FrontSide,
+                                wireframe: false
+                            });
+                        }
+                    }
+                });
+
+                scene.add(skyMesh);
+                console.log('Sky loaded - check above for texture loading!');
+
+            }, undefined, function(error) {
+                console.error('Sky model failed to load:', error);
+
+                // Fallback - create vertex colored sphere manually
+                const geometry = new THREE.SphereGeometry(1, 32, 32);
+
+                // Add some vertex colors to test
+                const colors = [];
+                const positionAttribute = geometry.attributes.position;
+                for (let i = 0; i < positionAttribute.count; i++) {
+                    colors.push(0.3, 0.6, 1); // Sky blue vertex colors
+                }
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+                const material = new THREE.MeshBasicMaterial({
+                    vertexColors: true,
+                    wireframe: false
+                });
+                skyMesh = new THREE.Mesh(geometry, material);
+                scene.add(skyMesh);
+                console.log('Using fallback vertex colored sphere');
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsed = clock.getElapsedTime();
+
+            // Gentle autonomous movement - no mouse control
+            if (skyMesh) {
+                skyMesh.rotation.y = elapsed * 0.02; // Slow rotation
+                skyMesh.rotation.x = Math.sin(elapsed * 0.03) * 0.1; // Gentle drift
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Initialize everything
+        window.addEventListener('load', () => {
+            initSkyScene();
+            animate();
+            startTypewriter();
+
+            // Initialize Lucide icons
+            lucide.createIcons();
+        });
+
+        window.addEventListener('resize', onWindowResize);
+
+        // Typewriter effect
+        function startTypewriter() {
+            const phrases = [
+                "built AAA RPGs with global impact",
+                "founded AI startups that help humans",
+                "won awards for digital innovation",
+                "architected chaos in beautiful ways",
+                "other cool stuff tbh"
+            ];
+
+            let currentPhrase = 0;
+            const typingElement = document.getElementById('typingText');
+
+            if (!typingElement) {
+                console.log('Typing element not found, retrying...');
+                setTimeout(startTypewriter, 500);
+                return;
+            }
+
+            console.log('Starting typewriter effect...');
+
+            function typePhrase(phrase, callback) {
+                let currentChar = 0;
+                typingElement.textContent = '';
+
+                function typeChar() {
+                    if (currentChar < phrase.length) {
+                        typingElement.textContent += phrase[currentChar];
+                        currentChar++;
+                        setTimeout(typeChar, 60 + Math.random() * 40);
+                    } else {
+                        setTimeout(callback, 2500);
+                    }
+                }
+                typeChar();
+            }
+
+            function deletePhrase(callback) {
+                const currentText = typingElement.textContent;
+                let currentChar = currentText.length;
+
+                function deleteChar() {
+                    if (currentChar > 0) {
+                        typingElement.textContent = currentText.substring(0, currentChar - 1);
+                        currentChar--;
+                        setTimeout(deleteChar, 30 + Math.random() * 20);
+                    } else {
+                        setTimeout(callback, 500);
+                    }
+                }
+                deleteChar();
+            }
+
+            function cycle() {
+                typePhrase(phrases[currentPhrase], () => {
+                    deletePhrase(() => {
+                        currentPhrase = (currentPhrase + 1) % phrases.length;
+                        setTimeout(cycle, 200);
+                    });
+                });
+            }
+
+            cycle();
+        }
+
+        // Random glitch effect on title only
+        setInterval(() => {
+            const glitchText = document.querySelector('.glitch-text');
+            if (Math.random() > 0.97) {
+                glitchText.style.transform = `translate(${Math.random() * 3 - 1.5}px, ${Math.random() * 3 - 1.5}px)`;
+                setTimeout(() => {
+                    glitchText.style.transform = 'translate(0, 0)';
+                }, 150);
+            }
+        }, 200);
+    </script>
+</body>
+</html>

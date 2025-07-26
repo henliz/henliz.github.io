@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Portfolio Models with Responsive Scaling</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Changa+One&family=Montserrat:wght@400;700&display=swap');
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #ece4f0;
+      color: #2a0245;
+      overflow-x: hidden;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .model-section {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #jaguar-section {
+      margin-bottom: 10vh;
+    }
+
+    .text-content {
+      position: absolute;
+      top: 5vh;
+      left: 5vw;
+      z-index: 10;
+      max-width: 40vw;
+    }
+
+    h2 {
+      margin: 0 0 1rem 0;
+      font-family: 'Changa One', sans-serif;
+      font-size: 3rem;
+    }
+
+    p {
+      margin: 0 0 1.5rem 0;
+      font-size: 1.2rem;
+      line-height: 1.5;
+    }
+
+    button {
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 20px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #000;
+      color: #fff;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Jaguar Section -->
+  <section class="model-section" id="jaguar-section">
+    <div class="text-content">
+      <h2>Reclaiming Jaguar’s identity with a true rebrand 🏎️</h2>
+      <p>What went wrong with the 2024 rebrand? How can we fix it?</p>
+      <a href="https://henrietta.webflow.io/jaguar-redesign" target="_blank" rel="noopener noreferrer">
+        <button>See What I Did &rarr;</button>
+      </a>
+    </div>
+    <canvas id="canvas1"></canvas>
+  </section>
+
+  <!-- MacBook Section -->
+  <section class="model-section">
+    <div class="text-content">
+      <h2>Seniors Connect</h2>
+      <p>Creating a high-fidelity prototype to end senior loneliness ☕</p>
+      <a href="https://henrietta.webflow.io/seniors-connect" target="_blank" rel="noopener noreferrer">
+        <button>See What I Did &rarr;</button>
+      </a>
+    </div>
+    <canvas id="canvas2"></canvas>
+  </section>
+
+  <!-- Steam Deck Section -->
+  <section class="model-section">
+    <div class="text-content">
+      <h2>Path to Menzoberranzan</h2>
+      <p>I am a Gameplay & Systems Programmer, working on a fan-created</p>
+      <p>expansion for the video game beloved by so many. ⚔️</p>
+      <a href="https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/" target="_blank" rel="noopener noreferrer">
+        <button>See What I Did &rarr;</button>
+      </a>
+    </div>
+    <canvas id="canvas3"></canvas>
+  </section>
+
+  <!-- Chocolate Section -->
+  <section class="model-section">
+    <div class="text-content">
+      <h2>Rheo Thompson</h2>
+      <p>A timeless chocolatier with a contemporary twist.</p>
+      <a href="https://henrietta.webflow.io/rheo-thompson" target="_blank" rel="noopener noreferrer">
+        <button>See What I Did &rarr;</button>
+      </a>
+    </div>
+    <canvas id="canvas4"></canvas>
+  </section>
+
+    <!-- Robot Section -->
+    <section class="model-section">
+      <div class="text-content">
+        <h2>AI Design @HalalMeals</h2>
+        <p>Tech-savvy taste, made for everyone.</p>
+        <a href="https://henrietta.webflow.io/halalmeals" target="_blank" rel="noopener noreferrer">
+          <button>See What I Did &rarr;</button>
+        </a>
+      </div>
+      <canvas id="canvas5"></canvas>
+    </section>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
+    import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/controls/OrbitControls.js";
+
+    let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    function getScaleFactor() {
+      const width = window.innerWidth;
+      if (width <= 480) return 0.3;
+      if (width <= 768) return 0.4;
+      if (width <= 1280) return 0.55;
+      return 1;
+    }
+
+    function createScene({ canvasID, modelPath, targetScale, basePosition, baseRotation, reCenter = false }) {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 0, 3);
+
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        canvas: document.getElementById(canvasID),
+        alpha: true
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(2, 2, 5);
+      scene.add(light);
+
+      if (canvasID !== "canvas1") {
+        const extraLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        extraLight.position.set(-2, 3, -5);
+        scene.add(extraLight);
+      }
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false;
+      controls.enablePan = false;
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+
+      if (isTouchDevice) {
+        controls.enabled = false;
+        controls.dispose();
+        renderer.domElement.style.pointerEvents = "none";
+      }
+
+      let model = null;
+      const loader = new GLTFLoader();
+      loader.load(modelPath, (gltf) => {
+        model = gltf.scene;
+        scene.add(model);
+        if (reCenter) {
+          const box = new THREE.Box3().setFromObject(model);
+          const center = box.getCenter(new THREE.Vector3());
+          model.position.sub(center);
+        }
+        model.position.copy(basePosition);
+        model.rotation.copy(baseRotation);
+      });
+
+      return {
+        scene, camera, renderer, controls,
+        getModel: () => model,
+        originalScale: targetScale,
+        basePosition, baseRotation
+      };
+    }
+
+    const section5_robot = createScene({
+      canvasID: "canvas5",
+      modelPath: "./models/robot.glb",
+      targetScale: 8,
+      basePosition: new THREE.Vector3(0, 0.1, -35),
+      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(25), THREE.MathUtils.degToRad(15), 0)
+    });
+
+    const section1 = createScene({
+      canvasID: "canvas1",
+      modelPath: "./models/jaguar.glb",
+      targetScale: 0.6,
+      basePosition: new THREE.Vector3(0, 0, 0),
+      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(20), THREE.MathUtils.degToRad(20), 0)
+    });
+
+    const section2 = createScene({
+      canvasID: "canvas2",
+      modelPath: "./models/laptop.glb",
+      targetScale: 0.07,
+      basePosition: new THREE.Vector3(0, -0.5, 0),
+      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(5), THREE.MathUtils.degToRad(40), 0)
+    });
+
+    const section3 = createScene({
+      canvasID: "canvas3",
+      modelPath: "./models/steamdeck.glb",
+      targetScale: 0.3,
+      basePosition: new THREE.Vector3(0, 0.1, 0),
+      baseRotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-15), 0)
+    });
+
+    const section4 = createScene({
+      canvasID: "canvas4",
+      modelPath: "./models/chocolate.glb",
+      targetScale: 0.003,
+      basePosition: new THREE.Vector3(0, 0.1, 0),
+      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(15), 0)
+    });
+
+    const overlayURL = "https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png";
+    const laptopOverlayURL = "https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png";
+
+    function addOverlay(section, textureURL, size, position) {
+      const loader = new THREE.TextureLoader();
+      loader.load(textureURL, (texture) => {
+        const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+        const geometry = new THREE.PlaneGeometry(...size);
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(...position);
+        const model = section.getModel();
+        if (model) model.add(mesh);
+      });
+    }
+
+    const waitForModel = (section, cb) => {
+      const check = setInterval(() => {
+        if (section.getModel()) {
+          cb();
+          clearInterval(check);
+        }
+      }, 100);
+    };
+
+    waitForModel(section3, () => addOverlay(section3, overlayURL, [4.52, 2.8], [0, 0.35, 1.06]));
+    waitForModel(section2, () => addOverlay(section2, laptopOverlayURL, [29, 17], [0, 10.7, -10.5]));
+
+    const sections = [section1, section2, section3, section4, section5_robot];
+    const clock = new THREE.Clock();
+
+    let mouseX = 0, mouseY = 0;
+    document.addEventListener("mousemove", (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
+
+      sections.forEach(section => {
+        const model = section.getModel();
+        if (model) {
+          const scaleFactor = getScaleFactor();
+          const scaledValue = section.originalScale * scaleFactor;
+          model.scale.lerp(new THREE.Vector3(scaledValue, scaledValue, scaledValue), 0.05);
+          model.position.y = section.basePosition.y + 0.1 * Math.sin(elapsed * 0.5);
+          model.rotation.x = THREE.MathUtils.lerp(model.rotation.x, section.baseRotation.x + (-mouseY * 0.1), 0.05);
+          model.rotation.y = THREE.MathUtils.lerp(model.rotation.y, section.baseRotation.y + (mouseX * 0.1), 0.05);
+        }
+        section.controls.update();
+        section.renderer.render(section.scene, section.camera);
+      });
+    }
+    animate();
+
+    window.addEventListener("resize", () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      sections.forEach(section => {
+        section.camera.aspect = width / height;
+        section.camera.updateProjectionMatrix();
+        section.renderer.setSize(width, height);
+      });
+    });
+  </script>
+</body>
+</html>
