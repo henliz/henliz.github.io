@@ -527,43 +527,143 @@
         }
 
         @media (max-width: 768px) {
+            .hero {
+                padding: 1rem 0;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+            }
+
             .hero-content {
                 flex-direction: column;
                 text-align: center;
                 gap: 2rem;
+                max-width: 100%;
+                padding: 1rem;
+                margin: 0 auto;
+            }
+
+            .text-section {
+                max-width: 100%;
+                order: 2;
+            }
+
+            .image-section {
+                order: 1;
+                margin-bottom: 1rem;
             }
 
             .floating-image-container {
-                width: 250px;
-                height: 320px;
+                width: 200px;
+                height: 250px;
+            }
+
+            .greeting {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .greeting-line1,
+            .greeting-line2 {
+                white-space: normal;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.3rem;
+            }
+
+            .main-title {
+                font-size: clamp(2rem, 12vw, 3rem);
+                margin-bottom: 0.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+                white-space: normal;
+                line-height: 1.6;
+                margin-bottom: 1.5rem;
+                padding: 0 0.5rem;
             }
 
             .cta-buttons {
                 justify-content: center;
+                gap: 0.8rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
             }
 
             .social-links {
                 justify-content: center;
             }
 
-            .company-link::after {
-                display: none;
+            .social-icon {
+                width: 45px;
+                height: 45px;
             }
 
-            .floating-image-container::after {
-                display: none;
+            .social-icon svg {
+                width: 20px;
+                height: 20px;
             }
 
+            .company-link::after,
+            .floating-image-container::after,
             .social-tooltip {
                 display: none;
             }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content {
+                padding: 0.5rem;
+                gap: 1.5rem;
+            }
+
+            .floating-image-container {
+                width: 180px;
+                height: 220px;
+            }
 
             .greeting {
-                font-size: 1.8rem;
+                font-size: 1.3rem;
+            }
+
+            .main-title {
+                font-size: clamp(1.8rem, 10vw, 2.5rem);
             }
 
             .subtitle {
-                white-space: normal;
+                font-size: 1rem;
+                padding: 0 0.25rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.8rem;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 250px;
+                padding: 0.8rem 1rem;
+            }
+
+            .social-links {
+                gap: 1rem;
+            }
+
+            .social-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .social-icon svg {
+                width: 18px;
+                height: 18px;
             }
         }
     </style>

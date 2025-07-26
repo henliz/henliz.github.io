@@ -93,22 +93,124 @@
             width: 100%;
         }
 
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(168, 218, 220, 0.1);
+        }
+
+        .hamburger:hover {
+            background: rgba(168, 218, 220, 0.2);
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #a8dadc;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background: rgba(15, 20, 25, 0.98);
+            backdrop-filter: blur(20px);
+            transition: right 0.3s ease;
+            padding: 5rem 2rem 2rem;
+            z-index: 999;
+            border-left: 1px solid rgba(168, 218, 220, 0.2);
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .mobile-menu ul li {
+            margin: 2rem 0;
+        }
+
+        .mobile-menu ul li a {
+            color: #f1faee;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 500;
+            display: block;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(168, 218, 220, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu ul li a:hover {
+            color: #a8dadc;
+            padding-left: 1rem;
+            background: rgba(168, 218, 220, 0.05);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .hero-section {
             height: 100vh;
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
 
         .hero-iframe {
             width: 100%;
             height: 100%;
             border: none;
+            display: block;
         }
 
         .section {
             padding: 5rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .section h2 {
@@ -126,86 +228,17 @@
             height: 100vh;
             position: relative;
             overflow: hidden;
-            margin: 2rem 0;
-            border-radius: 20px;
-            border: 2px solid rgba(168, 218, 220, 0.2);
+            margin: 0;
+            border: none;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .models-iframe {
             width: 100%;
             height: 100%;
             border: none;
-            border-radius: 18px;
-        }
-
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .project-card {
-            background: rgba(168, 218, 220, 0.05);
-            border-radius: 20px;
-            padding: 2rem;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(168, 218, 220, 0.1);
-            transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(168, 218, 220, 0.1), transparent);
-            transition: left 0.6s;
-        }
-
-        .project-card:hover::before {
-            left: 100%;
-        }
-
-        .project-card:hover {
-            transform: translateY(-10px);
-            background: rgba(168, 218, 220, 0.1);
-            border-color: rgba(168, 218, 220, 0.3);
-        }
-
-        .project-preview {
-            width: 100%;
-            height: 200px;
-            background: rgba(42, 157, 143, 0.1);
-            border-radius: 15px;
-            margin-bottom: 1rem;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid rgba(168, 218, 220, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: #a8dadc;
-            opacity: 0.6;
-        }
-
-        .project-card h3 {
-            margin-bottom: 1rem;
-            color: #a8dadc;
-            font-family: 'Montserrat Alternates', sans-serif;
-            font-weight: 600;
-        }
-
-        .project-card p {
-            opacity: 0.8;
-            line-height: 1.5;
-            color: #f1faee;
+            display: block;
         }
 
         .about-content {
@@ -278,25 +311,82 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+
             .navbar {
                 padding: 1rem;
             }
 
             .navbar .nav-links {
-                gap: 1rem;
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hero-section {
+                width: 100vw;
+                position: relative;
+                left: 50%;
+                right: 50%;
+                margin-left: -50vw;
+                margin-right: -50vw;
             }
 
             .section {
                 padding: 3rem 1rem;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .section h2 {
+                font-size: 2rem;
+            }
+
+            .models-section {
+                height: 60vh;
+                margin: 0;
+                width: 100%;
             }
 
             .contact-links {
                 flex-direction: column;
                 align-items: center;
+                gap: 1rem;
+            }
+
+            .contact-link {
+                width: 100%;
+                max-width: 250px;
+                text-align: center;
+            }
+
+            .skills {
+                gap: 0.5rem;
+            }
+
+            .skill-tag {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 0.8rem;
+            }
+
+            .section {
+                padding: 2rem 0.8rem;
             }
 
             .models-section {
                 height: 50vh;
+                margin: 0;
+                width: 100%;
             }
         }
     </style>
@@ -313,7 +403,22 @@
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
+            <div class="hamburger" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </nav>
+
+        <div class="overlay" onclick="closeMobileMenu()"></div>
+        <div class="mobile-menu">
+            <ul>
+                <li><a href="#home" onclick="closeMobileMenu()">Home</a></li>
+                <li><a href="#projects" onclick="closeMobileMenu()">Projects</a></li>
+                <li><a href="#about" onclick="closeMobileMenu()">About</a></li>
+                <li><a href="#contact" onclick="closeMobileMenu()">Contact</a></li>
+            </ul>
+        </div>
 
         <section class="hero-section" id="home">
             <iframe src="hero.html" class="hero-iframe"></iframe>
@@ -324,38 +429,12 @@
             <p style="text-align: center; opacity: 0.8; font-size: 1.1rem; color: #f1faee; margin-bottom: 2rem;">
                 A collection of interactive experiences and creative digital projects
             </p>
-
-            <!-- TEST: Load models.html directly in the page -->
-            <div class="models-section">
-                <iframe src="models.html" class="models-iframe"></iframe>
-            </div>
-
-            <div class="projects-grid">
-                <div class="project-card" onclick="window.open('models.html', '_blank')">
-                    <div class="project-preview">
-                        🌌
-                    </div>
-                    <h3>Interactive 3D Models</h3>
-                    <p>Full collection of interactive 3D assets built with Three.js</p>
-                </div>
-
-                <div class="project-card" onclick="alert('Coming soon!')">
-                    <div class="project-preview">
-                        ✨
-                    </div>
-                    <h3>Creative Coding Projects</h3>
-                    <p>Experimental digital art and generative design pieces</p>
-                </div>
-
-                <div class="project-card" onclick="alert('Coming soon!')">
-                    <div class="project-preview">
-                        💫
-                    </div>
-                    <h3>Web Applications</h3>
-                    <p>Full-stack applications with modern frameworks</p>
-                </div>
-            </div>
         </section>
+
+        <!-- Full-width models section -->
+        <div class="models-section">
+            <iframe src="models.html" class="models-iframe"></iframe>
+        </div>
 
         <section class="section" id="about">
             <h2>About Me</h2>
@@ -405,6 +484,34 @@
             });
         }
 
+        function toggleMobileMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const overlay = document.querySelector('.overlay');
+
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+
+            // Prevent body scroll when menu is open
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function closeMobileMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const overlay = document.querySelector('.overlay');
+
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
         // Simple smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -414,6 +521,18 @@
                     target.scrollIntoView({ behavior: 'smooth' });
                 }
             });
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const hamburger = document.querySelector('.hamburger');
+
+            if (mobileMenu.classList.contains('active') &&
+                !mobileMenu.contains(e.target) &&
+                !hamburger.contains(e.target)) {
+                closeMobileMenu();
+            }
         });
     </script>
 </body>
