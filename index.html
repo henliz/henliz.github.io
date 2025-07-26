@@ -20,6 +20,42 @@
             background: #0f1419;
             color: white;
             overflow-x: hidden;
+            cursor: none !important;
+        }
+
+        *, *::before, *::after {
+            cursor: none !important;
+        }
+
+        /* Custom Glassmorphism Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(168, 218, 220, 0.1);
+            border: 1px solid rgba(168, 218, 220, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            transition: all 0.08s ease-out;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px rgba(168, 218, 220, 0.2);
+        }
+
+        .custom-cursor.clicking {
+            background: rgba(168, 218, 220, 0.8);
+            border-color: rgba(168, 218, 220, 0.9);
+            transform: translate(-50%, -50%) scale(0.8);
+            box-shadow: 0 0 30px rgba(168, 218, 220, 0.6);
+        }
+
+        .custom-cursor.hovering {
+            width: 30px;
+            height: 30px;
+            background: rgba(168, 218, 220, 0.15);
+            border-color: rgba(168, 218, 220, 0.5);
+            box-shadow: 0 0 25px rgba(168, 218, 220, 0.4);
         }
 
         #app {
@@ -224,6 +260,23 @@
             font-weight: 700;
         }
 
+        .bento-section {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            border: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .bento-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
         .models-section {
             height: 100vh;
             position: relative;
@@ -346,6 +399,12 @@
                 font-size: 2rem;
             }
 
+            .bento-section {
+                height: 60vh;
+                margin: 0;
+                width: 100%;
+            }
+
             .models-section {
                 height: 60vh;
                 margin: 0;
@@ -383,6 +442,12 @@
                 padding: 2rem 0.8rem;
             }
 
+            .bento-section {
+                height: 50vh;
+                margin: 0;
+                width: 100%;
+            }
+
             .models-section {
                 height: 50vh;
                 margin: 0;
@@ -393,6 +458,9 @@
 </head>
 <body>
     <div id="app">
+        <!-- Custom Glassmorphism Cursor -->
+        <div class="custom-cursor" id="cursor"></div>
+
         <nav class="navbar">
             <a href="#home" class="logo" onclick="scrollToTop()">
                 <img src="HenLogo.png" alt="Henlogo">
@@ -462,6 +530,11 @@
             </div>
         </section>
 
+        <!-- Full-width bento resume section -->
+        <div class="bento-section">
+            <iframe src="bentoresume.html" class="bento-iframe"></iframe>
+        </div>
+
         <section class="section contact" id="contact">
             <h2>Let's Connect</h2>
             <p style="text-align: center; opacity: 0.8; font-size: 1.1rem; margin-bottom: 2rem; color: #f1faee;">
@@ -477,6 +550,84 @@
     </div>
 
     <script>
+        // Custom Cursor Logic - Optimized for performance
+        const cursor = document.getElementById('cursor');
+        let mouseX = 0;
+        let mouseY = 0;
+        let animationId;
+
+        // Smooth cursor movement with requestAnimationFrame
+        function updateCursor() {
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        }
+
+        // Track mouse movement with throttling
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            if (!animationId) {
+                animationId = requestAnimationFrame(() => {
+                    updateCursor();
+                    animationId = null;
+                });
+            }
+        });
+
+        // Click animation
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('clicking');
+        });
+
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('clicking');
+        });
+
+        // Hover states for interactive elements
+        const hoverElements = document.querySelectorAll('a, button, .hamburger, .logo, .contact-link, .skill-tag');
+
+        hoverElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.classList.add('hovering');
+            });
+
+            element.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hovering');
+            });
+        });
+
+        // Hide cursor when entering iframes
+        const iframes = document.querySelectorAll('iframe');
+        iframes.forEach(iframe => {
+            iframe.addEventListener('mouseenter', () => {
+                cursor.style.opacity = '0';
+            });
+
+            iframe.addEventListener('mouseleave', () => {
+                cursor.style.opacity = '1';
+            });
+        });
+
+        // Listen for messages from iframes to hide/show cursor
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'hideCursor') {
+                cursor.style.opacity = '0';
+            }
+            if (event.data.type === 'showCursor') {
+                cursor.style.opacity = '1';
+            }
+        });
+
+        // Hide cursor when leaving window
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity = '0';
+        });
+
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity = '1';
+        });
+
         function scrollToTop() {
             window.scrollTo({
                 top: 0,

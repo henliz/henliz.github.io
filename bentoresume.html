@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Henrietta's Bento Resume 🍱</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            color: #f1faee;
+            overflow-x: hidden;
+            min-height: 100vh;
+            cursor: none !important;
+            padding: 2rem;
+        }
+
+        *, *::before, *::after {
+            cursor: none !important;
+        }
+
+        /* Custom Glassmorphism Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(42, 157, 143, 0.3);
+            border: 2px solid rgba(42, 157, 143, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            backdrop-filter: blur(8px);
+            transition: all 0.08s ease-out;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
+        }
+
+        .custom-cursor.clicking {
+            background: rgba(42, 157, 143, 0.9);
+            border-color: rgba(42, 157, 143, 1);
+            transform: translate(-50%, -50%) scale(0.8);
+            box-shadow: 0 0 25px rgba(42, 157, 143, 0.8), inset 0 0 15px rgba(42, 157, 143, 0.3);
+        }
+
+        .custom-cursor.hovering {
+            width: 30px;
+            height: 30px;
+            background: rgba(42, 157, 143, 0.4);
+            border-color: rgba(42, 157, 143, 0.9);
+            box-shadow: 0 0 20px rgba(42, 157, 143, 0.6), inset 0 0 12px rgba(42, 157, 143, 0.2);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .bento-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        .bento-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .bento-header h1 {
+            font-family: 'Montserrat Alternates', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #a8dadc, #457b9d, #2a9d8f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .bento-header p {
+            font-size: 1.3rem;
+            opacity: 0.8;
+            color: #a8dadc;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, auto);
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .bento-box {
+            background: rgba(15, 20, 25, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(168, 218, 220, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .bento-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 218, 220, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .bento-box:hover::before {
+            left: 100%;
+        }
+
+        .bento-box:hover {
+            transform: translateY(-5px);
+            border-color: rgba(168, 218, 220, 0.4);
+            background: rgba(15, 20, 25, 0.85);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .bento-box.expanded {
+            background: rgba(42, 157, 143, 0.1);
+            border-color: rgba(42, 157, 143, 0.5);
+            transform: scale(1.02);
+        }
+
+        /* Grid Layout */
+        .intro { grid-column: 1 / 3; grid-row: 1; }
+        .photo { grid-column: 3 / 5; grid-row: 1; }
+        .experience { grid-column: 1 / 3; grid-row: 2; }
+        .skills { grid-column: 3; grid-row: 2; }
+        .projects { grid-column: 4; grid-row: 2; }
+        .education { grid-column: 1; grid-row: 3; }
+        .contact { grid-column: 2; grid-row: 3; }
+        .fun-facts { grid-column: 3 / 5; grid-row: 3; }
+
+        .bento-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .bento-title {
+            font-family: 'Montserrat Alternates', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #a8dadc;
+        }
+
+        .bento-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .bento-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding-top 0.4s ease;
+            margin-top: 0;
+        }
+
+        .bento-box.expanded .bento-details {
+            max-height: 500px;
+            padding-top: 1rem;
+        }
+
+        .photo-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 1rem;
+            border: 3px solid rgba(168, 218, 220, 0.4);
+            background: linear-gradient(45deg, #2a9d8f, #457b9d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background: rgba(42, 157, 143, 0.2);
+            border: 1px solid rgba(42, 157, 143, 0.3);
+            border-radius: 15px;
+            padding: 0.3rem 0.8rem;
+            margin: 0.2rem;
+            font-size: 0.8rem;
+            color: #a8dadc;
+            font-weight: 500;
+        }
+
+        .experience-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(168, 218, 220, 0.1);
+        }
+
+        .experience-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .job-title {
+            font-weight: 600;
+            color: #a8dadc;
+            font-size: 1.1rem;
+        }
+
+        .company {
+            color: #2a9d8f;
+            font-weight: 500;
+        }
+
+        .date {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(168, 218, 220, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #f1faee;
+            opacity: 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .bento-box.expanded .close-btn {
+            opacity: 1;
+        }
+
+        .close-btn:hover {
+            background: rgba(168, 218, 220, 0.4);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                gap: 1rem;
+            }
+
+            .intro, .photo, .experience, .skills, .projects, .education, .contact, .fun-facts {
+                grid-column: 1;
+                grid-row: auto;
+            }
+
+            .bento-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .bento-box {
+                padding: 1.5rem;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bento-header h1 {
+                font-size: 2rem;
+            }
+
+            .bento-box {
+                padding: 1rem;
+            }
+
+            body {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Glassmorphism Cursor -->
+    <div class="custom-cursor" id="cursor"></div>
+
+    <div class="bento-container">
+        <div class="bento-header">
+            <h1>Mini Resume</h1>
+            <p>Click the boxes for the TLDR of me!</p>
+        </div>
+
+        <div class="bento-grid">
+            <!-- Intro Box -->
+            <div class="bento-box intro" onclick="toggleBox(this)">
+                <span class="bento-icon">👋</span>
+                <h3 class="bento-title">Hey there!</h3>
+                <div class="bento-content">
+                    I'm a chaotic creative who collects careers like Barbie! Currently founding AI startups and building epic RPG expansions.
+                </div>
+                <div class="bento-details">
+                    <p>I'm passionate about bridging the gap between cutting-edge technology and human-centered design. My journey spans from AAA game development to AI innovation, always with a focus on creating meaningful experiences that solve real problems.</p>
+                    <p>When I'm not coding or designing, you'll find me planning my next career pivot or experimenting with the latest tech trends!</p>
+                </div>
+                <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+            </div>
+
+            <!-- Photo Box -->
+            <div class="bento-box photo" onclick="toggleBox(this)">
+                <div class="photo-container">
+                    <img src="./HenChibi.png" alt="Henrietta" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display: none; font-size: 3rem; align-items: center; justify-content: center; width: 100%; height: 100%;">📸</div>
+                </div>
+                <h3 class="bento-title">That's Me!</h3>
+                <div class="bento-content">
+                    The mastermind behind the chaos ✨
+                </div>
+                <div class="bento-details">
+                    <p>Based in Toronto, Ontario 🇨🇦</p>
+                    <p>Always ready for the next adventure, whether it's a new coding challenge, a design problem to solve, or a game world to build!</p>
+                </div>
+                <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+            </div>
+
+            <!-- Experience Box -->
+            <div class="bento-box experience" onclick="toggleBox(this)">
+                <span class="bento-icon">💼</span>
+                <h3 class="bento-title">Experience</h3>
+                <div class="bento-content">
+                    From indie studios to AI startups
+                </div>
+                <div class="bento-details">
+                    <div class="experience-item">
+                        <div class="job-title">Founder & CEO</div>
+                        <div class="company">Skrimp AI</div>
+                        <div class="date">2024 - Present</div>
+                        <p>Building an AI sous chef that revolutionizes meal planning and cooking for everyday people.</p>
+                    </div>
+                    <div class="experience-item">
+                        <div class="job-title">Tech Director</div>
+                        <div class="company">Path to Menzoberranzan</div>
+                        <div class="date">2023 - Present</div>
+                        <p>Leading a 200-person indie studio creating a 100+ hour expansion for Baldur's Gate 3.</p>
+                    </div>
+                    <div class="experience-item">
+                        <div class="job-title">Senior Developer</div>
+                        <div class="company">Previous Roles</div>
+                        <div class="date">2020 - 2023</div>
+                        <p>Built AAA RPGs with global impact and won awards for digital innovation.</p>
+                    </div>
+                </div>
+                <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+            </div>
+
+            <!-- Skills Box -->
+            <div class="bento-box skills" onclick="toggleBox(this)">
+                <span class="bento-icon">🛠️</span>
+                <h3 class="bento-title">Skills</h3>
+                <div class="bento-content">
+                    <span class="skill-tag">JavaScript</span>
+                    <span class="skill-tag">React</span>
+                    <span class="skill-tag">Node.js</span>
+                </div>
+                <div class="bento-details">
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Frontend:</strong><br>
+                        <span class="skill-tag">React</span>
+                        <span class="skill-tag">Vue.js</span>
+                        <span class="skill-tag">Three.js</span>
+                        <span class="skill-tag">WebGL</span>
+                        <span class="skill-tag">TypeScript</span>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <strong>Backend:</strong><br>
+                        <span class="skill-tag">Node.js</span>
+                        <span class="skill-tag">Python</span>
+                        <span class="skill-tag">PostgreSQL</span>
+                        <span class="skill-tag">MongoDB</span>
+                    </div>
+                    <div>
+                        <strong>Other:</strong><br>
+                        <span class="skill-tag">AI/ML</span>
+                        <span class="skill-tag">Game Dev</span>
+                        <span class="skill-tag">UI/UX</span>
+                        <span class="skill-tag">3D Modeling</span>
+                    </div>
+                </div>
+                <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+            </div>
+
+            <!-- Projects Box -->
+            <div class="bento-box projects" onclick="toggleBox(this)">
+                <span class="bento-icon">🚀</span>
+                <h3 class="bento-title">Projects</h3>
+                <div class="bento-content">
+                    Cool stuff I've built
+                </div>
+                <div class="bento-details">
+                    <div class="experience-item">
+                        <div class="job-title">Skrimp AI Platform</div>
+                        <p>AI-powered meal planning and recipe generation platform with smart grocery integration.</p>
+                    </div>
+                    <div class="experience-item">
+                        <div class="job-title">Baldur's Gate 3 Expansion</div>
+                        <p>Massive fan-created campaign with custom mechanics, storylines, and 100+ hours of content.</p>
+                    </div>
+                    <div class="experience-item">
+                        <div class="job-title">Interactive Portfolio</div>
+                        <p>This very website! Built with Three.js, custom animations, and lots of chaotic energy.</p>
+                    </div>
+                </div>
+                <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+            </div>
+
+            <!-- Education Box -->
+            <div class="bento-box education" onclick="toggleBox(this)">
+                <span class="bento-icon">🎓</span>
+                <h3 class="bento-title">Education</h3>
+                <div class="bento-content">
+                    Learning never stops!
+                </div>
+                <div class="bento-details">
+                    <div class="experience-item">
+                        <div class="job-title">Computer Science</div>
+                        <div class="company">University</div>
+                        <p>Focus on software engineering, AI, and human-computer interaction.</p>
+                    </div>
+                    <div class="experience-item">
+                        <div class="job-title">Self-Taught</div>
+                        <div class="company">School of Life</div>
+                        <p>Constantly learning new technologies, frameworks, and skills. Recent obsessions: AI/ML, WebXR, and game engine development.</p>
+                    </div>
+                </div>
+                <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+            </div>
+
+            <!-- Contact Box -->
+            <div class="bento-box contact" onclick="toggleBox(this)">
+                <span class="bento-icon">📧</span>
+                <h3 class="bento-title">Contact</h3>
+                <div class="bento-content">
+                    Let's connect!
+                </div>
+                <div class="bento-details">
+                    <p style="margin-bottom: 1rem;"><strong>Email:</strong><br>henrietta@skrimp.ai</p>
+                    <p style="margin-bottom: 1rem;"><strong>LinkedIn:</strong><br>/in/henriettavanniekerk</p>
+                    <p style="margin-bottom: 1rem;"><strong>GitHub:</strong><br>/henliz</p>
+                    <p><strong>Location:</strong><br>Toronto, Ontario, Canada</p>
+                </div>
+                <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+            </div>
+
+            <!-- Fun Facts Box -->
+            <div class="bento-box fun-facts" onclick="toggleBox(this)">
+                <span class="bento-icon">✨</span>
+                <h3 class="bento-title">Fun Facts</h3>
+                <div class="bento-content">
+                    The chaotic details that make me, me!
+                </div>
+                <div class="bento-details">
+                    <div class="experience-item">
+                        <div class="job-title">🎮 Gaming Enthusiast</div>
+                        <p>Massive RPG fan - hence the Baldur's Gate expansion! Current obsession: indie games with innovative mechanics.</p>
+                    </div>
+                    <div class="experience-item">
+                        <div class="job-title">🍳 Cooking Experimenter</div>
+                        <p>Yes, I built an AI chef because I love cooking! Always trying new recipes and fusion cuisines.</p>
+                    </div>
+                    <div class="experience-item">
+                        <div class="job-title">🎨 Creative Coder</div>
+                        <p>I believe code is art. Love creating interactive experiences, generative art, and beautiful UIs.</p>
+                    </div>
+                </div>
+                <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
+        let mouseX = 0;
+        let mouseY = 0;
+        let animationId;
+
+        function updateCursor() {
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            if (!animationId) {
+                animationId = requestAnimationFrame(() => {
+                    updateCursor();
+                    animationId = null;
+                });
+            }
+        });
+
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('clicking');
+        });
+
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('clicking');
+        });
+
+        // Hover states for interactive elements
+        const hoverElements = document.querySelectorAll('.bento-box, .close-btn');
+
+        hoverElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.classList.add('hovering');
+            });
+
+            element.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hovering');
+            });
+        });
+
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity = '0';
+        });
+
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity = '1';
+        });
+
+        // Bento Box Interactions
+        function toggleBox(box) {
+            // Close all other expanded boxes
+            document.querySelectorAll('.bento-box.expanded').forEach(openBox => {
+                if (openBox !== box) {
+                    openBox.classList.remove('expanded');
+                }
+            });
+
+            // Toggle this box
+            box.classList.toggle('expanded');
+        }
+
+        function closeBox(event, box) {
+            event.stopPropagation();
+            box.classList.remove('expanded');
+        }
+
+        // Close boxes when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.bento-box')) {
+                document.querySelectorAll('.bento-box.expanded').forEach(box => {
+                    box.classList.remove('expanded');
+                });
+            }
+        });
+
+        // Enhanced iframe cursor communication
+        document.addEventListener('mouseenter', () => {
+            if (window.parent !== window) {
+                window.parent.postMessage({ type: 'hideCursor' }, '*');
+            }
+        });
+
+        document.addEventListener('mouseleave', () => {
+            if (window.parent !== window) {
+                window.parent.postMessage({ type: 'showCursor' }, '*');
+            }
+        });
+
+        // Prevent scroll hijacking - let parent handle scrolling
+        document.addEventListener('wheel', (e) => {
+            // Only prevent default if not at boundaries
+            const atTop = window.scrollY === 0;
+            const atBottom = window.scrollY >= (document.documentElement.scrollHeight - window.innerHeight);
+
+            if (!atTop && !atBottom) {
+                // In middle, let it scroll normally
+                return;
+            }
+
+            // At boundaries, don't prevent - let parent handle
+        }, { passive: true });
+    </script>
+</body>
+</html>
