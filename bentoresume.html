@@ -21,15 +21,22 @@
             color: #f1faee;
             overflow-x: hidden;
             min-height: 100vh;
-            cursor: none !important;
             padding: 2rem;
+            position: relative;
         }
 
-        *, *::before, *::after {
-            cursor: none !important;
+        /* Only hide cursor on desktop */
+        @media (hover: hover) and (pointer: fine) {
+            body {
+                cursor: none !important;
+            }
+
+            *, *::before, *::after {
+                cursor: none !important;
+            }
         }
 
-        /* Custom Glassmorphism Cursor */
+        /* Custom Glassmorphism Cursor - Only show on desktop */
         .custom-cursor {
             position: fixed;
             width: 20px;
@@ -43,6 +50,14 @@
             transition: all 0.08s ease-out;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
+            display: none; /* Hidden by default */
+        }
+
+        /* Only show custom cursor on desktop */
+        @media (hover: hover) and (pointer: fine) {
+            .custom-cursor {
+                display: block;
+            }
         }
 
         .custom-cursor.clicking {
@@ -66,10 +81,29 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* Sky Background */
+        .sky-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .sky-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
         .bento-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 0;
+            position: relative;
+            z-index: 10;
         }
 
         .bento-header {
@@ -86,12 +120,15 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 0.5rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.15);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
         }
 
         .bento-header p {
             font-size: 1.3rem;
             opacity: 0.8;
             color: #a8dadc;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .bento-grid {
@@ -103,16 +140,21 @@
             margin: 0 auto;
         }
 
+        /* Enhanced Glassmorphism Bento Boxes */
         .bento-box {
-            background: rgba(15, 20, 25, 0.7);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
+            background: rgba(15, 20, 25, 0.4);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
             padding: 2rem;
-            border: 1px solid rgba(168, 218, 220, 0.2);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(168, 218, 220, 0.15);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             cursor: pointer;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 0 20px rgba(168, 218, 220, 0.05);
         }
 
         .bento-box::before {
@@ -122,25 +164,65 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(168, 218, 220, 0.1), transparent);
-            transition: left 0.6s;
+            background: linear-gradient(90deg, transparent, rgba(168, 218, 220, 0.08), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .bento-box::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg,
+                rgba(168, 218, 220, 0.1),
+                rgba(42, 157, 143, 0.1),
+                rgba(168, 218, 220, 0.1));
+            border-radius: 26px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .bento-box:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(15, 20, 25, 0.6);
+            border: 1px solid rgba(168, 218, 220, 0.3);
+            backdrop-filter: blur(30px);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(42, 157, 143, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 0 30px rgba(168, 218, 220, 0.1);
         }
 
         .bento-box:hover::before {
             left: 100%;
         }
 
-        .bento-box:hover {
-            transform: translateY(-5px);
-            border-color: rgba(168, 218, 220, 0.4);
-            background: rgba(15, 20, 25, 0.85);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        .bento-box:hover::after {
+            opacity: 1;
         }
 
         .bento-box.expanded {
-            background: rgba(42, 157, 143, 0.1);
-            border-color: rgba(42, 157, 143, 0.5);
-            transform: scale(1.02);
+            background: rgba(15, 20, 25, 0.8);
+            border: 1px solid rgba(42, 157, 143, 0.4);
+            transform: scale(1.03);
+            backdrop-filter: blur(35px);
+            box-shadow:
+                0 25px 80px rgba(0, 0, 0, 0.5),
+                0 0 60px rgba(42, 157, 143, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                inset 0 0 40px rgba(42, 157, 143, 0.1);
+        }
+
+        .bento-box.expanded::after {
+            opacity: 1;
+            background: linear-gradient(45deg,
+                rgba(42, 157, 143, 0.2),
+                rgba(168, 218, 220, 0.2),
+                rgba(42, 157, 143, 0.2));
         }
 
         /* Grid Layout */
@@ -157,6 +239,7 @@
             font-size: 2.5rem;
             margin-bottom: 1rem;
             display: block;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
 
         .bento-title {
@@ -165,18 +248,20 @@
             font-weight: 600;
             margin-bottom: 1rem;
             color: #a8dadc;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .bento-content {
             font-size: 1rem;
             line-height: 1.6;
             opacity: 0.9;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .bento-details {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.4s ease, padding-top 0.4s ease;
+            transition: max-height 0.5s ease, padding-top 0.5s ease;
             margin-top: 0;
         }
 
@@ -197,11 +282,15 @@
             align-items: center;
             justify-content: center;
             font-size: 3rem;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 2px 4px rgba(255, 255, 255, 0.1);
         }
 
         .skill-tag {
             display: inline-block;
-            background: rgba(42, 157, 143, 0.2);
+            background: rgba(42, 157, 143, 0.15);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(42, 157, 143, 0.3);
             border-radius: 15px;
             padding: 0.3rem 0.8rem;
@@ -209,6 +298,19 @@
             font-size: 0.8rem;
             color: #a8dadc;
             font-weight: 500;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            background: rgba(42, 157, 143, 0.25);
+            border-color: rgba(42, 157, 143, 0.5);
+            transform: translateY(-1px);
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
         .experience-item {
@@ -226,11 +328,13 @@
             font-weight: 600;
             color: #a8dadc;
             font-size: 1.1rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .company {
             color: #2a9d8f;
             font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .date {
@@ -243,8 +347,9 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            background: rgba(168, 218, 220, 0.2);
-            border: none;
+            background: rgba(168, 218, 220, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 218, 220, 0.3);
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -256,6 +361,9 @@
             opacity: 0;
             transition: all 0.3s ease;
             cursor: pointer;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .bento-box.expanded .close-btn {
@@ -263,8 +371,12 @@
         }
 
         .close-btn:hover {
-            background: rgba(168, 218, 220, 0.4);
+            background: rgba(168, 218, 220, 0.3);
+            border-color: rgba(168, 218, 220, 0.5);
             transform: scale(1.1);
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
         @media (max-width: 768px) {
@@ -310,6 +422,11 @@
 <body>
     <!-- Custom Glassmorphism Cursor -->
     <div class="custom-cursor" id="cursor"></div>
+
+    <!-- Sky Background -->
+    <div class="sky-background">
+        <canvas class="sky-canvas" id="skyCanvas"></canvas>
+    </div>
 
     <div class="bento-container">
         <div class="bento-header">
@@ -503,7 +620,25 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // Import Three.js with a delayed load to avoid conflicts with hero
+        let THREE;
+
+        async function loadThreeJS() {
+            try {
+                // Small delay to let hero load first
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Try loading Three.js
+                THREE = await import('https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js');
+                console.log('Three.js loaded successfully for bento!');
+                return true;
+            } catch (error) {
+                console.error('Failed to load Three.js for bento:', error);
+                return false;
+            }
+        }
+
         // Custom Cursor Logic
         const cursor = document.getElementById('cursor');
         let mouseX = 0;
@@ -536,7 +671,7 @@
         });
 
         // Hover states for interactive elements
-        const hoverElements = document.querySelectorAll('.bento-box, .close-btn');
+        const hoverElements = document.querySelectorAll('.bento-box, .close-btn, .skill-tag');
 
         hoverElements.forEach(element => {
             element.addEventListener('mouseenter', () => {
@@ -556,7 +691,172 @@
             cursor.style.opacity = '1';
         });
 
-        // Bento Box Interactions
+        // Three.js Sky Scene - Using skybluetwo.glb like hero uses skyblue.glb
+        let scene, camera, renderer, skyMesh;
+        let clock;
+
+        async function initSkyScene() {
+            if (!THREE) {
+                console.warn('Three.js not loaded, skipping sky scene');
+                return;
+            }
+
+            console.log('Initializing bento sky scene with skybluetwo.glb...');
+
+            try {
+                clock = new THREE.Clock();
+
+                // Scene setup
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.set(0, 0, 10);
+
+                // Renderer
+                const canvas = document.getElementById('skyCanvas');
+                renderer = new THREE.WebGLRenderer({
+                    canvas: canvas,
+                    alpha: true,
+                    antialias: true
+                });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+                // Bright lighting for vertex colors
+                const ambientLight = new THREE.AmbientLight(0xffffff, 3);
+                scene.add(ambientLight);
+
+                // Load the SAME sky model as hero for consistency
+                const { GLTFLoader } = await import('https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js');
+                const loader = new GLTFLoader();
+
+                loader.load('./models/skyblue.glb', function(gltf) {
+                    skyMesh = gltf.scene;
+
+                    console.log('Loaded skyblue.glb successfully!');
+
+                    // Dig deeper into the GLTF structure to find textures (like hero does)
+                    console.log('FULL GLTF:', gltf);
+                    console.log('GLTF parser:', gltf.parser);
+                    console.log('GLTF parser json:', gltf.parser ? gltf.parser.json : 'no parser');
+
+                    // Check the raw JSON data for textures/images
+                    if (gltf.parser && gltf.parser.json) {
+                        console.log('Raw JSON textures:', gltf.parser.json.textures);
+                        console.log('Raw JSON images:', gltf.parser.json.images);
+                        console.log('Raw JSON materials:', gltf.parser.json.materials);
+                    }
+
+                    // Look for textures in the parser cache
+                    if (gltf.parser && gltf.parser.cache) {
+                        console.log('Parser cache:', gltf.parser.cache);
+                    }
+
+                    // Scale and position (same as hero)
+                    skyMesh.scale.set(5, 5, 5);
+                    skyMesh.position.set(0, 0, 0);
+
+                    // Try to manually connect textures to materials (EXACTLY like hero)
+                    skyMesh.traverse((child) => {
+                        if (child.isMesh) {
+                            console.log('Original material:', child.material.name);
+                            console.log('Material map before:', child.material.map);
+
+                            // Try to find and assign textures from the GLTF data
+                            if (gltf.parser && gltf.parser.json && gltf.parser.json.textures) {
+                                // Get the first texture from the GLTF data
+                                const textureIndex = 0;
+                                if (gltf.parser.json.textures[textureIndex]) {
+                                    console.log('Found texture in GLTF JSON:', gltf.parser.json.textures[textureIndex]);
+
+                                    // Use the parser to load the texture
+                                    gltf.parser.loadTexture(textureIndex).then(texture => {
+                                        console.log('Loaded texture:', texture);
+                                        child.material.map = texture;
+
+                                        // Make it more vibrant and saturated!
+                                        child.material.color.setHex(0xffffff); // Pure white multiplier
+                                        child.material.transparent = false;
+                                        child.material.opacity = 1;
+                                        child.material.needsUpdate = true;
+
+                                        console.log('Applied vibrant texture to material!');
+                                    });
+                                }
+                            } else {
+                                console.log('No textures found in GLTF JSON, using fallback');
+                                // Fallback - solid color
+                                child.material = new THREE.MeshBasicMaterial({
+                                    color: 0x87CEEB,
+                                    side: THREE.FrontSide,
+                                    wireframe: false
+                                });
+                            }
+                        }
+                    });
+
+                    scene.add(skyMesh);
+                    console.log('Sky loaded - check above for texture loading!');
+
+                }, undefined, function(error) {
+                    console.error('Sky model failed to load:', error);
+                    createFallbackSky();
+                });
+
+            } catch (error) {
+                console.error('Sky scene initialization failed:', error);
+                createFallbackSky();
+            }
+        }
+
+        function createFallbackSky() {
+            if (!THREE) return;
+
+            console.log('Creating fallback sky geometry...');
+
+            // Create fallback - vertex colored sphere manually (like hero does)
+            const geometry = new THREE.SphereGeometry(1, 32, 32);
+
+            // Add some vertex colors to test
+            const colors = [];
+            const positionAttribute = geometry.attributes.position;
+            for (let i = 0; i < positionAttribute.count; i++) {
+                colors.push(0.3, 0.6, 1); // Sky blue vertex colors
+            }
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+            const material = new THREE.MeshBasicMaterial({
+                vertexColors: true,
+                wireframe: false
+            });
+            skyMesh = new THREE.Mesh(geometry, material);
+            scene.add(skyMesh);
+            console.log('Using fallback vertex colored sphere');
+        }
+
+        function animate() {
+            if (!THREE || !renderer || !scene || !camera) return;
+
+            requestAnimationFrame(animate);
+
+            const elapsed = clock.getElapsedTime();
+
+            // Gentle autonomous movement like hero - no mouse control
+            if (skyMesh) {
+                skyMesh.rotation.y = elapsed * 0.02; // Slow rotation
+                skyMesh.rotation.x = Math.sin(elapsed * 0.03) * 0.1; // Gentle drift
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+
+        // Bento Box Interactions - Define these FIRST before window.load
         function toggleBox(box) {
             // Close all other expanded boxes
             document.querySelectorAll('.bento-box.expanded').forEach(openBox => {
@@ -582,6 +882,28 @@
                 });
             }
         });
+
+        // Make these functions global so the HTML onclick can access them
+        window.toggleBox = toggleBox;
+        window.closeBox = closeBox;
+
+        // Initialize everything with proper timing
+        window.addEventListener('load', async () => {
+            console.log('Bento page loaded, starting initialization...');
+
+            // Load Three.js first
+            const threeLoaded = await loadThreeJS();
+
+            if (threeLoaded) {
+                // Initialize sky scene
+                await initSkyScene();
+                animate();
+            } else {
+                console.log('Skipping 3D sky, Three.js failed to load');
+            }
+        });
+
+        window.addEventListener('resize', onWindowResize);
 
         // Enhanced iframe cursor communication
         document.addEventListener('mouseenter', () => {
@@ -609,6 +931,8 @@
 
             // At boundaries, don't prevent - let parent handle
         }, { passive: true });
+
+        console.log('Bento Resume loaded successfully! 🍱✨');
     </script>
 </body>
 </html>
