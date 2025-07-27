@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+    // Check if we're coming from loading (has 'loaded' parameter)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isFromLoading = urlParams.has('loaded');
+
+    // Only redirect to loading if we're NOT coming from loading screen
+    if (!isFromLoading) {
+        window.location.href = './loading.html';
+    }
+    </script>
     <title>Henrietta's Portfolio</title>
     <link rel="icon" type="image/png" href="HenLogo.png">
     <link rel="shortcut icon" type="image/png" href="HenLogo.png">

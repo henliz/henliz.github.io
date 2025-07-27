@@ -115,13 +115,14 @@
             font-family: 'Montserrat Alternates', sans-serif;
             font-size: 3.5rem;
             font-weight: 700;
-            background: linear-gradient(45deg, #a8dadc, #457b9d, #2a9d8f);
+            background: linear-gradient(45deg, #f1faee, #a8dadc, #66fcf1, #2a9d8f, #457b9d);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 0.5rem;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.15);
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+            animation: gradientShift 8s ease infinite;
+            position: relative;
         }
 
         .bento-header p {
@@ -142,19 +143,19 @@
 
         /* Enhanced Glassmorphism Bento Boxes */
         .bento-box {
-            background: rgba(15, 20, 25, 0.4);
-            backdrop-filter: blur(25px);
+            background: rgba(15, 20, 25, 0.15);
+            backdrop-filter: blur(35px);
             border-radius: 24px;
             padding: 2rem;
-            border: 1px solid rgba(168, 218, 220, 0.15);
+            border: 1px solid rgba(168, 218, 220, 0.2);
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             cursor: pointer;
             box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1),
-                inset 0 0 20px rgba(168, 218, 220, 0.05);
+                0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                inset 0 0 20px rgba(168, 218, 220, 0.03);
         }
 
         .bento-box::before {
@@ -187,14 +188,14 @@
 
         .bento-box:hover {
             transform: translateY(-8px) scale(1.02);
-            background: rgba(15, 20, 25, 0.6);
+            background: rgba(15, 20, 25, 0.25);
             border: 1px solid rgba(168, 218, 220, 0.3);
-            backdrop-filter: blur(30px);
+            backdrop-filter: blur(40px);
             box-shadow:
-                0 20px 60px rgba(0, 0, 0, 0.4),
-                0 0 40px rgba(42, 157, 143, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2),
-                inset 0 0 30px rgba(168, 218, 220, 0.1);
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                0 0 40px rgba(42, 157, 143, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 0 30px rgba(168, 218, 220, 0.08);
         }
 
         .bento-box:hover::before {
@@ -206,15 +207,15 @@
         }
 
         .bento-box.expanded {
-            background: rgba(15, 20, 25, 0.8);
+            background: rgba(15, 20, 25, 0.35);
             border: 1px solid rgba(42, 157, 143, 0.4);
             transform: scale(1.03);
-            backdrop-filter: blur(35px);
+            backdrop-filter: blur(45px);
             box-shadow:
-                0 25px 80px rgba(0, 0, 0, 0.5),
-                0 0 60px rgba(42, 157, 143, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.25),
-                inset 0 0 40px rgba(42, 157, 143, 0.1);
+                0 25px 80px rgba(0, 0, 0, 0.4),
+                0 0 60px rgba(42, 157, 143, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 0 40px rgba(42, 157, 143, 0.08);
         }
 
         .bento-box.expanded::after {
@@ -418,6 +419,13 @@
             }
         }
     </style>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js"
+        }
+    }
+    </script>
 </head>
 <body>
     <!-- Custom Glassmorphism Cursor -->
@@ -620,24 +628,39 @@
         </div>
     </div>
 
-    <script type="module">
-        // Import Three.js with a delayed load to avoid conflicts with hero
-        let THREE;
+    <!-- Define the functions FIRST, before the module -->
+    <script>
+        // Bento Box Interactions - Define globally BEFORE modules load
+        function toggleBox(box) {
+            // Close all other expanded boxes
+            document.querySelectorAll('.bento-box.expanded').forEach(openBox => {
+                if (openBox !== box) {
+                    openBox.classList.remove('expanded');
+                }
+            });
 
-        async function loadThreeJS() {
-            try {
-                // Small delay to let hero load first
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                // Try loading Three.js
-                THREE = await import('https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js');
-                console.log('Three.js loaded successfully for bento!');
-                return true;
-            } catch (error) {
-                console.error('Failed to load Three.js for bento:', error);
-                return false;
-            }
+            // Toggle this box
+            box.classList.toggle('expanded');
         }
+
+        function closeBox(event, box) {
+            event.stopPropagation();
+            box.classList.remove('expanded');
+        }
+
+        // Close boxes when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.bento-box')) {
+                document.querySelectorAll('.bento-box.expanded').forEach(box => {
+                    box.classList.remove('expanded');
+                });
+            }
+        });
+    </script>
+
+    <script type="module">
+        import * as THREE from "three";
+        import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
 
         // Custom Cursor Logic
         const cursor = document.getElementById('cursor');
@@ -691,155 +714,130 @@
             cursor.style.opacity = '1';
         });
 
-        // Three.js Sky Scene - Using skybluetwo.glb like hero uses skyblue.glb
+        // Three.js Sky Scene - IDENTICAL to hero implementation
         let scene, camera, renderer, skyMesh;
-        let clock;
+        const clock = new THREE.Clock();
 
-        async function initSkyScene() {
-            if (!THREE) {
-                console.warn('Three.js not loaded, skipping sky scene');
-                return;
-            }
+        function initSkyScene() {
+            console.log('Initializing bento sky scene - identical to hero...');
 
-            console.log('Initializing bento sky scene with skybluetwo.glb...');
+            // Scene setup - IDENTICAL to hero
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 12); // SAME as hero - was different before!
 
-            try {
-                clock = new THREE.Clock();
+            // Renderer - IDENTICAL to hero
+            const canvas = document.getElementById('skyCanvas');
+            renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                alpha: true,
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
 
-                // Scene setup
-                scene = new THREE.Scene();
-                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                camera.position.set(0, 0, 10);
+            // Bright lighting for vertex colors - IDENTICAL to hero
+            const ambientLight = new THREE.AmbientLight(0xffffff, 3);
+            scene.add(ambientLight);
 
-                // Renderer
-                const canvas = document.getElementById('skyCanvas');
-                renderer = new THREE.WebGLRenderer({
-                    canvas: canvas,
-                    alpha: true,
-                    antialias: true
-                });
-                renderer.setSize(window.innerWidth, window.innerHeight);
+            // Load the sky model - EXACT same logic as hero
+            const loader = new GLTFLoader();
+            loader.load('./models/skyblue.glb', function(gltf) {
+                skyMesh = gltf.scene;
 
-                // Bright lighting for vertex colors
-                const ambientLight = new THREE.AmbientLight(0xffffff, 3);
-                scene.add(ambientLight);
+                console.log('Loaded skyblue.glb successfully in bento!');
 
-                // Load the SAME sky model as hero for consistency
-                const { GLTFLoader } = await import('https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js');
-                const loader = new GLTFLoader();
+                // Dig deeper into the GLTF structure - IDENTICAL to hero
+                console.log('FULL GLTF:', gltf);
+                console.log('GLTF parser:', gltf.parser);
+                console.log('GLTF parser json:', gltf.parser ? gltf.parser.json : 'no parser');
 
-                loader.load('./models/skyblue.glb', function(gltf) {
-                    skyMesh = gltf.scene;
+                // Check the raw JSON data for textures/images - IDENTICAL to hero
+                if (gltf.parser && gltf.parser.json) {
+                    console.log('Raw JSON textures:', gltf.parser.json.textures);
+                    console.log('Raw JSON images:', gltf.parser.json.images);
+                    console.log('Raw JSON materials:', gltf.parser.json.materials);
+                }
 
-                    console.log('Loaded skyblue.glb successfully!');
+                // Look for textures in the parser cache - IDENTICAL to hero
+                if (gltf.parser && gltf.parser.cache) {
+                    console.log('Parser cache:', gltf.parser.cache);
+                }
 
-                    // Dig deeper into the GLTF structure to find textures (like hero does)
-                    console.log('FULL GLTF:', gltf);
-                    console.log('GLTF parser:', gltf.parser);
-                    console.log('GLTF parser json:', gltf.parser ? gltf.parser.json : 'no parser');
+                // Scale and position - IDENTICAL to hero
+                skyMesh.scale.set(5, 5, 5);
+                skyMesh.position.set(0, 0, 0);
 
-                    // Check the raw JSON data for textures/images
-                    if (gltf.parser && gltf.parser.json) {
-                        console.log('Raw JSON textures:', gltf.parser.json.textures);
-                        console.log('Raw JSON images:', gltf.parser.json.images);
-                        console.log('Raw JSON materials:', gltf.parser.json.materials);
-                    }
+                // Try to manually connect textures to materials - IDENTICAL to hero
+                skyMesh.traverse((child) => {
+                    if (child.isMesh) {
+                        console.log('Original material:', child.material.name);
+                        console.log('Material map before:', child.material.map);
 
-                    // Look for textures in the parser cache
-                    if (gltf.parser && gltf.parser.cache) {
-                        console.log('Parser cache:', gltf.parser.cache);
-                    }
+                        // Try to find and assign textures from the GLTF data
+                        if (gltf.parser && gltf.parser.json && gltf.parser.json.textures) {
+                            // Get the first texture from the GLTF data
+                            const textureIndex = 0;
+                            if (gltf.parser.json.textures[textureIndex]) {
+                                console.log('Found texture in GLTF JSON:', gltf.parser.json.textures[textureIndex]);
 
-                    // Scale and position (same as hero)
-                    skyMesh.scale.set(5, 5, 5);
-                    skyMesh.position.set(0, 0, 0);
+                                // Use the parser to load the texture
+                                gltf.parser.loadTexture(textureIndex).then(texture => {
+                                    console.log('Loaded texture:', texture);
+                                    child.material.map = texture;
 
-                    // Try to manually connect textures to materials (EXACTLY like hero)
-                    skyMesh.traverse((child) => {
-                        if (child.isMesh) {
-                            console.log('Original material:', child.material.name);
-                            console.log('Material map before:', child.material.map);
+                                    // Make it more vibrant and saturated!
+                                    child.material.color.setHex(0xffffff); // Pure white multiplier
+                                    child.material.transparent = false;
+                                    child.material.opacity = 1;
+                                    child.material.needsUpdate = true;
 
-                            // Try to find and assign textures from the GLTF data
-                            if (gltf.parser && gltf.parser.json && gltf.parser.json.textures) {
-                                // Get the first texture from the GLTF data
-                                const textureIndex = 0;
-                                if (gltf.parser.json.textures[textureIndex]) {
-                                    console.log('Found texture in GLTF JSON:', gltf.parser.json.textures[textureIndex]);
-
-                                    // Use the parser to load the texture
-                                    gltf.parser.loadTexture(textureIndex).then(texture => {
-                                        console.log('Loaded texture:', texture);
-                                        child.material.map = texture;
-
-                                        // Make it more vibrant and saturated!
-                                        child.material.color.setHex(0xffffff); // Pure white multiplier
-                                        child.material.transparent = false;
-                                        child.material.opacity = 1;
-                                        child.material.needsUpdate = true;
-
-                                        console.log('Applied vibrant texture to material!');
-                                    });
-                                }
-                            } else {
-                                console.log('No textures found in GLTF JSON, using fallback');
-                                // Fallback - solid color
-                                child.material = new THREE.MeshBasicMaterial({
-                                    color: 0x87CEEB,
-                                    side: THREE.FrontSide,
-                                    wireframe: false
+                                    console.log('Applied vibrant texture to material!');
                                 });
                             }
+                        } else {
+                            console.log('No textures found in GLTF JSON, using fallback');
+                            // Fallback - solid color
+                            child.material = new THREE.MeshBasicMaterial({
+                                color: 0x87CEEB,
+                                side: THREE.FrontSide,
+                                wireframe: false
+                            });
                         }
-                    });
-
-                    scene.add(skyMesh);
-                    console.log('Sky loaded - check above for texture loading!');
-
-                }, undefined, function(error) {
-                    console.error('Sky model failed to load:', error);
-                    createFallbackSky();
+                    }
                 });
 
-            } catch (error) {
-                console.error('Sky scene initialization failed:', error);
-                createFallbackSky();
-            }
-        }
+                scene.add(skyMesh);
+                console.log('Sky loaded in bento - check above for texture loading!');
 
-        function createFallbackSky() {
-            if (!THREE) return;
+            }, undefined, function(error) {
+                console.error('Sky model failed to load in bento:', error);
 
-            console.log('Creating fallback sky geometry...');
+                // Fallback - create vertex colored sphere manually - IDENTICAL to hero
+                const geometry = new THREE.SphereGeometry(1, 32, 32);
 
-            // Create fallback - vertex colored sphere manually (like hero does)
-            const geometry = new THREE.SphereGeometry(1, 32, 32);
+                // Add some vertex colors to test
+                const colors = [];
+                const positionAttribute = geometry.attributes.position;
+                for (let i = 0; i < positionAttribute.count; i++) {
+                    colors.push(0.3, 0.6, 1); // Sky blue vertex colors
+                }
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-            // Add some vertex colors to test
-            const colors = [];
-            const positionAttribute = geometry.attributes.position;
-            for (let i = 0; i < positionAttribute.count; i++) {
-                colors.push(0.3, 0.6, 1); // Sky blue vertex colors
-            }
-            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-
-            const material = new THREE.MeshBasicMaterial({
-                vertexColors: true,
-                wireframe: false
+                const material = new THREE.MeshBasicMaterial({
+                    vertexColors: true,
+                    wireframe: false
+                });
+                skyMesh = new THREE.Mesh(geometry, material);
+                scene.add(skyMesh);
+                console.log('Using fallback vertex colored sphere in bento');
             });
-            skyMesh = new THREE.Mesh(geometry, material);
-            scene.add(skyMesh);
-            console.log('Using fallback vertex colored sphere');
         }
 
         function animate() {
-            if (!THREE || !renderer || !scene || !camera) return;
-
             requestAnimationFrame(animate);
-
             const elapsed = clock.getElapsedTime();
 
-            // Gentle autonomous movement like hero - no mouse control
+            // Gentle autonomous movement - IDENTICAL to hero
             if (skyMesh) {
                 skyMesh.rotation.y = elapsed * 0.02; // Slow rotation
                 skyMesh.rotation.x = Math.sin(elapsed * 0.03) * 0.1; // Gentle drift
@@ -849,88 +847,21 @@
         }
 
         function onWindowResize() {
-            if (camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // Bento Box Interactions - Define these FIRST before window.load
-        function toggleBox(box) {
-            // Close all other expanded boxes
-            document.querySelectorAll('.bento-box.expanded').forEach(openBox => {
-                if (openBox !== box) {
-                    openBox.classList.remove('expanded');
-                }
-            });
-
-            // Toggle this box
-            box.classList.toggle('expanded');
-        }
-
-        function closeBox(event, box) {
-            event.stopPropagation();
-            box.classList.remove('expanded');
-        }
-
-        // Close boxes when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.bento-box')) {
-                document.querySelectorAll('.bento-box.expanded').forEach(box => {
-                    box.classList.remove('expanded');
-                });
-            }
-        });
-
-        // Make these functions global so the HTML onclick can access them
-        window.toggleBox = toggleBox;
-        window.closeBox = closeBox;
-
-        // Initialize everything with proper timing
-        window.addEventListener('load', async () => {
+        // Initialize everything - NO timing conflicts
+        window.addEventListener('load', () => {
             console.log('Bento page loaded, starting initialization...');
 
-            // Load Three.js first
-            const threeLoaded = await loadThreeJS();
-
-            if (threeLoaded) {
-                // Initialize sky scene
-                await initSkyScene();
-                animate();
-            } else {
-                console.log('Skipping 3D sky, Three.js failed to load');
-            }
+            // Initialize sky scene immediately - no delays
+            initSkyScene();
+            animate();
         });
 
         window.addEventListener('resize', onWindowResize);
-
-        // Enhanced iframe cursor communication
-        document.addEventListener('mouseenter', () => {
-            if (window.parent !== window) {
-                window.parent.postMessage({ type: 'hideCursor' }, '*');
-            }
-        });
-
-        document.addEventListener('mouseleave', () => {
-            if (window.parent !== window) {
-                window.parent.postMessage({ type: 'showCursor' }, '*');
-            }
-        });
-
-        // Prevent scroll hijacking - let parent handle scrolling
-        document.addEventListener('wheel', (e) => {
-            // Only prevent default if not at boundaries
-            const atTop = window.scrollY === 0;
-            const atBottom = window.scrollY >= (document.documentElement.scrollHeight - window.innerHeight);
-
-            if (!atTop && !atBottom) {
-                // In middle, let it scroll normally
-                return;
-            }
-
-            // At boundaries, don't prevent - let parent handle
-        }, { passive: true });
 
         console.log('Bento Resume loaded successfully! 🍱✨');
     </script>

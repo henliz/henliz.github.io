@@ -1222,6 +1222,17 @@
                 }, 150);
             }
         }, 200);
+
+        // Signal that hero page is ready after everything is loaded
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                // Send message to parent window (loading.html)
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({ type: 'heroReady' }, '*');
+                }
+                console.log('Hero page ready signal sent');
+            }, 1000); // 1 second delay for safety
+        });
     </script>
     <div id="parisModal" class="modal">
         <div class="modal-content">

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading... ✨</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            color: #f1faee;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            /* SHOW IMMEDIATELY - no opacity: 0 */
+        }
+
+        /* Only hide cursor on desktop */
+        @media (hover: hover) and (pointer: fine) {
+            body {
+                cursor: none !important;
+            }
+
+            *, *::before, *::after {
+                cursor: none !important;
+            }
+        }
+
+        /* Custom Glassmorphism Cursor - Only show on desktop */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(42, 157, 143, 0.3);
+            border: 2px solid rgba(42, 157, 143, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            backdrop-filter: blur(8px);
+            transition: all 0.08s ease-out;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
+            display: none;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .custom-cursor {
+                display: block;
+            }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Sky Background */
+        .sky-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .sky-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .loading-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            background: rgba(15, 20, 25, 0.15);
+            backdrop-filter: blur(35px);
+            border-radius: 32px;
+            padding: 3rem 2.5rem;
+            border: 1px solid rgba(168, 218, 220, 0.2);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                inset 0 0 30px rgba(168, 218, 220, 0.05);
+            max-width: 500px;
+            width: 90%;
+            animation: floatContainer 6s ease-in-out infinite;
+            /* Show immediately */
+            opacity: 1;
+            transition: all 0.8s ease-out;
+        }
+
+        @keyframes floatContainer {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .vaporeon-container {
+            position: relative;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .vaporeon-gif {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid rgba(168, 218, 220, 0.4);
+            box-shadow:
+                0 0 30px rgba(42, 157, 143, 0.3),
+                inset 0 2px 4px rgba(255, 255, 255, 0.1);
+            animation: vaporeonFloat 4s ease-in-out infinite;
+            background: rgba(168, 218, 220, 0.1);
+            object-fit: cover;
+        }
+
+        @keyframes vaporeonFloat {
+            0%, 100% {
+                transform: translateY(0px) scale(1);
+                box-shadow:
+                    0 0 30px rgba(42, 157, 143, 0.3),
+                    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+            }
+            50% {
+                transform: translateY(-8px) scale(1.02);
+                box-shadow:
+                    0 0 40px rgba(42, 157, 143, 0.5),
+                    inset 0 2px 4px rgba(255, 255, 255, 0.15);
+            }
+        }
+
+        .sparkles {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(45deg, #66fcf1, #a8dadc);
+            border-radius: 50%;
+            animation: sparkleFloat 3s ease-in-out infinite;
+            opacity: 0.8;
+            box-shadow: 0 0 10px rgba(102, 252, 241, 0.6);
+        }
+
+        .sparkle:nth-child(1) {
+            top: 20%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .sparkle:nth-child(2) {
+            top: 30%;
+            right: 20%;
+            animation-delay: 0.5s;
+        }
+
+        .sparkle:nth-child(3) {
+            bottom: 25%;
+            left: 25%;
+            animation-delay: 1s;
+        }
+
+        .sparkle:nth-child(4) {
+            bottom: 35%;
+            right: 15%;
+            animation-delay: 1.5s;
+        }
+
+        .sparkle:nth-child(5) {
+            top: 50%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+
+        .sparkle:nth-child(6) {
+            top: 15%;
+            right: 5%;
+            animation-delay: 2.5s;
+        }
+
+        @keyframes sparkleFloat {
+            0%, 100% {
+                transform: translateY(0px) scale(1);
+                opacity: 0.4;
+            }
+            50% {
+                transform: translateY(-15px) scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .loading-title {
+            font-family: 'Montserrat Alternates', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #f1faee, #a8dadc, #66fcf1, #2a9d8f, #457b9d);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 8s ease infinite;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-message {
+            font-size: 1.2rem;
+            color: #a8dadc;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .easter-egg-hint {
+            font-size: 1rem;
+            color: #66fcf1;
+            opacity: 0.8;
+            font-style: italic;
+            margin-bottom: 2rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(168, 218, 220, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(168, 218, 220, 0.2);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #2a9d8f, #66fcf1, #a8dadc);
+            background-size: 200% 100%;
+            border-radius: 10px;
+            width: 0%;
+            animation: progressShimmer 2s ease-in-out infinite;
+            box-shadow: 0 0 15px rgba(42, 157, 143, 0.4);
+            transition: width 0.3s ease;
+        }
+
+        @keyframes progressShimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .loading-percentage {
+            font-family: 'Montserrat Alternates', sans-serif;
+            font-size: 1.1rem;
+            color: #f1faee;
+            margin-top: 1rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .loading-container {
+                padding: 2.5rem 2rem;
+                margin: 1rem;
+            }
+
+            .loading-title {
+                font-size: 2rem;
+            }
+
+            .loading-message {
+                font-size: 1.1rem;
+            }
+
+            .easter-egg-hint {
+                font-size: 0.9rem;
+            }
+
+            .vaporeon-gif {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .loading-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .loading-title {
+                font-size: 1.8rem;
+            }
+
+            .loading-message {
+                font-size: 1rem;
+            }
+
+            .easter-egg-hint {
+                font-size: 0.85rem;
+            }
+
+            .vaporeon-gif {
+                width: 90px;
+                height: 90px;
+            }
+        }
+
+        /* LOADED STATE - fade out when ready */
+        .loaded {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.8s ease-out;
+        }
+    </style>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js"
+        }
+    }
+    </script>
+</head>
+<body>
+    <!-- Custom Glassmorphism Cursor -->
+    <div class="custom-cursor" id="cursor"></div>
+
+    <!-- Sky Background -->
+    <div class="sky-background">
+        <canvas class="sky-canvas" id="skyCanvas"></canvas>
+    </div>
+
+    <div class="loading-container" id="loadingContainer">
+        <div class="vaporeon-container">
+            <div class="sparkles">
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+            </div>
+            <img
+                src="./loading.gif"
+                alt="Loading Animation"
+                class="vaporeon-gif"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            >
+            <!-- Fallback with animated Vaporeon emoji -->
+            <div style="display: none; width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(45deg, #4FC3F7, #29B6F6, #0288D1); align-items: center; justify-content: center; font-size: 3rem; border: 3px solid rgba(168, 218, 220, 0.4); animation: vaporeonFloat 4s ease-in-out infinite;">
+                🌊
+            </div>
+        </div>
+
+        <h1 class="loading-title">Loading Magic...</h1>
+        <p class="loading-message">Preparing your chaotic experience ✨</p>
+        <p class="easter-egg-hint" id="easterEggHint">
+            💫 Hover around my site to discover nostalgic easter eggs!
+        </p>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="loading-percentage" id="loadingPercentage">0%</div>
+    </div>
+
+
+    <script>
+        // Custom Cursor Logic (keep existing cursor code)
+        const cursor = document.getElementById('cursor');
+        let mouseX = 0;
+        let mouseY = 0;
+        let animationId;
+
+        function updateCursor() {
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if (!animationId) {
+                animationId = requestAnimationFrame(() => {
+                    updateCursor();
+                    animationId = null;
+                });
+            }
+        });
+
+        document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+        document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+        document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+        document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+
+        // Detect mobile/touch device
+        function updateEasterEggHint() {
+            const easterEggHint = document.getElementById('easterEggHint');
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            if (isTouchDevice) {
+                easterEggHint.textContent = '💫 Tap around my site to discover nostalgic easter eggs!';
+            } else {
+                easterEggHint.textContent = '💫 Hover around my site to discover nostalgic easter eggs!';
+            }
+        }
+
+        // Progress tracking
+        let totalProgress = 0;
+
+        function updateProgress(progress) {
+            totalProgress = Math.min(progress, 100);
+            const progressBar = document.getElementById('progressBar');
+            const loadingPercentage = document.getElementById('loadingPercentage');
+            progressBar.style.width = totalProgress + '%';
+            loadingPercentage.textContent = Math.floor(totalProgress) + '%';
+
+            if (totalProgress >= 100) {
+                finishLoading();
+            }
+        }
+
+        function finishLoading() {
+            setTimeout(() => {
+                const loadingContainer = document.getElementById('loadingContainer');
+                loadingContainer.classList.add('loaded');
+                setTimeout(() => {
+                    window.location.href = './index.html?loaded=true';
+                }, 800);
+            }, 1000);
+        }
+
+        // PRELOAD HERO ASSETS (images, models, etc) using fetch
+        async function preloadHeroAssets() {
+            console.log('Preloading hero assets...');
+
+            try {
+                // Preload the hero HTML
+                await fetch('./hero.html');
+                updateProgress(60);
+
+                // Preload the 3D model
+                await fetch('./models/skyblue.glb');
+                updateProgress(80);
+
+                // Preload hero image
+                await fetch('./herogirl.jpg').catch(() => console.log('Hero image not found, skipping'));
+                updateProgress(90);
+
+                console.log('Assets preloaded successfully!');
+                updateProgress(100);
+
+            } catch (error) {
+                console.log('Some assets failed to preload, continuing anyway:', error);
+                updateProgress(100);
+            }
+        }
+
+        // Loading messages
+        const loadingMessages = [
+            "Preparing your chaotic experience ✨",
+            "Summoning digital nostalgia 🌈",
+            "Loading pixels with love 💖",
+            "Brewing some coding magic ⚡",
+            "Organizing beautiful chaos 🎨",
+            "Awakening the 3D sky ☁️",
+            "Calibrating liquid glass 🌊"
+        ];
+
+        function cycleLoadingMessages() {
+            const messageElement = document.querySelector('.loading-message');
+            let messageIndex = 0;
+            const interval = setInterval(() => {
+                if (totalProgress >= 100) {
+                    messageElement.textContent = "Ready to explore! 🎉";
+                    clearInterval(interval);
+                    return;
+                }
+                messageIndex = (messageIndex + 1) % loadingMessages.length;
+                messageElement.textContent = loadingMessages[messageIndex];
+            }, 1500);
+        }
+
+        // Main loading sequence
+        function startLoading() {
+            updateProgress(10);
+
+            if (document.fonts) {
+                document.fonts.ready.then(() => updateProgress(30));
+            } else {
+                setTimeout(() => updateProgress(30), 500);
+            }
+
+            // Init 3D scene on loading page
+            setTimeout(() => {
+                updateProgress(50);
+                if (window.initSkyScene) {
+                    initSkyScene();
+                }
+            }, 1200);
+
+            // Start asset preloading
+            setTimeout(() => {
+                preloadHeroAssets();
+            }, 1500);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateEasterEggHint();
+            cycleLoadingMessages();
+            startLoading();
+        });
+    </script>
+
+    <script type="module">
+        import * as THREE from "three";
+        import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
+
+        // Three.js Sky Scene - declare variables globally
+        let scene, camera, renderer, skyMesh;
+        const clock = new THREE.Clock();
+
+        // Make THREE and GLTFLoader available globally
+        window.THREE = THREE;
+        window.GLTFLoader = GLTFLoader;
+
+        function initSkyScene() {
+            scene = new window.THREE.Scene();
+            camera = new window.THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 12);
+
+            const canvas = document.getElementById('skyCanvas');
+            renderer = new window.THREE.WebGLRenderer({
+                canvas: canvas,
+                alpha: true,
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            const ambientLight = new window.THREE.AmbientLight(0xffffff, 3);
+            scene.add(ambientLight);
+
+            const loader = new window.GLTFLoader();
+            loader.load('./models/skyblue.glb',
+                function(gltf) {
+                    skyMesh = gltf.scene;
+                    skyMesh.scale.set(5, 5, 5);
+                    skyMesh.position.set(0, 0, 0);
+
+                    skyMesh.traverse((child) => {
+                        if (child.isMesh) {
+                            if (gltf.parser && gltf.parser.json && gltf.parser.json.textures) {
+                                const textureIndex = 0;
+                                if (gltf.parser.json.textures[textureIndex]) {
+                                    gltf.parser.loadTexture(textureIndex).then(texture => {
+                                        child.material.map = texture;
+                                        child.material.color.setHex(0xffffff);
+                                        child.material.transparent = false;
+                                        child.material.opacity = 1;
+                                        child.material.needsUpdate = true;
+                                    });
+                                }
+                            } else {
+                                child.material = new window.THREE.MeshBasicMaterial({
+                                    color: 0x87CEEB,
+                                    side: window.THREE.FrontSide,
+                                    wireframe: false
+                                });
+                            }
+                        }
+                    });
+
+                    scene.add(skyMesh);
+                    console.log('Sky model loaded successfully!');
+                    animate();
+                },
+                function(progress) {
+                    console.log('Model loading progress:', progress);
+                },
+                function(error) {
+                    console.warn('Sky model failed to load, using fallback:', error);
+
+                    const geometry = new window.THREE.SphereGeometry(1, 32, 32);
+                    const colors = [];
+                    const positionAttribute = geometry.attributes.position;
+                    for (let i = 0; i < positionAttribute.count; i++) {
+                        colors.push(0.3, 0.6, 1);
+                    }
+                    geometry.setAttribute('color', new window.THREE.Float32BufferAttribute(colors, 3));
+
+                    const material = new window.THREE.MeshBasicMaterial({
+                        vertexColors: true,
+                        wireframe: false
+                    });
+                    skyMesh = new window.THREE.Mesh(geometry, material);
+                    scene.add(skyMesh);
+                    animate();
+                }
+            );
+        }
+
+        // Make it globally available
+        window.initSkyScene = initSkyScene;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsed = clock.getElapsedTime();
+
+            if (skyMesh) {
+                skyMesh.rotation.y = elapsed * 0.02;
+                skyMesh.rotation.x = Math.sin(elapsed * 0.03) * 0.1;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+
+        // Make animate and clock globally available too
+        window.animate = animate;
+        window.clock = clock;
+
+        window.addEventListener('resize', onWindowResize);
+    </script>
+</body>
+</html>
