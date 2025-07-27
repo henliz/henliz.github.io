@@ -20,14 +20,20 @@
             background: #0f1419;
             color: white;
             overflow-x: hidden;
-            cursor: none !important;
         }
 
-        *, *::before, *::after {
-            cursor: none !important;
+        /* Only hide cursor on desktop */
+        @media (hover: hover) and (pointer: fine) {
+            body {
+                cursor: none !important;
+            }
+
+            *, *::before, *::after {
+                cursor: none !important;
+            }
         }
 
-        /* Custom Glassmorphism Cursor */
+        /* Custom Glassmorphism Cursor - Only show on desktop */
         .custom-cursor {
             position: fixed;
             width: 20px;
@@ -41,6 +47,14 @@
             transition: all 0.08s ease-out;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 20px rgba(168, 218, 220, 0.2);
+            display: none; /* Hidden by default */
+        }
+
+        /* Only show custom cursor on desktop */
+        @media (hover: hover) and (pointer: fine) {
+            .custom-cursor {
+                display: block;
+            }
         }
 
         .custom-cursor.clicking {
@@ -381,6 +395,7 @@
             }
 
             .hero-section {
+                height: 110vh; /* Increased for mobile */
                 width: 100vw;
                 position: relative;
                 left: 50%;
@@ -400,13 +415,19 @@
             }
 
             .bento-section {
-                height: 60vh;
+                height: auto; /* Auto height on mobile */
+                min-height: 80vh; /* Minimum height to prevent too small */
                 margin: 0;
                 width: 100%;
             }
 
+            .bento-iframe {
+                height: 150vh; /* Generous height to avoid scrolling */
+                min-height: 800px; /* Minimum fallback */
+            }
+
             .models-section {
-                height: 60vh;
+                height: 100vh; /* Keep full height for mobile */
                 margin: 0;
                 width: 100%;
             }
@@ -442,14 +463,18 @@
                 padding: 2rem 0.8rem;
             }
 
+            .hero-section {
+                height: 120vh; /* Even more height for very small screens */
+            }
+
             .bento-section {
-                height: 50vh;
+                height: 100vh; /* Keep full height for small mobile */
                 margin: 0;
                 width: 100%;
             }
 
             .models-section {
-                height: 50vh;
+                height: 100vh; /* Keep full height for small mobile */
                 margin: 0;
                 width: 100%;
             }
@@ -549,83 +574,88 @@
     </div>
 
     <script>
-        // Custom Cursor Logic - Optimized for performance
-        const cursor = document.getElementById('cursor');
-        let mouseX = 0;
-        let mouseY = 0;
-        let animationId;
+        // Detect if device supports hover (desktop)
+        const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-        // Smooth cursor movement with requestAnimationFrame
-        function updateCursor() {
-            cursor.style.left = mouseX + 'px';
-            cursor.style.top = mouseY + 'px';
-        }
+        // Custom Cursor Logic - Only for desktop
+        if (isDesktop) {
+            const cursor = document.getElementById('cursor');
+            let mouseX = 0;
+            let mouseY = 0;
+            let animationId;
 
-        // Track mouse movement with throttling
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+            // Smooth cursor movement with requestAnimationFrame
+            function updateCursor() {
+                cursor.style.left = mouseX + 'px';
+                cursor.style.top = mouseY + 'px';
+            }
 
-            if (!animationId) {
-                animationId = requestAnimationFrame(() => {
-                    updateCursor();
-                    animationId = null;
+            // Track mouse movement with throttling
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+
+                if (!animationId) {
+                    animationId = requestAnimationFrame(() => {
+                        updateCursor();
+                        animationId = null;
+                    });
+                }
+            });
+
+            // Click animation
+            document.addEventListener('mousedown', () => {
+                cursor.classList.add('clicking');
+            });
+
+            document.addEventListener('mouseup', () => {
+                cursor.classList.remove('clicking');
+            });
+
+            // Hover states for interactive elements
+            const hoverElements = document.querySelectorAll('a, button, .hamburger, .logo, .contact-link, .skill-tag');
+
+            hoverElements.forEach(element => {
+                element.addEventListener('mouseenter', () => {
+                    cursor.classList.add('hovering');
                 });
-            }
-        });
 
-        // Click animation
-        document.addEventListener('mousedown', () => {
-            cursor.classList.add('clicking');
-        });
-
-        document.addEventListener('mouseup', () => {
-            cursor.classList.remove('clicking');
-        });
-
-        // Hover states for interactive elements
-        const hoverElements = document.querySelectorAll('a, button, .hamburger, .logo, .contact-link, .skill-tag');
-
-        hoverElements.forEach(element => {
-            element.addEventListener('mouseenter', () => {
-                cursor.classList.add('hovering');
+                element.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('hovering');
+                });
             });
 
-            element.addEventListener('mouseleave', () => {
-                cursor.classList.remove('hovering');
-            });
-        });
+            // Hide cursor when entering iframes
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                iframe.addEventListener('mouseenter', () => {
+                    cursor.style.opacity = '0';
+                });
 
-        // Hide cursor when entering iframes
-        const iframes = document.querySelectorAll('iframe');
-        iframes.forEach(iframe => {
-            iframe.addEventListener('mouseenter', () => {
+                iframe.addEventListener('mouseleave', () => {
+                    cursor.style.opacity = '1';
+                });
+            });
+
+            // Listen for messages from iframes to hide/show cursor
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'hideCursor') {
+                    cursor.style.opacity = '0';
+                }
+                if (event.data.type === 'showCursor') {
+                    cursor.style.opacity = '1';
+                }
+            });
+
+            // Hide cursor when leaving window
+            document.addEventListener('mouseleave', () => {
                 cursor.style.opacity = '0';
             });
 
-            iframe.addEventListener('mouseleave', () => {
+            document.addEventListener('mouseenter', () => {
                 cursor.style.opacity = '1';
             });
-        });
-
-        // Listen for messages from iframes to hide/show cursor
-        window.addEventListener('message', (event) => {
-            if (event.data.type === 'hideCursor') {
-                cursor.style.opacity = '0';
-            }
-            if (event.data.type === 'showCursor') {
-                cursor.style.opacity = '1';
-            }
-        });
-
-        // Hide cursor when leaving window
-        document.addEventListener('mouseleave', () => {
-            cursor.style.opacity = '0';
-        });
-
-        document.addEventListener('mouseenter', () => {
-            cursor.style.opacity = '1';
-        });
+        }
 
         function scrollToTop() {
             window.scrollTo({

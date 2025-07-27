@@ -13,15 +13,21 @@
       color: #f1faee;
       overflow: hidden;
       font-family: 'Montserrat', sans-serif;
-      cursor: none !important;
       height: 100vh;
     }
 
-    *, *::before, *::after {
-      cursor: none !important;
+    /* Only hide cursor on desktop */
+    @media (hover: hover) and (pointer: fine) {
+      html, body {
+        cursor: none !important;
+      }
+
+      *, *::before, *::after {
+        cursor: none !important;
+      }
     }
 
-    /* Custom Glassmorphism Cursor */
+    /* Custom Glassmorphism Cursor - Only show on desktop */
     .custom-cursor {
       position: fixed;
       width: 20px;
@@ -35,6 +41,14 @@
       transition: all 0.08s ease-out;
       transform: translate(-50%, -50%);
       box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
+      display: none; /* Hidden by default */
+    }
+
+    /* Only show custom cursor on desktop */
+    @media (hover: hover) and (pointer: fine) {
+      .custom-cursor {
+        display: block;
+      }
     }
 
     .custom-cursor.clicking {
@@ -371,74 +385,79 @@
     import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
     import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/controls/OrbitControls.js";
 
-    // Custom Cursor Logic - Optimized for performance
-    const cursor = document.getElementById('cursor');
-    let mouseX = 0;
-    let mouseY = 0;
-    let animationId;
+    // Detect if device supports hover (desktop)
+    const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-    // Smooth cursor movement with requestAnimationFrame
-    function updateCursor() {
-      cursor.style.left = mouseX + 'px';
-      cursor.style.top = mouseY + 'px';
-    }
+    // Custom Cursor Logic - Only for desktop
+    if (isDesktop) {
+      const cursor = document.getElementById('cursor');
+      let mouseX = 0;
+      let mouseY = 0;
+      let animationId;
 
-    // Track mouse movement with throttling
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
+      // Smooth cursor movement with requestAnimationFrame
+      function updateCursor() {
+        cursor.style.left = mouseX + 'px';
+        cursor.style.top = mouseY + 'px';
+      }
 
-      if (!animationId) {
-        animationId = requestAnimationFrame(() => {
-          updateCursor();
-          animationId = null;
+      // Track mouse movement with throttling
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        if (!animationId) {
+          animationId = requestAnimationFrame(() => {
+            updateCursor();
+            animationId = null;
+          });
+        }
+      });
+
+      // Click animation
+      document.addEventListener('mousedown', () => {
+        cursor.classList.add('clicking');
+      });
+
+      document.addEventListener('mouseup', () => {
+        cursor.classList.remove('clicking');
+      });
+
+      // Hover states for interactive elements
+      const hoverElements = document.querySelectorAll('button, a, .nav-dot');
+
+      hoverElements.forEach(element => {
+        element.addEventListener('mouseenter', () => {
+          cursor.classList.add('hovering');
         });
-      }
-    });
 
-    // Click animation
-    document.addEventListener('mousedown', () => {
-      cursor.classList.add('clicking');
-    });
-
-    document.addEventListener('mouseup', () => {
-      cursor.classList.remove('clicking');
-    });
-
-    // Hover states for interactive elements
-    const hoverElements = document.querySelectorAll('button, a, .nav-dot');
-
-    hoverElements.forEach(element => {
-      element.addEventListener('mouseenter', () => {
-        cursor.classList.add('hovering');
+        element.addEventListener('mouseleave', () => {
+          cursor.classList.remove('hovering');
+        });
       });
 
-      element.addEventListener('mouseleave', () => {
-        cursor.classList.remove('hovering');
+      // Tell parent window to hide cursor but allow escape scrolling
+      document.addEventListener('mouseenter', () => {
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'hideCursor' }, '*');
+        }
       });
-    });
 
-    // Tell parent window to hide cursor but allow escape scrolling
-    document.addEventListener('mouseenter', () => {
-      if (window.parent !== window) {
-        window.parent.postMessage({ type: 'hideCursor' }, '*');
-      }
-    });
+      document.addEventListener('mouseleave', () => {
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'showCursor' }, '*');
+        }
+      });
 
-    document.addEventListener('mouseleave', () => {
-      if (window.parent !== window) {
-        window.parent.postMessage({ type: 'showCursor' }, '*');
-      }
-    });
+      // Hide cursor when leaving window
+      document.addEventListener('mouseleave', () => {
+        cursor.style.opacity = '0';
+      });
 
-    // Hide cursor when leaving window
-    document.addEventListener('mouseleave', () => {
-      cursor.style.opacity = '0';
-    });
-
-    document.addEventListener('mouseenter', () => {
-      cursor.style.opacity = '1';
-    });
+      document.addEventListener('mouseenter', () => {
+        cursor.style.opacity = '1';
+      });
+    }
 
     // Spiral Navigation Logic
     let currentSection = 0;
@@ -716,12 +735,14 @@
     const sections_3d = [section1, section2, section3, section4, section5_robot];
     const clock = new THREE.Clock();
 
-    // Optimized mouse tracking for 3D models
+    // Optimized mouse tracking for 3D models - Only on desktop
     let mouseMoveX = 0, mouseMoveY = 0;
-    document.addEventListener("mousemove", (e) => {
-      mouseMoveX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseMoveY = (e.clientY / window.innerHeight - 0.5) * 2;
-    });
+    if (isDesktop) {
+      document.addEventListener("mousemove", (e) => {
+        mouseMoveX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseMoveY = (e.clientY / window.innerHeight - 0.5) * 2;
+      });
+    }
 
     function animate() {
       requestAnimationFrame(animate);
@@ -734,8 +755,16 @@
           const scaledValue = section.originalScale * scaleFactor;
           model.scale.lerp(new THREE.Vector3(scaledValue, scaledValue, scaledValue), 0.05);
           model.position.y = section.basePosition.y + 0.1 * Math.sin(elapsed * 0.5);
-          model.rotation.x = THREE.MathUtils.lerp(model.rotation.x, section.baseRotation.x + (-mouseMoveY * 0.1), 0.05);
-          model.rotation.y = THREE.MathUtils.lerp(model.rotation.y, section.baseRotation.y + (mouseMoveX * 0.1), 0.05);
+
+          // Only apply mouse tracking on desktop
+          if (isDesktop) {
+            model.rotation.x = THREE.MathUtils.lerp(model.rotation.x, section.baseRotation.x + (-mouseMoveY * 0.1), 0.05);
+            model.rotation.y = THREE.MathUtils.lerp(model.rotation.y, section.baseRotation.y + (mouseMoveX * 0.1), 0.05);
+          } else {
+            // On mobile, just use base rotation
+            model.rotation.x = section.baseRotation.x;
+            model.rotation.y = section.baseRotation.y;
+          }
         }
         section.controls.update();
         section.renderer.render(section.scene, section.camera);
