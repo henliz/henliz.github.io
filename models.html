@@ -590,8 +590,8 @@
 
     function getScaleFactor() {
       const width = window.innerWidth;
-      if (width <= 480) return 0.3;
-      if (width <= 768) return 0.4;
+      if (width <= 480) return 0.4; // Increased from 0.3
+      if (width <= 768) return 0.5; // Increased from 0.4
       if (width <= 1280) return 0.55;
       return 1;
     }
