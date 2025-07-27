@@ -416,14 +416,15 @@
 
             .bento-section {
                 height: auto; /* Auto height on mobile */
-                min-height: 80vh; /* Minimum height to prevent too small */
                 margin: 0;
                 width: 100%;
             }
 
             .bento-iframe {
-                height: 150vh; /* Generous height to avoid scrolling */
-                min-height: 800px; /* Minimum fallback */
+                height: 200vh; /* SUPER generous height - way more than needed */
+                width: 100%;
+                border: none;
+                display: block;
             }
 
             .models-section {
@@ -468,9 +469,16 @@
             }
 
             .bento-section {
-                height: 100vh; /* Keep full height for small mobile */
+                height: auto; /* Auto height for small mobile */
                 margin: 0;
                 width: 100%;
+            }
+
+            .bento-iframe {
+                height: 180vh; /* Still very generous for small screens */
+                width: 100%;
+                border: none;
+                display: block;
             }
 
             .models-section {

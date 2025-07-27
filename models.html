@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Portfolio Models with Responsive Scaling</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Changa+One&family=Montserrat:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Changa+One&family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@400;700&display=swap');
 
     html, body {
       margin: 0;
@@ -123,20 +123,21 @@
 
     h2 {
       margin: 0 0 1rem 0;
-      font-family: 'Changa One', sans-serif;
-      font-size: 3rem;
+      font-family: 'Montserrat Alternates', sans-serif;
+      font-size: 2.5rem;
       color: #f1faee;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
       background: linear-gradient(45deg, #a8dadc, #457b9d, #2a9d8f);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      font-weight: 700;
     }
 
     p {
       margin: 0 0 1.5rem 0;
-      font-size: 1.2rem;
-      line-height: 1.5;
+      font-size: 1.1rem;
+      line-height: 1.4;
       color: #f1faee;
       opacity: 0.9;
     }
@@ -258,7 +259,7 @@
       }
 
       h2 {
-        font-size: 2rem;
+        font-size: 1.8rem;
       }
 
       p {
@@ -304,65 +305,52 @@
   <div class="custom-cursor" id="cursor"></div>
 
   <div class="portfolio-container">
-    <!-- Jaguar Section -->
-    <section class="model-section active" data-section="0" id="jaguar-section">
+    <!-- Skrimp Section (using chocolate model) -->
+    <section class="model-section active" data-section="0" id="skrimp-section">
       <div class="text-content">
-        <h2>Reclaiming Jaguar's identity with a true rebrand 🏎️</h2>
-        <p>What went wrong with the 2024 rebrand? How can we fix it?</p>
-        <a href="https://henrietta.webflow.io/jaguar-redesign" target="_blank" rel="noopener noreferrer">
-          <button>See What I Did &rarr;</button>
+        <h2>Skrimp AI</h2>
+        <p>Building the future of conversational AI</p>
+        <a href="https://skrimp.ai" target="_blank" rel="noopener noreferrer">
+          <button>Explore &rarr;</button>
         </a>
       </div>
       <canvas id="canvas1"></canvas>
     </section>
 
-    <!-- MacBook Section -->
+    <!-- Path to Menzoberranzan Section (using steamdeck model) -->
     <section class="model-section" data-section="1">
       <div class="text-content">
-        <h2>Seniors Connect</h2>
-        <p>Creating a high-fidelity prototype to end senior loneliness ☕</p>
-        <a href="https://henrietta.webflow.io/seniors-connect" target="_blank" rel="noopener noreferrer">
-          <button>See What I Did &rarr;</button>
+        <h2>Path to Menzoberranzan</h2>
+        <p>Fan-created Baldur's Gate 3 expansion</p>
+        <a href="https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/" target="_blank" rel="noopener noreferrer">
+          <button>View Progress &rarr;</button>
         </a>
       </div>
       <canvas id="canvas2"></canvas>
     </section>
 
-    <!-- Steam Deck Section -->
+    <!-- Jaguar Section -->
     <section class="model-section" data-section="2">
       <div class="text-content">
-        <h2>Path to Menzoberranzan</h2>
-        <p>I am a Gameplay & Systems Programmer, working on a fan-created</p>
-        <p>expansion for the video game beloved by so many. ⚔️</p>
-        <a href="https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/" target="_blank" rel="noopener noreferrer">
-          <button>See What I Did &rarr;</button>
+        <h2>Jaguar Rebrand</h2>
+        <p>Reclaiming identity through design</p>
+        <a href="https://henrietta.webflow.io/jaguar-redesign" target="_blank" rel="noopener noreferrer">
+          <button>See Design &rarr;</button>
         </a>
       </div>
       <canvas id="canvas3"></canvas>
     </section>
 
-    <!-- Chocolate Section -->
+    <!-- HalalMeals Section (using robot model) -->
     <section class="model-section" data-section="3">
       <div class="text-content">
-        <h2>Rheo Thompson</h2>
-        <p>A timeless chocolatier with a contemporary twist.</p>
-        <a href="https://henrietta.webflow.io/rheo-thompson" target="_blank" rel="noopener noreferrer">
-          <button>See What I Did &rarr;</button>
+        <h2>HalalMeals AI</h2>
+        <p>Tech-savvy taste for everyone</p>
+        <a href="https://henrietta.webflow.io/halalmeals" target="_blank" rel="noopener noreferrer">
+          <button>View Design &rarr;</button>
         </a>
       </div>
       <canvas id="canvas4"></canvas>
-    </section>
-
-    <!-- Robot Section -->
-    <section class="model-section" data-section="4">
-      <div class="text-content">
-        <h2>AI Design @HalalMeals</h2>
-        <p>Tech-savvy taste, made for everyone.</p>
-        <a href="https://henrietta.webflow.io/halalmeals" target="_blank" rel="noopener noreferrer">
-          <button>See What I Did &rarr;</button>
-        </a>
-      </div>
-      <canvas id="canvas5"></canvas>
     </section>
   </div>
 
@@ -372,7 +360,6 @@
     <div class="nav-dot" data-section="1"></div>
     <div class="nav-dot" data-section="2"></div>
     <div class="nav-dot" data-section="3"></div>
-    <div class="nav-dot" data-section="4"></div>
   </div>
 
   <!-- Scroll Indicator -->
@@ -461,7 +448,7 @@
 
     // Spiral Navigation Logic
     let currentSection = 0;
-    const totalSections = 5;
+    const totalSections = 4; // Updated to 4 sections
     let isAnimating = false;
 
     const navDots = document.querySelectorAll('.nav-dot');
@@ -665,48 +652,40 @@
       };
     }
 
-    const section5_robot = createScene({
-      canvasID: "canvas5",
-      modelPath: "./models/robot.glb",
-      targetScale: 8,
-      basePosition: new THREE.Vector3(0, 0.1, -35),
-      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(25), THREE.MathUtils.degToRad(15), 0)
-    });
-
-    const section1 = createScene({
+    // Reorganized models according to your request
+    const section1_skrimp = createScene({
       canvasID: "canvas1",
-      modelPath: "./models/jaguar.glb",
-      targetScale: 0.6,
-      basePosition: new THREE.Vector3(0, 0, 0),
-      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(20), THREE.MathUtils.degToRad(20), 0)
+      modelPath: "./models/chocolate.glb", // Using chocolate model for Skrimp
+      targetScale: 0.003,
+      basePosition: new THREE.Vector3(0, 0.1, 0),
+      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(15), 0)
     });
 
-    const section2 = createScene({
+    const section2_menzoberranzan = createScene({
       canvasID: "canvas2",
-      modelPath: "./models/laptop.glb",
-      targetScale: 0.07,
-      basePosition: new THREE.Vector3(0, -0.5, 0),
-      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(5), THREE.MathUtils.degToRad(40), 0)
-    });
-
-    const section3 = createScene({
-      canvasID: "canvas3",
       modelPath: "./models/steamdeck.glb",
       targetScale: 0.3,
       basePosition: new THREE.Vector3(0, 0.1, 0),
       baseRotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-15), 0)
     });
 
-    const section4 = createScene({
+    const section3_jaguar = createScene({
+      canvasID: "canvas3",
+      modelPath: "./models/jaguar.glb",
+      targetScale: 0.6,
+      basePosition: new THREE.Vector3(0, 0, 0),
+      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(20), THREE.MathUtils.degToRad(20), 0)
+    });
+
+    const section4_halalmeals = createScene({
       canvasID: "canvas4",
-      modelPath: "./models/chocolate.glb",
-      targetScale: 0.003,
-      basePosition: new THREE.Vector3(0, 0.1, 0),
-      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(15), 0)
+      modelPath: "./models/robot.glb",
+      targetScale: 8,
+      basePosition: new THREE.Vector3(0, 0.1, -35),
+      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(25), THREE.MathUtils.degToRad(15), 0)
     });
 
     const overlayURL = "https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png";
-    const laptopOverlayURL = "https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png";
 
     function addOverlay(section, textureURL, size, position) {
       const loader = new THREE.TextureLoader();
@@ -729,10 +708,10 @@
       }, 100);
     };
 
-    waitForModel(section3, () => addOverlay(section3, overlayURL, [4.52, 2.8], [0, 0.35, 1.06]));
-    waitForModel(section2, () => addOverlay(section2, laptopOverlayURL, [29, 17], [0, 10.7, -10.5]));
+    // Add overlay to Steam Deck for Menzoberranzan section
+    waitForModel(section2_menzoberranzan, () => addOverlay(section2_menzoberranzan, overlayURL, [4.52, 2.8], [0, 0.35, 1.06]));
 
-    const sections_3d = [section1, section2, section3, section4, section5_robot];
+    const sections_3d = [section1_skrimp, section2_menzoberranzan, section3_jaguar, section4_halalmeals];
     const clock = new THREE.Clock();
 
     // Optimized mouse tracking for 3D models - Only on desktop
