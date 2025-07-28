@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar Component</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: transparent;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Only hide cursor on desktop */
+        @media (hover: hover) and (pointer: fine) {
+            body {
+                cursor: none !important;
+            }
+
+            *, *::before, *::after {
+                cursor: none !important;
+            }
+        }
+
+        /* Custom Glassmorphism Cursor - Only show on desktop */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(168, 218, 220, 0.1);
+            border: 1px solid rgba(168, 218, 220, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10001;
+            backdrop-filter: blur(10px);
+            transition: all 0.08s ease-out;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px rgba(168, 218, 220, 0.2);
+            display: none; /* Hidden by default */
+        }
+
+        /* Only show custom cursor on desktop */
+        @media (hover: hover) and (pointer: fine) {
+            .custom-cursor {
+                display: block;
+            }
+        }
+
+        .custom-cursor.clicking {
+            background: rgba(168, 218, 220, 0.8);
+            border-color: rgba(168, 218, 220, 0.9);
+            transform: translate(-50%, -50%) scale(0.8);
+            box-shadow: 0 0 30px rgba(168, 218, 220, 0.6);
+        }
+
+        .custom-cursor.hovering {
+            width: 30px;
+            height: 30px;
+            background: rgba(168, 218, 220, 0.15);
+            border-color: rgba(168, 218, 220, 0.5);
+            box-shadow: 0 0 25px rgba(168, 218, 220, 0.4);
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(168, 218, 220, 0.1);
+        }
+
+        .navbar .logo {
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .logo img {
+            height: 40px;
+            width: auto;
+            transition: all 0.3s ease;
+        }
+
+        .navbar .logo:hover img {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .navbar .nav-links a {
+            color: #f1faee;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .navbar .nav-links a:hover {
+            color: #a8dadc;
+        }
+
+        .navbar .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, #a8dadc, #2a9d8f);
+            transition: width 0.3s;
+        }
+
+        .navbar .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(168, 218, 220, 0.1);
+        }
+
+        .hamburger:hover {
+            background: rgba(168, 218, 220, 0.2);
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #a8dadc;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background: rgba(15, 20, 25, 0.98);
+            backdrop-filter: blur(20px);
+            transition: right 0.3s ease;
+            padding: 5rem 2rem 2rem;
+            z-index: 999;
+            border-left: 1px solid rgba(168, 218, 220, 0.2);
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .mobile-menu ul li {
+            margin: 2rem 0;
+        }
+
+        .mobile-menu ul li a {
+            color: #f1faee;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 500;
+            display: block;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(168, 218, 220, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu ul li a:hover {
+            color: #a8dadc;
+            padding-left: 1rem;
+            background: rgba(168, 218, 220, 0.05);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .navbar .nav-links {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 0.8rem;
+            }
+        }
+
+        /* Resume Popup Styles */
+        #resume-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #0f1419;
+            padding: 1rem;
+            border-radius: 12px;
+            z-index: 1100;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-width: 95%;
+            width: 90%;
+            height: 90vh;
+            overflow: hidden;
+            border: 1px solid rgba(168, 218, 220, 0.2);
+        }
+
+        .contact-link {
+            padding: 1rem 2rem;
+            background: rgba(168, 218, 220, 0.1);
+            border-radius: 15px;
+            color: #f1faee;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+            border: 1px solid rgba(168, 218, 220, 0.2);
+            display: inline-block;
+            margin: 0 0.5rem;
+        }
+
+        .contact-link:hover {
+            background: rgba(42, 157, 143, 0.2);
+            transform: translateY(-3px);
+            color: #a8dadc;
+            border-color: rgba(42, 157, 143, 0.4);
+        }
+
+        @media screen and (max-width: 600px) {
+            #resume-popup {
+                width: 95% !important;
+                height: 85vh !important;
+                padding: 0.8rem !important;
+                border-radius: 10px !important;
+            }
+
+            #resume-popup embed {
+                height: 75vh !important;
+            }
+
+            #resume-popup button {
+                padding: 0.3rem 0.7rem !important;
+                font-size: 0.9rem !important;
+            }
+
+            #resume-popup p {
+                font-size: 1rem !important;
+            }
+
+            #resume-popup .contact-link {
+                display: block;
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Glassmorphism Cursor -->
+    <div class="custom-cursor" id="cursor"></div>
+
+    <nav class="navbar">
+        <a href="javascript:void(0)" class="logo" onclick="navigateToSection('home')">
+            <img src="HenLogo.png" alt="Henlogo">
+        </a>
+        <ul class="nav-links">
+            <li><a href="javascript:void(0)" onclick="openResumePopup()">Resume</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateToSection('projects')">Projects</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateToSection('about')">About</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateToSection('contact')">Contact</a></li>
+        </ul>
+        <div class="hamburger" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="overlay" onclick="closeMobileMenu()"></div>
+    <div class="mobile-menu">
+        <ul>
+            <li><a href="javascript:void(0)" onclick="openResumePopup(); closeMobileMenu()">Resume</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateToSection('projects'); closeMobileMenu()">Projects</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateToSection('about'); closeMobileMenu()">About</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateToSection('contact'); closeMobileMenu()">Contact</a></li>
+        </ul>
+    </div>
+
+    <!-- Resume Popup -->
+    <div id="resume-popup">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <p style="color: #f1faee; font-size: 1.2rem; margin: 0;">📄 My Resume</p>
+            <button onclick="closeResumePopup()" style="background: #457b9d; color: white; padding: 0.4rem 0.8rem; border: none; border-radius: 8px;">Close</button>
+        </div>
+
+        <!-- PDF Embed -->
+        <embed src="HenResume.pdf#zoom=130" type="application/pdf" style="
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        ">
+
+        <div style="margin-top: 1rem; text-align: center;">
+            <a href="HenResume.pdf" download class="contact-link">Download PDF</a>
+            <a href="mailto:?subject=My Resume&body=Here is my resume: https://henliz.github.io//HenResume.pdf" class="contact-link">Send via Email</a>
+        </div>
+    </div>
+
+    <script>
+        // Detect if device supports hover (desktop)
+        const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+        // Custom Cursor Logic - Only for desktop
+        if (isDesktop) {
+            const cursor = document.getElementById('cursor');
+            let mouseX = 0;
+            let mouseY = 0;
+            let animationId;
+
+            // Smooth cursor movement with requestAnimationFrame
+            function updateCursor() {
+                cursor.style.left = mouseX + 'px';
+                cursor.style.top = mouseY + 'px';
+            }
+
+            // Track mouse movement with throttling
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+
+                if (!animationId) {
+                    animationId = requestAnimationFrame(() => {
+                        updateCursor();
+                        animationId = null;
+                    });
+                }
+            });
+
+            // Click animation
+            document.addEventListener('mousedown', () => {
+                cursor.classList.add('clicking');
+            });
+
+            document.addEventListener('mouseup', () => {
+                cursor.classList.remove('clicking');
+            });
+
+            // Hover states for interactive elements
+            const hoverElements = document.querySelectorAll('a, button, .hamburger, .logo, .contact-link');
+
+            function updateHoverElements() {
+                const newHoverElements = document.querySelectorAll('a, button, .hamburger, .logo, .contact-link');
+                newHoverElements.forEach(element => {
+                    element.addEventListener('mouseenter', () => {
+                        cursor.classList.add('hovering');
+                    });
+
+                    element.addEventListener('mouseleave', () => {
+                        cursor.classList.remove('hovering');
+                    });
+                });
+            }
+
+            // Initial setup
+            updateHoverElements();
+
+            // Update hover elements when DOM changes
+            const observer = new MutationObserver(updateHoverElements);
+            observer.observe(document.body, { childList: true, subtree: true });
+
+            // Hide cursor when leaving window
+            document.addEventListener('mouseleave', () => {
+                cursor.style.opacity = '0';
+            });
+
+            document.addEventListener('mouseenter', () => {
+                cursor.style.opacity = '1';
+            });
+        }
+
+        function navigateToSection(sectionId) {
+            // Check if we're in an iframe (navbar component loaded in another page)
+            if (window.parent && window.parent !== window) {
+                // Send message to parent window to navigate
+                window.parent.postMessage({
+                    type: 'navigate',
+                    target: sectionId === 'home' ? '#home' : '#' + sectionId
+                }, '*');
+            } else {
+                // Direct navigation if we're in the main page
+                if (sectionId === 'home') {
+                    // If we're not on the main index page, go there
+                    if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
+                        window.location.href = '/index.html?loaded=true';
+                    } else {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    }
+                } else {
+                    // Navigate to specific section
+                    const element = document.getElementById(sectionId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                        // If section doesn't exist on current page, go to main index
+                        window.location.href = '/index.html?loaded=true#' + sectionId;
+                    }
+                }
+            }
+        }
+
+        function toggleMobileMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const overlay = document.querySelector('.overlay');
+
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+
+            // Prevent body scroll when menu is open
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+                // Also send message to parent if in iframe
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({ type: 'lockScroll' }, '*');
+                }
+            } else {
+                document.body.style.overflow = 'auto';
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({ type: 'unlockScroll' }, '*');
+                }
+            }
+        }
+
+        function closeMobileMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const overlay = document.querySelector('.overlay');
+
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'unlockScroll' }, '*');
+            }
+        }
+
+        function openResumePopup() {
+            document.getElementById('resume-popup').style.display = 'block';
+        }
+
+        function closeResumePopup() {
+            document.getElementById('resume-popup').style.display = 'none';
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const hamburger = document.querySelector('.hamburger');
+
+            if (mobileMenu.classList.contains('active') &&
+                !mobileMenu.contains(e.target) &&
+                !hamburger.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+
+        // Listen for messages from parent window
+        window.addEventListener('message', function(event) {
+            // Handle any messages from parent if needed
+            if (event.data.type === 'closeMenu') {
+                closeMobileMenu();
+            }
+        });
+
+        console.log('Navbar component loaded with custom cursor! 🧭✨');
+    </script>
+</body>
+</html>

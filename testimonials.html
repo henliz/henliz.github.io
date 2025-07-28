@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Testimonials</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f1419;
+      color: #f1faee;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 3rem 0 2rem;
+      color: #a8dadc;
+    }
+
+    .carousel-wrapper {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .carousel {
+      display: flex;
+      gap: 32px;
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .testimonial-card {
+      flex: 0 0 300px;
+      height: 180px;
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(168, 218, 220, 0.3);
+      padding: 1rem;
+      text-align: center;
+      color: #f1faee;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .testimonial-card img {
+      max-height: 80px;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+    }
+
+    .testimonial-card p {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 0;
+      max-width: 90%;
+    }
+
+    .testimonial-card.active {
+      transform: scale(1.05);
+      z-index: 2;
+    }
+
+    .testimonial-card.inactive {
+      opacity: 0.6;
+      z-index: 1;
+    }
+
+    .testimonial-dots {
+      display: flex;
+      justify-content: center;
+      margin: 1.5rem auto;
+      gap: 0.5rem;
+    }
+
+    .testimonial-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #457b9d;
+      opacity: 0.4;
+      transition: all 0.3s ease;
+    }
+
+    .testimonial-dots span.active {
+      background-color: #a8dadc;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="section-title">✨ What People Say About Me</div>
+
+  <div class="carousel-wrapper">
+    <div class="carousel" id="carouselTrack"></div>
+  </div>
+
+  <div class="testimonial-dots" id="carouselDots"></div>
+
+  <script>
+    const testimonials = [
+      { img: "1.png", text: "This woman is a terrifying blend of genius and chaos." },
+      { img: "2.png", text: "You work like you’re on a side questing through life." },
+      { img: "3.png", text: "Stop reinventing the wheel. But it’s cuter when you do it." },
+      { img: "4.png", text: "I think you actually time travel to get work done." },
+      { img: "5.png", text: "How are you this powerful AND this weird?" },
+      { img: "6.png", text: "You’re like a productivity app possessed by a theatre kid." }
+    ];
+
+    const track = document.getElementById('carouselTrack');
+    const dots = document.getElementById('carouselDots');
+    let currentIndex = 0;
+
+    const renderTestimonials = () => {
+      const visibleCount = 5; // 2 left, 1 center, 2 right
+      const total = testimonials.length;
+
+      track.innerHTML = '';
+      dots.innerHTML = '';
+
+      testimonials.forEach((t, i) => {
+        const card = document.createElement('div');
+        card.className = 'testimonial-card';
+        card.innerHTML = `<img src="${t.img}" alt="pfp"><p>"${t.text}"</p>`;
+        track.appendChild(card);
+
+        const dot = document.createElement('span');
+        if (i === 0) dot.classList.add('active');
+        dots.appendChild(dot);
+      });
+
+      updateVisible();
+    };
+
+    const updateVisible = () => {
+      const cards = document.querySelectorAll('.testimonial-card');
+      const total = testimonials.length;
+
+      cards.forEach((card, i) => {
+        card.classList.remove('active', 'inactive');
+        const offset = (i - currentIndex + total) % total;
+
+        if (offset === 0) {
+          card.classList.add('active');
+          card.style.display = 'flex';
+        } else if (offset === 1 || offset === total - 1) {
+          card.classList.add('inactive');
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      const shift = -((currentIndex) * (300 + 32) - (track.offsetWidth / 2 - 150));
+      track.style.transform = `translateX(${shift}px)`;
+
+      const dotEls = document.querySelectorAll('.testimonial-dots span');
+      dotEls.forEach(dot => dot.classList.remove('active'));
+      dotEls[currentIndex].classList.add('active');
+    };
+
+    const loopCarousel = () => {
+      currentIndex = (currentIndex + 1) % testimonials.length;
+      updateVisible();
+    };
+
+    renderTestimonials();
+    setInterval(loopCarousel, 3000);
+  </script>
+</body>
+</html>
+
+
