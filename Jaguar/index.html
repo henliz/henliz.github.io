@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jaguar Redesign – Full Project</title>
+
+  <!-- Import Montserrat from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      /* Basic Colors */
+      --bg-color: #FFFFFF;           /* Overall white background */
+      --heading-color: #4B2E83;      /* Dark purple for headings */
+      --text-color: #333333;         /* Dark text */
+      --card-bg: #F6F1FB;            /* Light pastel for boxes/cards */
+      --accent-color: #4B2E83;       /* Accent color for highlights */
+
+      /* Radial progress circle values */
+      --circle-size: 100;
+      --circle-radius: 45;
+      --circle-circumference: 282.743;
+      --circle-track: #DFD2EE;
+
+      /* Transition timings */
+      --reveal-duration: 0.5s;
+    }
+
+    /* Reset & Base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, h4 {
+      color: var(--heading-color);
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    ul {
+      list-style: disc inside;
+    }
+
+    /* Global Section Styling: Full-Width, Spacing & Left-Aligned Headings */
+    section {
+      width: 100%;
+      padding: 5rem 0;
+      background-color: var(--bg-color);
+    }
+    .section-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 5%;
+      text-align: left;
+    }
+    .section-content h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-content p {
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin-bottom: 2rem;
+    }
+
+    /* Scroll Reveal (Updated for a more chill effect) */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+    .active {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+
+    /* HERO SECTION (Part 1) */
+    .hero {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5%;
+    }
+    .hero-container {
+      display: flex;
+      width: 100%;
+      max-width: 1400px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .hero-container.reveal { }
+    .hero-left {
+      flex: 1;
+      padding-right: 2rem;
+    }
+    .hero-left h1 {
+      font-size: 5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+    }
+    .hero-left h2 {
+      font-size: 2rem;
+      font-weight: 400;
+    }
+    .hero-right {
+      max-width: 40%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+    .hero-left h1.reveal,
+    .hero-left h2.reveal,
+    .hero-right.reveal { }
+    .header-info p {
+      font-size: 1rem;
+      text-align: right;
+      margin-bottom: 0.5rem;
+    }
+    .header-info ul.skills-list {
+      margin-left: 1.5rem;
+    }
+    .overview-cover {
+      width: 100%;
+      display: block;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+    .skip-link {
+      margin-top: 1rem;
+    }
+    .skip-button {
+      display: inline-block;
+      background-color: var(--accent-color);
+      color: #FFFFFF;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.8rem 1.2rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .skip-button:hover {
+      background-color: #3a1f67;
+    }
+
+    /* PROJECT OVERVIEW (Part 2) with Cover Art */
+    .project-overview { }
+
+    /* CHALLENGE SECTION (Part 3) */
+    .challenge { }
+    .challenge-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+    .challenge-col {
+      flex: 1;
+      min-width: 300px;
+    }
+    .challenge-col.left img.challenge-blackbox {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+    .challenge-col.right p {
+      margin-bottom: 0.75rem;
+    }
+    .challenge-skinny-image {
+      width: 100%;
+      max-width: 450px;
+      margin: 1rem 0;
+      border-radius: 8px;
+      display: block;
+    }
+    .highlight-box {
+      background-color: var(--card-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-top: 0.75rem;
+    }
+
+    /* SCENE SECTION (Part 4) */
+    .scene { }
+    .scene-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+    .scene-col {
+      flex: 1;
+      min-width: 300px;
+    }
+    .scene-col.left h4 {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+      opacity: 0.8;
+    }
+    .scene-col.left p {
+      margin-bottom: 0.75rem;
+    }
+    .scene-big-image {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .scene-big-image img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+
+    /* RESEARCH & SURVEY SECTION (Section 3.4) */
+    .research {
+      background-color: var(--bg-color);
+      padding: 5rem 5%;
+      text-align: left;
+    }
+    .research h2 {
+      margin-bottom: 1.5rem;
+    }
+    .research p {
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin-bottom: 2rem;
+    }
+    .quote-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(240px, 1fr));
+      gap: 1.5rem;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+    .quote-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      padding: 1.5rem;
+      min-height: 180px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity var(--reveal-duration) ease, transform var(--reveal-duration) ease;
+    }
+    .quote-text {
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .quote-author {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 2rem;
+      justify-items: center;
+      margin: 0 auto;
+    }
+    .stats-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      padding: 2rem 1rem;
+      text-align: center;
+      min-height: 220px;
+      width: 100%;
+      max-width: 400px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity var(--reveal-duration) ease, transform var(--reveal-duration) ease;
+      position: relative;
+    }
+    .stats-title {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--heading-color);
+    }
+    .stats-desc {
+      font-size: 1rem;
+      line-height: 1.4;
+      max-width: 300px;
+      margin: 0.5rem auto 0;
+      color: var(--text-color);
+    }
+    .circle-container {
+      width: var(--circle-size)px;
+      height: var(--circle-size)px;
+      margin: 0 auto 0.75rem;
+      position: relative;
+    }
+    .circle-bg {
+      stroke: var(--circle-track);
+      fill: none;
+      stroke-width: 10;
+    }
+    .circle-progress {
+      stroke: var(--accent-color);
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: var(--circle-circumference);
+      stroke-dashoffset: var(--circle-circumference);
+      transition: stroke-dashoffset 1.2s ease;
+    }
+    .circle-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--heading-color);
+    }
+
+    /* NEW SECTION 3.5 // Our Constraints */
+    .constraints {
+      padding: 4rem 0;
+      background-color: #FFFFFF;
+    }
+    .constraints .section-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 5%;
+      text-align: left;
+    }
+    .constraints h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .constraints-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-top: 3rem;
+    }
+    .constraints-left {
+      flex: 1;
+      min-width: 300px;
+    }
+    .constraints-left .highlight-box {
+      background-color: var(--card-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    .constraints-right {
+      flex: 1;
+      min-width: 300px;
+    }
+    .constraints-right h3 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      color: var(--heading-color);
+    }
+    .constraints-right p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      color: var(--text-color);
+    }
+
+    /* IDEATION SECTION (Part 4) */
+    .ideation { }
+    .ideation-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+    .ideation-col {
+      flex: 1;
+      min-width: 300px;
+    }
+    .ideation-col.left p {
+      margin-bottom: 0.75rem;
+    }
+    .ideation-col.right .highlight-box {
+      background-color: var(--card-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+    }
+    .ideation-images {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ideation-images img {
+      width: 48%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .ideation-big-image {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .ideation-big-image img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    .must-haves-container {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      max-width: 1400px;
+      margin: 3rem auto 0;
+      text-align: left;
+    }
+    .must-haves-left {
+      flex: 1;
+    }
+    .must-haves-left h3 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .must-haves-left p {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+    .must-haves-right {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .must-haves-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .must-haves-card h4 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--heading-color);
+    }
+    .must-haves-card p {
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    /* DESIGN PROCESS SECTION (Part 5) – Dense Version */
+    .design-process {
+      text-align: left;
+      width: 100%;
+      background-color: var(--bg-color);
+      padding: 4rem 0;
+    }
+    .design-process .section-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 5%;
+    }
+    .design-process h2 {
+      margin-bottom: 3rem;
+    }
+    .process-subsection {
+      text-align: left;
+      margin-bottom: 4rem;
+    }
+    .process-subsection h3 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--heading-color);
+    }
+    .process-subsection p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .process-dense-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .process-dense-left,
+    .process-dense-right {
+      flex: 1;
+      min-width: 300px;
+    }
+    .process-dense-left .highlight-box {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+    .process-dense-right .mini-images {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .process-dense-right .mini-images img {
+      width: 48%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* New CSS for 5.2: Instead of forcing a vertical "Shorts style", the YouTube Shorts will display normally, but larger */
+    .shorts-container {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    .shorts-container iframe {
+      width: 480px;     /* larger than before */
+      height: 270px;    /* standard 16:9 ratio (480 x 270) */
+      border: none;
+    }
+
+    /* The long video embed remains as before */
+    .video-embed,
+    .figma-embed {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem auto 0;
+    }
+    .video-embed iframe,
+    .figma-embed iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* TAKEAWAYS SECTION (Part 6) */
+    .takeaways {
+      text-align: center;
+    }
+    .takeaways h3 {
+      font-size: 1rem;
+      font-weight: 400;
+      text-transform: lowercase;
+      opacity: 0.8;
+      margin-bottom: 0.5rem;
+    }
+    .takeaways h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: var(--heading-color);
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background-color: var(--card-bg);
+      padding: 2rem;
+      border-radius: 8px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: left;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+    .card h4 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+    .card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.7rem;
+      color: var(--heading-color);
+    }
+    .card p {
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .hero-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .hero-left {
+        padding-right: 0;
+      }
+      .hero-left h1 {
+        font-size: 3.5rem;
+      }
+      .hero-left h2 {
+        font-size: 1.75rem;
+      }
+      .hero-right {
+        max-width: 100%;
+        align-items: center;
+      }
+      .challenge-row,
+      .scene-row,
+      .ideation-row,
+      .must-haves-container,
+      .process-dense-row {
+        flex-direction: column;
+      }
+      .quote-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .process-dense-right .mini-images img {
+        width: 100%;
+      }
+      .shorts-container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO SECTION (Part 1) -->
+  <header class="hero" id="hero">
+    <div class="hero-container section-content reveal">
+      <div class="hero-left">
+        <h1 class="reveal">Jaguar Redesign</h1>
+        <h2 class="reveal">Preserving their iconic legacy by fixing the 2024 rebrand disaster.</h2>
+      </div>
+      <div class="hero-right reveal">
+        <div class="header-info reveal">
+          <p><strong>Role:</strong> Lead Designer</p>
+          <p><strong>Timeline:</strong> 3 Weeks</p>
+          <p><strong>Tools &amp; Skills:</strong></p>
+          <ul class="skills-list">
+            <li>User Research</li>
+            <li>Prototyping</li>
+            <li>Design Systems</li>
+            <li>Typography</li>
+            <li>Figma</li>
+          </ul>
+        </div>
+        <div class="skip-link reveal">
+          <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PROJECT OVERVIEW (Part 2) with Cover Art -->
+  <section class="project-overview" id="project-overview">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 1 // Project Overview</h2>
+      <p class="reveal">
+       Jaguar is a brand with legacy — bold, fast, and unmistakably British. But in recent years, that legacy has stalled. This project set out to reignite Jaguar’s cultural relevance for a new generation of drivers by redefining how the brand speaks, looks, and feels.
+      </p>
+      <p class="reveal">
+        Our goal: craft a modern identity system that honors Jaguar’s heritage while capturing the spirit of innovation, edge, and luxury performance that once made it iconic. Through strategic brand analysis, visual exploration, and experience-driven storytelling, we set the stage for Jaguar’s next era.
+      </p>
+      <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/96860304_PcIkCNlaZ4Dp9nO.png" alt="Cover Art" class="overview-cover reveal">
+    </div>
+  </section>
+
+  <!-- CHALLENGE SECTION (Part 3) -->
+  <section class="challenge" id="challenge">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 2 // The Challenge</h2>
+      <div class="challenge-row">
+        <div class="challenge-col left reveal">
+          <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774691_oOn2ZjIy4KXb65z.png" alt="Black box image" class="challenge-blackbox">
+        </div>
+        <div class="challenge-col right reveal">
+          <p class="reveal">
+      Jaguar’s 2024 rebrand attempted to modernize the brand with sleek visuals and a vague tagline — but lacked a clear emotional hook or story. Unlike BMW’s performance-driven identity or Mercedes’ luxury-first image, Jaguar struggled to answer a simple question: “What do we stand for now?”
+          </p>
+          <p class="reveal">
+            This brand ambiguity left Jaguar stuck between categories — too premium to be scrappy, too legacy to feel innovative. As one industry review noted:
+          </p>
+          <p class="reveal">
+            “Jaguar seems unsure whether to chase Tesla or hold onto its heritage — and ends up doing neither.”
+            — Top Gear, 2023
+          </p>
+          <p class="reveal">
+            To bring Jaguar back to cultural relevance, we needed more than another aesthetic refresh. We needed a compelling, resonant brand identity grounded in emotion, meaning, and modern expectations.
+          </p>
+          <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774810_wh3JXF1rmKHDNtC.png" alt="Skinny screenshot" class="challenge-skinny-image reveal">
+          <div class="highlight-box reveal">
+            “But the original jaguar is so cool” - this is true, yes. The original Jaguar 'leaper' logo will forever be iconic, but after 5+ years of not making a profit, it had become clear their brand identity wasn't working.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE SECTION (Part 4) -->
+  <section class="scene" id="scene">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 3 // Let’s set the scene</h2>
+      <div class="scene-row">
+        <div class="scene-col left reveal">
+          <h4 class="reveal">What went wrong with the 2024 rebrand? How can we fix it?</h4>
+          <p class="reveal">
+            Jaguar attempted various brand taglines, such as “The Art of Performance” and “Alive,” but these failed to resonate with audiences in the same way as competitors' more iconic slogans, such as BMW’s “Ultimate Driving Machine.”
+          </p>
+          <p class="reveal">
+            This inconsistency left consumers unclear about Jaguar's identity—was it a performance brand, a luxury brand, or something in between? In contrast, BMW, Mercedes, and Audi each maintained strong, well-defined positions in the market, with BMW focusing on performance, Mercedes on luxury, and Audi on technological innovation.
+          </p>
+        </div>
+        <div class="scene-col right reveal">
+          <div class="highlight-box reveal">
+            This created an interesting opportunity, Jaguar has heritage, but it’s not owning a lane. Unlike competitors, its identity isn’t clear or confidently positioned.
+          </div>
+          <div class="highlight-box reveal">
+            I wanted to build a brand that doesn’t just look sleek, but feels emotionally specific— something you remember, not just recognize.
+          </div>
+        </div>
+      </div>
+      <div class="scene-big-image reveal">
+        <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98776582_6Zw9ruYy2NCHf3q.png" alt="Problem Statement: Simplified footage preview">
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH & SURVEY SECTION (Section 3.4) -->
+  <section class="research" id="research-results">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 3.4 // Research &amp; Survey Results</h2>
+      <p class="reveal">
+      In 2024, Jaguar’s Super Bowl ad went viral — but not for the right reasons. Elon Musk famously responded on X: “Do you sell cars?” The moment highlighted a broader perception issue: consumers knew Jaguar looked good, but weren’t sure what it actually stood for.
+      </p>
+      <p class="reveal">
+        We conducted a mix of brand perception interviews, survey feedback, and cultural audits to understand how Jaguar is seen today. The results revealed a consistent message: while the product is still respected, the brand story isn’t landing. Jaguar is admired — but not loved. Consumers struggle to define what Jaguar stands for, and many younger drivers see it as either “premium dad car” or “stuck in the past.” This lack of clarity is costing Jaguar its edge in an increasingly identity-driven market.
+      </p>
+      <div class="quote-grid reveal">
+        <div class="quote-card reveal">
+          <div class="quote-text">
+            "I know Jaguar’s fast… but I don’t know what they mean anymore."
+          </div>
+          <div class="quote-author">— Interviewee</div>
+        </div>
+        <div class="quote-card reveal">
+          <div class="quote-text">
+            "Feels like they’re afraid to pick a side — sporty? classy? electric?"
+          </div>
+          <div class="quote-author">— Twitter User</div>
+        </div>
+        <div class="quote-card reveal">
+          <div class="quote-text">
+            “It’s still a beautiful car — but the brand’s lost its edge.”
+          </div>
+          <div class="quote-author">— Top Gear, 2024</div>
+        </div>
+        <div class="quote-card reveal">
+          <div class="quote-text">
+            “Jaguar’s cool, but it’s not part of the conversation.”
+          </div>
+          <div class="quote-author">— Marketing week analysis, 2023</div>
+        </div>
+        <div class="quote-card reveal">
+          <div class="quote-text">
+            "Jaguar hasn’t had a defining campaign since ‘It’s Good to Be Bad.’ Everything since has felt like filler.”
+          </div>
+          <div class="quote-author">— Autocar, 2024 Brand Retrospective</div>
+        </div>
+      </div>
+      <h3 class="reveal" style="margin-top: 3rem; margin-bottom: 2rem;">Key Findings</h3>
+      <div class="stats-grid reveal">
+        <div class="stats-card reveal" data-percent="81">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Could recall BMW’s tagline— only 26% remembered Jaguar’s</h3>
+          <p class="stats-desc reveal">
+					Brand slogans like “The Ultimate Driving Machine” had higher stickiness than Jaguar’s recent messaging.
+          </p>
+        </div>
+        <div class="stats-card reveal" data-percent="59">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Said Jaguar “looks great,” but couldn’t name a single ad or campaign</h3>
+          <p class="stats-desc reveal">
+Visual appeal remains strong, but narrative connection is weak.
+          </p>
+        </div>
+        <div class="stats-card reveal" data-percent="64">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Of drivers under 35 associated Jaguar with “older generations”</h3>
+          <p class="stats-desc reveal">
+A major perception gap exists between emerging markets and legacy image.
+          </p>
+        </div>
+        <div class="stats-card reveal" data-percent="72">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Agreed Jaguar needs to “pick a lane”</h3>
+          <p class="stats-desc reveal">
+            Consumers expressed confusion over whether Jaguar was performance-first, luxury-first, or electric-forward.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW SECTION 3.5 // Our Constraints -->
+  <section class="constraints" id="constraints">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 3.5 // Our Constraints</h2>
+      <p class="reveal" style="font-size: 1.1rem; line-height: 1.5; margin-bottom: 2rem;">
+       With a legacy brand like Jaguar, reimagining identity isn’t just a creative exercise — it’s a balancing act. We had to move fast, work within non-negotiable brand equities, and create a solution that would resonate internally and externally.
+      </p>
+      <p class="reveal">
+        Our constraints weren’t obstacles — they were guardrails. They helped us focus the work around what mattered most: building a brand system that could evolve without losing its edge.
+      </p>
+      <div class="constraints-row" style="display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; margin-top: 3rem;">
+        <div class="constraints-left" style="flex: 1; min-width: 300px;">
+          <div class="highlight-box reveal" style="margin-bottom: 1rem;">
+            <strong>⏳ A three-week sprint</strong>
+            <p style="margin-top: 0.5rem;">
+						We worked within a tight timeframe to deliver a clear, provable brand direction before Jaguar's Q2 review.
+            </p>
+          </div>
+          <div class="highlight-box reveal" style="margin-bottom: 1rem;">
+            <strong>🎯 Legacy brand tension</strong>
+            <p style="margin-top: 0.5rem;">
+             Every design decision had to respect heritage elements — the leaper, the typography, the tone — without defaulting to nostalgia.
+            </p>
+          </div>
+          <div class="highlight-box reveal" style="margin-bottom: 1rem;">
+            <strong>🗣 Public perception fatigue</strong>
+            <p style="margin-top: 0.5rem;">
+              Multiple past rebrands had created skepticism. We needed to say something new, but still Jaguar.
+            </p>
+          </div>
+          <div class="highlight-box reveal">
+            <strong>⚖️ Internal alignment</strong>
+            <p style="margin-top: 0.5rem;">
+              Our scope had to be clear enough to rally cross-functional teams— from visual designers to product owners, around a unified identity.
+            </p>
+          </div>
+        </div>
+        <div class="constraints-right" style="flex: 1; min-width: 300px;">
+          <h3 class="reveal" style="margin-bottom: 1rem;">The Problem &amp; Our Scope</h3>
+          <p class="reveal" style="font-size: 1.1rem; line-height: 1.5;">
+            Redefining Jaguar’s brand identity required balancing creative ambition with business realities. The challenge wasn’t just aesthetic — it was strategic: how do we evolve a legacy brand without alienating loyalists or diluting heritage?
+          </p>
+          <p class="reveal">
+            Instead of reinventing every element, we scoped our intervention around a focused set of moves: clarifying Jaguar’s narrative voice, realigning visual identity with performance values, and shaping a brand system that could flex across digital and experiential channels.
+          </p>
+          <p class="reveal">
+            Our goal was to create a cohesive, contemporary brand framework that stayed true to Jaguar’s DNA — while reigniting relevance for a new generation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IDEATION SECTION (Part 4) -->
+  <section class="ideation" id="ideation">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 4 // Ideating</h2>
+      <div class="ideation-row">
+        <div class="ideation-col left reveal">
+          <p>
+         In this phase, we explored not just what Jaguar could say — but how it should feel. We sketched campaign concepts, mapped brand tone against competitor archetypes, and tested moodboards that ranged from bold and rebellious to timeless and understated.
+          </p>
+          <p>
+            Every creative direction asked the same question: If Jaguar were a person, what would they be like today? Through word association, tone-mapping, and visual exploration, we narrowed down the emotional lane that felt both iconic and future-facing — edgy without being aggressive, premium without being cold.
+          </p>
+        </div>
+        <div class="ideation-col right reveal">
+          <div class="highlight-box reveal">
+            We explored dozens of brand tones— from heritage luxury to renegade precision — to find a vibe that felt unmistakably Jaguar.
+          </div>
+          <div class="highlight-box reveal">
+            We prioritized tone directions that felt emotionally specific, visually distinct, and able to flex across digital and physical touchpoints.
+          </div>
+          <div class="ideation-images reveal">
+            <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98821399_vOUK29Ba9ku8bkL.png" alt="Sketch 1">
+            <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98821447_5z3eN2buuaJl0RX.png" alt="Sketch 2">
+          </div>
+        </div>
+      </div>
+      <div class="ideation-big-image reveal">
+        <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98821276_BZtdC5on8Td3fi5.png" alt="Big Ideation Visual">
+      </div>
+      <div class="must-haves-container reveal">
+        <div class="must-haves-left reveal">
+          <h3>Brainstorming our must‑haves</h3>
+          <p>Designing with legacy and longevity in mind.</p>
+        </div>
+        <div class="must-haves-right reveal">
+          <div class="must-haves-card reveal">
+            <h4>🏁 A Distinct Brand Lane</h4>
+            <p>
+Jaguar needed a clarified market position—was it performance-first, luxury-first, or future-facing? We prioritized a narrative that could confidently anchor Jaguar within the premium performance space, without mimicking competitors like BMW or Audi.
+            </p>
+          </div>
+          <div class="must-haves-card reveal">
+            <h4>🎯 Emotive, Modern Messaging
+</h4>
+            <p>
+The brand voice had to evoke aspiration, precision, and seduction—without sounding outdated or trying too hard. We explored campaign copy that could land emotionally, not just aesthetically.
+            </p>
+          </div>
+          <div class="must-haves-card reveal">
+            <h4>🎨 A Cohesive Visual Identity
+</h4>
+            <p>
+We explored a refined visual system—dark greens, serif typography, dynamic lighting—that could feel premium without being sterile. Every design choice was filtered through: “Would this belong in the next Jaguar showroom? Or on a startup pitch deck?”
+            </p>
+          </div>
+          <div class="must-haves-card reveal">
+            <h4>🔁 Scalable Brand Architecture
+</h4>
+            <p>
+From digital experiences to showroom signage, we focused on creating modular brand elements—taglines, submarks, motion rules—that could flex across campaigns, platforms, and audiences without losing cohesion.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESIGN PROCESS SECTION (Part 5) -->
+  <section class="design-process" id="design-process">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 5 // Design Process</h2>
+
+      <!-- 5.1 Sub-section: Logo & Identity System Development -->
+      <div class="process-subsection reveal">
+        <h3 class="reveal">5.1 // Logo &amp; Identity System Development</h3>
+        <p class="reveal">
+         The leaper is iconic — but nostalgia doesn’t move product. Jaguar has lost cultural and commercial momentum for over five years, despite a globally recognized logo. Our goal wasn’t to erase heritage, but to evolve it into something meaningful for today’s drivers.
+        </p>
+        <p class="reveal">
+          The diamond mark emerged as a bold response: sleek, electric, and modular. It honors Jaguar’s legacy through embedded initials (J, R), while signaling speed, tension, and electrification through its lightning-inspired form. It’s not just a logo — it’s a recalibrated identity.
+        </p>
+        <div class="process-dense-row reveal">
+          <div class="process-dense-left">
+            <div class="highlight-box reveal">
+              We refined the logo into a versatile, minimal identity system built for motion and digital use.
+            </div>
+            <div class="highlight-box reveal">
+              We’re not ditching the leaper. We’re acknowledging it no longer leads.
+            </div>
+          </div>
+          <div class="process-dense-right">
+            <div class="mini-images reveal">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98821965_mbRH7JdHo7sNLzQ.png" alt="Sketch 3">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98822003_TdB2Ris3hXom90u.png" alt="Sketch 4">
+            </div>
+          </div>
+        </div>
+         <div class="ideation-big-image reveal">
+           <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98822024_LF3WvpDdlR1khdh.png" alt="Big Ideation Visual">
+           <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98822071_h1ucDiYTJsSM1wd.png" alt="Big Ideation Visual">
+         </div>
+      </div>
+
+      <!-- 5.2 Sub-section: Prototyping & Iteration -->
+      <div class="process-subsection reveal">
+        <h3 class="reveal">5.2 // Prototyping &amp; Iteration</h3>
+        <p class="reveal">
+        After defining our core features, we transitioned from paper sketches to interactive digital prototypes for both mobile and desktop. This dual-platform approach let us test how seniors engaged with the experience in different contexts — from tablets at home to full-screen interfaces at community centers.
+        </p>
+        <p class="reveal">
+        Each prototype underwent multiple rounds of usability testing, with direct feedback shaping refinements like clearer iconography, larger tap targets, and simplified flows. We prioritized accessibility every step of the way to ensure confidence, not confusion, at every tap or click.
+        </p>
+        <div class="process-dense-row reveal">
+          <div class="process-dense-left">
+            <div class="highlight-box reveal">
+              Accessibility checks led to high contrast, large targets, and intuitive navigation.
+            </div>
+            <div class="highlight-box reveal">
+              User testing prompted key changes, including a universal “Help” panel and onboarding support.
+            </div>
+          </div>
+          <div class="process-dense-right">
+            <div class="mini-images reveal">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98823042_6o6EVws4bbAYLob.png" alt="Prototype 1">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98823062_CKkqWBw287VmxRT.png" alt="Prototype 2">
+            </div>
+          </div>
+        </div>
+        <!-- New container for three video embeds side by side (YouTube Shorts) with standard 16:9 ratio -->
+        <div class="shorts-container reveal">
+          <iframe src="https://www.youtube.com/embed/fp2IUXuk0h0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <iframe src="https://www.youtube.com/embed/ViNgz9cA2F0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <iframe src="https://www.youtube.com/embed/Z9tMeMOs35I" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <!-- One long video embed below the shorts -->
+        <div class="video-embed reveal">
+          <iframe src="https://www.youtube.com/embed/byAXR21e04s" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAKEAWAYS SECTION (Part 6) -->
+<section class="takeaways" id="takeaways">
+  <div class="section-content reveal">
+    <h3 class="reveal">the end, but not really...</h3>
+    <h2 class="reveal">Section 6 // My Takeaways</h2>
+    <div class="cards reveal">
+      <div class="card reveal">
+        <!-- Using the number and headline together -->
+        <h4 class="reveal">01</h4>
+        <h3 class="reveal">Strategy drives style</h3>
+        <p class="reveal">
+          Rebranding isn’t just about visuals — it’s about choosing what the brand stands for. Every color, shape, and word had to trace back to a clear position: bold, electric, and timeless.
+        </p>
+      </div>
+      <div class="card reveal">
+        <h4 class="reveal">02</h4>
+        <h3 class="reveal">Legacy is not a limitation</h3>
+        <p class="reveal">
+          Working with a historic brand challenged me to respect what came before without getting stuck in it. The key was transformation, not abandonment.
+        </p>
+      </div>
+      <div class="card reveal">
+        <h4 class="reveal">03</h4>
+        <h3 class="reveal">Tools don’t make taste</h3>
+        <p class="reveal">
+          AI and motion tools accelerated the work, but never led it. The creative direction — the tone, restraint, and attitude — always came first.
+        </p>
+      </div>
+      <div class="card reveal">
+        <h4 class="reveal">04 — Identity is lived, not just launched</h4>
+        <h3 class="reveal">Identity is lived, not just launched</h3>
+        <p class="reveal">
+          A logo is just the beginning. I learned to think about how identity scales: across screens, in motion, in voice, in culture.
+        </p>
+      </div>
+    </div>
+    <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+      <h3 class="reveal" style="color: var(--heading-color); font-size: 1.75rem; margin-bottom: 1rem;">🗜️ From Research to Relevance</h3>
+      <p class="reveal" style="color: var(--text-color); font-size: 1.1rem; line-height: 1.5;">
+        This project pushed me beyond just making things look good — it asked me to make them matter. Rebranding Jaguar meant bridging the past and future with purpose: creating a system that felt fast, focused, and emotionally resonant.
+      </p>
+      <p class="reveal" style="color: var(--text-color); font-size: 1.1rem; line-height: 1.5;">
+        What surprised me most? The hardest part wasn’t simplifying — it was being specific. Great branding isn’t just consistent. It’s confident. And now, Jaguar can be again.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+  <!-- ========================================
+         JavaScript: Scroll Reveal & Radial Progress Animation
+  ======================================== -->
+  <script>
+    // Scroll Reveal
+    const revealElements = document.querySelectorAll('.reveal');
+    const observerOptions = { threshold: 0.2 };
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // Radial Progress Animation
+    const statsCards = document.querySelectorAll('.stats-card');
+
+    function animateProgress(card, percentage) {
+      const circle = card.querySelector('.circle-progress');
+      const label = card.querySelector('.circle-text');
+      const circumference = parseFloat(getComputedStyle(document.documentElement)
+                                .getPropertyValue('--circle-circumference'));
+      const targetOffset = circumference - (percentage / 100) * circumference;
+      circle.style.strokeDasharray = circumference;
+      circle.style.strokeDashoffset = circumference;
+      circle.style.strokeDashoffset = targetOffset;
+
+      let current = 0;
+      function countUp() {
+        if (current < percentage) {
+          current++;
+          label.textContent = current + '%';
+          requestAnimationFrame(countUp);
+        } else {
+          label.textContent = percentage + '%';
+        }
+      }
+      requestAnimationFrame(countUp);
+    }
+
+    statsCards.forEach(card => {
+      card.addEventListener('transitionend', () => {
+        if (card.classList.contains('active')) {
+          const percent = parseInt(card.getAttribute('data-percent'));
+          animateProgress(card, percent);
+        }
+      }, { once: true });
+    });
+  </script>
+</body>
+</html>
