@@ -374,23 +374,19 @@
     </div>
 
     <script>
-        // Detect if device supports hover (desktop)
         const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-        // Custom Cursor Logic - Only for desktop
         if (isDesktop) {
             const cursor = document.getElementById('cursor');
             let mouseX = 0;
             let mouseY = 0;
             let animationId;
 
-            // Smooth cursor movement with requestAnimationFrame
             function updateCursor() {
                 cursor.style.left = mouseX + 'px';
                 cursor.style.top = mouseY + 'px';
             }
 
-            // Track mouse movement with throttling
             document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
@@ -403,7 +399,6 @@
                 }
             });
 
-            // Click animation
             document.addEventListener('mousedown', () => {
                 cursor.classList.add('clicking');
             });
@@ -412,7 +407,6 @@
                 cursor.classList.remove('clicking');
             });
 
-            // Hover states for interactive elements
             const hoverElements = document.querySelectorAll('a, button, .hamburger, .logo, .contact-link');
 
             function updateHoverElements() {
@@ -428,14 +422,10 @@
                 });
             }
 
-            // Initial setup
             updateHoverElements();
-
-            // Update hover elements when DOM changes
             const observer = new MutationObserver(updateHoverElements);
             observer.observe(document.body, { childList: true, subtree: true });
 
-            // Hide cursor when leaving window
             document.addEventListener('mouseleave', () => {
                 cursor.style.opacity = '0';
             });
@@ -446,37 +436,16 @@
         }
 
         function navigateToSection(sectionId) {
-            // Check if we're in an iframe (navbar component loaded in another page)
-            if (window.parent && window.parent !== window) {
-                // Send message to parent window to navigate
-                window.parent.postMessage({
-                    type: 'navigate',
-                    target: sectionId === 'home' ? '#home' : '#' + sectionId
-                }, '*');
+            const root = '/index.html';
+
+            if (sectionId === 'home') {
+                window.top.location.href = `${root}?loaded=true`;
             } else {
-                // Direct navigation if we're in the main page
-                if (sectionId === 'home') {
-                    // If we're not on the main index page, go there
-                    if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
-                        window.location.href = '/index.html?loaded=true';
-                    } else {
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
-                    }
-                } else {
-                    // Navigate to specific section
-                    const element = document.getElementById(sectionId);
-                    if (element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
-                    } else {
-                        // If section doesn't exist on current page, go to main index
-                        window.location.href = '/index.html?loaded=true#' + sectionId;
-                    }
-                }
+                window.top.location.href = `${root}?loaded=true#${sectionId}`;
             }
         }
+
+
 
         function toggleMobileMenu() {
             const hamburger = document.querySelector('.hamburger');
@@ -487,10 +456,8 @@
             mobileMenu.classList.toggle('active');
             overlay.classList.toggle('active');
 
-            // Prevent body scroll when menu is open
             if (mobileMenu.classList.contains('active')) {
                 document.body.style.overflow = 'hidden';
-                // Also send message to parent if in iframe
                 if (window.parent && window.parent !== window) {
                     window.parent.postMessage({ type: 'lockScroll' }, '*');
                 }
@@ -525,7 +492,6 @@
             document.getElementById('resume-popup').style.display = 'none';
         }
 
-        // Close mobile menu when clicking outside
         document.addEventListener('click', function(e) {
             const mobileMenu = document.querySelector('.mobile-menu');
             const hamburger = document.querySelector('.hamburger');
@@ -537,9 +503,7 @@
             }
         });
 
-        // Listen for messages from parent window
         window.addEventListener('message', function(event) {
-            // Handle any messages from parent if needed
             if (event.data.type === 'closeMenu') {
                 closeMobileMenu();
             }
@@ -547,5 +511,6 @@
 
         console.log('Navbar component loaded with custom cursor! 🧭✨');
     </script>
+
 </body>
 </html>
