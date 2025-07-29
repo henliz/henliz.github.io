@@ -42,28 +42,20 @@
         }
 
         /* Layer 1: Sky Background (Bottom) */
-        /* keep page + study scroller transparent */
-        html, body, .content-layer, #studyContent { background: transparent !important; }
-
-        /* layering */
-        .sky-background { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-        .content-layer  { position: fixed; top: 80px; left: 0; right: 0; bottom: 0; z-index: 50; }
-        .nav-layer      { z-index: 100; }
-
-
-       .sky-background {
-          position: fixed;
-          inset: 0;
-          z-index: 1;
-          pointer-events: none;
+        .sky-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.8;
         }
 
         .sky-canvas {
-          width: 100%;
-          height: 100%;
-          display: block;
+            width: 100%;
+            height: 100%;
         }
-
 
         /* Layer 2: Navigation (Middle) */
         .nav-layer {
@@ -313,17 +305,12 @@
 
             // Renderer - IDENTICAL to bento
             const canvas = document.getElementById('skyCanvas');
-            // inside initSkyScene()
             renderer = new THREE.WebGLRenderer({
-              canvas: document.getElementById('skyCanvas'),
-              antialias: true,
-              alpha: false           // <-- key: canvas is NOT transparent anymore
+                canvas: canvas,
+                alpha: true,
+                antialias: true
             });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.setSize(window.innerWidth, window.innerHeight);
-
-            // optional: a dark clear color during the first frame/before GLB draws
-            renderer.setClearColor(0x0f1419, 1);
 
             // Bright lighting for vertex colors - IDENTICAL to bento
             const ambientLight = new THREE.AmbientLight(0xffffff, 3);
@@ -442,12 +429,7 @@
                 skyMesh.rotation.x = Math.sin(elapsed * 0.03) * 0.1; // Gentle drift
             }
 
-            // after the GLB loads and you've added it to the scene:
             renderer.render(scene, camera);
-            requestAnimationFrame(() => {
-              document.getElementById('loadingLayer').classList.add('hidden');
-            });
-
         }
 
         function onWindowResize() {
@@ -516,16 +498,6 @@
             await loadComponent('../loading.html', 'loadingLayer');
             await loadComponent('../nav.html', 'navLayer');
             await loadComponent('study.html', 'studyContent');
-
-            const forceTransparent = document.createElement('style');
-            forceTransparent.textContent = `
-              html, body, .content-layer, #studyContent,
-              section, header, main, article {
-                background: transparent !important;
-              }
-            `;
-            document.head.appendChild(forceTransparent);
-
 
             // Initialize sky scene
             initSkyScene();

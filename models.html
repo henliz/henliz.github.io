@@ -311,7 +311,7 @@
         <h2>Skrimp AI</h2>
         <p>Founder & CEO</p>
         <p>Making the cost of living feel livable</p>
-        <a href="https://skrimp.ai" target="_blank" rel="noopener noreferrer">
+        <a href="Skrimp/index.html" target="_blank" rel="noopener noreferrer">
           <button>Explore &rarr;</button>
         </a>
       </div>
@@ -343,16 +343,28 @@
       <canvas id="canvas3"></canvas>
     </section>
 
-    <!-- HalalMeals Section (using robot model) -->
+    <!-- Seniors Connect Section (using laptop model) -->
     <section class="model-section" data-section="3">
       <div class="text-content">
-        <h2>AI Design @ HalalMeals</h2>
-        <p>Tech-savvy taste for everyone</p>
-        <a href="https://henrietta.webflow.io/halalmeals" target="_blank" rel="noopener noreferrer">
-          <button>View Design &rarr;</button>
+        <h2>Seniors Connect</h2>
+        <p>Creating a high-fidelity prototype to end senior loneliness ☕</p>
+        <a href="SeniorsConnect/index.html" target="_blank" rel="noopener noreferrer">
+          <button>See What I Did &rarr;</button>
         </a>
       </div>
       <canvas id="canvas4"></canvas>
+    </section>
+
+    <!-- HalalMeals Section (using robot model) -->
+    <section class="model-section" data-section="4">
+      <div class="text-content">
+        <h2>AI Design @ HalalMeals</h2>
+        <p>Tech-savvy taste for everyone</p>
+        <a href="HalalMeals/index.html" target="_blank" rel="noopener noreferrer">
+          <button>View Design &rarr;</button>
+        </a>
+      </div>
+      <canvas id="canvas5"></canvas>
     </section>
   </div>
 
@@ -362,6 +374,7 @@
     <div class="nav-dot" data-section="1"></div>
     <div class="nav-dot" data-section="2"></div>
     <div class="nav-dot" data-section="3"></div>
+    <div class="nav-dot" data-section="4"></div>
   </div>
 
   <!-- Scroll Indicator -->
@@ -450,7 +463,7 @@
 
     // Spiral Navigation Logic
     let currentSection = 0;
-    const totalSections = 4; // Updated to 4 sections
+    const totalSections = 5; // Updated to 5 sections
     let isAnimating = false;
 
     const navDots = document.querySelectorAll('.nav-dot');
@@ -654,7 +667,7 @@
       };
     }
 
-    // Reorganized models according to your request
+    // Reorganized models with Seniors Connect added
     const section1_skrimp = createScene({
       canvasID: "canvas1",
       modelPath: "./models/yummymeal.glb", // Using yummymeal model for Skrimp
@@ -679,8 +692,16 @@
       baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(20), THREE.MathUtils.degToRad(20), 0)
     });
 
-    const section4_halalmeals = createScene({
+    const section4_seniorsconnect = createScene({
       canvasID: "canvas4",
+      modelPath: "./models/laptop.glb",
+      targetScale: 0.07,
+      basePosition: new THREE.Vector3(0, -0.5, 0),
+      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(5), THREE.MathUtils.degToRad(40), 0)
+    });
+
+    const section5_halalmeals = createScene({
+      canvasID: "canvas5",
       modelPath: "./models/robot.glb",
       targetScale: 8,
       basePosition: new THREE.Vector3(0, 0.1, -35),
@@ -688,6 +709,7 @@
     });
 
     const overlayURL = "https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png";
+    const laptopOverlayURL = "https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png";
 
     function addOverlay(section, textureURL, size, position) {
       const loader = new THREE.TextureLoader();
@@ -713,7 +735,10 @@
     // Add overlay to Steam Deck for Menzoberranzan section
     waitForModel(section2_menzoberranzan, () => addOverlay(section2_menzoberranzan, overlayURL, [4.52, 2.8], [0, 0.35, 1.06]));
 
-    const sections_3d = [section1_skrimp, section2_menzoberranzan, section3_jaguar, section4_halalmeals];
+    // Add laptop screen overlay for Seniors Connect section
+    waitForModel(section4_seniorsconnect, () => addOverlay(section4_seniorsconnect, laptopOverlayURL, [29, 17], [0, 10.7, -10.5]));
+
+    const sections_3d = [section1_skrimp, section2_menzoberranzan, section3_jaguar, section4_seniorsconnect, section5_halalmeals];
     const clock = new THREE.Clock();
 
     // Optimized mouse tracking for 3D models - Only on desktop

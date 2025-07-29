@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Seniors Connect – Full Project</title>
+
+  <!-- Import Montserrat from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      /* Basic Colors */
+      --bg-color: #FFFFFF;           /* Overall white background */
+      --heading-color: #4B2E83;      /* Dark purple for headings */
+      --text-color: #333333;         /* Dark text */
+      --card-bg: #F6F1FB;            /* Light pastel for boxes/cards */
+      --accent-color: #4B2E83;       /* Accent color for highlights */
+
+      /* Radial progress circle values */
+      --circle-size: 100;
+      --circle-radius: 45;
+      --circle-circumference: 282.743;
+      --circle-track: #DFD2EE;
+
+      /* Transition timings */
+      --reveal-duration: 0.5s;
+    }
+
+    /* Reset & Base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, h4 {
+      color: var(--heading-color);
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    ul {
+      list-style: disc inside;
+    }
+
+    /* Global Section Styling: Full-Width, Spacing & Left-Aligned Headings */
+    section {
+      width: 100%;
+      padding: 5rem 0;
+      background-color: var(--bg-color);
+    }
+    .section-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 5%;
+      text-align: left;
+    }
+    .section-content h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-content p {
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin-bottom: 2rem;
+    }
+
+    /* Scroll Reveal (Updated for a more chill effect) */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+    .active {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+
+    /* HERO SECTION (Part 1) */
+    .hero {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5%;
+    }
+    .hero-container {
+      display: flex;
+      width: 100%;
+      max-width: 1400px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .hero-container.reveal { }
+    .hero-left {
+      flex: 1;
+      padding-right: 2rem;
+    }
+    .hero-left h1 {
+      font-size: 5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+    }
+    .hero-left h2 {
+      font-size: 2rem;
+      font-weight: 400;
+    }
+    .hero-right {
+      max-width: 40%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+    .hero-left h1.reveal,
+    .hero-left h2.reveal,
+    .hero-right.reveal { }
+    .header-info p {
+      font-size: 1rem;
+      text-align: right;
+      margin-bottom: 0.5rem;
+    }
+    .header-info ul.skills-list {
+      margin-left: 1.5rem;
+    }
+    .overview-cover {
+      width: 100%;
+      display: block;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+    .skip-link {
+      margin-top: 1rem;
+    }
+    .skip-button {
+      display: inline-block;
+      background-color: var(--accent-color);
+      color: #FFFFFF;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.8rem 1.2rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .skip-button:hover {
+      background-color: #3a1f67;
+    }
+
+    /* PROJECT OVERVIEW (Part 2) with Cover Art */
+    .project-overview { }
+
+    /* CHALLENGE SECTION (Part 3) */
+    .challenge { }
+    .challenge-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+    .challenge-col {
+      flex: 1;
+      min-width: 300px;
+    }
+    .challenge-col.left img.challenge-blackbox {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+    .challenge-col.right p {
+      margin-bottom: 0.75rem;
+    }
+    .challenge-skinny-image {
+      width: 100%;
+      max-width: 450px;
+      margin: 1rem 0;
+      border-radius: 8px;
+      display: block;
+    }
+    .highlight-box {
+      background-color: var(--card-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-top: 0.75rem;
+    }
+
+    /* SCENE SECTION (Part 4) */
+    .scene { }
+    .scene-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+    .scene-col {
+      flex: 1;
+      min-width: 300px;
+    }
+    .scene-col.left h4 {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+      opacity: 0.8;
+    }
+    .scene-col.left p {
+      margin-bottom: 0.75rem;
+    }
+    .scene-big-image {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .scene-big-image img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+
+    /* RESEARCH & SURVEY SECTION (Section 3.4) */
+    .research {
+      background-color: var(--bg-color);
+      padding: 5rem 5%;
+      text-align: left;
+    }
+    .research h2 {
+      margin-bottom: 1.5rem;
+    }
+    .research p {
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin-bottom: 2rem;
+    }
+    .quote-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(240px, 1fr));
+      gap: 1.5rem;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+    .quote-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      padding: 1.5rem;
+      min-height: 180px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity var(--reveal-duration) ease, transform var(--reveal-duration) ease;
+    }
+    .quote-text {
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .quote-author {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 2rem;
+      justify-items: center;
+      margin: 0 auto;
+    }
+    .stats-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      padding: 2rem 1rem;
+      text-align: center;
+      min-height: 220px;
+      width: 100%;
+      max-width: 400px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity var(--reveal-duration) ease, transform var(--reveal-duration) ease;
+      position: relative;
+    }
+    .stats-title {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--heading-color);
+    }
+    .stats-desc {
+      font-size: 1rem;
+      line-height: 1.4;
+      max-width: 300px;
+      margin: 0.5rem auto 0;
+      color: var(--text-color);
+    }
+    .circle-container {
+      width: var(--circle-size)px;
+      height: var(--circle-size)px;
+      margin: 0 auto 0.75rem;
+      position: relative;
+    }
+    .circle-bg {
+      stroke: var(--circle-track);
+      fill: none;
+      stroke-width: 10;
+    }
+    .circle-progress {
+      stroke: var(--accent-color);
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: var(--circle-circumference);
+      stroke-dashoffset: var(--circle-circumference);
+      transition: stroke-dashoffset 1.2s ease;
+    }
+    .circle-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--heading-color);
+    }
+
+    /* NEW SECTION 3.5 // Our Constraints */
+    .constraints {
+      padding: 4rem 0;
+      background-color: #FFFFFF;
+    }
+    .constraints .section-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 5%;
+      text-align: left;
+    }
+    .constraints h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .constraints-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-top: 3rem;
+    }
+    .constraints-left {
+      flex: 1;
+      min-width: 300px;
+    }
+    .constraints-left .highlight-box {
+      background-color: var(--card-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    .constraints-right {
+      flex: 1;
+      min-width: 300px;
+    }
+    .constraints-right h3 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      color: var(--heading-color);
+    }
+    .constraints-right p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      color: var(--text-color);
+    }
+
+    /* IDEATION SECTION (Part 4) */
+    .ideation { }
+    .ideation-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+    .ideation-col {
+      flex: 1;
+      min-width: 300px;
+    }
+    .ideation-col.left p {
+      margin-bottom: 0.75rem;
+    }
+    .ideation-col.right .highlight-box {
+      background-color: var(--card-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+    }
+    .ideation-images {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ideation-images img {
+      width: 48%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .ideation-big-image {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .ideation-big-image img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    .must-haves-container {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      max-width: 1400px;
+      margin: 3rem auto 0;
+      text-align: left;
+    }
+    .must-haves-left {
+      flex: 1;
+    }
+    .must-haves-left h3 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .must-haves-left p {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+    .must-haves-right {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .must-haves-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .must-haves-card h4 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--heading-color);
+    }
+    .must-haves-card p {
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    /* DESIGN PROCESS SECTION (Part 5) – Dense Version */
+    .design-process {
+      text-align: left;
+      width: 100%;
+      background-color: var(--bg-color);
+      padding: 4rem 0;
+    }
+    .design-process .section-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 5%;
+    }
+    .design-process h2 {
+      margin-bottom: 3rem;
+    }
+    .process-subsection {
+      text-align: left;
+      margin-bottom: 4rem;
+    }
+    .process-subsection h3 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--heading-color);
+    }
+    .process-subsection p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .process-dense-row {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .process-dense-left,
+    .process-dense-right {
+      flex: 1;
+      min-width: 300px;
+    }
+    .process-dense-left .highlight-box {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+    .process-dense-right .mini-images {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .process-dense-right .mini-images img {
+      width: 48%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .video-embed,
+    .figma-embed {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+      margin: 2rem auto 0;
+    }
+    .video-embed iframe,
+    .figma-embed iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* TAKEAWAYS SECTION (Part 6) */
+    .takeaways {
+      text-align: center;
+    }
+    .takeaways h3 {
+      font-size: 1rem;
+      font-weight: 400;
+      text-transform: lowercase;
+      opacity: 0.8;
+      margin-bottom: 0.5rem;
+    }
+    .takeaways h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: var(--heading-color);
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background-color: var(--card-bg);
+      padding: 2rem;
+      border-radius: 8px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: left;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+    .card h4 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+    .card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.7rem;
+      color: var(--heading-color);
+    }
+    .card p {
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .hero-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .hero-left {
+        padding-right: 0;
+      }
+      .hero-left h1 {
+        font-size: 3.5rem;
+      }
+      .hero-left h2 {
+        font-size: 1.75rem;
+      }
+      .hero-right {
+        max-width: 100%;
+        align-items: center;
+      }
+      .challenge-row,
+      .scene-row,
+      .ideation-row,
+      .must-haves-container,
+      .process-dense-row {
+        flex-direction: column;
+      }
+      .quote-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .process-dense-right .mini-images img {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO SECTION (Part 1) -->
+  <header class="hero" id="hero">
+    <div class="hero-container section-content reveal">
+      <div class="hero-left">
+        <h1 class="reveal">Seniors Connect</h1>
+        <h2 class="reveal">Helping the Elderly Make New Friends</h2>
+      </div>
+      <div class="hero-right reveal">
+        <div class="header-info reveal">
+          <p><strong>Role:</strong> Design Intern (Design Systems)</p>
+          <p><strong>Timeline:</strong> Summer 2023 – 12 weeks</p>
+          <p><strong>Tools &amp; Skills:</strong></p>
+          <ul class="skills-list">
+            <li>User Research</li>
+            <li>Prototyping</li>
+            <li>Design Systems</li>
+            <li>Typography</li>
+            <li>Figma</li>
+          </ul>
+        </div>
+        <div class="skip-link reveal">
+          <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PROJECT OVERVIEW (Part 2) with Cover Art -->
+  <section class="project-overview" id="project-overview">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 1 // Project Overview</h2>
+      <p class="reveal">
+        Seniors Connect is an innovative platform designed to bridge the gap between generations.
+        Our mission is to help the elderly create new friendships and alleviate loneliness through an accessible,
+        friendly, and engaging digital experience.
+      </p>
+      <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/96792291_DF6jSnUtIQyHbTU.png" alt="Cover Art" class="overview-cover reveal">
+    </div>
+  </section>
+
+  <!-- CHALLENGE SECTION (Part 3) -->
+  <section class="challenge" id="challenge">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 2 // The Challenge</h2>
+      <div class="challenge-row">
+        <div class="challenge-col left reveal">
+          <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98468173_RluDj3r5VQqKrFD.png" alt="Black box image" class="challenge-blackbox">
+        </div>
+        <div class="challenge-col right reveal">
+          <p class="reveal">
+          Technology promises connection — but for many seniors, it delivers confusion. Between apps that assume tech fluency and platforms that reward speed over clarity, older users are often left behind. Not by choice, but by design. </p>
+
+<p>The challenge wasn’t just usability. It was restoring comfort, confidence, and a sense of belonging in a digital world that wasn’t built for them.
+          </p>
+          <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98772121_bMSTZYVmf0Mm5FS.png" alt="Skinny screenshot" class="challenge-skinny-image reveal">
+          <div class="highlight-box reveal">
+            We saw an opportunity to make interaction feel less like a system to learn, and more like a moment to look forward to.
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE SECTION (Part 4) -->
+  <section class="scene" id="scene">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 3 // Let’s set the scene</h2>
+      <div class="scene-row">
+        <div class="scene-col left reveal">
+          <h4 class="reveal">A quiet epidemic...</h4>
+          <p class="reveal">
+            Loneliness among seniors is more than a feeling, it’s a growing public health concern. Studies link social isolation in older adults to increased risks of depression, cognitive decline, and even early mortality. And yet, it's often invisible. A cozy photo or scheduled group activity doesn't capture the quiet stretches of time where no one checks in, or when digital communication feels alienating rather than connecting. </p>
+
+<p>We knew our intervention couldn’t be about just “adding more features.” It had to reflect the emotional texture of aging— and meet people where they are, not where tech assumes they should be.
+          </p>
+        </div>
+        <div class="scene-col right reveal">
+          <div class="highlight-box reveal">
+            We approached this challenge with a deep focus on mental models: not just what seniors can do with technology, but what they expect, fear, and hope for when using it. Designing within an ecosystem familiar to them allowed us to lower barriers while introducing subtle, confidence-building shifts in behavior.
+          </div>
+          <div class="highlight-box reveal">
+           Imagine a platform that doesn't just connect people, it understands the gaps between intention and connection. What if a system could gently prompt moments of interaction, share context with loved ones, and bridge the distance between availability and presence — all before loneliness has a chance to settle in?
+          </div>
+        </div>
+      </div>
+      <div class="scene-big-image reveal">
+        <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98471933_YkBZUd8Na5UVtZD.png" alt="Problem Statement: Simplified footage preview">
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH & SURVEY SECTION (Section 3.4) -->
+  <section class="research" id="research-results">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 3.4 // Research &amp; Survey Results</h2>
+      <p class="reveal">
+       We began by listening— not to assumptions, but to real people. Through interviews and surveys with seniors and caregivers, we explored the lived experiences of aging, loneliness, and digital exclusion. Many described a deep desire to connect, but felt left behind by technology that wasn’t built for them.</p>
+
+<p>Our mixed-method research helped uncover patterns: isolation due to distance, hesitation rooted in unfamiliar tech, and the emotional weight of being ignored. These insights didn’t just inform our design, they gave it purpose. Every feature we considered was grounded in a single goal: to make connection feel not just possible, but personal.
+      </p>
+      <div class="quote-grid reveal">
+        <div class="quote-card reveal">
+          <div class="quote-text">
+            "Many of my friends have passed away, and it’s hard to make new connections."
+          </div>
+          <div class="quote-author">— Anonymous</div>
+        </div>
+        <div class="quote-card reveal">
+          <div class="quote-text">
+            "Social connections improve health; without them, every interaction feels like a lifeline."
+          </div>
+          <div class="quote-author">— CDC</div>
+        </div>
+        <div class="quote-card reveal">
+          <div class="quote-text">
+            "Loneliness is linked to higher blood pressure and greater risk of heart disease."
+          </div>
+          <div class="quote-author">— CMAJ</div>
+        </div>
+        <div class="quote-card reveal">
+          <div class="quote-text">
+            "I feel isolated since my family is far away. More interaction would boost my spirits."
+          </div>
+          <div class="quote-author">— Anonymous</div>
+        </div>
+        <div class="quote-card reveal">
+          <div class="quote-text">
+            "Limited mobility makes community events hard to join, leaving many seniors desperate for connection."
+          </div>
+          <div class="quote-author">— Anonymous</div>
+        </div>
+      </div>
+      <h3 class="reveal" style="margin-top: 3rem; margin-bottom: 2rem;">Key Findings</h3>
+      <div class="stats-grid reveal">
+        <div class="stats-card reveal" data-percent="80">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Feel isolated</h3>
+          <p class="stats-desc reveal">
+            80% of seniors reported feeling isolated, emphasizing a need for stronger social connectivity.
+          </p>
+        </div>
+        <div class="stats-card reveal" data-percent="65">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Difficulty using tech</h3>
+          <p class="stats-desc reveal">
+            65% of seniors find digital tools challenging, highlighting the need for intuitive design.
+          </p>
+        </div>
+        <div class="stats-card reveal" data-percent="50">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Low community events</h3>
+          <p class="stats-desc reveal">
+            50% noted limited local events as a major factor contributing to isolation.
+          </p>
+        </div>
+        <div class="stats-card reveal" data-percent="90">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Interest in meetups</h3>
+          <p class="stats-desc reveal">
+            90% expressed interest in simplified virtual or in-person meetups if the tech is accessible.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW SECTION 3.5 // Our Constraints -->
+  <section class="constraints" id="constraints">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 3.5 // Our Constraints</h2>
+      <p class="reveal" style="font-size: 1.1rem; line-height: 1.5; margin-bottom: 2rem;">
+        With our research and understanding of our users, we realized that to create an accessible and impactful solution, we needed to set a realistic scope.
+      </p>
+      <div class="constraints-row" style="display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; margin-top: 3rem;">
+        <div class="constraints-left" style="flex: 1; min-width: 300px;">
+          <div class="highlight-box reveal" style="margin-bottom: 1rem;">
+            <strong>⏰ A four week deadline</strong>
+            <p style="margin-top: 0.5rem;">
+             Because we had to launch before our deadline, with time for user-acceptance testing.
+            </p>
+          </div>
+          <div class="highlight-box reveal" style="margin-bottom: 1rem;">
+            <strong>💻 Technology access nuances</strong>
+            <p style="margin-top: 0.5rem;">
+             Many seniors have limited experience with smartphones and tablets, requiring a highly intuitive interface.
+            </p>
+          </div>
+          <div class="highlight-box reveal" style="margin-bottom: 1rem;">
+            <strong>🧠 Cognitive load considerations</strong>
+            <p style="margin-top: 0.5rem;">
+              The app needed to be simple enough to prevent overwhelming users while still offering robust functionality.
+            </p>
+          </div>
+          <div class="highlight-box reveal">
+            <strong>🧩 Simple interactions only</strong>
+            <p style="margin-top: 0.5rem;">
+              We had to ensure that the app's functionality was straightforward and that users could perform tasks without needing technical support.
+            </p>
+          </div>
+        </div>
+        <div class="constraints-right" style="flex: 1; min-width: 300px;">
+          <h3 class="reveal" style="margin-bottom: 1rem;">The Problem &amp; Our Scope</h3>
+          <p class="reveal" style="font-size: 1.1rem; line-height: 1.5;">
+            Designing for seniors requires balancing their unique needs with realistic project limitations.
+            Instead of overloading the app with every possible feature, we set a scope that focuses on essential functions—
+            creating an approachable and accessible experience that can genuinely connect people. </p>
+
+            <p>Our goal was to create an intuitive and accessible design that could be easily adopted by seniors, providing them with a platform to connect with others and alleviate feelings of loneliness.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IDEATION SECTION (Part 4) -->
+  <section class="ideation" id="ideation">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 4 // Ideating</h2>
+      <div class="ideation-row">
+        <div class="ideation-col left reveal">
+          <p>
+          In this phase, we embraced experimentation. We sketched, mapped, and prototyped over 50 early ideas, from interface concepts to emotional interaction flows, aiming to make digital connection feel natural, not forced.</p>
+          <p>
+           Every decision was guided by one question: Would this feel easy, uplifting, and familiar to a senior using it for the first time? Through affinity mapping, mood boards, and team voting, we refined our thinking toward features that prioritized comfort, clarity, and social possibility.
+          </p>
+        </div>
+        <div class="ideation-col right reveal">
+          <div class="highlight-box reveal">
+            We explored over 50 design directions — from hand-drawn flows to crazy 8s sketches, and even wizard of Oz 'effect' demos, then prioritized ideas that invited seniors to engage, not just use.
+          </div>
+          <div class="highlight-box reveal">
+           Using affinity mapping and user insight clustering, we surfaced concepts that felt personal, easy to navigate, and emotionally rewarding.
+
+          </div>
+          <div class="ideation-images reveal">
+            <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98772952_1Y07m9cu8rUH1vd.png" alt="Sketch 1">
+            <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98773038_v77Pa01z9tCVOqj.png" alt="Sketch 2">
+          </div>
+        </div>
+      </div>
+      <div class="ideation-big-image reveal">
+        <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98772894_CjS9Ii9b9VrXWUU.png" alt="Big Ideation Visual">
+      </div>
+      <div class="must-haves-container reveal">
+        <div class="must-haves-left reveal">
+          <h3>Brainstorming our must‑haves</h3>
+          <p>Designing with seniors in mind.</p>
+        </div>
+        <div class="must-haves-right reveal">
+          <div class="must-haves-card reveal">
+            <h4>🎉 An event page</h4>
+            <p>
+              An event page where users have the option to share local events or clubs they are going to. Other users will be able to see which of they’re friends are going to an event and shoot them a message, either custom or presented.
+            </p>
+          </div>
+          <div class="must-haves-card reveal">
+            <h4>🛠️ Customizable Profiles</h4>
+            <p>
+              Customizable Profiles allow seniors to add their interests, favorite activities, and hobbies. This personalization makes it easier for seniors to connect with others who share common interests, fostering more meaningful relationships within the platform.
+            </p>
+          </div>
+          <div class="must-haves-card reveal">
+            <h4>📲 Interactive Tutorials</h4>
+            <p>
+              Interactive Tutorials guide seniors through the app. These video or text tutorials can be accessed at any time and provide step-by-step instructions for using all major features. The tutorials are designed to be clear and simple, ensuring seniors feel confident while navigating the app.
+
+            </p>
+          </div>
+          <div class="must-haves-card reveal">
+            <h4>🤝 One‑Click Meetups</h4>
+            <p>
+              One-Click Meetups help seniors plan social gatherings or virtual meetings. The app provides a simple calendar tool where seniors can suggest a meeting time and place, then automatically share the invite with their friends. This feature removes the complexity of organizing events, making it more accessible.
+
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESIGN PROCESS SECTION (Part 5) -->
+  <section class="design-process" id="design-process">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 5 // Design Process</h2>
+      <div class="process-subsection reveal">
+        <h3 class="reveal">5.1 // Ideation &amp; Concept Development</h3>
+        <p class="reveal">
+         We began by casting a wide net, generating concepts through brainstorming sessions, mood boards, and sketches. Each idea was mapped back to a central question: How can we make connection feel effortless and inviting for seniors?</p>
+
+<p>Through direct feedback from seniors, we identified design patterns that made people feel either empowered or excluded. These insights helped us refine our ideas into features that felt familiar, emotionally supportive, and easy to navigate— even for first-time users.
+        </p>
+        <div class="process-dense-row reveal">
+          <div class="process-dense-left">
+            <div class="highlight-box reveal">
+              We focused on community-first features to ease loneliness and build connection.
+            </div>
+            <div class="highlight-box reveal">
+              Sketches revealed early friction points, from overwhelming layouts to unclear labels. That guided our push for accessible, intuitive navigation.
+            </div>
+          </div>
+          <div class="process-dense-right">
+            <div class="mini-images reveal">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98773174_6828ZbmerbM633c.png" alt="Sketch 3">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98723278_WyhmRXdYvE3gMB2.png" alt="Sketch 4">
+            </div>
+          </div>
+        </div>
+        <div class="video-embed reveal">
+          <iframe src="https://www.youtube.com/embed/eOFAFMzizOE"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+      <div class="process-subsection reveal">
+        <h3 class="reveal">5.2 // Prototyping &amp; Iteration</h3>
+        <p class="reveal">
+        After defining our core features, we transitioned from paper sketches to interactive digital prototypes for both mobile and desktop. This dual-platform approach let us test how seniors engaged with the experience in different contexts — from tablets at home to full-screen interfaces at community centers.</p>
+
+<p>Each prototype underwent multiple rounds of usability testing, with direct feedback shaping refinements like clearer iconography, larger tap targets, and simplified flows. We prioritized accessibility every step of the way to ensure confidence, not confusion, at every tap or click.
+
+
+        </p>
+        <div class="process-dense-row reveal">
+          <div class="process-dense-left">
+            <div class="highlight-box reveal">
+              Accessibility checks led to high contrast, large targets, and intuitive navigation.
+            </div>
+            <div class="highlight-box reveal">
+              User testing prompted key changes, including a universal “Help” panel and onboarding support.
+            </div>
+          </div>
+          <div class="process-dense-right">
+            <div class="mini-images reveal">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774259_L62HzI5nEJQE1cJ.png" alt="Prototype 1">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774276_kHRriRsQEWkbGuO.png" alt="Prototype 2">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774348_I7u3MimF6qTvKki.png" alt="Prototype 3">
+            </div>
+          </div>
+        </div>
+        <div class="figma-embed reveal">
+          <iframe src="https://embed.figma.com/proto/iZfp0bnOftXJdtzhBEEB5z/Prototypes-GBDA-210?node-id=1-4&p=f&scaling=scale-down&content-scaling=fixed&page-id=1%3A2&starting-point-node-id=1%3A4&embed-host=share" allowfullscreen></iframe>
+          </div>
+        <div class="figma-embed reveal">
+          <iframe src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FiZfp0bnOftXJdtzhBEEB5z%2FPrototypes-GBDA-210%3Fnode-id%3D1-5%26t%3DFpIeDfz0IXr7lkms-1%26scaling%3Dscale-down%26content-scaling%3Dfixed%26page-id%3D1%253A3%26starting-point-node-id%3D1%253A5" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- TAKEAWAYS SECTION (Part 6) -->
+  <section class="takeaways" id="takeaways">
+    <div class="section-content reveal">
+      <h3 class="reveal">the end, but not really...</h3>
+      <h2 class="reveal">Section 6 // My Takeaways</h2>
+      <div class="cards reveal">
+        <div class="card reveal">
+          <h4 class="reveal">01</h4>
+          <h3 class="reveal">Design for clarity, not just beauty</h3>
+          <p class="reveal">
+           Legible typography, strong contrast, and simplified layouts helped ensure that seniors could quickly recognize what mattered— without second guessing.
+          </p>
+        </div>
+        <div class="card reveal">
+          <h4 class="reveal">02</h4>
+          <h3 class="reveal">Collaboration builds accessibility</h3>
+          <p class="reveal">
+            Bridging the gap between design and development helped us catch issues early and implement more inclusive features from the ground up.
+          </p>
+        </div>
+        <div class="card reveal">
+          <h4 class="reveal">03</h4>
+          <h3 class="reveal">Inclusion is a process, not a checkbox</h3>
+          <p class="reveal">
+            We didn’t just “design for” seniors, we designed with them. Their stories, frustrations, and suggestions directly shaped what this product became.
+          </p>
+        </div>
+        <div class="card reveal">
+          <h4 class="reveal">04</h4>
+          <h3 class="reveal">Design for now, plan for what’s next</h3>
+          <p class="reveal">
+            Modular systems and forward-thinking structures gave us room to adapt and expand — keeping the experience flexible without compromising simplicity.
+          </p>
+        </div>
+      </div>
+      <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <h3 class="reveal" style="color: var(--heading-color); font-size: 1.75rem; margin-bottom: 1rem;">🌱 From Insight to Impact</h3>
+        <p class="reveal" style="color: var(--text-color); font-size: 1.1rem; line-height: 1.5;">
+         This project taught us more than how to prototype or run usability tests, it taught us how to listen.</p>
+
+<p>Working alongside seniors and caregivers helped us recognize the emotional stakes of “good” design: the difference between connection and silence, between confidence and hesitation.</p>
+
+<p>The final platform wasn’t just intuitive, it felt personal. And that’s what made it meaningful. Because in the end, designing for inclusion isn’t just a skill — it’s a responsibility.
+
+
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================
+         JavaScript: Scroll Reveal & Radial Progress Animation
+  ======================================== -->
+  <script>
+    // Scroll Reveal
+    const revealElements = document.querySelectorAll('.reveal');
+    const observerOptions = { threshold: 0.2 };
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // Radial Progress Animation
+    const statsCards = document.querySelectorAll('.stats-card');
+
+    function animateProgress(card, percentage) {
+      const circle = card.querySelector('.circle-progress');
+      const label = card.querySelector('.circle-text');
+      const circumference = parseFloat(getComputedStyle(document.documentElement)
+                                .getPropertyValue('--circle-circumference'));
+      const targetOffset = circumference - (percentage / 100) * circumference;
+      circle.style.strokeDasharray = circumference;
+      circle.style.strokeDashoffset = circumference;
+      circle.style.strokeDashoffset = targetOffset;
+
+      let current = 0;
+      function countUp() {
+        if (current < percentage) {
+          current++;
+          label.textContent = current + '%';
+          requestAnimationFrame(countUp);
+        } else {
+          label.textContent = percentage + '%';
+        }
+      }
+      requestAnimationFrame(countUp);
+    }
+
+    statsCards.forEach(card => {
+      card.addEventListener('transitionend', () => {
+        if (card.classList.contains('active')) {
+          const percent = parseInt(card.getAttribute('data-percent'));
+          animateProgress(card, percent);
+        }
+      }, { once: true });
+    });
+  </script>
+</body>
+</html>
