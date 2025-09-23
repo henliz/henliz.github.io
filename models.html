@@ -2,532 +2,207 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Portfolio Models • Corkscrew Scroll</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Helix Scroll • One-Scene Portfolio (Smooth Scroll-Scrub)</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Changa+One&family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@400;700&display=swap');
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: #0f1419;
-      color: #f1faee;
-      overflow: hidden; /* locked until we explicitly unlock at the very end */
-      font-family: 'Montserrat', sans-serif;
-      height: 100vh;
+    :root{
+      --bg:#0f1419; --fg:#e6f2f2; --a:#2a9d8f; --b:#457b9d;
     }
-    body.unlocked {
-      overflow: auto !important; /* allow escape only when we call unlockPage() */
-    }
-
-    /* Only hide cursor on desktop */
-    @media (hover: hover) and (pointer: fine) {
-      html, body { cursor: none !important; }
-      *, *::before, *::after { cursor: none !important; }
-    }
-
-    /* Decorative spiral ring overlay (subtle) */
-    .spiral-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 2;
-      mix-blend-mode: screen;
-      opacity: 0.05;
-      background: radial-gradient(closest-side, rgba(168,218,220,.35), transparent 60%),
-                  repeating-conic-gradient(from 0deg, rgba(69,123,157,.25) 0 6deg, transparent 6deg 12deg);
-      animation: ringSpin 24s linear infinite;
-    }
-    @keyframes ringSpin { to { transform: rotate(360deg); } }
-
-    .portfolio-container {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-      perspective: 1200px; /* give the corkscrew some depth */
-    }
-
-    .model-section {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-      background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
-      background-size: 400% 400%;
-      animation: gradientShift 20s ease infinite;
-      opacity: 0;
-      transform: translateZ(-450px) rotate(-18deg) translateY(12vh) scale(.9); /* starting pose */
-      will-change: transform, opacity, filter;
-    }
-
-    /* active slide sits flat */
-    .model-section.active {
-      opacity: 1;
-      transform: translateZ(0) rotate(0) translateY(0) scale(1);
-      transition: transform .9s cubic-bezier(.22,.61,.36,1), opacity .6s ease;
-      z-index: 1;
-    }
-
-    /* corkscrew animations */
-    .corkscrew-in {
-      animation: corkscrewIn .9s cubic-bezier(.22,.61,.36,1) forwards;
-    }
-    .corkscrew-out-down {
-      animation: corkscrewOutDown .9s cubic-bezier(.22,.61,.36,1) forwards;
-    }
-    .corkscrew-out-up {
-      animation: corkscrewOutUp .9s cubic-bezier(.22,.61,.36,1) forwards;
-    }
-
-    @keyframes corkscrewIn {
-      0% {
-        opacity: 0;
-        filter: blur(6px);
-        transform: translateZ(-520px) rotate(-24deg) translateY(16vh) scale(.88);
-      }
-      100% {
-        opacity: 1;
-        filter: blur(0);
-        transform: translateZ(0) rotate(0) translateY(0) scale(1);
-      }
-    }
-    @keyframes corkscrewOutDown {
-      0% { opacity: 1; filter: blur(0); transform: translateZ(0) rotate(0) translateY(0) scale(1); }
-      100% { opacity: 0; filter: blur(6px); transform: translateZ(520px) rotate(24deg) translateY(-16vh) scale(1.08); }
-    }
-    @keyframes corkscrewOutUp {
-      0% { opacity: 1; filter: blur(0); transform: translateZ(0) rotate(0) translateY(0) scale(1); }
-      100% { opacity: 0; filter: blur(6px); transform: translateZ(-520px) rotate(-24deg) translateY(16vh) scale(.88); }
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .text-content {
-      position: absolute;
-      top: 5vh;
-      left: 5vw;
-      z-index: 10;
-      max-width: 40vw;
-      background: rgba(15, 20, 25, 0.85);
-      backdrop-filter: blur(15px);
-      border-radius: 20px;
-      padding: 2rem;
-      border: 1px solid rgba(168, 218, 220, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-
-    h2 {
-      margin: 0 0 1rem 0;
-      font-family: 'Montserrat Alternates', sans-serif;
-      font-size: 2.5rem;
-      color: #f1faee;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-      background: linear-gradient(45deg, #a8dadc, #457b9d, #2a9d8f);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      font-weight: 700;
-    }
-
-    p { margin: 0 0 1.5rem 0; font-size: 1.1rem; line-height: 1.4; color: #f1faee; opacity: 0.9; }
-    a { text-decoration: none; }
-
-    button {
-      background: linear-gradient(45deg, #2a9d8f, #457b9d);
-      color: #f1faee; border: none; border-radius: 25px; padding: 12px 24px; font-size: 1rem; font-weight: 600;
-      cursor: pointer; transition: all 0.3s ease; font-family: 'Montserrat', sans-serif;
-      box-shadow: 0 4px 15px rgba(42, 157, 143, 0.3);
-      position: relative; overflow: hidden;
-    }
-    button::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); transition: left .5s; }
-    button:hover::before { left: 100%; }
-    button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(42, 157, 143, 0.5); background: linear-gradient(45deg, #34a8a0, #5088a8); }
-
-    canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-
-    .navigation-dots { position: fixed; right: 2rem; top: 50%; transform: translateY(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 1rem; }
-    .nav-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(168, 218, 220, 0.3); cursor: pointer; transition: all .3s ease; border: 2px solid rgba(168, 218, 220, 0.5); }
-    .nav-dot.active { background: rgba(42, 157, 143, 0.8); border-color: rgba(42, 157, 143, 1); transform: scale(1.3); box-shadow: 0 0 15px rgba(42, 157, 143, 0.6); }
-    .nav-dot:hover { background: rgba(168, 218, 220, 0.6); transform: scale(1.1); }
-
-    .scroll-indicator { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 1000; color: #a8dadc; font-size: .9rem; opacity: .7; text-align: center; pointer-events: none; }
-    .scroll-indicator::before { content: '⏶'; display: block; font-size: 1.5rem; animation: bounce 2s infinite; }
-    @keyframes bounce { 0%,20%,50%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} 60%{transform:translateY(-3px)} }
-
-    @media (max-width: 768px) {
-      .text-content { max-width: 80vw; padding: 1.5rem; top: 3vh; left: 10vw; }
-      h2 { font-size: 1.8rem; }
-      p { font-size: 1rem; }
-      button { padding: 10px 20px; font-size: .9rem; }
-      .navigation-dots { right: 1rem; }
-    }
-    @media (max-width: 480px) {
-      .text-content { max-width: 90vw; padding: 1rem; left: 5vw; }
-      h2 { font-size: 1.5rem; }
-      p { font-size: .9rem; }
-    }
-
-    /* Custom Glassmorphism Cursor - Only show on desktop */
-    .custom-cursor {
-      position: fixed; width: 20px; height: 20px; background: rgba(42, 157, 143, 0.3);
-      border: 2px solid rgba(42, 157, 143, 0.8); border-radius: 50%; pointer-events: none; z-index: 10000;
-      backdrop-filter: blur(8px); transition: all .08s ease-out; transform: translate(-50%, -50%);
-      box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
-      display: none;
-    }
-    @media (hover: hover) and (pointer: fine) { .custom-cursor { display: block; } }
-    .custom-cursor.clicking { background: rgba(42, 157, 143, 0.9); border-color: rgba(42, 157, 143, 1); transform: translate(-50%, -50%) scale(.8); box-shadow: 0 0 25px rgba(42, 157, 143, 0.8), inset 0 0 15px rgba(42, 157, 143, 0.3); }
-    .custom-cursor.hovering { width: 30px; height: 30px; background: rgba(42, 157, 143, 0.4); border-color: rgba(42, 157, 143, 0.9); box-shadow: 0 0 20px rgba(42, 157, 143, 0.6), inset 0 0 12px rgba(42, 157, 143, 0.2); }
+    html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,"Helvetica Neue",Arial,sans-serif}
+    body.unlocked{overflow:auto!important}
+    canvas#webgl{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+    /* Minimal HUD only */
+    .hud{position:fixed;z-index:5;top:6vh;left:6vw;max-width:min(520px,80vw);background:rgba(15,20,25,.7);backdrop-filter:blur(12px);border:1px solid rgba(168,218,220,.18);border-radius:16px;padding:1rem 1.1rem;box-shadow:0 8px 26px rgba(0,0,0,.35)}
+    .hud h2{margin:0 0 .35rem 0;font-weight:800;letter-spacing:-.01em;font-size:clamp(1.6rem,2.6vw,2.4rem);background:linear-gradient(45deg,#a8dadc,#457b9d,#2a9d8f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hud p{margin:0 0 .8rem 0;opacity:.9;line-height:1.35;font-size:clamp(.95rem,1.6vw,1.05rem)}
+    .hud .cta{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(45deg,var(--a),var(--b));color:var(--fg);border:0;border-radius:999px;font-weight:700;padding:.6rem .95rem;cursor:pointer;text-decoration:none;box-shadow:0 6px 18px rgba(42,157,143,.35);transition:transform .2s ease,box-shadow .2s ease}
+    .hud .cta:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(42,157,143,.55)}
+    .locknote{position:fixed;z-index:5;bottom:1rem;left:50%;transform:translateX(-50%);opacity:.75;font-size:.92rem}
+    @media(max-width:768px){.hud{left:7vw;right:7vw}}
   </style>
-  <script type="importmap">
-  {
-    "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js" }
-  }
-  </script>
+  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js" } }</script>
 </head>
 <body>
-  <div class="custom-cursor" id="cursor"></div>
-  <div class="spiral-overlay"></div>
+  <canvas id="webgl"></canvas>
 
-  <div class="portfolio-container">
-    <!-- 1. Skrimp -->
-    <section class="model-section active" data-section="0" id="skrimp-section">
-      <div class="text-content">
-        <h2>Skrimp AI</h2>
-        <p>Founder & CEO</p>
-        <p>Making the cost of living feel livable</p>
-        <a href="Skrimp/index.html" target="_blank" rel="noopener noreferrer"><button>Explore →</button></a>
-      </div>
-      <canvas id="canvas1"></canvas>
-    </section>
-
-    <!-- 2. PtM -->
-    <section class="model-section" data-section="1">
-      <div class="text-content">
-        <h2>Path to Menzoberranzan</h2>
-        <p>Technical Director of 200 person studio</p>
-        <p>Unofficial Baldur's Gate 3 Expansion</p>
-        <a href="https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/" target="_blank" rel="noopener noreferrer"><button>View Progress →</button></a>
-      </div>
-      <canvas id="canvas2"></canvas>
-    </section>
-
-    <!-- 3. Jaguar -->
-    <section class="model-section" data-section="2">
-      <div class="text-content">
-        <h2>Jaguar Rebrand</h2>
-        <p>Fixing the 2024 design disaster</p>
-        <a href="Jaguar/index.html" target="_top"><button>See Design →</button></a>
-      </div>
-      <canvas id="canvas3"></canvas>
-    </section>
-
-    <!-- 4. Seniors Connect -->
-    <section class="model-section" data-section="3">
-      <div class="text-content">
-        <h2>Seniors Connect</h2>
-        <p>Creating a high-fidelity prototype to end senior loneliness ☕</p>
-        <a href="SeniorsConnect/index.html" target="_blank" rel="noopener noreferrer"><button>See What I Did →</button></a>
-      </div>
-      <canvas id="canvas4"></canvas>
-    </section>
-
-    <!-- 5. HalalMeals -->
-    <section class="model-section" data-section="4">
-      <div class="text-content">
-        <h2>AI Design @ HalalMeals</h2>
-        <p>Tech-savvy taste for everyone</p>
-        <a href="HalalMeals/index.html" target="_blank" rel="noopener noreferrer"><button>View Design →</button></a>
-      </div>
-      <canvas id="canvas5"></canvas>
-    </section>
+  <div class="hud">
+    <h2 id="hud-title">Loading…</h2>
+    <p id="hud-desc"></p>
+    <a id="hud-link" class="cta" href="#" target="_blank" rel="noopener noreferrer">Explore →</a>
   </div>
-
-  <!-- Dots -->
-  <div class="navigation-dots">
-    <div class="nav-dot active" data-section="0"></div>
-    <div class="nav-dot" data-section="1"></div>
-    <div class="nav-dot" data-section="2"></div>
-    <div class="nav-dot" data-section="3"></div>
-    <div class="nav-dot" data-section="4"></div>
-  </div>
-
-  <!-- Scroll Indicator -->
-  <div class="scroll-indicator" id="scrollIndicator">Scroll / Space / ↓  — last slide unlocks page</div>
+  <div id="locknote" class="locknote">Scroll to explore — unlocks at the bottom</div>
 
   <script type="module">
     import * as THREE from 'three';
     import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/controls/OrbitControls.js';
 
-    const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    /* ================= Config ================= */
+    const stations = [
+      { name:'Skrimp AI', desc:'Founder & CEO — Making the cost of living feel livable', href:'Skrimp/index.html', model:'./models/yummymeal.glb', scale:0.25*1.5, baseEuler:[ 10, 15, 0] },
+      { name:'Path to Menzoberranzan', desc:"Technical Director — Unofficial Baldur's Gate 3 Expansion (200-person studio)", href:'https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/', model:'./models/steamdeck.glb', scale:0.30*1.5, baseEuler:[  0,-10, 0] },
+      { name:'Jaguar Rebrand', desc:'Fixing the 2024 brand drift with a true identity system', href:'Jaguar/index.html', model:'./models/jaguar.glb', scale:0.60*1.5, baseEuler:[ 10, 20, 0] },
+      { name:'Seniors Connect', desc:'High‑fidelity prototype to end senior loneliness ☕', href:'SeniorsConnect/index.html', model:'./models/laptop.glb', scale:0.07*1.5, baseEuler:[  5, 35, 0] },
+    ];
 
-    /* ==== Custom cursor (desktop only) ==== */
-    if (isDesktop) {
-      const cursor = document.getElementById('cursor');
-      let mouseX = 0, mouseY = 0, rafId;
-      function draw() { cursor.style.left = mouseX + 'px'; cursor.style.top = mouseY + 'px'; }
-      document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; if (!rafId) rafId = requestAnimationFrame(() => { draw(); rafId = null; }); });
-      document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
-      document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
-      document.querySelectorAll('button, a, .nav-dot').forEach(el=>{
-        el.addEventListener('mouseenter', ()=>cursor.classList.add('hovering'));
-        el.addEventListener('mouseleave', ()=>cursor.classList.remove('hovering'));
+    // Helix path settings — smooth scrub (no discrete jumps)
+    const RADIUS = 6;            // how far camera orbits from center axis
+    const TURNS  = 3.6;          // total spiral turns
+    const PITCH  = 1.7;          // vertical change per radian
+    const THETA_MAX = TURNS * Math.PI * 2;
+
+    // Where each station is along the [0..1] timeline (top→bottom)
+    const tStops = [0.06, 0.36, 0.66, 0.94];
+
+    // Scroll responsiveness (t per wheel delta unit)
+    const SCROLL_K = 1 / 2600;     // bigger = faster; tuned for trackpads & wheels
+    const TOUCH_K  = 1 / 1200;   // swipe sensitivity
+
+    /* ================= Scene ================= */
+    const renderer = new THREE.WebGLRenderer({ antialias:true, canvas:document.getElementById('webgl'), alpha:true, powerPreference:'high-performance' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+
+    const scene = new THREE.Scene();
+    scene.background = null; // let page color show through
+
+    const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 1000);
+    camera.position.set(RADIUS, 0, 0);
+
+    const hemi = new THREE.HemisphereLight(0xbfd8ff, 0x304050, 0.7); scene.add(hemi);
+    const key  = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(6, 8, 10); scene.add(key);
+    const rim  = new THREE.DirectionalLight(0x6ecfcf, 0.6); rim.position.set(-8, 6, -10); scene.add(rim);
+
+    /* =============== Helpers =============== */
+    const eul = (x,y,z)=> new THREE.Euler(THREE.MathUtils.degToRad(x), THREE.MathUtils.degToRad(y), THREE.MathUtils.degToRad(z));
+    const tmpV = new THREE.Vector3();
+
+    function helixAt(t){
+      const clamped = THREE.MathUtils.clamp(t,0,1);
+      const theta = clamped * THETA_MAX;
+      const x = RADIUS * Math.cos(theta);
+      const z = RADIUS * Math.sin(theta);
+      const y = -PITCH * theta;
+      return new THREE.Vector3(x,y,z);
+    }
+
+    function axisAt(t){
+      const clamped = THREE.MathUtils.clamp(t,0,1);
+      const theta = clamped * THETA_MAX;
+      return new THREE.Vector3(0, -PITCH * theta, 0);
+    }
+
+    // Angle lerp that respects wrap‑around
+    function lerpAngle(a,b,t){ let d=((b-a+Math.PI)%(Math.PI*2))-Math.PI; return a + d*t; }
+
+    /* =============== Stations =============== */
+    const loader = new GLTFLoader();
+    const stationNodes = stations.map((cfg, i)=>{
+      const anchor = new THREE.Group();
+      anchor.position.copy(axisAt(tStops[i]));
+      scene.add(anchor);
+
+      const pivot = new THREE.Group(); // yaw to face camera
+      anchor.add(pivot);
+
+      loader.load(cfg.model, (gltf)=>{
+        const model = gltf.scene;
+        model.scale.setScalar(cfg.scale);
+        model.rotation.copy(eul(...cfg.baseEuler));
+        pivot.add(model);
       });
-    }
 
-    /* ==== Navigation & corkscrew transitions ==== */
-    let currentSection = 0;
-    const totalSections = 5;
-    let isAnimating = false;
-    let isUnlocked = false; // becomes true only after we unlock on the last panel
-
-    const navDots   = document.querySelectorAll('.nav-dot');
-    const sections  = document.querySelectorAll('.model-section');
-    const indicator = document.getElementById('scrollIndicator');
-
-    function updateDots() {
-      navDots.forEach((dot, idx)=>dot.classList.toggle('active', idx === currentSection));
-    }
-
-    function showSection(index, dir = 'down') {
-      if (isAnimating || index === currentSection || index < 0 || index >= totalSections) return;
-      isAnimating = true;
-
-      const from = sections[currentSection];
-      const to   = sections[index];
-
-      // outgoing
-      from.classList.remove('active');
-      from.classList.remove('corkscrew-in','corkscrew-out-up','corkscrew-out-down');
-      from.classList.add(dir === 'down' ? 'corkscrew-out-down' : 'corkscrew-out-up');
-
-      // incoming
-      to.classList.add('corkscrew-in');
-      to.addEventListener('animationend', handleInEnd, { once: true });
-
-      function handleInEnd(){
-        to.classList.remove('corkscrew-in');
-        to.classList.add('active');
-        from.classList.remove('corkscrew-out-up','corkscrew-out-down');
-        currentSection = index;
-        updateDots();
-        isAnimating = false;
-
-        // update indicator text when we reach the last slide
-        if (currentSection === totalSections - 1) {
-          indicator.textContent = 'Last panel — scroll ↓ again to unlock page';
-        } else {
-          indicator.textContent = 'Scroll / Space / ↓  — last slide unlocks page';
-        }
-      }
-    }
-
-    navDots.forEach((dot) => {
-      dot.addEventListener('click', () => {
-        const target = Number(dot.getAttribute('data-section'));
-        showSection(target, target > currentSection ? 'down' : 'up');
-      });
+      return { anchor, pivot, yaw:0 };
     });
 
-    /* ==== Scroll/touch/keys trap until bottom ==== */
-    let scrollAccumulator = 0;
-    const stepThreshold = 160; // momentum needed to switch panels
-    const exitThreshold = 220; // extra momentum on the last panel to unlock the page
-    let lastWheelAt = 0;
+    /* =============== HUD & state =============== */
+    const titleEl = document.getElementById('hud-title');
+    const descEl  = document.getElementById('hud-desc');
+    const linkEl  = document.getElementById('hud-link');
+    const lockEl  = document.getElementById('locknote');
 
-    function onWheel(e){
-      if (isUnlocked) return; // page is free now
-
-      const now = Date.now();
-      if (isAnimating || (now - lastWheelAt) < 80) { e.preventDefault(); return; }
-
-      const dy = e.deltaY;
-      const down = dy > 0;
-      e.preventDefault();
-      e.stopPropagation();
-
-      scrollAccumulator += dy;
-      lastWheelAt = now;
-
-      // unlock gesture on last slide
-      if (currentSection === totalSections - 1 && down && scrollAccumulator >= exitThreshold) {
-        unlockPage();
-        scrollAccumulator = 0;
-        return;
-      }
-
-      // move between sections
-      if (down && scrollAccumulator >= stepThreshold && currentSection < totalSections - 1) {
-        showSection(currentSection + 1, 'down');
-        scrollAccumulator = 0;
-      } else if (!down && Math.abs(scrollAccumulator) >= stepThreshold && currentSection > 0) {
-        showSection(currentSection - 1, 'up');
-        scrollAccumulator = 0;
-      }
+    function setHud(i){
+      const s = stations[i];
+      titleEl.textContent = s.name;
+      descEl.textContent  = s.desc;
+      linkEl.href         = s.href;
+      lockEl.textContent  = (i === stations.length-1) ? 'Bottom reached — page will unlock' : 'Scroll to explore — unlocks at the bottom';
     }
+
+    let progress      = tStops[0];  // actual camera
+    let progressGoal  = tStops[0];  // target from scroll
+    let currentIndex  = 0;
+    setHud(0);
+
+    /* =============== Scroll‑scrub (no jumps) =============== */
+    function onWheel(e){
+      if (unlocked) return;
+      e.preventDefault();
+      progressGoal = THREE.MathUtils.clamp(progressGoal + e.deltaY * SCROLL_K, 0, 1);
+    }
+
+    let touchY = 0;
+    function onTouchStart(e){ touchY = e.changedTouches[0].screenY; }
+    function onTouchEnd(e){ if (unlocked) return; const dy = touchY - e.changedTouches[0].screenY; progressGoal = THREE.MathUtils.clamp(progressGoal + dy * TOUCH_K, 0, 1); }
 
     function onKey(e){
-      if (isUnlocked) return;
-      if (isAnimating) { e.preventDefault(); return; }
-      if ((e.key === ' ' || e.key === 'PageDown' || e.key === 'ArrowDown') && currentSection < totalSections - 1) {
-        e.preventDefault();
-        showSection(currentSection + 1, 'down');
-      } else if ((e.key === 'PageUp' || e.key === 'ArrowUp') && currentSection > 0) {
-        e.preventDefault();
-        showSection(currentSection - 1, 'up');
-      } else if ((e.key === 'End' || e.key === 'Enter') && currentSection === totalSections - 1) {
-        e.preventDefault();
-        unlockPage();
-      }
+      if (unlocked) return;
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); progressGoal = Math.min(1, progressGoal + 0.04); }
+      if (e.key === 'ArrowUp'   || e.key === 'PageUp') { e.preventDefault(); progressGoal = Math.max(0, progressGoal - 0.04); }
+      if (e.key === 'End') { e.preventDefault(); progressGoal = 1; }
     }
 
-    // Basic swipe support
-    let touchStartY = 0;
-    function onTouchStart(e){ touchStartY = e.changedTouches[0].screenY; }
-    function onTouchEnd(e){
-      if (isUnlocked || isAnimating) return;
-      const dy = touchStartY - e.changedTouches[0].screenY;
-      if (Math.abs(dy) < 50) return;
-      if (dy > 0) {
-        if (currentSection === totalSections - 1) { unlockPage(); }
-        else { showSection(currentSection + 1, 'down'); }
-      } else if (currentSection > 0) {
-        showSection(currentSection - 1, 'up');
-      }
-    }
+    addEventListener('wheel', onWheel, { passive:false });
+    addEventListener('keydown', onKey, { passive:false });
+    addEventListener('touchstart', onTouchStart, { passive:true });
+    addEventListener('touchend', onTouchEnd, { passive:true });
 
-    function lockHandlers(){
-      window.addEventListener('wheel', onWheel, { passive: false });
-      window.addEventListener('keydown', onKey,  { passive: false });
-      window.addEventListener('touchstart', onTouchStart, { passive: true });
-      window.addEventListener('touchend',   onTouchEnd,   { passive: true });
-    }
+    let unlocked = false;
+    function unlockPage(){ if (unlocked) return; unlocked = true; document.body.classList.add('unlocked'); lockEl.textContent = 'Unlocked'; setTimeout(()=> lockEl.style.opacity=.0, 1000); removeEventListener('wheel', onWheel); removeEventListener('keydown', onKey); removeEventListener('touchstart', onTouchStart); removeEventListener('touchend', onTouchEnd); }
 
-    function removeHandlers(){
-      window.removeEventListener('wheel', onWheel);
-      window.removeEventListener('keydown', onKey);
-      window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchend', onTouchEnd);
-    }
-
-    function unlockPage(){
-      if (isUnlocked) return;
-      isUnlocked = true;
-      document.body.classList.add('unlocked');
-      removeHandlers();
-      document.querySelector('.navigation-dots')?.classList.add('hide');
-      indicator.textContent = 'Unlocked — free page scroll enabled';
-      setTimeout(()=>indicator.style.opacity = .0, 1200);
-    }
-
-    lockHandlers();
-
-    /* ===== THREE scenes (kept from your build, tuned a bit) ===== */
-    let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-    function getScaleFactor() {
-      const width = window.innerWidth;
-      if (width <= 480) return 0.4;
-      if (width <= 768) return 0.5;
-      if (width <= 1280) return 0.55;
-      return 1;
-    }
-
-    function createScene({ canvasID, modelPath, targetScale, basePosition, baseRotation, reCenter = false }) {
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.set(0, 0, 3);
-
-      const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById(canvasID), alpha: true, powerPreference: 'high-performance' });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-
-      const light = new THREE.DirectionalLight(0xffffff, 1); light.position.set(2, 2, 5); scene.add(light);
-      if (canvasID !== 'canvas1') { const extraLight = new THREE.DirectionalLight(0xffffff, 0.8); extraLight.position.set(-2, 3, -5); scene.add(extraLight); }
-
-      const controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableZoom = false; controls.enablePan = false; controls.enableDamping = true; controls.dampingFactor = 0.05;
-
-      if (isTouchDevice) { controls.enabled = false; controls.dispose(); renderer.domElement.style.pointerEvents = 'none'; }
-
-      let model = null;
-      const loader = new GLTFLoader();
-      loader.load(modelPath, (gltf) => {
-        model = gltf.scene; scene.add(model);
-        if (reCenter) { const box = new THREE.Box3().setFromObject(model); const center = box.getCenter(new THREE.Vector3()); model.position.sub(center); }
-        model.position.copy(basePosition); model.rotation.copy(baseRotation);
-      });
-
-      return { scene, camera, renderer, controls, getModel: () => model, originalScale: targetScale, basePosition, baseRotation };
-    }
-
-    const s1 = createScene({ canvasID: 'canvas1', modelPath: './models/yummymeal.glb', targetScale: .25, basePosition: new THREE.Vector3(0, .1, 0), baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(15), 0) });
-    const s2 = createScene({ canvasID: 'canvas2', modelPath: './models/steamdeck.glb', targetScale: .3, basePosition: new THREE.Vector3(0, .1, 0), baseRotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-15), 0) });
-    const s3 = createScene({ canvasID: 'canvas3', modelPath: './models/jaguar.glb', targetScale: .6, basePosition: new THREE.Vector3(0, 0, 0), baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(20), THREE.MathUtils.degToRad(20), 0) });
-    const s4 = createScene({ canvasID: 'canvas4', modelPath: './models/laptop.glb', targetScale: .07, basePosition: new THREE.Vector3(0, -.5, 0), baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(5), THREE.MathUtils.degToRad(40), 0) });
-    const s5 = createScene({ canvasID: 'canvas5', modelPath: './models/robot.glb', targetScale: 8, basePosition: new THREE.Vector3(0, .1, -35), baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(25), THREE.MathUtils.degToRad(15), 0) });
-
-    const overlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png';
-    const laptopOverlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';
-
-    function addOverlay(section, textureURL, size, position) {
-      const loader = new THREE.TextureLoader();
-      loader.load(textureURL, (texture) => {
-        const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-        const geometry = new THREE.PlaneGeometry(...size);
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(...position);
-        const model = section.getModel();
-        if (model) model.add(mesh);
-      });
-    }
-
-    const waitForModel = (section, cb) => { const id = setInterval(()=>{ if (section.getModel()) { clearInterval(id); cb(); } }, 100); };
-    waitForModel(s2, () => addOverlay(s2, overlayURL, [4.52, 2.8], [0, 0.35, 1.06]));
-    waitForModel(s4, () => addOverlay(s4, laptopOverlayURL, [29, 17], [0, 10.7, -10.5]));
-
-    const scenes = [s1, s2, s3, s4, s5];
-    const clock  = new THREE.Clock();
-
-    let mouseMoveX = 0, mouseMoveY = 0;
-    if (isDesktop) {
-      document.addEventListener('mousemove', (e) => {
-        mouseMoveX = (e.clientX / window.innerWidth - 0.5) * 2;
-        mouseMoveY = (e.clientY / window.innerHeight - 0.5) * 2;
-      });
-    }
-
-    function animate() {
+    /* =============== Animate =============== */
+    const clock = new THREE.Clock();
+    function animate(){
       requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-      scenes.forEach(section => {
-        const model = section.getModel();
-        if (model) {
-          const scaleFactor = getScaleFactor();
-          const s = section.originalScale * scaleFactor;
-          model.scale.lerp(new THREE.Vector3(s, s, s), 0.05);
-          model.position.y = section.basePosition.y + 0.1 * Math.sin(t * 0.5);
-          if (isDesktop) {
-            model.rotation.x = THREE.MathUtils.lerp(model.rotation.x, section.baseRotation.x + (-mouseMoveY * 0.1), 0.05);
-            model.rotation.y = THREE.MathUtils.lerp(model.rotation.y, section.baseRotation.y + (mouseMoveX * 0.1), 0.05);
-          } else {
-            model.rotation.x = section.baseRotation.x;
-            model.rotation.y = section.baseRotation.y;
-          }
-        }
-        section.controls.update();
-        section.renderer.render(section.scene, section.camera);
+
+      // Smooth camera motion toward the scrolled goal
+      progress = THREE.MathUtils.lerp(progress, progressGoal, 0.08); // smooth but responsive
+
+      const camPos = helixAt(progress);
+      camera.position.copy(camPos);
+
+      // Look slightly ahead along the helix for natural forward framing
+      const ahead = helixAt(Math.min(1, progress + 0.006));
+      const axis  = axisAt(progress);
+      camera.lookAt(axis.lerp(ahead, 0.22));
+
+      // 3/4 facing for each pivot relative to camera (live update)
+      stationNodes.forEach((node)=>{
+        const toCamX = camera.position.x - node.anchor.position.x;
+        const toCamZ = camera.position.z - node.anchor.position.z;
+        const targetYaw = Math.atan2(toCamX, toCamZ);        // Yaw to face camera
+        const threeQuarter = THREE.MathUtils.degToRad(-20);  // 3/4 turn (not straight-on)
+        node.yaw = lerpAngle(node.yaw, targetYaw + threeQuarter, 0.12);
+        node.pivot.rotation.y = node.yaw;
       });
+
+      // Update HUD when closest station changes
+      let nearest = 0, best = Infinity;
+      for (let i=0;i<tStops.length;i++){ const d = Math.abs(progress - tStops[i]); if (d < best){ best = d; nearest = i; } }
+      if (nearest !== currentIndex){ currentIndex = nearest; setHud(nearest); }
+
+      // Auto-unlock once bottom is reached and settled
+      if (!unlocked && progressGoal >= 1 && Math.abs(progress - 1) < 0.002) unlockPage();
+
+      // Gentle idle motion for presence
+      const t = clock.getElapsedTime();
+      stationNodes.forEach((n,i)=>{ n.anchor.position.y = axisAt(tStops[i]).y + Math.sin(t*0.4 + i)*0.06; });
+
+      renderer.render(scene, camera);
     }
     animate();
 
-    window.addEventListener('resize', () => {
-      const w = window.innerWidth, h = window.innerHeight;
-      scenes.forEach(section => { section.camera.aspect = w / h; section.camera.updateProjectionMatrix(); section.renderer.setSize(w, h); });
-    });
+    /* =============== Resize =============== */
+    addEventListener('resize', ()=>{ camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
   </script>
 </body>
 </html>
