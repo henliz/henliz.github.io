@@ -182,16 +182,16 @@
 
         .main-title {
             font-family: 'Montserrat Alternates', sans-serif;
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-size: clamp(2rem, 2vw, 4.5rem);
             font-weight: 700;
-            margin-bottom: 0rem;
-            margin-top: 0rem;
-            background: linear-gradient(45deg, #a8dadc, #457b9d, #f1faee, #e63946, #2a9d8f);
+            margin-bottom: 0.5rem;
+            margin-top: 2rem;
+            background: linear-gradient(45deg, #457b9d, #2a4d49, #1e3d61, #2a9d8f);
             background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: gradientText 4s ease infinite;
+            animation: gradientText 10s ease infinite;
             line-height: 1.1;
         }
 
@@ -650,11 +650,6 @@
                 gap: 0.3rem;
             }
 
-            .main-title {
-                font-size: clamp(2rem, 12vw, 3rem);
-                margin-top: 1rem;
-                margin-bottom: 0.5rem;
-            }
 
             .subtitle {
                 font-size: 1.1rem;
@@ -714,9 +709,7 @@
                 font-size: 1.3rem;
             }
 
-            .main-title {
-                font-size: clamp(1.8rem, 10vw, 2.5rem);
-            }
+
 
             .subtitle {
                 font-size: 1rem;
@@ -750,34 +743,48 @@
             }
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 999;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+        /* Overlay */
+        .modal{
+          position: fixed;
+          inset: 0;                 /* top/right/bottom/left: 0 */
+          height: 100dvh;           /* reliable mobile viewport */
+          display: none;            /* hidden by default */
+          place-items: center;      /* 🚀 centers the card */
+          padding: clamp(12px, 2vw, 24px);  /* room at edges */
+          background: rgba(0,0,0,.6);
+          backdrop-filter: blur(15px);
+          z-index: 2147483000;      /* above everything */
+          margin-top: 4rem;
+        }
+        .modal.open{ display: grid; }
+
+        /* Your card */
+        .modal-content{
+          width: min(920px, 92vw);
+          max-height: min(88dvh, 920px);
+          background: #0f1419;
+          color: #e6f2f2;
+          border-radius: 24px;
+          padding: clamp(14px, 2vw, 20px);
+          box-shadow: 0 20px 60px rgba(0,0,0,.45);
+          overflow: hidden;         /* clip iframe corners */
+          box-sizing: border-box;
         }
 
-        .modal-content {
-            position: relative;
-            margin: 5% auto;
-            padding: 1rem;
-            background: #fff;
-            max-width: 600px;
-            width: 90%;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* Close button */
+        .modal-content .close{
+          position:absolute; top:10px; right:14px;
+          font-size:28px; cursor:pointer;
         }
 
-        .modal-content iframe {
-            max-width: 100%;
-            border-radius: 8px;
-        }
+        /* 16:9 video wrapper that clips the iframe */
+        .embed-16x9{ position:relative; width:100%; aspect-ratio:16/9; border-radius:16px; overflow:hidden; background:#111; }
+        .embed-16x9 iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+
+
+        /* If the modal content sits inside a flex parent somewhere: prevent flex overflow */
+        .modal-content{ min-width: 0; }
+
 
 
         .close {
@@ -901,13 +908,13 @@
 
 
                 <h1 class="main-title">
-                    <span class="glitch-text" data-text="I'm Henrietta">I'm Henrietta</span>
+                    Hi, I'm Henriëtta van Niekerk
                 </h1>
 
                 <p class="subtitle">
                     What have I done? <span class="typewriter-container"><span class="typing-text" id="typingText"></span></span>
-                    <br>
-                    Founder @ <span class="company-link" data-info="AI sous chef revolutionizing meal planning" onclick="window.open('https://skrimp.ai', '_blank')">Skrimp</span> | Tech Director @ <span class="company-link" data-info="200 person indie studio, making a 100+ hour Baldur's Gate 3 expansion" onclick="window.open('https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/', '_blank')">Path to Menzoberranzan</span>
+                    <br><br>
+                    Founder @ <span class="company-link" data-info="AI sous chef revolutionizing meal planning" onclick="window.open('https://skrimp.ai', '_blank')">Skrimp</span> | Tech Director @ <span class="company-link" data-info="100+ person game dev team, making a 50+ hour Baldur's Gate 3 expansion" onclick="window.open('https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/', '_blank')">Path to Menzoberranzan</span>
                 </p>
 
                 <div class="cta-buttons">
@@ -1248,24 +1255,19 @@
             }, 1000); // 1 second delay for safety
         });
     </script>
-    <div id="parisModal" class="modal">
-        <div class="modal-content">
+        <div id="parisModal" class="modal" role="dialog" aria-modal="true">
+          <div class="modal-content">
             <span class="close" onclick="closeParisModal()">&times;</span>
-
-            <!-- Yarn embed -->
-            <div style="position: relative; width: 100%; padding-bottom: 56.25%;">
-                <iframe
-                    id="parisVideo"
-                    style="position:absolute; width:100%; height:100%;"
-                    src="https://www.getyarn.io/yarn-clip/bf2a9c85-a91c-4c5e-8839-4b910debfa95/embed?autoplay=false&responsive=true"
-                    frameborder="0"
-                    allowfullscreen>
-                </iframe>
+            <div class="embed-16x9">
+              <iframe id="parisVideo"
+                      src="https://www.getyarn.io/yarn-clip/bf2a9c85-a91c-4c5e-8839-4b910debfa95/embed?autoplay=false&responsive=true"
+                      allowfullscreen loading="lazy"></iframe>
             </div>
-
             <p class="modal-caption">Channeling the Paris Geller work ethic.</p>
+          </div>
         </div>
-    </div>
+
+
 
 
 </body>

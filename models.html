@@ -3,34 +3,105 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Helix Scroll • One-Scene Portfolio (Smooth Scroll-Scrub)</title>
+  <title>Helix Scroll • One-Scene Portfolio (Smooth Scroll-Scrub + Escape at Ends)</title>
   <style>
     :root{
       --bg:#0f1419; --fg:#e6f2f2; --a:#2a9d8f; --b:#457b9d;
     }
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,"Helvetica Neue",Arial,sans-serif}
-    body.unlocked{overflow:auto!important}
-    canvas#webgl{position:fixed;inset:0;width:100vw;height:100vh;display:block}
-    /* Minimal HUD only */
-    .hud{position:fixed;z-index:5;top:6vh;left:6vw;max-width:min(520px,80vw);background:rgba(15,20,25,.7);backdrop-filter:blur(12px);border:1px solid rgba(168,218,220,.18);border-radius:16px;padding:1rem 1.1rem;box-shadow:0 8px 26px rgba(0,0,0,.35)}
-    .hud h2{margin:0 0 .35rem 0;font-weight:800;letter-spacing:-.01em;font-size:clamp(1.6rem,2.6vw,2.4rem);background:linear-gradient(45deg,#a8dadc,#457b9d,#2a9d8f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    /* Page defaults: allow page to scroll */
+    html,body{
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,"Helvetica Neue",Arial,sans-serif;
+    }
+
+    /* Scene section: tall so you can scroll into/out of it */
+    #scene{
+      position:relative;
+      height: 220vh;           /* sticky region with headroom to scroll away */
+    }
+    .scene-pin{
+      position: sticky;
+      top: 0;
+      height: 100vh;           /* the 3D scene fills the viewport while in-section */
+      overflow: hidden;        /* keep internals tidy */
+      touch-action: pan-y;     /* allow vertical scroll by default; JS will prevent when needed */
+    }
+
+    /* Canvas fills the pinned area */
+    canvas#webgl{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      display:block;
+    }
+
+    /* HUD sits inside the pinned region so it scrolls away with the scene */
+    .hud{
+      position:absolute;
+      z-index:5;
+      top:6vh;
+      left:6vw;
+      max-width:min(520px,80vw);
+      background:rgba(15,20,25,.7);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(168,218,220,.18);
+      border-radius:16px;
+      padding:1rem 1.1rem;
+      box-shadow:0 8px 26px rgba(0,0,0,.35)
+    }
+    .hud h2{
+      margin:0 0 .35rem 0;
+      font-weight:800;
+      letter-spacing:-.01em;
+      font-size:clamp(1.6rem,2.6vw,2.4rem);
+      background:linear-gradient(45deg,#a8dadc,#457b9d,#2a9d8f);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+    }
     .hud p{margin:0 0 .8rem 0;opacity:.9;line-height:1.35;font-size:clamp(.95rem,1.6vw,1.05rem)}
-    .hud .cta{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(45deg,var(--a),var(--b));color:var(--fg);border:0;border-radius:999px;font-weight:700;padding:.6rem .95rem;cursor:pointer;text-decoration:none;box-shadow:0 6px 18px rgba(42,157,143,.35);transition:transform .2s ease,box-shadow .2s ease}
+    .hud .cta{
+      display:inline-flex;align-items:center;gap:.5rem;
+      background:linear-gradient(45deg,var(--a),var(--b));
+      color:var(--fg);border:0;border-radius:999px;font-weight:700;
+      padding:.6rem .95rem;cursor:pointer;text-decoration:none;
+      box-shadow:0 6px 18px rgba(42,157,143,.35);
+      transition:transform .2s ease,box-shadow .2s ease
+    }
     .hud .cta:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(42,157,143,.55)}
-    .locknote{position:fixed;z-index:5;bottom:1rem;left:50%;transform:translateX(-50%);opacity:.75;font-size:.92rem}
+
+    .locknote{
+      position:absolute;z-index:5;bottom:1rem;left:50%;transform:translateX(-50%);
+      opacity:.8;font-size:.92rem;white-space:nowrap
+    }
     @media(max-width:768px){.hud{left:7vw;right:7vw}}
+
+    /* Demo filler above/below the scene - remove/replace with your real content */
+    header, footer{padding:18vh 8vw;opacity:.9}
+    header h1, footer h1{margin:0 0 1rem 0}
+    header p, footer p{max-width:52ch;line-height:1.5}
   </style>
-  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js" } }</script>
+
+  <script type="importmap">
+  { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js" } }
+  </script>
 </head>
 <body>
-  <canvas id="webgl"></canvas>
 
-  <div class="hud">
-    <h2 id="hud-title">Loading…</h2>
-    <p id="hud-desc"></p>
-    <a id="hud-link" class="cta" href="#" target="_blank" rel="noopener noreferrer">Explore →</a>
-  </div>
-  <div id="locknote" class="locknote">Scroll to explore — unlocks at the bottom</div>
+  <!-- Sticky 3D scene section -->
+  <section id="scene">
+    <div class="scene-pin" id="scenePin">
+      <canvas id="webgl"></canvas>
+
+      <div class="hud">
+        <h2 id="hud-title">Loading…</h2>
+        <p id="hud-desc"></p>
+        <a id="hud-link" class="cta" href="#" target="_blank" rel="noopener noreferrer">Explore →</a>
+      </div>
+      <div id="locknote" class="locknote">Scroll inside scene — exit at ends</div>
+    </div>
+  </section>
 
   <script type="module">
     import * as THREE from 'three';
@@ -38,32 +109,34 @@
 
     /* ================= Config ================= */
     const stations = [
-      { name:'Skrimp AI', desc:'Founder & CEO — Making the cost of living feel livable', href:'Skrimp/index.html', model:'./models/yummymeal.glb', scale:0.25*1.5, baseEuler:[ 10, 15, 0] },
-      { name:'Path to Menzoberranzan', desc:"Technical Director — Unofficial Baldur's Gate 3 Expansion (200-person studio)", href:'https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/', model:'./models/steamdeck.glb', scale:0.30*1.5, baseEuler:[  0,-10, 0] },
+      { name:'Skrimp AI', desc:'Founder & CEO — Your AI sous chef, making the cost of living feel livable', href:'Skrimp/index.html', model:'./models/yummymeal.glb', scale:0.25*1.5, baseEuler:[ 10, 15, 0] },
+      { name:'Path to Menzoberranzan', desc:"Technical Director — Unofficial Baldur's Gate 3 Expansion (100+ person studio)", href:'https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/', model:'./models/steamdeck.glb', scale:0.30*1.5, baseEuler:[  0,-10, 0] },
       { name:'Jaguar Rebrand', desc:'Fixing the 2024 brand drift with a true identity system', href:'Jaguar/index.html', model:'./models/jaguar.glb', scale:0.60*1.5, baseEuler:[ 10, 20, 0] },
       { name:'Seniors Connect', desc:'High-fidelity prototype to end senior loneliness ☕', href:'SeniorsConnect/index.html', model:'./models/laptop.glb', scale:0.07*1.5, baseEuler:[  5, 35, 0] },
     ];
 
-    // Helix path settings — smooth scrub (no discrete jumps)
-    const RADIUS = 6;            // how far camera orbits from center axis
-    const TURNS  = 3.6;          // total spiral turns
-    const PITCH  = 1.7;          // vertical change per radian
+    // Helix path settings — smooth scrub
+    const RADIUS = 6, TURNS = 3.6, PITCH = 1.7;
     const THETA_MAX = TURNS * Math.PI * 2;
-
-    // Where each station is along the [0..1] timeline (top→bottom)
     const tStops = [0.06, 0.36, 0.66, 0.94];
 
-    // Scroll responsiveness (t per wheel delta unit)
-    const SCROLL_K = 1 / 2600;     // bigger = faster; tuned for trackpads & wheels
-    const TOUCH_K  = 1 / 1200;   // swipe sensitivity
+    // Scroll responsiveness (t per wheel/touch delta unit)
+    const SCROLL_K = 1/2600;
+    const TOUCH_K  = 1/1400;
+    const EPS      = 0.0015;
 
     /* ================= Scene ================= */
-    const renderer = new THREE.WebGLRenderer({ antialias:true, canvas:document.getElementById('webgl'), alpha:true, powerPreference:'high-performance' });
+    const renderer = new THREE.WebGLRenderer({
+      antialias:true,
+      canvas:document.getElementById('webgl'),
+      alpha:true,
+      powerPreference:'high-performance'
+    });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
 
     const scene = new THREE.Scene();
-    scene.background = null; // let page color show through
+    scene.background = null;
 
     const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 1000);
     camera.position.set(RADIUS, 0, 0);
@@ -73,34 +146,35 @@
     const rim  = new THREE.DirectionalLight(0x6ecfcf, 0.6); rim.position.set(-8, 6, -10); scene.add(rim);
 
     /* =============== Helpers =============== */
-    const eul = (x,y,z)=> new THREE.Euler(THREE.MathUtils.degToRad(x), THREE.MathUtils.degToRad(y), THREE.MathUtils.degToRad(z));
-    const tmpV = new THREE.Vector3();
+    const eul = (x,y,z)=> new THREE.Euler(
+      THREE.MathUtils.degToRad(x),
+      THREE.MathUtils.degToRad(y),
+      THREE.MathUtils.degToRad(z)
+    );
 
     function helixAt(t){
       const clamped = THREE.MathUtils.clamp(t,0,1);
       const theta = clamped * THETA_MAX;
-      const x = RADIUS * Math.cos(theta);
-      const z = RADIUS * Math.sin(theta);
-      const y = -PITCH * theta;
-      return new THREE.Vector3(x,y,z);
+      return new THREE.Vector3(
+        RADIUS * Math.cos(theta),
+        -PITCH * theta,
+        RADIUS * Math.sin(theta),
+      );
     }
-
     function axisAt(t){
       const clamped = THREE.MathUtils.clamp(t,0,1);
       const theta = clamped * THETA_MAX;
       return new THREE.Vector3(0, -PITCH * theta, 0);
     }
-
-    // Angle lerp that respects wrap-around
     function lerpAngle(a,b,t){ let d=((b-a+Math.PI)%(Math.PI*2))-Math.PI; return a + d*t; }
 
     /* =============== Stations =============== */
     const loader = new GLTFLoader();
 
-    /* --- ADDED: overlay helpers & URLs (no other edits) --- */
+    // overlay planes (Steam Deck + Laptop)
     const texLoader = new THREE.TextureLoader();
-    const overlayURL       = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png'; // Steam Deck screen
-    const laptopOverlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';  // Laptop screen
+    const overlayURL       = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png';
+    const laptopOverlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';
     function addOverlayTo(model, url, sizeXY, posXYZ){
       texLoader.load(url, (texture)=>{
         texture.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
@@ -114,14 +188,13 @@
         model.add(mesh);
       });
     }
-    /* --- end added helpers --- */
 
     const stationNodes = stations.map((cfg, i)=>{
       const anchor = new THREE.Group();
       anchor.position.copy(axisAt(tStops[i]));
       scene.add(anchor);
 
-      const pivot = new THREE.Group(); // yaw to face camera
+      const pivot = new THREE.Group();
       anchor.add(pivot);
 
       loader.load(cfg.model, (gltf)=>{
@@ -130,10 +203,8 @@
         model.rotation.copy(eul(...cfg.baseEuler));
         pivot.add(model);
 
-        /* --- ADDED: attach image planes for i=1 (Steam Deck) and i=3 (Laptop) --- */
         if (i === 1) addOverlayTo(model, overlayURL,       [4.52, 2.8], [0, 0.35,  1.06]);
         if (i === 3) addOverlayTo(model, laptopOverlayURL, [29,   17 ], [0,10.7, -10.5]);
-        /* --- end added planes --- */
       });
 
       return { anchor, pivot, yaw:0 };
@@ -150,7 +221,6 @@
       titleEl.textContent = s.name;
       descEl.textContent  = s.desc;
       linkEl.href         = s.href;
-      lockEl.textContent  = (i === stations.length-1) ? 'Bottom reached — page will unlock' : 'Scroll to explore — unlocks at the bottom';
     }
 
     let progress      = tStops[0];  // actual camera
@@ -158,31 +228,66 @@
     let currentIndex  = 0;
     setHud(0);
 
-    /* =============== Scroll-scrub (no jumps) =============== */
+    /* =============== Scroll handling (with pass-through at ends) =============== */
+    const pin = document.getElementById('scenePin');
+
+    function atTop()    { return progressGoal <= EPS; }
+    function atBottom() { return progressGoal >= 1 - EPS; }
+
     function onWheel(e){
-      if (unlocked) return;
+      // If we're at the top and scrolling up (dy<0), or at the bottom and scrolling down (dy>0),
+      // DON'T preventDefault → let the page scroll.
+      const dy = e.deltaY;
+      if ((atTop() && dy < 0) || (atBottom() && dy > 0)) {
+        lockEl.textContent = 'Leaving scene…';
+        return; // allow native scroll
+      }
       e.preventDefault();
-      progressGoal = THREE.MathUtils.clamp(progressGoal + e.deltaY * SCROLL_K, 0, 1);
+      lockEl.textContent = 'Scroll inside scene — exit at ends';
+      progressGoal = THREE.MathUtils.clamp(progressGoal + dy * SCROLL_K, 0, 1);
     }
 
     let touchY = 0;
-    function onTouchStart(e){ touchY = e.changedTouches[0].screenY; }
-    function onTouchEnd(e){ if (unlocked) return; const dy = touchY - e.changedTouches[0].screenY; progressGoal = THREE.MathUtils.clamp(progressGoal + dy * TOUCH_K, 0, 1); }
+    function onTouchStart(e){
+      touchY = e.changedTouches[0].screenY;
+    }
+    function onTouchMove(e){
+      const y = e.changedTouches[0].screenY;
+      const dy = touchY - y; // swipe up = positive
+      touchY = y;
+
+      // Pass-through on outward swipes at the ends
+      if ((atTop() && dy < 0) || (atBottom() && dy > 0)) {
+        lockEl.textContent = 'Leaving scene…';
+        return; // allow page to scroll
+      }
+
+      // Otherwise, scrub inside the scene
+      e.preventDefault(); // important for smoothness
+      lockEl.textContent = 'Scroll inside scene — exit at ends';
+      progressGoal = THREE.MathUtils.clamp(progressGoal + dy * TOUCH_K, 0, 1);
+    }
+    function onTouchEnd(){ /* no-op */ }
 
     function onKey(e){
-      if (unlocked) return;
-      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); progressGoal = Math.min(1, progressGoal + 0.04); }
-      if (e.key === 'ArrowUp'   || e.key === 'PageUp') { e.preventDefault(); progressGoal = Math.max(0, progressGoal - 0.04); }
-      if (e.key === 'End') { e.preventDefault(); progressGoal = 1; }
+      // At ends, let outward keys bubble to page (no preventDefault)
+      const upKey   = (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Home');
+      const downKey = (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'End' || e.key === ' ');
+
+      if ((upKey   && atTop())    || (downKey && atBottom())) return;
+
+      // Otherwise, steer the camera and block default
+      if (downKey) { e.preventDefault(); progressGoal = Math.min(1, progressGoal + 0.04); }
+      if (upKey)   { e.preventDefault(); progressGoal = Math.max(0, progressGoal - 0.04); }
     }
 
-    addEventListener('wheel', onWheel, { passive:false });
+    // Attach listeners to the pinned scene, so the rest of the page is unaffected
+    pin.addEventListener('wheel', onWheel, { passive:false });
+    pin.addEventListener('touchstart', onTouchStart, { passive:true  });
+    pin.addEventListener('touchmove',  onTouchMove,  { passive:false });
+    pin.addEventListener('touchend',   onTouchEnd,   { passive:true  });
+    // Keys still go on window
     addEventListener('keydown', onKey, { passive:false });
-    addEventListener('touchstart', onTouchStart, { passive:true });
-    addEventListener('touchend', onTouchEnd, { passive:true });
-
-    let unlocked = false;
-    function unlockPage(){ if (unlocked) return; unlocked = true; document.body.classList.add('unlocked'); lockEl.textContent = 'Unlocked'; setTimeout(()=> lockEl.style.opacity=.0, 1000); removeEventListener('wheel', onWheel); removeEventListener('keydown', onKey); removeEventListener('touchstart', onTouchStart); removeEventListener('touchend', onTouchEnd); }
 
     /* =============== Animate =============== */
     const clock = new THREE.Clock();
@@ -190,22 +295,21 @@
       requestAnimationFrame(animate);
 
       // Smooth camera motion toward the scrolled goal
-      progress = THREE.MathUtils.lerp(progress, progressGoal, 0.08); // smooth but responsive
+      progress = THREE.MathUtils.lerp(progress, progressGoal, 0.08);
 
       const camPos = helixAt(progress);
       camera.position.copy(camPos);
 
-      // Look slightly ahead along the helix for natural forward framing
       const ahead = helixAt(Math.min(1, progress + 0.006));
       const axis  = axisAt(progress);
       camera.lookAt(axis.lerp(ahead, 0.22));
 
-      // 3/4 facing for each pivot relative to camera (live update)
+      // 3/4 facing for each pivot relative to camera
       stationNodes.forEach((node)=>{
         const toCamX = camera.position.x - node.anchor.position.x;
         const toCamZ = camera.position.z - node.anchor.position.z;
-        const targetYaw = Math.atan2(toCamX, toCamZ);        // Yaw to face camera
-        const threeQuarter = THREE.MathUtils.degToRad(-20);  // 3/4 turn (not straight-on)
+        const targetYaw = Math.atan2(toCamX, toCamZ);
+        const threeQuarter = THREE.MathUtils.degToRad(-20);
         node.yaw = lerpAngle(node.yaw, targetYaw + threeQuarter, 0.12);
         node.pivot.rotation.y = node.yaw;
       });
@@ -215,10 +319,7 @@
       for (let i=0;i<tStops.length;i++){ const d = Math.abs(progress - tStops[i]); if (d < best){ best = d; nearest = i; } }
       if (nearest !== currentIndex){ currentIndex = nearest; setHud(nearest); }
 
-      // Auto-unlock once bottom is reached and settled
-      if (!unlocked && progressGoal >= 1 && Math.abs(progress - 1) < 0.002) unlockPage();
-
-      // Gentle idle motion for presence
+      // Gentle idle motion
       const t = clock.getElapsedTime();
       stationNodes.forEach((n,i)=>{ n.anchor.position.y = axisAt(tStops[i]).y + Math.sin(t*0.4 + i)*0.06; });
 
@@ -227,7 +328,12 @@
     animate();
 
     /* =============== Resize =============== */
-    addEventListener('resize', ()=>{ camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+    addEventListener('resize', ()=>{
+      camera.aspect = innerWidth/innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
   </script>
 </body>
 </html>
+
