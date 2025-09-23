@@ -41,7 +41,7 @@
       { name:'Skrimp AI', desc:'Founder & CEO — Making the cost of living feel livable', href:'Skrimp/index.html', model:'./models/yummymeal.glb', scale:0.25*1.5, baseEuler:[ 10, 15, 0] },
       { name:'Path to Menzoberranzan', desc:"Technical Director — Unofficial Baldur's Gate 3 Expansion (200-person studio)", href:'https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/', model:'./models/steamdeck.glb', scale:0.30*1.5, baseEuler:[  0,-10, 0] },
       { name:'Jaguar Rebrand', desc:'Fixing the 2024 brand drift with a true identity system', href:'Jaguar/index.html', model:'./models/jaguar.glb', scale:0.60*1.5, baseEuler:[ 10, 20, 0] },
-      { name:'Seniors Connect', desc:'High‑fidelity prototype to end senior loneliness ☕', href:'SeniorsConnect/index.html', model:'./models/laptop.glb', scale:0.07*1.5, baseEuler:[  5, 35, 0] },
+      { name:'Seniors Connect', desc:'High-fidelity prototype to end senior loneliness ☕', href:'SeniorsConnect/index.html', model:'./models/laptop.glb', scale:0.07*1.5, baseEuler:[  5, 35, 0] },
     ];
 
     // Helix path settings — smooth scrub (no discrete jumps)
@@ -91,11 +91,31 @@
       return new THREE.Vector3(0, -PITCH * theta, 0);
     }
 
-    // Angle lerp that respects wrap‑around
+    // Angle lerp that respects wrap-around
     function lerpAngle(a,b,t){ let d=((b-a+Math.PI)%(Math.PI*2))-Math.PI; return a + d*t; }
 
     /* =============== Stations =============== */
     const loader = new GLTFLoader();
+
+    /* --- ADDED: overlay helpers & URLs (no other edits) --- */
+    const texLoader = new THREE.TextureLoader();
+    const overlayURL       = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png'; // Steam Deck screen
+    const laptopOverlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';  // Laptop screen
+    function addOverlayTo(model, url, sizeXY, posXYZ){
+      texLoader.load(url, (texture)=>{
+        texture.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
+        texture.minFilter  = THREE.LinearMipmapLinearFilter;
+        texture.magFilter  = THREE.LinearFilter;
+        const mat = new THREE.MeshBasicMaterial({ map:texture, transparent:true });
+        const geo = new THREE.PlaneGeometry(sizeXY[0], sizeXY[1]);
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(posXYZ[0], posXYZ[1], posXYZ[2]);
+        mesh.renderOrder = 10;
+        model.add(mesh);
+      });
+    }
+    /* --- end added helpers --- */
+
     const stationNodes = stations.map((cfg, i)=>{
       const anchor = new THREE.Group();
       anchor.position.copy(axisAt(tStops[i]));
@@ -109,6 +129,11 @@
         model.scale.setScalar(cfg.scale);
         model.rotation.copy(eul(...cfg.baseEuler));
         pivot.add(model);
+
+        /* --- ADDED: attach image planes for i=1 (Steam Deck) and i=3 (Laptop) --- */
+        if (i === 1) addOverlayTo(model, overlayURL,       [4.52, 2.8], [0, 0.35,  1.06]);
+        if (i === 3) addOverlayTo(model, laptopOverlayURL, [29,   17 ], [0,10.7, -10.5]);
+        /* --- end added planes --- */
       });
 
       return { anchor, pivot, yaw:0 };
@@ -133,7 +158,7 @@
     let currentIndex  = 0;
     setHud(0);
 
-    /* =============== Scroll‑scrub (no jumps) =============== */
+    /* =============== Scroll-scrub (no jumps) =============== */
     function onWheel(e){
       if (unlocked) return;
       e.preventDefault();
