@@ -2,182 +2,397 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Testimonials</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Testimonials – Glass Marquee (Tall, Linkable)</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Montserrat+Alternates:wght@700;800&display=swap" rel="stylesheet"/>
+
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0f1419;
-      color: #f1faee;
+    :root{
+      /* Layout / spacing */
+      --wrap-max: 1300px;
+      --col-gap: clamp(20px, 5vw, 40px);
+      --item-gap: clamp(26px, 3vw, 40px);
+      --visible-cards: 3;
+
+      /* Card size */
+      --card-h: 650px;            /* kept for reference; no longer used for fixed height */
+      --min-card-h: 360px;        /* NEW: baseline for short quotes */
+      --radius: 28px;
+
+      /* Motion */
+      --speed-up: 36s;     /* left/right columns */
+      --speed-down: 32s;   /* middle column */
+
+      /* Colors */
+      --ink: #0c1116;
+      --ink-soft: #1a2a33;
+
+      /* Byline gradient (deep blue → cyan → aqua → violet) */
+      --byline-grad: linear-gradient(
+        90deg,
+        #1751ff 0%,
+        #1aa9ff 18%,
+        #00e5ff 42%,
+        #00ffd1 64%,
+        #7af5ff 82%,
+        #7d7bff 100%
+      );
     }
 
-    .section-title {
-      text-align: center;
-      font-size: 2rem;
-      font-weight: bold;
-      margin: 3rem 0 2rem;
-      color: #a8dadc;
+    html,body{margin:0}
+    body{
+      font-family: Montserrat, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+      font-size: 19px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      color: var(--ink);
+      background: transparent;
     }
 
-    .carousel-wrapper {
+    .section-title{
+      text-align:center;
+      font-family: "Montserrat Alternates", Montserrat, sans-serif;
+      font-weight:800;
+      font-size:clamp(2rem, 2.6vw + 1rem, 3.1rem);
+      margin:3rem 0 1.25rem;
+      letter-spacing:.2px;
+      color:#eaf6fb;
+    }
+
+    .wrap{ width:min(var(--wrap-max), 95%); margin-inline:auto; padding-bottom:2rem; }
+
+    /* Skinny 3-column grid */
+    .rails{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap: var(--col-gap);
+      align-items:start;
+    }
+
+    /* Transparent columns with fade mask */
+    .col{
+      width:100%;
+      /* was: calc(var(--card-h) * var(--visible-cards) + (var(--visible-cards) - 1) * var(--item-gap)) */
+      height: auto; /* JS will set explicit pixel height to show ~3 cards */
+      overflow:hidden;
+      position:relative;
+      border-radius: calc(var(--radius) * 1.05);
+      background: transparent;
+
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0) 0%,
+        rgba(0,0,0,.88) 10%,
+        #000 22%,
+        #000 78%,
+        rgba(0,0,0,.88) 90%,
+        rgba(0,0,0,0) 100%
+      );
+              mask-image: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0) 0%,
+        rgba(0,0,0,.88) 10%,
+        #000 22%,
+        #000 78%,
+        rgba(0,0,0,.88) 90%,
+        rgba(0,0,0,0) 100%
+      );
+    }
+
+    /* Moving track */
+    .marquee{
+      display:flex;
+      flex-direction:column;
+      gap: var(--item-gap);
+      padding: calc(var(--item-gap) * 0.75);
+      will-change: transform;
+      animation: scrollY var(--speed) linear infinite;
+    }
+    .col[data-dir="up"]   .marquee{ --speed: var(--speed-up);   animation-direction: normal; }
+    .col[data-dir="down"] .marquee{ --speed: var(--speed-down); animation-direction: reverse; }
+    .col:hover .marquee{ animation-play-state: paused; } /* pause only hovered column */
+
+    /* Aqua glass card */
+    .card{
+      box-sizing: border-box;  /* keeps all 4 rounded corners visible */
+      position: relative;      /* for the link icon */
       width: 100%;
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      justify-content: center;
+      /* was: height: var(--card-h); */
+      height: auto;            /* auto-height based on content */
+      min-height: var(--min-card-h);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+
+      background:
+        linear-gradient(180deg, rgba(220,246,255,.78), rgba(190,238,255,.50)),
+        radial-gradient(140% 180% at 15% -10%, rgba(255,255,255,.70), rgba(255,255,255,0)),
+        radial-gradient(140% 180% at 85% 120%, rgba(0,225,255,.22), rgba(0,225,255,0));
+      backdrop-filter: blur(18px) saturate(170%);
+      -webkit-backdrop-filter: blur(18px) saturate(170%);
+
+      border: 1.5px solid #AEEBFF;   /* crisp border */
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.55),
+        inset 0 -1px 0 rgba(255,255,255,.25),
+        0 14px 36px rgba(0,0,0,.22);
+
+      color: var(--ink);
+      display:flex; flex-direction:column; gap:16px;
+
+      overflow-wrap:anywhere; word-break:normal; hyphens:auto;
     }
 
-    .carousel {
-      display: flex;
-      gap: 32px;
-      transition: transform 0.6s ease-in-out;
+    /* Link icon (only rendered when the card has a URL) */
+    .source{
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 34px; height: 34px;
+      display:grid; place-items:center;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.25));
+      border: 1px solid rgba(174,235,255,.9);
+      box-shadow: 0 6px 18px rgba(0,0,0,.25);
+      backdrop-filter: blur(10px) saturate(140%);
+      -webkit-backdrop-filter: blur(10px) saturate(140%);
+      text-decoration:none;
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+      opacity:.9;
+    }
+    .source:hover{ transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,.28); opacity:1; }
+    .source:focus-visible{ outline: 2px solid #7af5ff; outline-offset: 2px; }
+    .source svg{ width:18px; height:18px; fill:#0b6b80; }
+
+    /* Stars: 3D-ish */
+    .stars{
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      background: radial-gradient(120% 150% at 30% 20%,
+                   #bfffe1 0%, #4be2a9 35%, #16b27c 70%, #0a7b54 100%);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      text-shadow:
+        0 1px 0 rgba(255,255,255,.6),
+        0 -1px 0 rgba(0,0,0,.25);
+      filter: drop-shadow(0 10px 12px rgba(14,140,96,.35));
     }
 
-    .testimonial-card {
-      flex: 0 0 300px;
-      height: 180px;
-      border-radius: 20px;
-      backdrop-filter: blur(12px);
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(168, 218, 220, 0.3);
-      padding: 1rem;
-      text-align: center;
-      color: #f1faee;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+    .title{
+      font-family: "Montserrat Alternates", Montserrat, sans-serif;
+      font-weight:800;
+      font-size: clamp(1.55rem, 1.4vw + 1rem, 2rem);
+      line-height:1.22;
+      color: var(--ink);
     }
 
-    .testimonial-card img {
-      max-height: 80px;
-      margin-bottom: 1rem;
-      border-radius: 8px;
+    .body{
+      color: var(--ink-soft);
+      font-size: clamp(1.18rem, .5vw + 1rem, 1.3rem);
+      line-height: 1.78;
     }
 
-    .testimonial-card p {
-      font-size: 0.95rem;
-      line-height: 1.5;
-      margin: 0;
-      max-width: 90%;
+    /* Byline: stronger gradient + DROP SHADOW (requested) */
+    .byline{
+      margin-top: 6px;
+      font-weight:800;
+      font-size: 1.25rem;
+      background: var(--byline-grad);
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+      font-family: "Montserrat Alternates", Montserrat, sans-serif;
+      letter-spacing:.2px;
+      /* visible drop shadow + glow */
+      text-shadow:
+        0 3px 6px rgba(0,0,0,.35),
+        0 8px 22px rgba(32,190,255,.45),
+        0 3px 12px rgba(0,255,209,.25);
     }
 
-    .testimonial-card.active {
-      transform: scale(1.05);
-      z-index: 2;
+    /* Slight emphasis for center column */
+    .col:nth-child(2) .card{
+      background:
+        linear-gradient(180deg, rgba(230,250,255,.82), rgba(200,244,255,.56)),
+        radial-gradient(140% 180% at 15% -10%, rgba(255,255,255,.75), rgba(255,255,255,0)),
+        radial-gradient(140% 180% at 85% 120%, rgba(0,225,255,.24), rgba(0,225,255,0));
     }
 
-    .testimonial-card.inactive {
-      opacity: 0.6;
-      z-index: 1;
+    @media (prefers-reduced-motion: reduce){ .marquee{ animation:none; } }
+
+    @media (max-width: 1080px){ .rails{ grid-template-columns: repeat(2, minmax(220px, 1fr)); } }
+    @media (max-width: 700px){
+      :root{ --card-h: 510px; } /* retained (unused for auto-height); harmless */
+      .rails{ grid-template-columns: 1fr; }
     }
 
-    .testimonial-dots {
-      display: flex;
-      justify-content: center;
-      margin: 1.5rem auto;
-      gap: 0.5rem;
-    }
-
-    .testimonial-dots span {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: #457b9d;
-      opacity: 0.4;
-      transition: all 0.3s ease;
-    }
-
-    .testimonial-dots span.active {
-      background-color: #a8dadc;
-      opacity: 1;
-    }
+    @keyframes scrollY{ from{ transform: translateY(0); } to{ transform: translateY(-50%); } }
   </style>
 </head>
 <body>
-
-  <div class="section-title">✨ What People Say About Me</div>
-
-  <div class="carousel-wrapper">
-    <div class="carousel" id="carouselTrack"></div>
+  <div class="section-title">Highlights & Hype</div>
+  <div class="wrap">
+    <div class="rails" id="rails"></div>
   </div>
 
-  <div class="testimonial-dots" id="carouselDots"></div>
-
   <script>
-    const testimonials = [
-      { img: "1.png", text: "This woman is a terrifying blend of genius and chaos." },
-      { img: "2.png", text: "You work like you’re on a side questing through life." },
-      { img: "3.png", text: "Stop reinventing the wheel. But it’s cuter when you do it." },
-      { img: "4.png", text: "I think you actually time travel to get work done." },
-      { img: "5.png", text: "How are you this powerful AND this weird?" },
-      { img: "6.png", text: "You’re like a productivity app possessed by a theatre kid." }
+    /* Add an optional `url` to show the top-right link icon for that card */
+    const ITEMS = [
+      { title: "Easy, Family Friendly (Skrimp.ai)", by: "Lisa Freeman",   body: "It’s pretty easy to use, very straightforward. I appreciated that the recipes weren’t making me go find 11 random ingredients I’d never use again — or things I know my kids wouldn’t even try.", stars: 5, url: "https://www.ctvnews.ca/kitchener/article/university-of-waterloo-student-uses-ai-to-save-families-money-on-grocery-bills/" },
+      { title: "Perfect Vibes 🎉",        by: "Arnav",   body: "From the vibes to the matcha itself, everything was perfect. Pleasantly surprised by how delicious it is when made right.", stars: 5 },
+      { title: "So Calming",              by: "Fatimah", body: "Left feeling energized and relaxed at the same time. 10/10 would bring a friend.", stars: 5, url: "https://example.com/fatimah" },
+      { title: "Learned So Much",         by: "Eric",    body: "Types and techniques finally made sense. I can make café-quality at home now.", stars: 5 },
+      { title: "AI With Compassion 🌱",                  by: "Mary Wells, Dean of Engineering, UWaterloo",  body: "[Henrietta and Skrimp] show that AI does not have to be scary — it can be compassionate, practical, and profoundly human. It’s a powerful reminder of how technology, when guided by compassion, can make a tangible difference in people’s lives.", stars: 5, url: "https://www.linkedin.com/feed/update/urn:li:activity:7373331409849167872/" },
+      { title: "Big Savings for Families",           by: "Waterloo Region Record",    body: "Families testing the app [skrimp.ai] have reported cutting their grocery bills by as much as $100 a week, close to $5,000 a year.", stars: 5, url: "https://www.therecord.com/news/waterloo-region/ai-isnt-always-scary-uw-student-helps-families-save-money-on-groceries/article_45f84cea-663f-5f2b-bb73-d66f190899f9.html" },
+      { title: "Great for Teams",         by: "Jae",     body: "Booked a workshop for our team social — everybody loved it. Smooth and thoughtful.", stars: 5 },
+      { title: "AI Made Practical",                by: "Waterloo Region Record",    body: "Artificial intelligence often comes with baggage — fears about job loss, privacy and trust. But [Henrietta] is showing how it can be used to make life a little easier and cheaper", stars: 5, url: "https://www.therecord.com/news/waterloo-region/ai-isnt-always-scary-uw-student-helps-families-save-money-on-groceries/article_45f84cea-663f-5f2b-bb73-d66f190899f9.html" },
+      { title: "Delicious & Nerdy",       by: "Leo",     body: "The science bits scratched my brain in the best way.", stars: 5 }
     ];
 
-    const track = document.getElementById('carouselTrack');
-    const dots = document.getElementById('carouselDots');
-    let currentIndex = 0;
+    function split(items, cols=3){
+      const out = Array.from({length: cols}, () => []);
+      items.forEach((it, i) => out[i % cols].push(it));
+      return out;
+    }
 
-    const renderTestimonials = () => {
-      const visibleCount = 5; // 2 left, 1 center, 2 right
-      const total = testimonials.length;
+    function card({title, body, by, stars, url}){
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML = `
+        ${url ? `
+          <a class="source" href="${url}" target="_blank" rel="noopener noreferrer"
+             aria-label="Open source for ${title}" title="Open source">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14 3h7v7h-2V6.414l-9.293 9.293-1.414-1.414L17.586 5H14V3zM5 5h5v2H7v10h10v-3h2v5H5V5z"/>
+            </svg>
+          </a>` : ``}
+        <div class="stars">${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}</div>
+        <div class="title">${title}</div>
+        <div class="body">${body}</div>
+        <div class="byline">${by}</div>
+      `;
+      return el;
+    }
 
-      track.innerHTML = '';
-      dots.innerHTML = '';
+    function column(items, dir){
+      const col   = document.createElement('div'); col.className = 'col'; col.dataset.dir = dir;
+      const track = document.createElement('div'); track.className = 'marquee';
 
-      testimonials.forEach((t, i) => {
-        const card = document.createElement('div');
-        card.className = 'testimonial-card';
-        card.innerHTML = `<img src="${t.img}" alt="pfp"><p>"${t.text}"</p>`;
-        track.appendChild(card);
+      const list = document.createElement('div');
+      list.style.display = 'flex';
+      list.style.flexDirection = 'column';
+      list.style.gap = 'var(--item-gap)';
 
-        const dot = document.createElement('span');
-        if (i === 0) dot.classList.add('active');
-        dots.appendChild(dot);
+      items.forEach(i => list.appendChild(card(i)));
+      const clone = list.cloneNode(true);   // duplicate for seamless loop
+
+      track.appendChild(list); track.appendChild(clone);
+      col.appendChild(track);
+      return col;
+    }
+
+    (function init(){
+      const rails = document.getElementById('rails');
+      const [left, mid, right] = split(ITEMS, 3);
+      rails.appendChild(column(left,  'up'));
+      rails.appendChild(column(mid,   'down'));   /* middle scrolls down */
+      rails.appendChild(column(right, 'up'));
+
+      /* NEW: size columns to show ~3 real cards (auto-height cards supported) */
+      const VISIBLE_CARDS = parseInt(getComputedStyle(document.documentElement)
+                            .getPropertyValue('--visible-cards')) || 3;
+
+      function setColumnViewportHeight(col){
+        const marquee = col.querySelector('.marquee');
+        const cards   = col.querySelectorAll('.card');
+        if (!marquee || cards.length === 0) return;
+
+        const gapPx = parseFloat(getComputedStyle(marquee).gap || '0');
+        const take  = Math.min(VISIBLE_CARDS, cards.length);
+
+        let h = 0;
+        for (let i = 0; i < take; i++) h += cards[i].offsetHeight;
+        h += gapPx * (take - 1);
+
+        col.style.height = h + 'px';
+      }
+
+      function updateAllColumnHeights(){
+        document.querySelectorAll('.col').forEach(setColumnViewportHeight);
+      }
+
+      // Initial + font settle
+      updateAllColumnHeights();
+      document.fonts?.ready?.then(updateAllColumnHeights);
+
+      // On resize
+      window.addEventListener('resize', () => {
+        requestAnimationFrame(updateAllColumnHeights);
       });
 
-      updateVisible();
-    };
+      // Observe card size changes (reflow, content changes)
+      const ro = new ResizeObserver(() => updateAllColumnHeights());
+      document.querySelectorAll('.card').forEach(el => ro.observe(el));
 
-    const updateVisible = () => {
-      const cards = document.querySelectorAll('.testimonial-card');
-      const total = testimonials.length;
-
-      cards.forEach((card, i) => {
-        card.classList.remove('active', 'inactive');
-        const offset = (i - currentIndex + total) % total;
-
-        if (offset === 0) {
-          card.classList.add('active');
-          card.style.display = 'flex';
-        } else if (offset === 1 || offset === total - 1) {
-          card.classList.add('inactive');
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      const shift = -((currentIndex) * (300 + 32) - (track.offsetWidth / 2 - 150));
-      track.style.transform = `translateX(${shift}px)`;
-
-      const dotEls = document.querySelectorAll('.testimonial-dots span');
-      dotEls.forEach(dot => dot.classList.remove('active'));
-      dotEls[currentIndex].classList.add('active');
-    };
-
-    const loopCarousel = () => {
-      currentIndex = (currentIndex + 1) % testimonials.length;
-      updateVisible();
-    };
-
-    renderTestimonials();
-    setInterval(loopCarousel, 3000);
+      // If cards/columns are ever added dynamically, watch the rails subtree
+      new MutationObserver(() => {
+        document.querySelectorAll('.card').forEach(el => ro.observe(el));
+        updateAllColumnHeights();
+      }).observe(rails, { childList:true, subtree:true });
+    })();
   </script>
+
+  <!-- Auto-resize so the parent page grows with content -->
+  <script>
+      (function () {
+        const VISIBLE_CARDS = parseInt(
+          getComputedStyle(document.documentElement)
+            .getPropertyValue('--visible-cards')
+        ) || 3;
+
+        function measureViewportHeight(col){
+          const marquee = col.querySelector('.marquee');
+          const cards   = col.querySelectorAll('.card');
+          if (!marquee || cards.length === 0) return 0;
+
+          const gapPx = parseFloat(getComputedStyle(marquee).gap || '0');
+          const take  = Math.min(VISIBLE_CARDS, cards.length);
+
+          let h = 0;
+          for (let i = 0; i < take; i++) h += cards[i].offsetHeight;
+          h += gapPx * (take - 1);
+          return h;
+        }
+
+        function unifyColumnHeights(){
+          const cols = Array.from(document.querySelectorAll('.col'));
+          if (!cols.length) return;
+
+          // 1) measure each column's needed height
+          const heights = cols.map(measureViewportHeight);
+
+          // 2) pick the tallest so bottoms align across columns
+          const unified = Math.max(...heights, 0);
+
+          // 3) apply the same height to all columns
+          cols.forEach(col => { col.style.height = unified + 'px'; });
+        }
+
+        // Run after render + once fonts settle
+        window.addEventListener('load', unifyColumnHeights);
+        document.fonts?.ready?.then(unifyColumnHeights);
+
+        // Re-run on resize
+        window.addEventListener('resize', () => requestAnimationFrame(unifyColumnHeights));
+
+        // Re-run when cards change size/content
+        const ro = new ResizeObserver(unifyColumnHeights);
+        new MutationObserver(() => {
+          document.querySelectorAll('.card').forEach(el => ro.observe(el));
+          unifyColumnHeights();
+        }).observe(document.getElementById('rails'), { childList:true, subtree:true });
+      })();
+    </script>
+
 </body>
 </html>
-
-

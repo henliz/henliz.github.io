@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Portfolio Models with Responsive Scaling</title>
+  <title>Portfolio Models • Corkscrew Scroll</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Changa+One&family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@400;700&display=swap');
 
@@ -11,72 +11,45 @@
       padding: 0;
       background: #0f1419;
       color: #f1faee;
-      overflow: hidden;
+      overflow: hidden; /* locked until we explicitly unlock at the very end */
       font-family: 'Montserrat', sans-serif;
       height: 100vh;
+    }
+    body.unlocked {
+      overflow: auto !important; /* allow escape only when we call unlockPage() */
     }
 
     /* Only hide cursor on desktop */
     @media (hover: hover) and (pointer: fine) {
-      html, body {
-        cursor: none !important;
-      }
-
-      *, *::before, *::after {
-        cursor: none !important;
-      }
+      html, body { cursor: none !important; }
+      *, *::before, *::after { cursor: none !important; }
     }
 
-    /* Custom Glassmorphism Cursor - Only show on desktop */
-    .custom-cursor {
+    /* Decorative spiral ring overlay (subtle) */
+    .spiral-overlay {
       position: fixed;
-      width: 20px;
-      height: 20px;
-      background: rgba(42, 157, 143, 0.3);
-      border: 2px solid rgba(42, 157, 143, 0.8);
-      border-radius: 50%;
+      inset: 0;
       pointer-events: none;
-      z-index: 10000;
-      backdrop-filter: blur(8px);
-      transition: all 0.08s ease-out;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
-      display: none; /* Hidden by default */
+      z-index: 2;
+      mix-blend-mode: screen;
+      opacity: 0.05;
+      background: radial-gradient(closest-side, rgba(168,218,220,.35), transparent 60%),
+                  repeating-conic-gradient(from 0deg, rgba(69,123,157,.25) 0 6deg, transparent 6deg 12deg);
+      animation: ringSpin 24s linear infinite;
     }
-
-    /* Only show custom cursor on desktop */
-    @media (hover: hover) and (pointer: fine) {
-      .custom-cursor {
-        display: block;
-      }
-    }
-
-    .custom-cursor.clicking {
-      background: rgba(42, 157, 143, 0.9);
-      border-color: rgba(42, 157, 143, 1);
-      transform: translate(-50%, -50%) scale(0.8);
-      box-shadow: 0 0 25px rgba(42, 157, 143, 0.8), inset 0 0 15px rgba(42, 157, 143, 0.3);
-    }
-
-    .custom-cursor.hovering {
-      width: 30px;
-      height: 30px;
-      background: rgba(42, 157, 143, 0.4);
-      border-color: rgba(42, 157, 143, 0.9);
-      box-shadow: 0 0 20px rgba(42, 157, 143, 0.6), inset 0 0 12px rgba(42, 157, 143, 0.2);
-    }
+    @keyframes ringSpin { to { transform: rotate(360deg); } }
 
     .portfolio-container {
       position: relative;
       width: 100%;
       height: 100vh;
       overflow: hidden;
+      perspective: 1200px; /* give the corkscrew some depth */
     }
 
     .model-section {
       position: absolute;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100vh;
       overflow: hidden;
@@ -84,21 +57,48 @@
       background-size: 400% 400%;
       animation: gradientShift 20s ease infinite;
       opacity: 0;
-      transform: translateY(30vh);
-      transition: all 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transform: translateZ(-450px) rotate(-18deg) translateY(12vh) scale(.9); /* starting pose */
+      will-change: transform, opacity, filter;
     }
 
+    /* active slide sits flat */
     .model-section.active {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateZ(0) rotate(0) translateY(0) scale(1);
+      transition: transform .9s cubic-bezier(.22,.61,.36,1), opacity .6s ease;
+      z-index: 1;
     }
 
-    .model-section.prev {
-      transform: translateY(-30vh);
+    /* corkscrew animations */
+    .corkscrew-in {
+      animation: corkscrewIn .9s cubic-bezier(.22,.61,.36,1) forwards;
+    }
+    .corkscrew-out-down {
+      animation: corkscrewOutDown .9s cubic-bezier(.22,.61,.36,1) forwards;
+    }
+    .corkscrew-out-up {
+      animation: corkscrewOutUp .9s cubic-bezier(.22,.61,.36,1) forwards;
     }
 
-    .model-section.next {
-      transform: translateY(30vh);
+    @keyframes corkscrewIn {
+      0% {
+        opacity: 0;
+        filter: blur(6px);
+        transform: translateZ(-520px) rotate(-24deg) translateY(16vh) scale(.88);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateZ(0) rotate(0) translateY(0) scale(1);
+      }
+    }
+    @keyframes corkscrewOutDown {
+      0% { opacity: 1; filter: blur(0); transform: translateZ(0) rotate(0) translateY(0) scale(1); }
+      100% { opacity: 0; filter: blur(6px); transform: translateZ(520px) rotate(24deg) translateY(-16vh) scale(1.08); }
+    }
+    @keyframes corkscrewOutUp {
+      0% { opacity: 1; filter: blur(0); transform: translateZ(0) rotate(0) translateY(0) scale(1); }
+      100% { opacity: 0; filter: blur(6px); transform: translateZ(-520px) rotate(-24deg) translateY(16vh) scale(.88); }
     }
 
     @keyframes gradientShift {
@@ -128,247 +128,125 @@
       color: #f1faee;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
       background: linear-gradient(45deg, #a8dadc, #457b9d, #2a9d8f);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       font-weight: 700;
     }
 
-    p {
-      margin: 0 0 1.5rem 0;
-      font-size: 1.1rem;
-      line-height: 1.4;
-      color: #f1faee;
-      opacity: 0.9;
-    }
-
-    a {
-      text-decoration: none;
-    }
+    p { margin: 0 0 1.5rem 0; font-size: 1.1rem; line-height: 1.4; color: #f1faee; opacity: 0.9; }
+    a { text-decoration: none; }
 
     button {
       background: linear-gradient(45deg, #2a9d8f, #457b9d);
-      color: #f1faee;
-      border: none;
-      border-radius: 25px;
-      padding: 12px 24px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: 'Montserrat', sans-serif;
+      color: #f1faee; border: none; border-radius: 25px; padding: 12px 24px; font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: all 0.3s ease; font-family: 'Montserrat', sans-serif;
       box-shadow: 0 4px 15px rgba(42, 157, 143, 0.3);
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
+    button::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); transition: left .5s; }
+    button:hover::before { left: 100%; }
+    button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(42, 157, 143, 0.5); background: linear-gradient(45deg, #34a8a0, #5088a8); }
 
-    button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
+    canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-    button:hover::before {
-      left: 100%;
-    }
+    .navigation-dots { position: fixed; right: 2rem; top: 50%; transform: translateY(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 1rem; }
+    .nav-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(168, 218, 220, 0.3); cursor: pointer; transition: all .3s ease; border: 2px solid rgba(168, 218, 220, 0.5); }
+    .nav-dot.active { background: rgba(42, 157, 143, 0.8); border-color: rgba(42, 157, 143, 1); transform: scale(1.3); box-shadow: 0 0 15px rgba(42, 157, 143, 0.6); }
+    .nav-dot:hover { background: rgba(168, 218, 220, 0.6); transform: scale(1.1); }
 
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(42, 157, 143, 0.5);
-      background: linear-gradient(45deg, #34a8a0, #5088a8);
-    }
-
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .navigation-dots {
-      position: fixed;
-      right: 2rem;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .nav-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: rgba(168, 218, 220, 0.3);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px solid rgba(168, 218, 220, 0.5);
-    }
-
-    .nav-dot.active {
-      background: rgba(42, 157, 143, 0.8);
-      border-color: rgba(42, 157, 143, 1);
-      transform: scale(1.3);
-      box-shadow: 0 0 15px rgba(42, 157, 143, 0.6);
-    }
-
-    .nav-dot:hover {
-      background: rgba(168, 218, 220, 0.6);
-      transform: scale(1.1);
-    }
-
-    .scroll-indicator {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      color: #a8dadc;
-      font-size: 0.9rem;
-      opacity: 0.7;
-      text-align: center;
-      pointer-events: none;
-    }
-
-    .scroll-indicator::before {
-      content: '⏶';
-      display: block;
-      font-size: 1.5rem;
-      animation: bounce 2s infinite;
-    }
-
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(-5px); }
-      60% { transform: translateY(-3px); }
-    }
+    .scroll-indicator { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 1000; color: #a8dadc; font-size: .9rem; opacity: .7; text-align: center; pointer-events: none; }
+    .scroll-indicator::before { content: '⏶'; display: block; font-size: 1.5rem; animation: bounce 2s infinite; }
+    @keyframes bounce { 0%,20%,50%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} 60%{transform:translateY(-3px)} }
 
     @media (max-width: 768px) {
-      .text-content {
-        max-width: 80vw;
-        padding: 1.5rem;
-        top: 3vh;
-        left: 10vw;
-      }
-
-      h2 {
-        font-size: 1.8rem;
-      }
-
-      p {
-        font-size: 1rem;
-      }
-
-      button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-      }
-
-      .navigation-dots {
-        right: 1rem;
-      }
+      .text-content { max-width: 80vw; padding: 1.5rem; top: 3vh; left: 10vw; }
+      h2 { font-size: 1.8rem; }
+      p { font-size: 1rem; }
+      button { padding: 10px 20px; font-size: .9rem; }
+      .navigation-dots { right: 1rem; }
     }
-
     @media (max-width: 480px) {
-      .text-content {
-        max-width: 90vw;
-        padding: 1rem;
-        left: 5vw;
-      }
-
-      h2 {
-        font-size: 1.5rem;
-      }
-
-      p {
-        font-size: 0.9rem;
-      }
+      .text-content { max-width: 90vw; padding: 1rem; left: 5vw; }
+      h2 { font-size: 1.5rem; }
+      p { font-size: .9rem; }
     }
+
+    /* Custom Glassmorphism Cursor - Only show on desktop */
+    .custom-cursor {
+      position: fixed; width: 20px; height: 20px; background: rgba(42, 157, 143, 0.3);
+      border: 2px solid rgba(42, 157, 143, 0.8); border-radius: 50%; pointer-events: none; z-index: 10000;
+      backdrop-filter: blur(8px); transition: all .08s ease-out; transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
+      display: none;
+    }
+    @media (hover: hover) and (pointer: fine) { .custom-cursor { display: block; } }
+    .custom-cursor.clicking { background: rgba(42, 157, 143, 0.9); border-color: rgba(42, 157, 143, 1); transform: translate(-50%, -50%) scale(.8); box-shadow: 0 0 25px rgba(42, 157, 143, 0.8), inset 0 0 15px rgba(42, 157, 143, 0.3); }
+    .custom-cursor.hovering { width: 30px; height: 30px; background: rgba(42, 157, 143, 0.4); border-color: rgba(42, 157, 143, 0.9); box-shadow: 0 0 20px rgba(42, 157, 143, 0.6), inset 0 0 12px rgba(42, 157, 143, 0.2); }
   </style>
   <script type="importmap">
   {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js"
-    }
+    "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js" }
   }
   </script>
 </head>
 <body>
-  <!-- Custom Glassmorphism Cursor -->
   <div class="custom-cursor" id="cursor"></div>
+  <div class="spiral-overlay"></div>
 
   <div class="portfolio-container">
-    <!-- Skrimp Section (using yummymeal model) -->
+    <!-- 1. Skrimp -->
     <section class="model-section active" data-section="0" id="skrimp-section">
       <div class="text-content">
         <h2>Skrimp AI</h2>
         <p>Founder & CEO</p>
         <p>Making the cost of living feel livable</p>
-        <a href="Skrimp/index.html" target="_blank" rel="noopener noreferrer">
-          <button>Explore &rarr;</button>
-        </a>
+        <a href="Skrimp/index.html" target="_blank" rel="noopener noreferrer"><button>Explore →</button></a>
       </div>
       <canvas id="canvas1"></canvas>
     </section>
 
-    <!-- Path to Menzoberranzan Section (using steamdeck model) -->
+    <!-- 2. PtM -->
     <section class="model-section" data-section="1">
       <div class="text-content">
         <h2>Path to Menzoberranzan</h2>
         <p>Technical Director of 200 person studio</p>
         <p>Unofficial Baldur's Gate 3 Expansion</p>
-        <a href="https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/" target="_blank" rel="noopener noreferrer">
-          <button>View Progress &rarr;</button>
-        </a>
+        <a href="https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/" target="_blank" rel="noopener noreferrer"><button>View Progress →</button></a>
       </div>
       <canvas id="canvas2"></canvas>
     </section>
 
-    <!-- Jaguar Section -->
+    <!-- 3. Jaguar -->
     <section class="model-section" data-section="2">
       <div class="text-content">
         <h2>Jaguar Rebrand</h2>
         <p>Fixing the 2024 design disaster</p>
-        <a href="Jaguar/index.html" target="_top">
-          <button>See Design &rarr;</button>
-        </a>
+        <a href="Jaguar/index.html" target="_top"><button>See Design →</button></a>
       </div>
       <canvas id="canvas3"></canvas>
     </section>
 
-    <!-- Seniors Connect Section (using laptop model) -->
+    <!-- 4. Seniors Connect -->
     <section class="model-section" data-section="3">
       <div class="text-content">
         <h2>Seniors Connect</h2>
         <p>Creating a high-fidelity prototype to end senior loneliness ☕</p>
-        <a href="SeniorsConnect/index.html" target="_blank" rel="noopener noreferrer">
-          <button>See What I Did &rarr;</button>
-        </a>
+        <a href="SeniorsConnect/index.html" target="_blank" rel="noopener noreferrer"><button>See What I Did →</button></a>
       </div>
       <canvas id="canvas4"></canvas>
     </section>
 
-    <!-- HalalMeals Section (using robot model) -->
+    <!-- 5. HalalMeals -->
     <section class="model-section" data-section="4">
       <div class="text-content">
         <h2>AI Design @ HalalMeals</h2>
         <p>Tech-savvy taste for everyone</p>
-        <a href="HalalMeals/index.html" target="_blank" rel="noopener noreferrer">
-          <button>View Design &rarr;</button>
-        </a>
+        <a href="HalalMeals/index.html" target="_blank" rel="noopener noreferrer"><button>View Design →</button></a>
       </div>
       <canvas id="canvas5"></canvas>
     </section>
   </div>
 
-  <!-- Navigation Dots -->
+  <!-- Dots -->
   <div class="navigation-dots">
     <div class="nav-dot active" data-section="0"></div>
     <div class="nav-dot" data-section="1"></div>
@@ -378,235 +256,183 @@
   </div>
 
   <!-- Scroll Indicator -->
-  <div class="scroll-indicator">
-    Scroll or use dots to navigate
-  </div>
+  <div class="scroll-indicator" id="scrollIndicator">Scroll / Space / ↓  — last slide unlocks page</div>
 
   <script type="module">
-    import * as THREE from "three";
-    import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
-    import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/controls/OrbitControls.js";
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/controls/OrbitControls.js';
 
-    // Detect if device supports hover (desktop)
     const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-    // Custom Cursor Logic - Only for desktop
+    /* ==== Custom cursor (desktop only) ==== */
     if (isDesktop) {
       const cursor = document.getElementById('cursor');
-      let mouseX = 0;
-      let mouseY = 0;
-      let animationId;
-
-      // Smooth cursor movement with requestAnimationFrame
-      function updateCursor() {
-        cursor.style.left = mouseX + 'px';
-        cursor.style.top = mouseY + 'px';
-      }
-
-      // Track mouse movement with throttling
-      document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        if (!animationId) {
-          animationId = requestAnimationFrame(() => {
-            updateCursor();
-            animationId = null;
-          });
-        }
-      });
-
-      // Click animation
-      document.addEventListener('mousedown', () => {
-        cursor.classList.add('clicking');
-      });
-
-      document.addEventListener('mouseup', () => {
-        cursor.classList.remove('clicking');
-      });
-
-      // Hover states for interactive elements
-      const hoverElements = document.querySelectorAll('button, a, .nav-dot');
-
-      hoverElements.forEach(element => {
-        element.addEventListener('mouseenter', () => {
-          cursor.classList.add('hovering');
-        });
-
-        element.addEventListener('mouseleave', () => {
-          cursor.classList.remove('hovering');
-        });
-      });
-
-      // Tell parent window to hide cursor but allow escape scrolling
-      document.addEventListener('mouseenter', () => {
-        if (window.parent !== window) {
-          window.parent.postMessage({ type: 'hideCursor' }, '*');
-        }
-      });
-
-      document.addEventListener('mouseleave', () => {
-        if (window.parent !== window) {
-          window.parent.postMessage({ type: 'showCursor' }, '*');
-        }
-      });
-
-      // Hide cursor when leaving window
-      document.addEventListener('mouseleave', () => {
-        cursor.style.opacity = '0';
-      });
-
-      document.addEventListener('mouseenter', () => {
-        cursor.style.opacity = '1';
+      let mouseX = 0, mouseY = 0, rafId;
+      function draw() { cursor.style.left = mouseX + 'px'; cursor.style.top = mouseY + 'px'; }
+      document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; if (!rafId) rafId = requestAnimationFrame(() => { draw(); rafId = null; }); });
+      document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+      document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
+      document.querySelectorAll('button, a, .nav-dot').forEach(el=>{
+        el.addEventListener('mouseenter', ()=>cursor.classList.add('hovering'));
+        el.addEventListener('mouseleave', ()=>cursor.classList.remove('hovering'));
       });
     }
 
-    // Spiral Navigation Logic
+    /* ==== Navigation & corkscrew transitions ==== */
     let currentSection = 0;
-    const totalSections = 5; // Updated to 5 sections
+    const totalSections = 5;
     let isAnimating = false;
+    let isUnlocked = false; // becomes true only after we unlock on the last panel
 
-    const navDots = document.querySelectorAll('.nav-dot');
-    const sections = document.querySelectorAll('.model-section');
+    const navDots   = document.querySelectorAll('.nav-dot');
+    const sections  = document.querySelectorAll('.model-section');
+    const indicator = document.getElementById('scrollIndicator');
 
-    function updateNavigation() {
-      navDots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentSection);
-      });
+    function updateDots() {
+      navDots.forEach((dot, idx)=>dot.classList.toggle('active', idx === currentSection));
     }
 
-    function showSection(index) {
+    function showSection(index, dir = 'down') {
       if (isAnimating || index === currentSection || index < 0 || index >= totalSections) return;
-
       isAnimating = true;
 
-      // Hide current section with spiral effect
-      sections[currentSection].classList.remove('active');
-      if (index > currentSection) {
-        sections[currentSection].classList.add('prev');
-      } else {
-        sections[currentSection].classList.add('next');
-      }
+      const from = sections[currentSection];
+      const to   = sections[index];
 
-      // Show new section
-      setTimeout(() => {
-        sections[currentSection].classList.remove('prev', 'next');
+      // outgoing
+      from.classList.remove('active');
+      from.classList.remove('corkscrew-in','corkscrew-out-up','corkscrew-out-down');
+      from.classList.add(dir === 'down' ? 'corkscrew-out-down' : 'corkscrew-out-up');
+
+      // incoming
+      to.classList.add('corkscrew-in');
+      to.addEventListener('animationend', handleInEnd, { once: true });
+
+      function handleInEnd(){
+        to.classList.remove('corkscrew-in');
+        to.classList.add('active');
+        from.classList.remove('corkscrew-out-up','corkscrew-out-down');
         currentSection = index;
-        sections[currentSection].classList.add('active');
-        updateNavigation();
+        updateDots();
+        isAnimating = false;
 
-        setTimeout(() => {
-          isAnimating = false;
-        }, 500);
-      }, 200);
+        // update indicator text when we reach the last slide
+        if (currentSection === totalSections - 1) {
+          indicator.textContent = 'Last panel — scroll ↓ again to unlock page';
+        } else {
+          indicator.textContent = 'Scroll / Space / ↓  — last slide unlocks page';
+        }
+      }
     }
 
-    // Navigation dot clicks
-    navDots.forEach((dot, index) => {
-      dot.addEventListener('click', () => showSection(index));
+    navDots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const target = Number(dot.getAttribute('data-section'));
+        showSection(target, target > currentSection ? 'down' : 'up');
+      });
     });
 
-    // Smart scroll handling with momentum requirement and full visibility check
-    let scrollTimeout;
+    /* ==== Scroll/touch/keys trap until bottom ==== */
     let scrollAccumulator = 0;
-    const scrollThreshold = 150; // Increased threshold for more deliberate scrolling
-    let lastScrollTime = 0;
+    const stepThreshold = 160; // momentum needed to switch panels
+    const exitThreshold = 220; // extra momentum on the last panel to unlock the page
+    let lastWheelAt = 0;
 
-    document.addEventListener('wheel', (e) => {
-      const currentTime = Date.now();
+    function onWheel(e){
+      if (isUnlocked) return; // page is free now
 
-      // Prevent rapid scrolling and ensure animation is complete
-      if (isAnimating || currentTime - lastScrollTime < 100) return;
+      const now = Date.now();
+      if (isAnimating || (now - lastWheelAt) < 80) { e.preventDefault(); return; }
 
-      const scrollingDown = e.deltaY > 0;
-      const scrollingUp = e.deltaY < 0;
+      const dy = e.deltaY;
+      const down = dy > 0;
+      e.preventDefault();
+      e.stopPropagation();
 
-      const isAtFirstSection = currentSection === 0;
-      const isAtLastSection = currentSection === totalSections - 1;
+      scrollAccumulator += dy;
+      lastWheelAt = now;
 
-      // Only allow escape at actual boundaries
-      const shouldEscapeUp = isAtFirstSection && scrollingUp;
-      const shouldEscapeDown = isAtLastSection && scrollingDown;
-
-      // If we're at a boundary and trying to escape, let it through
-      if (shouldEscapeUp || shouldEscapeDown) {
-        // Reset accumulator when escaping
+      // unlock gesture on last slide
+      if (currentSection === totalSections - 1 && down && scrollAccumulator >= exitThreshold) {
+        unlockPage();
         scrollAccumulator = 0;
         return;
       }
 
-      // Otherwise, we handle the scroll internally
-      e.preventDefault();
-      e.stopPropagation();
-
-      // Accumulate scroll momentum
-      if (scrollingDown) {
-        scrollAccumulator = Math.max(0, scrollAccumulator + e.deltaY);
-      } else {
-        scrollAccumulator = Math.min(0, scrollAccumulator + e.deltaY);
+      // move between sections
+      if (down && scrollAccumulator >= stepThreshold && currentSection < totalSections - 1) {
+        showSection(currentSection + 1, 'down');
+        scrollAccumulator = 0;
+      } else if (!down && Math.abs(scrollAccumulator) >= stepThreshold && currentSection > 0) {
+        showSection(currentSection - 1, 'up');
+        scrollAccumulator = 0;
       }
+    }
 
-      // Clear timeout to prevent rapid switching
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        // Only proceed if we have enough momentum and aren't animating
-        if (!isAnimating) {
-          if (scrollAccumulator >= scrollThreshold && currentSection < totalSections - 1) {
-            lastScrollTime = currentTime;
-            showSection(currentSection + 1);
-            scrollAccumulator = 0;
-          } else if (scrollAccumulator <= -scrollThreshold && currentSection > 0) {
-            lastScrollTime = currentTime;
-            showSection(currentSection - 1);
-            scrollAccumulator = 0;
-          }
-        }
-      }, 100); // Reduced timeout for more responsiveness when threshold is met
-    }, { passive: false });
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      if (isAnimating) return;
-
-      if ((e.key === 'ArrowDown' || e.key === 'Space') && currentSection < totalSections - 1) {
+    function onKey(e){
+      if (isUnlocked) return;
+      if (isAnimating) { e.preventDefault(); return; }
+      if ((e.key === ' ' || e.key === 'PageDown' || e.key === 'ArrowDown') && currentSection < totalSections - 1) {
         e.preventDefault();
-        showSection(currentSection + 1);
-      } else if (e.key === 'ArrowUp' && currentSection > 0) {
+        showSection(currentSection + 1, 'down');
+      } else if ((e.key === 'PageUp' || e.key === 'ArrowUp') && currentSection > 0) {
         e.preventDefault();
-        showSection(currentSection - 1);
+        showSection(currentSection - 1, 'up');
+      } else if ((e.key === 'End' || e.key === 'Enter') && currentSection === totalSections - 1) {
+        e.preventDefault();
+        unlockPage();
       }
-    });
+    }
 
-    // Touch/swipe support
+    // Basic swipe support
     let touchStartY = 0;
-    let touchEndY = 0;
-
-    document.addEventListener('touchstart', (e) => {
-      touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
-    document.addEventListener('touchend', (e) => {
-      if (isAnimating) return;
-
-      touchEndY = e.changedTouches[0].screenY;
-      const swipeDistance = touchStartY - touchEndY;
-
-      if (Math.abs(swipeDistance) > 50) {
-        if (swipeDistance > 0 && currentSection < totalSections - 1) {
-          showSection(currentSection + 1);
-        } else if (swipeDistance < 0 && currentSection > 0) {
-          showSection(currentSection - 1);
-        }
+    function onTouchStart(e){ touchStartY = e.changedTouches[0].screenY; }
+    function onTouchEnd(e){
+      if (isUnlocked || isAnimating) return;
+      const dy = touchStartY - e.changedTouches[0].screenY;
+      if (Math.abs(dy) < 50) return;
+      if (dy > 0) {
+        if (currentSection === totalSections - 1) { unlockPage(); }
+        else { showSection(currentSection + 1, 'down'); }
+      } else if (currentSection > 0) {
+        showSection(currentSection - 1, 'up');
       }
-    }, { passive: true });
+    }
 
-    // ORIGINAL 3D MODELS CODE - UNCHANGED
+    function lockHandlers(){
+      window.addEventListener('wheel', onWheel, { passive: false });
+      window.addEventListener('keydown', onKey,  { passive: false });
+      window.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchend',   onTouchEnd,   { passive: true });
+    }
+
+    function removeHandlers(){
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend', onTouchEnd);
+    }
+
+    function unlockPage(){
+      if (isUnlocked) return;
+      isUnlocked = true;
+      document.body.classList.add('unlocked');
+      removeHandlers();
+      document.querySelector('.navigation-dots')?.classList.add('hide');
+      indicator.textContent = 'Unlocked — free page scroll enabled';
+      setTimeout(()=>indicator.style.opacity = .0, 1200);
+    }
+
+    lockHandlers();
+
+    /* ===== THREE scenes (kept from your build, tuned a bit) ===== */
     let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     function getScaleFactor() {
       const width = window.innerWidth;
-      if (width <= 480) return 0.4; // Increased from 0.3
-      if (width <= 768) return 0.5; // Increased from 0.4
+      if (width <= 480) return 0.4;
+      if (width <= 768) return 0.5;
       if (width <= 1280) return 0.55;
       return 1;
     }
@@ -616,100 +442,36 @@
       const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
       camera.position.set(0, 0, 3);
 
-      const renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        canvas: document.getElementById(canvasID),
-        alpha: true
-      });
+      const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById(canvasID), alpha: true, powerPreference: 'high-performance' });
       renderer.setSize(window.innerWidth, window.innerHeight);
 
-      const light = new THREE.DirectionalLight(0xffffff, 1);
-      light.position.set(2, 2, 5);
-      scene.add(light);
-
-      if (canvasID !== "canvas1") {
-        const extraLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        extraLight.position.set(-2, 3, -5);
-        scene.add(extraLight);
-      }
+      const light = new THREE.DirectionalLight(0xffffff, 1); light.position.set(2, 2, 5); scene.add(light);
+      if (canvasID !== 'canvas1') { const extraLight = new THREE.DirectionalLight(0xffffff, 0.8); extraLight.position.set(-2, 3, -5); scene.add(extraLight); }
 
       const controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableZoom = false;
-      controls.enablePan = false;
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.05;
+      controls.enableZoom = false; controls.enablePan = false; controls.enableDamping = true; controls.dampingFactor = 0.05;
 
-      if (isTouchDevice) {
-        controls.enabled = false;
-        controls.dispose();
-        renderer.domElement.style.pointerEvents = "none";
-      }
+      if (isTouchDevice) { controls.enabled = false; controls.dispose(); renderer.domElement.style.pointerEvents = 'none'; }
 
       let model = null;
       const loader = new GLTFLoader();
       loader.load(modelPath, (gltf) => {
-        model = gltf.scene;
-        scene.add(model);
-        if (reCenter) {
-          const box = new THREE.Box3().setFromObject(model);
-          const center = box.getCenter(new THREE.Vector3());
-          model.position.sub(center);
-        }
-        model.position.copy(basePosition);
-        model.rotation.copy(baseRotation);
+        model = gltf.scene; scene.add(model);
+        if (reCenter) { const box = new THREE.Box3().setFromObject(model); const center = box.getCenter(new THREE.Vector3()); model.position.sub(center); }
+        model.position.copy(basePosition); model.rotation.copy(baseRotation);
       });
 
-      return {
-        scene, camera, renderer, controls,
-        getModel: () => model,
-        originalScale: targetScale,
-        basePosition, baseRotation
-      };
+      return { scene, camera, renderer, controls, getModel: () => model, originalScale: targetScale, basePosition, baseRotation };
     }
 
-    // Reorganized models with Seniors Connect added
-    const section1_skrimp = createScene({
-      canvasID: "canvas1",
-      modelPath: "./models/yummymeal.glb", // Using yummymeal model for Skrimp
-      targetScale: 0.25, // Much smaller - like the chocolate was!
-      basePosition: new THREE.Vector3(0, 0.1, 0),
-      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(15), 0)
-    });
+    const s1 = createScene({ canvasID: 'canvas1', modelPath: './models/yummymeal.glb', targetScale: .25, basePosition: new THREE.Vector3(0, .1, 0), baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(35), THREE.MathUtils.degToRad(15), 0) });
+    const s2 = createScene({ canvasID: 'canvas2', modelPath: './models/steamdeck.glb', targetScale: .3, basePosition: new THREE.Vector3(0, .1, 0), baseRotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-15), 0) });
+    const s3 = createScene({ canvasID: 'canvas3', modelPath: './models/jaguar.glb', targetScale: .6, basePosition: new THREE.Vector3(0, 0, 0), baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(20), THREE.MathUtils.degToRad(20), 0) });
+    const s4 = createScene({ canvasID: 'canvas4', modelPath: './models/laptop.glb', targetScale: .07, basePosition: new THREE.Vector3(0, -.5, 0), baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(5), THREE.MathUtils.degToRad(40), 0) });
+    const s5 = createScene({ canvasID: 'canvas5', modelPath: './models/robot.glb', targetScale: 8, basePosition: new THREE.Vector3(0, .1, -35), baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(25), THREE.MathUtils.degToRad(15), 0) });
 
-    const section2_menzoberranzan = createScene({
-      canvasID: "canvas2",
-      modelPath: "./models/steamdeck.glb",
-      targetScale: 0.3,
-      basePosition: new THREE.Vector3(0, 0.1, 0),
-      baseRotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-15), 0)
-    });
-
-    const section3_jaguar = createScene({
-      canvasID: "canvas3",
-      modelPath: "./models/jaguar.glb",
-      targetScale: 0.6,
-      basePosition: new THREE.Vector3(0, 0, 0),
-      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(20), THREE.MathUtils.degToRad(20), 0)
-    });
-
-    const section4_seniorsconnect = createScene({
-      canvasID: "canvas4",
-      modelPath: "./models/laptop.glb",
-      targetScale: 0.07,
-      basePosition: new THREE.Vector3(0, -0.5, 0),
-      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(5), THREE.MathUtils.degToRad(40), 0)
-    });
-
-    const section5_halalmeals = createScene({
-      canvasID: "canvas5",
-      modelPath: "./models/robot.glb",
-      targetScale: 8,
-      basePosition: new THREE.Vector3(0, 0.1, -35),
-      baseRotation: new THREE.Euler(THREE.MathUtils.degToRad(25), THREE.MathUtils.degToRad(15), 0)
-    });
-
-    const overlayURL = "https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png";
-    const laptopOverlayURL = "https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png";
+    const overlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png';
+    const laptopOverlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';
 
     function addOverlay(section, textureURL, size, position) {
       const loader = new THREE.TextureLoader();
@@ -723,28 +485,16 @@
       });
     }
 
-    const waitForModel = (section, cb) => {
-      const check = setInterval(() => {
-        if (section.getModel()) {
-          cb();
-          clearInterval(check);
-        }
-      }, 100);
-    };
+    const waitForModel = (section, cb) => { const id = setInterval(()=>{ if (section.getModel()) { clearInterval(id); cb(); } }, 100); };
+    waitForModel(s2, () => addOverlay(s2, overlayURL, [4.52, 2.8], [0, 0.35, 1.06]));
+    waitForModel(s4, () => addOverlay(s4, laptopOverlayURL, [29, 17], [0, 10.7, -10.5]));
 
-    // Add overlay to Steam Deck for Menzoberranzan section
-    waitForModel(section2_menzoberranzan, () => addOverlay(section2_menzoberranzan, overlayURL, [4.52, 2.8], [0, 0.35, 1.06]));
+    const scenes = [s1, s2, s3, s4, s5];
+    const clock  = new THREE.Clock();
 
-    // Add laptop screen overlay for Seniors Connect section
-    waitForModel(section4_seniorsconnect, () => addOverlay(section4_seniorsconnect, laptopOverlayURL, [29, 17], [0, 10.7, -10.5]));
-
-    const sections_3d = [section1_skrimp, section2_menzoberranzan, section3_jaguar, section4_seniorsconnect, section5_halalmeals];
-    const clock = new THREE.Clock();
-
-    // Optimized mouse tracking for 3D models - Only on desktop
     let mouseMoveX = 0, mouseMoveY = 0;
     if (isDesktop) {
-      document.addEventListener("mousemove", (e) => {
+      document.addEventListener('mousemove', (e) => {
         mouseMoveX = (e.clientX / window.innerWidth - 0.5) * 2;
         mouseMoveY = (e.clientY / window.innerHeight - 0.5) * 2;
       });
@@ -752,22 +502,18 @@
 
     function animate() {
       requestAnimationFrame(animate);
-      const elapsed = clock.getElapsedTime();
-
-      sections_3d.forEach(section => {
+      const t = clock.getElapsedTime();
+      scenes.forEach(section => {
         const model = section.getModel();
         if (model) {
           const scaleFactor = getScaleFactor();
-          const scaledValue = section.originalScale * scaleFactor;
-          model.scale.lerp(new THREE.Vector3(scaledValue, scaledValue, scaledValue), 0.05);
-          model.position.y = section.basePosition.y + 0.1 * Math.sin(elapsed * 0.5);
-
-          // Only apply mouse tracking on desktop
+          const s = section.originalScale * scaleFactor;
+          model.scale.lerp(new THREE.Vector3(s, s, s), 0.05);
+          model.position.y = section.basePosition.y + 0.1 * Math.sin(t * 0.5);
           if (isDesktop) {
             model.rotation.x = THREE.MathUtils.lerp(model.rotation.x, section.baseRotation.x + (-mouseMoveY * 0.1), 0.05);
             model.rotation.y = THREE.MathUtils.lerp(model.rotation.y, section.baseRotation.y + (mouseMoveX * 0.1), 0.05);
           } else {
-            // On mobile, just use base rotation
             model.rotation.x = section.baseRotation.x;
             model.rotation.y = section.baseRotation.y;
           }
@@ -778,14 +524,9 @@
     }
     animate();
 
-    window.addEventListener("resize", () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      sections_3d.forEach(section => {
-        section.camera.aspect = width / height;
-        section.camera.updateProjectionMatrix();
-        section.renderer.setSize(width, height);
-      });
+    window.addEventListener('resize', () => {
+      const w = window.innerWidth, h = window.innerHeight;
+      scenes.forEach(section => { section.camera.aspect = w / h; section.camera.updateProjectionMatrix(); section.renderer.setSize(w, h); });
     });
   </script>
 </body>

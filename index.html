@@ -508,19 +508,22 @@
           }
         }
     .testimonials-section {
-      height: 33vh;
+      height: auto;          /* grow with content */
+      min-height: 60svh;     /* optional: show a nice first fold */
       margin-top: 4rem;
       width: 100%;
-      overflow: hidden;
+      overflow: visible;     /* no clipping */
       position: relative;
     }
 
     .testimonial-iframe {
       width: 100%;
-      height: 100%;
+      height: auto;          /* we’ll set height via JS */
       border: none;
       display: block;
     }
+
+
 
 
 
@@ -608,7 +611,7 @@
 
         <!-- Full-width references goofy resume section -->
         <div class="testimonials-section">
-            <iframe src="testimonials.html" class="testimonial-iframe"></iframe>
+            <iframe id="testimonialsFrame" src="testimonials.html" class="testimonial-iframe"></iframe>
         </div>
 
         <section class="section contact" id="contact">
@@ -774,6 +777,42 @@
         }
 
     </script>
+
+
+    <script>
+      (function () {
+        const frame = document.getElementById('testimonialsFrame');
+
+        function resizeFromDOM() {
+          try {
+            const doc = frame.contentDocument || frame.contentWindow.document;
+            const h = Math.max(
+              doc.body?.scrollHeight || 0,
+              doc.documentElement?.scrollHeight || 0
+            );
+            if (h) frame.style.height = h + 'px';
+          } catch (e) {
+            // Cross-origin guard; if different origin, rely on postMessage only
+          }
+        }
+
+        frame.addEventListener('load', () => {
+          resizeFromDOM();               // initial fit
+          // Refit again shortly after in case fonts/images shift layout
+          setTimeout(resizeFromDOM, 50);
+          setTimeout(resizeFromDOM, 250);
+        });
+
+        // Listen for inner page height pings
+        window.addEventListener('message', (e) => {
+          if (e?.data?.type === 'testimonialsHeight' && Number.isFinite(e.data.height)) {
+            frame.style.height = e.data.height + 'px';
+          }
+        });
+      })();
+    </script>
+
+
  <!-- Resume Popup -->
 <div id="resume-popup" style="
     display: none;
