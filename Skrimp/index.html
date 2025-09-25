@@ -1,549 +1,656 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jaguar Redesign – Full Experience</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jaguar Redesign – Full Project</title>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-        }
+  <style>
+    :root {
+      /* Girlypop Colors - matching hero/bento aesthetic */
+      --bg-gradient: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
+      --glass-bg: rgba(15, 20, 25, 0.35);
+      --glass-border: rgba(168, 218, 220, 0.3);
+      --text-primary: #f1faee;
+      --text-secondary: #a8dadc;
+      --accent-teal: #2a9d8f;
+      --accent-blue: #457b9d;
+      --accent-light: #a8dadc;
+      --card-bg: rgba(15, 20, 25, 0.45);
+      --gradient-text: linear-gradient(45deg, #a8dadc, #457b9d, #f1faee, #66fcf1, #2a9d8f);
 
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 20s ease infinite;
-            color: #f1faee;
-            cursor: none !important;
-            position: fixed;
-            width: 100%;
-        }
-
-        *, *::before, *::after {
-            cursor: none !important;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Layer 1: Sky Background (Bottom) */
-        /* keep page + study scroller transparent */
-        html, body, .content-layer, #studyContent { background: transparent !important; }
-
-        /* layering */
-        .sky-background { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-        .content-layer  { position: fixed; top: 80px; left: 0; right: 0; bottom: 0; z-index: 50; }
-        .nav-layer      { z-index: 100; }
-
-
-       .sky-background {
-          position: fixed;
-          inset: 0;
-          z-index: 1;
-          pointer-events: none;
-        }
-
-        .sky-canvas {
-          width: 100%;
-          height: 100%;
-          display: block;
-        }
-
-
-        /* Layer 2: Navigation (Middle) */
-        .nav-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 80px;
-            z-index: 100;
-        }
-
-        /* Layer 3: Loading Screen (When Active) */
-        .loading-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1000;
-            opacity: 1;
-            transition: opacity 1s ease-out;
-        }
-
-        .loading-layer.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* Layer 4: Case Study Content (Top) */
-        .content-layer {
-            position: fixed;
-            top: 80px;
-            left: 0;
-            width: 100%;
-            height: calc(100vh - 80px);
-            z-index: 50;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .study-content {
-            width: 100%;
-            background: transparent;
-            padding: 0;
-        }
-
-        /* Custom Glassmorphism Cursor */
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: rgba(42, 157, 143, 0.3);
-            border: 2px solid rgba(42, 157, 143, 0.8);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10001;
-            backdrop-filter: blur(8px);
-            transition: all 0.08s ease-out;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
-        }
-
-        .custom-cursor.clicking {
-            background: rgba(42, 157, 143, 0.9);
-            border-color: rgba(42, 157, 143, 1);
-            transform: translate(-50%, -50%) scale(0.8);
-            box-shadow: 0 0 25px rgba(42, 157, 143, 0.8), inset 0 0 15px rgba(42, 157, 143, 0.3);
-        }
-
-        .custom-cursor.hovering {
-            width: 30px;
-            height: 30px;
-            background: rgba(42, 157, 143, 0.4);
-            border-color: rgba(42, 157, 143, 0.9);
-            box-shadow: 0 0 20px rgba(42, 157, 143, 0.6), inset 0 0 12px rgba(42, 157, 143, 0.2);
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .nav-layer {
-                height: 70px;
-            }
-            .content-layer {
-                top: 70px;
-                height: calc(100vh - 70px);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .nav-layer {
-                height: 60px;
-            }
-            .content-layer {
-                top: 60px;
-                height: calc(100vh - 60px);
-            }
-        }
-
-        /* Override nav component popup constraints with higher specificity */
-        #resume-popup {
-            width: 95vw !important;
-            height: 95vh !important;
-            max-width: none !important;
-        }
-
-        @media screen and (max-width: 600px) {
-            #resume-popup {
-                width: 95vw !important;
-                height: 90vh !important;
-                max-width: none !important;
-            }
-        }
-    </style>
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js"
-        }
+      /* Radial progress circle values */
+      --circle-size: 100;
+      --circle-radius: 45;
+      --circle-circumference: 282.743;
+      --circle-track: rgba(168, 218, 220, 0.3);
     }
-    </script>
+
+    /* Reset & Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { cursor: none !important; }
+
+    /* Keep page transparent so background.html shows through */
+    html, body { background: transparent !important; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      color: #f1faee;
+      cursor: none !important;
+      /* NOTE: do NOT set position: fixed or width:100% here (prevents scroll) */
+    }
+
+    /* Background host (behind everything, never captures clicks) */
+    #bg-host {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+    #bg-host > iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    /* Custom Glassmorphism Cursor */
+    .custom-cursor {
+      position: fixed; width: 20px; height: 20px;
+      background: rgba(42, 157, 143, 0.3);
+      border: 2px solid rgba(42, 157, 143, 0.8);
+      border-radius: 50%; pointer-events: none; z-index: 10000;
+      backdrop-filter: blur(8px); transition: all 0.08s ease-out;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
+    }
+    .custom-cursor.clicking {
+      background: rgba(42, 157, 143, 0.9);
+      border-color: rgba(42, 157, 143, 1);
+      transform: translate(-50%, -50%) scale(0.8);
+      box-shadow: 0 0 25px rgba(42, 157, 143, 0.8), inset 0 0 15px rgba(42, 157, 143, 0.3);
+    }
+    .custom-cursor.hovering {
+      width: 30px; height: 30px;
+      background: rgba(42, 157, 143, 0.4);
+      border-color: rgba(42, 157, 143, 0.9);
+      box-shadow: 0 0 20px rgba(42, 157, 143, 0.6), inset 0 0 12px rgba(42, 157, 143, 0.2);
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1, h2, h3, h4 {
+      color: var(--text-secondary);
+      font-family: 'Montserrat Alternates', sans-serif;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: disc inside; }
+
+    /* Global Section Styling with Glassmorphism */
+    section { width: 100%; padding: 5rem 0; position: relative; }
+    .section-content { max-width: 1400px; margin: 0 auto; padding: 0 5%; text-align: left; }
+
+    .section-content h2 {
+      font-size: 2.5rem; margin-bottom: 1.5rem;
+      background: var(--gradient-text); background-size: 200% 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: gradientShift 8s ease infinite; font-weight: 700;
+    }
+    .section-content p { font-size: 1.1rem; max-width: 800px; margin-bottom: 2rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+
+    /* Scroll Reveal */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .5s ease-out, transform .5s ease-out; }
+    .active { opacity: 1 !important; transform: translateY(0) !important; }
+
+    /* HERO */
+    .hero { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 0 5%; position: relative; }
+    .hero-container {
+      display: flex; width: 100%; max-width: 1400px; justify-content: space-between; align-items: flex-start;
+      background: var(--glass-bg); backdrop-filter: blur(25px); border-radius: 24px; padding: 3rem;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .hero-left { flex: 1; padding-right: 2rem; }
+    .hero-left h1 {
+      font-size: 5rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.1;
+      background: var(--gradient-text); background-size: 300% 300%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: gradientShift 4s ease infinite;
+    }
+    .hero-left h2 { font-size: 2rem; font-weight: 400; color: var(--text-secondary); }
+    .hero-right { max-width: 40%; display: flex; flex-direction: column; gap: 1rem; align-items: flex-end; }
+    .header-info p { font-size: 1rem; text-align: right; margin-bottom: .5rem; color: var(--text-primary); }
+    .header-info ul.skills-list { margin-left: 1.5rem; color: var(--text-secondary); }
+    .overview-cover { width: 100%; display: block; border-radius: 16px; margin-top: 2rem; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 1px solid var(--glass-border); }
+
+    .skip-link { margin-top: 1rem; }
+    .skip-button {
+      display: inline-block; background: linear-gradient(45deg, var(--accent-teal), var(--accent-blue));
+      color: var(--text-primary); font-size: .9rem; font-weight: 700; text-transform: uppercase;
+      padding: 1rem 2rem; border: none; border-radius: 50px; cursor: pointer; transition: all .3s ease;
+      font-family: 'Montserrat', sans-serif; box-shadow: 0 4px 15px rgba(42,157,143,.4); position: relative; overflow: hidden;
+    }
+    .skip-button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(42,157,143,.6); }
+    .skip-button::before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); transition: left .5s;
+    }
+    .skip-button:hover::before { left: 100%; }
+
+    /* Glass cards, grids, etc. (unchanged from your file) */
+    .glass-card{background:var(--glass-bg);backdrop-filter:blur(25px);border-radius:20px;padding:2rem;border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);transition:.3s;position:relative;overflow:hidden;}
+    .glass-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,218,220,.08),transparent);transition:left .8s ease;}
+    .glass-card:hover{transform:translateY(-5px);background:rgba(15,20,25,.5);border:1px solid rgba(168,218,220,.4);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(42,157,143,.2),inset 0 1px 0 rgba(255,255,255,.15);}
+    .glass-card:hover::before{left:100%;}
+    .challenge-row,.scene-row,.ideation-row,.must-haves-container,.process-dense-row,.constraints-row{display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-top:2rem;}
+    .challenge-col,.scene-col,.ideation-col{flex:1;min-width:300px;}
+    .challenge-col.left img.challenge-blackbox,.challenge-skinny-image{width:100%;border-radius:16px;display:block;box-shadow:0 8px 32px rgba(0,0,0,.3);border:1px solid var(--glass-border);}
+    .highlight-box{background:var(--card-bg);backdrop-filter:blur(20px);padding:1.5rem;border-radius:16px;font-weight:500;margin-top:.75rem;border:1px solid var(--glass-border);box-shadow:0 4px 16px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.05);color:var(--text-primary);}
+    .scene-big-image{text-align:center;margin-top:2rem;}
+    .scene-big-image img{max-width:100%;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);border:1px solid var(--glass-border);}
+
+    .research{padding:5rem 5%;text-align:left;}
+    .quote-grid{display:grid;grid-template-columns:repeat(3,minmax(240px,1fr));gap:1.5rem;justify-content:center;margin-bottom:3rem;}
+    .quote-card{background:var(--glass-bg);backdrop-filter:blur(35px);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.2);padding:1.5rem;min-height:180px;opacity:0;transform:translateY(20px);transition:.5s;border:1px solid var(--glass-border);position:relative;overflow:hidden;}
+    .quote-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,218,220,.05),transparent);transition:left .6s ease;}
+    .quote-card:hover::before{left:100%;}
+    .quote-text{font-size:1rem;line-height:1.5;margin-bottom:1rem;color:var(--text-primary);}
+    .quote-author{font-size:.9rem;opacity:.8;text-align:right;color:var(--text-secondary);}
+
+    .stats-grid{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:2rem;justify-items:center;margin:0 auto;}
+    .stats-card{background:var(--glass-bg);backdrop-filter:blur(35px);border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.2);padding:2rem 1rem;text-align:center;min-height:220px;width:100%;max-width:400px;opacity:0;transform:translateY(20px);transition:.5s;position:relative;border:1px solid var(--glass-border);overflow:hidden;}
+    .stats-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(42,157,143,.05),transparent);transition:left .8s ease;}
+    .stats-card:hover::before{left:100%;}
+    .stats-title{margin-top:1rem;font-size:1.2rem;margin-bottom:.5rem;color:var(--text-secondary);font-family:'Montserrat Alternates',sans-serif;font-weight:600;}
+    .stats-desc{font-size:1rem;line-height:1.4;max-width:300px;margin:.5rem auto 0;color:var(--text-primary);}
+    .circle-container{width:var(--circle-size)px;height:var(--circle-size)px;margin:0 auto .75rem;position:relative;}
+    .circle-bg{stroke:var(--circle-track);fill:none;stroke-width:10;}
+    .circle-progress{stroke:var(--accent-teal);fill:none;stroke-width:10;stroke-linecap:round;stroke-dasharray:var(--circle-circumference);stroke-dashoffset:var(--circle-circumference);transition:stroke-dashoffset 1.2s ease;}
+    .circle-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.1rem;font-weight:700;color:var(--text-secondary);}
+
+    .constraints { padding: 4rem 0; }
+    .constraints .section-content{max-width:1400px;margin:0 auto;padding:0 5%;text-align:left;}
+    .constraints h2{font-size:2.5rem;margin-bottom:1rem;}
+    .constraints-right h3{font-size:1.75rem;margin-bottom:1rem;color:var(--text-secondary);}
+    .constraints-right p{font-size:1.1rem;line-height:1.5;color:var(--text-primary);}
+
+    .ideation-images{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem;}
+    .ideation-images img{width:48%;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.2);border:1px solid var(--glass-border);}
+    .ideation-big-image{text-align:center;margin-top:2rem;}
+    .ideation-big-image img{max-width:100%;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);border:1px solid var(--glass-border);}
+
+    .must-haves-container{display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;max-width:1400px;margin:3rem auto 0;text-align:left;}
+    .must-haves-card{background:var(--glass-bg);backdrop-filter:blur(35px);border-radius:16px;padding:1.5rem;box-shadow:0 8px 32px rgba(0,0,0,.2);border:1px solid var(--glass-border);transition:.3s;position:relative;overflow:hidden;}
+    .must-haves-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,218,220,.05),transparent);transition:left .6s ease;}
+    .must-haves-card:hover::before{left:100%;}
+
+    .design-process { text-align: left; width: 100%; padding: 4rem 0; }
+    .design-process .section-content { max-width: 1400px; margin: 0 auto; padding: 0 5%; }
+    .process-subsection { text-align: left; margin-bottom: 4rem; }
+    .process-subsection h3 {
+      font-size: 2rem; margin-bottom: 1rem; color: var(--text-secondary);
+      background: var(--gradient-text); background-size: 200% 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: gradientShift 6s ease infinite;
+    }
+
+    .shorts-container{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:2rem;}
+    .shorts-container iframe{width:480px;height:270px;border:none;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.3);}
+
+    .video-embed,.figma-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin:2rem auto 0;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);}
+    .video-embed iframe,.figma-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:16px;}
+
+    .takeaways{text-align:center;}
+    .takeaways h3{font-size:1rem;font-weight:400;text-transform:lowercase;opacity:.8;margin-bottom:.5rem;color:var(--text-secondary);}
+    .takeaways h2{font-size:2rem;font-weight:700;margin-bottom:2rem;}
+    .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:2rem;max-width:1400px;margin:0 auto;}
+    .card{background:var(--glass-bg);backdrop-filter:blur(35px);padding:2rem;border-radius:20px;transition:.3s;text-align:left;border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,.2);position:relative;overflow:hidden;}
+    .card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,218,220,.08),transparent);transition:left .8s ease;}
+    .card:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,0,0,.3);}
+    .card:hover::before{left:100%;}
+    .card h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;opacity:.7;margin-bottom:.5rem;color:var(--accent-teal);}
+    .card h3{font-size:1.3rem;margin-bottom:.7rem;color:var(--text-secondary);}
+    .card p{font-size:1rem;line-height:1.4;color:var(--text-primary);}
+
+    /* Anchor target spacing (for fixed navs) */
+    #contact { scroll-margin-top: 96px; }
+
+    /* Responsive */
+    @media (max-width: 768px){
+      .hero-container{flex-direction:column;align-items:center;text-align:center;padding:2rem;}
+      .hero-left{padding-right:0;}
+      .hero-left h1{font-size:3.5rem;}
+      .hero-left h2{font-size:1.75rem;}
+      .hero-right{max-width:100%;align-items:center;}
+      .quote-grid{grid-template-columns:1fr;}
+      .stats-grid{grid-template-columns:1fr;}
+      .shorts-container{flex-direction:column;align-items:center;}
+      .shorts-container iframe{width:100%;max-width:480px;}
+      .cards{grid-template-columns:1fr;}
+    }
+    @media (max-width:480px){
+      .hero-left h1{font-size:2.5rem;}
+      .hero-left h2{font-size:1.5rem;}
+      .section-content h2{font-size:2rem;}
+      .hero-container{padding:1.5rem;}
+      .glass-card,.highlight-box,.must-haves-card,.card{padding:1.5rem;}
+    }
+  </style>
+
+  <!-- (Unused here, safe to keep) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js"
+    }
+  }
+  </script>
 </head>
 <body>
-    <!-- Custom Glassmorphism Cursor -->
-    <div class="custom-cursor" id="cursor"></div>
+  <!-- Custom Cursor -->
+  <div class="custom-cursor" id="cursor"></div>
 
-    <!-- Layer 1: Loading Screen - Load your component here -->
-    <div class="loading-layer" id="loadingLayer">
-        <!-- Your loading.html content will be loaded here -->
-    </div>
+  <!-- Injected NAV (no iframe) -->
+  <div id="nav-slot" data-include="../nav.html"></div>
 
-    <!-- Layer 2: Sky Background (Bottom Layer) -->
-    <div class="sky-background">
-        <canvas class="sky-canvas" id="skyCanvas"></canvas>
-    </div>
-
-    <!-- Layer 3: Navigation - Load your component here -->
-    <div class="nav-layer" id="navLayer">
-        <!-- Your nav.html content will be loaded here -->
-    </div>
-
-    <!-- Layer 4: Case Study Content (Top Layer) -->
-    <div class="content-layer">
-        <div class="study-content" id="studyContent">
-            <!-- Your study.html content will be loaded here -->
+  <!-- HERO -->
+  <header class="hero" id="hero">
+    <div class="hero-container section-content reveal">
+      <div class="hero-left">
+        <h1 class="reveal">Jaguar Redesign</h1>
+        <h2 class="reveal">Preserving their iconic legacy by fixing the 2024 rebrand disaster.</h2>
+      </div>
+      <div class="hero-right reveal">
+        <div class="header-info reveal">
+          <p><strong>Role:</strong> Lead Designer</p>
+          <p><strong>Timeline:</strong> 3 Weeks</p>
+          <p><strong>Tools &amp; Skills:</strong></p>
+          <ul class="skills-list">
+            <li>User Research</li>
+            <li>Prototyping</li>
+            <li>Design Systems</li>
+            <li>Typography</li>
+            <li>Figma</li>
+          </ul>
         </div>
+        <div class="skip-link reveal">
+          <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+        </div>
+      </div>
     </div>
+  </header>
 
-    <script type="module">
-        import * as THREE from "three";
-        import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
+  <!-- PROJECT OVERVIEW -->
+  <section class="project-overview" id="project-overview">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 1 // Project Overview</h2>
+      <p class="reveal">
+        Jaguar is a brand with legacy — bold, fast, and unmistakably British. But in recent years, that legacy has stalled. This project set out to reignite Jaguar's cultural relevance for a new generation of drivers by redefining how the brand speaks, looks, and feels.
+      </p>
+      <p class="reveal">
+        Our goal: craft a modern identity system that honors Jaguar's heritage while capturing the spirit of innovation, edge, and luxury performance that once made it iconic. Through strategic brand analysis, visual exploration, and experience-driven storytelling, we set the stage for Jaguar's next era.
+      </p>
+      <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/96860304_PcIkCNlaZ4Dp9nO.png" alt="Cover Art" class="overview-cover reveal">
+    </div>
+  </section>
 
-        // Custom Cursor Logic (keeping your exact implementation)
-        const cursor = document.getElementById('cursor');
-        let mouseX = 0;
-        let mouseY = 0;
-        let animationId;
+  <!-- CHALLENGE -->
+  <section class="challenge" id="challenge">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 2 // The Challenge</h2>
+      <div class="challenge-row">
+        <div class="challenge-col left reveal">
+          <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774691_oOn2ZjIy4KXb65z.png" alt="Black box image" class="challenge-blackbox">
+        </div>
+        <div class="challenge-col right reveal">
+          <p class="reveal">
+            Jaguar's 2024 rebrand attempted to modernize the brand with sleek visuals and a vague tagline — but lacked a clear emotional hook or story. Unlike BMW's performance-driven identity or Mercedes' luxury-first image, Jaguar struggled to answer a simple question: "What do we stand for now?"
+          </p>
+          <p class="reveal">This brand ambiguity left Jaguar stuck between categories — too premium to be scrappy, too legacy to feel innovative. As one industry review noted:</p>
+          <p class="reveal">"Jaguar seems unsure whether to chase Tesla or hold onto its heritage — and ends up doing neither." — Top Gear, 2023</p>
+          <p class="reveal">
+            To bring Jaguar back to cultural relevance, we needed more than another aesthetic refresh. We needed a compelling, resonant brand identity grounded in emotion, meaning, and modern expectations.
+          </p>
+          <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774810_wh3JXF1rmKHDNtC.png" alt="Skinny screenshot" class="challenge-skinny-image reveal">
+          <div class="highlight-box reveal">
+            "But the original jaguar is so cool" - this is true, yes. The original Jaguar 'leaper' logo will forever be iconic, but after 5+ years of not making a profit, it had become clear their brand identity wasn't working.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        function updateCursor() {
-            cursor.style.left = mouseX + 'px';
-            cursor.style.top = mouseY + 'px';
+  <!-- SCENE -->
+  <section class="scene" id="scene">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 3 // Let's set the scene</h2>
+      <div class="scene-row">
+        <div class="scene-col left reveal">
+          <h4 class="reveal">What went wrong with the 2024 rebrand? How can we fix it?</h4>
+          <p class="reveal">
+            Jaguar attempted various brand taglines, such as "The Art of Performance" and "Alive," but these failed to resonate with audiences in the same way as competitors' more iconic slogans, such as BMW's "Ultimate Driving Machine."
+          </p>
+          <p class="reveal">
+            This inconsistency left consumers unclear about Jaguar's identity—was it a performance brand, a luxury brand, or something in between? In contrast, BMW, Mercedes, and Audi each maintained strong, well-defined positions in the market, with BMW focusing on performance, Mercedes on luxury, and Audi on technological innovation.
+          </p>
+        </div>
+        <div class="scene-col right reveal">
+          <div class="highlight-box reveal">
+            This created an interesting opportunity, Jaguar has heritage, but it's not owning a lane. Unlike competitors, its identity isn't clear or confidently positioned.
+          </div>
+          <div class="highlight-box reveal">
+            I wanted to build a brand that doesn't just look sleek, but feels emotionally specific— something you remember, not just recognize.
+          </div>
+        </div>
+      </div>
+      <div class="scene-big-image reveal">
+        <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98776582_6Zw9ruYy2NCHf3q.png" alt="Problem Statement: Simplified footage preview">
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH -->
+  <section class="research" id="research-results">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 3.4 // Research &amp; Survey Results</h2>
+      <p class="reveal">
+        In 2024, Jaguar's Super Bowl ad went viral — but not for the right reasons. Elon Musk famously responded on X: "Do you sell cars?" The moment highlighted a broader perception issue: consumers knew Jaguar looked good, but weren't sure what it actually stood for.
+      </p>
+      <p class="reveal">
+        We conducted a mix of brand perception interviews, survey feedback, and cultural audits to understand how Jaguar is seen today...
+      </p>
+
+      <div class="quote-grid reveal">
+        <div class="quote-card reveal"><div class="quote-text">"I know Jaguar's fast… but I don't know what they mean anymore."</div><div class="quote-author">— Interviewee</div></div>
+        <div class="quote-card reveal"><div class="quote-text">"Feels like they're afraid to pick a side — sporty? classy? electric?"</div><div class="quote-author">— Twitter User</div></div>
+        <div class="quote-card reveal"><div class="quote-text">"It's still a beautiful car — but the brand's lost its edge."</div><div class="quote-author">— Top Gear, 2024</div></div>
+        <div class="quote-card reveal"><div class="quote-text">"Jaguar's cool, but it's not part of the conversation."</div><div class="quote-author">— Marketing week analysis, 2023</div></div>
+        <div class="quote-card reveal"><div class="quote-text">"Jaguar hasn't had a defining campaign since 'It's Good to Be Bad.' Everything since has felt like filler."</div><div class="quote-author">— Autocar, 2024 Brand Retrospective</div></div>
+      </div>
+
+      <h3 class="reveal" style="margin-top:3rem;margin-bottom:2rem;color:var(--text-secondary);font-family:'Montserrat Alternates',sans-serif;">Key Findings</h3>
+      <div class="stats-grid reveal">
+        <div class="stats-card reveal" data-percent="81">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Could recall BMW's tagline— only 26% remembered Jaguar's</h3>
+          <p class="stats-desc reveal">Brand slogans like "The Ultimate Driving Machine" had higher stickiness than Jaguar's recent messaging.</p>
+        </div>
+
+        <div class="stats-card reveal" data-percent="59">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Said Jaguar "looks great," but couldn't name a single ad or campaign</h3>
+          <p class="stats-desc reveal">Visual appeal remains strong, but narrative connection is weak.</p>
+        </div>
+
+        <div class="stats-card reveal" data-percent="64">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Of drivers under 35 associated Jaguar with "older generations"</h3>
+          <p class="stats-desc reveal">A major perception gap exists between emerging markets and legacy image.</p>
+        </div>
+
+        <div class="stats-card reveal" data-percent="72">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Agreed Jaguar needs to "pick a lane"</h3>
+          <p class="stats-desc reveal">Consumers expressed confusion over whether Jaguar was performance-first, luxury-first, or electric-forward.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONSTRAINTS -->
+  <section class="constraints" id="constraints">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 3.5 // Our Constraints</h2>
+      <p class="reveal" style="font-size:1.1rem;line-height:1.5;margin-bottom:2rem;">
+        With a legacy brand like Jaguar, reimagining identity isn't just a creative exercise — it's a balancing act...
+      </p>
+      <div class="constraints-row">
+        <div class="constraints-left">
+          <div class="highlight-box reveal"><strong>⏳ A three-week sprint</strong><p style="margin-top:.5rem;">We worked within a tight timeframe to deliver a clear, provable brand direction before Jaguar's Q2 review.</p></div>
+          <div class="highlight-box reveal"><strong>🎯 Legacy brand tension</strong><p style="margin-top:.5rem;">Every design decision had to respect heritage elements...</p></div>
+          <div class="highlight-box reveal"><strong>🗣 Public perception fatigue</strong><p style="margin-top:.5rem;">Multiple past rebrands had created skepticism...</p></div>
+          <div class="highlight-box reveal"><strong>⚖️ Internal alignment</strong><p style="margin-top:.5rem;">Our scope had to be clear enough to rally cross-functional teams...</p></div>
+        </div>
+        <div class="constraints-right">
+          <h3 class="reveal">The Problem &amp; Our Scope</h3>
+          <p class="reveal">Redefining Jaguar's brand identity required balancing creative ambition with business realities...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IDEATION -->
+  <section class="ideation" id="ideation">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 4 // Ideating</h2>
+      <div class="ideation-row">
+        <div class="ideation-col left reveal">
+          <p>In this phase, we explored not just what Jaguar could say — but how it should feel...</p>
+          <p>Every creative direction asked the same question: If Jaguar were a person, what would they be like today?...</p>
+        </div>
+        <div class="ideation-col right reveal">
+          <div class="highlight-box reveal">We explored dozens of brand tones— from heritage luxury to renegade precision...</div>
+          <div class="highlight-box reveal">We prioritized tone directions that felt emotionally specific...</div>
+          <div class="ideation-images reveal">
+            <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98821399_vOUK29Ba9ku8bkL.png" alt="Sketch 1">
+            <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98821447_5z3eN2buuaJl0RX.png" alt="Sketch 2">
+          </div>
+        </div>
+      </div>
+      <div class="ideation-big-image reveal">
+        <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98821276_BZtdC5on8Td3fi5.png" alt="Big Ideation Visual">
+      </div>
+      <div class="must-haves-container reveal">
+        <div class="must-haves-left reveal">
+          <h3>Brainstorming our must-haves</h3>
+          <p>Designing with legacy and longevity in mind.</p>
+        </div>
+        <div class="must-haves-right reveal">
+          <div class="must-haves-card reveal"><h4>🏁 A Distinct Brand Lane</h4><p>Jaguar needed a clarified market position...</p></div>
+          <div class="must-haves-card reveal"><h4>🎯 Emotive, Modern Messaging</h4><p>The brand voice had to evoke aspiration, precision, and seduction...</p></div>
+          <div class="must-haves-card reveal"><h4>🎨 A Cohesive Visual Identity</h4><p>We explored a refined visual system—dark greens, serif typography...</p></div>
+          <div class="must-haves-card reveal"><h4>🔁 Scalable Brand Architecture</h4><p>From digital experiences to showroom signage...</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESIGN PROCESS -->
+  <section class="design-process" id="design-process">
+    <div class="section-content reveal">
+      <h2 class="reveal">Section 5 // Design Process</h2>
+      <div class="process-subsection reveal">
+        <h3 class="reveal">5.1 // Logo &amp; Identity System Development</h3>
+        <p class="reveal">The leaper is iconic — but nostalgia doesn't move product...</p>
+        <div class="process-dense-row reveal">
+          <div class="process-dense-left">
+            <div class="highlight-box reveal">We refined the logo into a versatile, minimal identity system...</div>
+            <div class="highlight-box reveal">We're not ditching the leaper. We're acknowledging it no longer leads.</div>
+          </div>
+          <div class="process-dense-right">
+            <div class="mini-images reveal">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98821965_mbRH7JdHo7sNLzQ.png" alt="Sketch 3">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98822003_TdB2Ris3hXom90u.png" alt="Sketch 4">
+            </div>
+          </div>
+        </div>
+        <div class="ideation-big-image reveal">
+          <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98822024_LF3WvpDdlR1khdh.png" alt="Big Ideation Visual">
+          <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98822071_h1ucDiYTJsSM1wd.png" alt="Big Ideation Visual">
+        </div>
+      </div>
+
+      <div class="process-subsection reveal">
+        <h3 class="reveal">5.2 // Prototyping &amp; Iteration</h3>
+        <p class="reveal">After defining our core features, we transitioned from paper sketches to interactive digital prototypes...</p>
+        <p class="reveal">Each prototype underwent multiple rounds of usability testing...</p>
+        <div class="process-dense-row reveal">
+          <div class="process-dense-left">
+            <div class="highlight-box reveal">Accessibility checks led to high contrast...</div>
+            <div class="highlight-box reveal">User testing prompted key changes...</div>
+          </div>
+          <div class="process-dense-right">
+            <div class="mini-images reveal">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98823042_6o6EVws4bbAYLob.png" alt="Prototype 1">
+              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98823062_CKkqWBw287VmxRT.png" alt="Prototype 2">
+            </div>
+          </div>
+        </div>
+
+        <div class="shorts-container reveal">
+          <iframe src="https://www.youtube.com/embed/fp2IUXuk0h0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <iframe src="https://www.youtube.com/embed/ViNgz9cA2F0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <iframe src="https://www.youtube.com/embed/Z9tMeMOs35I" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <div class="video-embed reveal">
+          <iframe src="https://www.youtube.com/embed/byAXR21e04s" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAKEAWAYS -->
+  <section class="takeaways" id="takeaways">
+    <div class="section-content reveal">
+      <h3 class="reveal">the end, but not really...</h3>
+      <h2 class="reveal">Section 6 // My Takeaways</h2>
+      <div class="cards reveal">
+        <div class="card reveal"><h4 class="reveal">01</h4><h3 class="reveal">Strategy drives style</h3><p class="reveal">Rebranding isn't just about visuals...</p></div>
+        <div class="card reveal"><h4 class="reveal">02</h4><h3 class="reveal">Legacy is not a limitation</h3><p class="reveal">Working with a historic brand challenged me...</p></div>
+        <div class="card reveal"><h4 class="reveal">03</h4><h3 class="reveal">Tools don't make taste</h3><p class="reveal">AI and motion tools accelerated the work...</p></div>
+        <div class="card reveal"><h4 class="reveal">04</h4><h3 class="reveal">Identity is lived, not just launched</h3><p class="reveal">A logo is just the beginning...</p></div>
+      </div>
+      <div class="reflection reveal" style="margin-top:3rem;max-width:800px;margin-left:auto;margin-right:auto;">
+        <h3 class="reveal" style="color:var(--text-secondary);font-size:1.75rem;margin-bottom:1rem;font-family:'Montserrat Alternates',sans-serif;">🗜️ From Research to Relevance</h3>
+        <p class="reveal" style="color:var(--text-primary);font-size:1.1rem;line-height:1.5;">This project pushed me beyond just making things look good...</p>
+        <p class="reveal" style="color:var(--text-primary);font-size:1.1rem;line-height:1.5;">What surprised me most? The hardest part wasn't simplifying — it was being specific...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Injected FOOTER (anchor target) -->
+  <div id="contact" data-include="../footer.html"></div>
+
+  <!-- ===== JS: Cursor, Reveal, Progress, Background, Partials ===== -->
+  <script type="module">
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    let mouseX = 0, mouseY = 0, rafId;
+    function updateCursor(){ cursor.style.left = mouseX+'px'; cursor.style.top = mouseY+'px'; }
+    document.addEventListener('mousemove',(e)=>{ mouseX=e.clientX; mouseY=e.clientY; if(!rafId){ rafId=requestAnimationFrame(()=>{ updateCursor(); rafId=null; }); }});
+    document.addEventListener('mousedown',()=>cursor.classList.add('clicking'));
+    document.addEventListener('mouseup',()=>cursor.classList.remove('clicking'));
+
+    // Delegated hover so it works for dynamically injected nav/footer
+    const hoverSel = 'a, button, .skip-button, .glass-card, .quote-card, .stats-card, .must-haves-card, .card, img';
+    document.addEventListener('mouseover', (e) => { if (e.target.closest(hoverSel)) cursor.classList.add('hovering'); });
+    document.addEventListener('mouseout',  (e) => { if (e.target.closest(hoverSel)) cursor.classList.remove('hovering'); });
+    document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { cursor.style.opacity = '1'; });
+
+    // Scroll reveal
+    const revealObserver = new IntersectionObserver((entries, obs)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){ entry.target.classList.add('active'); obs.unobserve(entry.target); }
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+    // Radial progress animation
+    function animateProgress(card, percentage){
+      const circle = card.querySelector('.circle-progress');
+      const label  = card.querySelector('.circle-text');
+      const circumference = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--circle-circumference'));
+      const targetOffset = circumference - (percentage / 100) * circumference;
+      circle.style.strokeDasharray = circumference;
+      circle.style.strokeDashoffset = circumference;
+      circle.style.strokeDashoffset = targetOffset;
+      let current = 0;
+      function step(){ if(current < percentage){ current++; label.textContent = current + '%'; requestAnimationFrame(step); } else { label.textContent = percentage + '%'; } }
+      requestAnimationFrame(step);
+    }
+    document.querySelectorAll('.stats-card').forEach(card=>{
+      card.addEventListener('transitionend',()=>{
+        if(card.classList.contains('active')){
+          const pct = parseInt(card.getAttribute('data-percent') || '0', 10);
+          animateProgress(card, pct);
         }
+      }, { once:true });
+    });
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+    // (Removed window resize handler that referenced undefined camera/renderer)
+    window.addEventListener('load', () => {
+      console.log('Jaguar case study loaded ✅');
+    });
+  </script>
 
-            if (!animationId) {
-                animationId = requestAnimationFrame(() => {
-                    updateCursor();
-                    animationId = null;
-                });
-            }
-        });
+  <!-- Background loader (fixed behind everything) -->
+  <script>
+    (function () {
+      if (document.getElementById('bg-host')) return; // idempotent
+      const host = document.createElement('div');
+      host.id = 'bg-host';
+      const frame = document.createElement('iframe');
+      frame.src = 'background.html';
+      frame.loading = 'eager';
+      frame.setAttribute('aria-hidden', 'true');
+      frame.tabIndex = -1;
+      host.appendChild(frame);
+      document.body.prepend(host);
+    })();
+  </script>
 
-        document.addEventListener('mousedown', () => {
-            cursor.classList.add('clicking');
-        });
+  <!-- Partials loader: loads nav.html and footer.html; executes their <script> tags -->
+  <script>
+    (async function includePartials() {
+      const targets = document.querySelectorAll('[data-include]');
+      for (const el of targets) {
+        const url = el.getAttribute('data-include');
+        try {
+          const res = await fetch(url, { credentials: 'same-origin' });
+          if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+          const html = await res.text();
 
-        document.addEventListener('mouseup', () => {
-            cursor.classList.remove('clicking');
-        });
+          // Inject HTML
+          el.innerHTML = html;
 
-        // Function to load HTML component into a container
-        async function loadComponent(url, containerId) {
-            try {
-                const response = await fetch(url);
-                const html = await response.text();
-
-                // Create a temporary div to parse the HTML
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-
-                // Extract styles and inject them
-                const styles = tempDiv.querySelectorAll('style');
-                styles.forEach(style => {
-                    document.head.appendChild(style.cloneNode(true));
-                });
-
-                // Extract the body content or all content
-                const bodyContent = tempDiv.querySelector('body');
-                const container = document.getElementById(containerId);
-
-                if (bodyContent) {
-                    container.innerHTML = bodyContent.innerHTML;
-                } else {
-                    // Fallback: use all content if no body tag
-                    container.innerHTML = html;
-                }
-
-                // Execute any scripts
-                const scripts = tempDiv.querySelectorAll('script');
-                scripts.forEach(script => {
-                    const newScript = document.createElement('script');
-                    if (script.src) {
-                        newScript.src = script.src;
-                    } else {
-                        newScript.textContent = script.textContent;
-                    }
-                    if (script.type) {
-                        newScript.type = script.type;
-                    }
-                    document.head.appendChild(newScript);
-                });
-
-                console.log(`✅ Component ${url} loaded successfully!`);
-                return true;
-
-            } catch (error) {
-                console.error(`❌ Failed to load component ${url}:`, error);
-                return false;
-            }
+          // Execute any inline or external <script> tags inside the partial
+          const scripts = el.querySelectorAll('script');
+          for (const oldScript of scripts) {
+            const s = document.createElement('script');
+            for (const { name, value } of [...oldScript.attributes]) s.setAttribute(name, value);
+            if (oldScript.src) s.src = oldScript.src; else s.textContent = oldScript.textContent || '';
+            oldScript.replaceWith(s);
+          }
+        } catch (err) {
+          console.warn(`Failed to include ${url}:`, err);
         }
-
-        // Three.js Sky Scene - IDENTICAL to your original
-        let scene, camera, renderer, skyMesh;
-        const clock = new THREE.Clock();
-        let loadingProgress = 0;
-        const totalAssets = 1;
-
-        function initSkyScene() {
-            console.log('Initializing master sky scene - identical to bento...');
-
-            // Scene setup - IDENTICAL to bento
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0, 12); // SAME as bento
-
-            // Renderer - IDENTICAL to bento
-            const canvas = document.getElementById('skyCanvas');
-            // inside initSkyScene()
-            renderer = new THREE.WebGLRenderer({
-              canvas: document.getElementById('skyCanvas'),
-              antialias: true,
-              alpha: false           // <-- key: canvas is NOT transparent anymore
-            });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
-            // optional: a dark clear color during the first frame/before GLB draws
-            renderer.setClearColor(0x0f1419, 1);
-
-            // Bright lighting for vertex colors - IDENTICAL to bento
-            const ambientLight = new THREE.AmbientLight(0xffffff, 3);
-            scene.add(ambientLight);
-
-            // Load the sky model - EXACT same logic as bento
-            const loader = new GLTFLoader();
-            loader.load('../models/skyblue.glb', function(gltf) {
-                skyMesh = gltf.scene;
-
-                console.log('Loaded skyblue.glb successfully in master scene!');
-
-                // Dig deeper into the GLTF structure - IDENTICAL to bento
-                console.log('FULL GLTF:', gltf);
-                console.log('GLTF parser:', gltf.parser);
-                console.log('GLTF parser json:', gltf.parser ? gltf.parser.json : 'no parser');
-
-                // Check the raw JSON data for textures/images - IDENTICAL to bento
-                if (gltf.parser && gltf.parser.json) {
-                    console.log('Raw JSON textures:', gltf.parser.json.textures);
-                    console.log('Raw JSON images:', gltf.parser.json.images);
-                    console.log('Raw JSON materials:', gltf.parser.json.materials);
-                }
-
-                // Look for textures in the parser cache - IDENTICAL to bento
-                if (gltf.parser && gltf.parser.cache) {
-                    console.log('Parser cache:', gltf.parser.cache);
-                }
-
-                // Scale and position - IDENTICAL to bento
-                skyMesh.scale.set(5, 5, 5);
-                skyMesh.position.set(0, 0, 0);
-
-                // Try to manually connect textures to materials - IDENTICAL to bento
-                skyMesh.traverse((child) => {
-                    if (child.isMesh) {
-                        console.log('Original material:', child.material.name);
-                        console.log('Material map before:', child.material.map);
-
-                        // Try to find and assign textures from the GLTF data
-                        if (gltf.parser && gltf.parser.json && gltf.parser.json.textures) {
-                            // Get the first texture from the GLTF data
-                            const textureIndex = 0;
-                            if (gltf.parser.json.textures[textureIndex]) {
-                                console.log('Found texture in GLTF JSON:', gltf.parser.json.textures[textureIndex]);
-
-                                // Use the parser to load the texture
-                                gltf.parser.loadTexture(textureIndex).then(texture => {
-                                    console.log('Loaded texture:', texture);
-                                    child.material.map = texture;
-
-                                    // Make it more vibrant and saturated!
-                                    child.material.color.setHex(0xffffff); // Pure white multiplier
-                                    child.material.transparent = false;
-                                    child.material.opacity = 1;
-                                    child.material.needsUpdate = true;
-
-                                    console.log('Applied vibrant texture to material!');
-                                });
-                            }
-                        } else {
-                            console.log('No textures found in GLTF JSON, using fallback');
-                            // Fallback - solid color
-                            child.material = new THREE.MeshBasicMaterial({
-                                color: 0x87CEEB,
-                                side: THREE.FrontSide,
-                                wireframe: false
-                            });
-                        }
-                    }
-                });
-
-                scene.add(skyMesh);
-                console.log('Sky loaded in master - check above for texture loading!');
-
-                // Asset loaded, update progress
-                loadingProgress++;
-                checkLoadingComplete();
-
-            }, function(progress) {
-                console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
-            }, function(error) {
-                console.error('Sky model failed to load in master:', error);
-
-                // Fallback - create vertex colored sphere manually - IDENTICAL to bento
-                const geometry = new THREE.SphereGeometry(1, 32, 32);
-
-                // Add some vertex colors to test
-                const colors = [];
-                const positionAttribute = geometry.attributes.position;
-                for (let i = 0; i < positionAttribute.count; i++) {
-                    colors.push(0.3, 0.6, 1); // Sky blue vertex colors
-                }
-                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-
-                const material = new THREE.MeshBasicMaterial({
-                    vertexColors: true,
-                    wireframe: false
-                });
-                skyMesh = new THREE.Mesh(geometry, material);
-                scene.add(skyMesh);
-                console.log('Using fallback vertex colored sphere in master');
-
-                loadingProgress++;
-                checkLoadingComplete();
-            });
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const elapsed = clock.getElapsedTime();
-
-            // Gentle autonomous movement - IDENTICAL to bento
-            if (skyMesh) {
-                skyMesh.rotation.y = elapsed * 0.02; // Slow rotation
-                skyMesh.rotation.x = Math.sin(elapsed * 0.03) * 0.1; // Gentle drift
-            }
-
-            // after the GLB loads and you've added it to the scene:
-            renderer.render(scene, camera);
-            requestAnimationFrame(() => {
-              document.getElementById('loadingLayer').classList.add('hidden');
-            });
-
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // Loading management
-        function checkLoadingComplete() {
-            if (loadingProgress >= totalAssets) {
-                // Sky is loaded! Hide your loading component and reveal the experience
-                setTimeout(() => {
-                    const loadingLayer = document.getElementById('loadingLayer');
-                    loadingLayer.classList.add('hidden');
-                    console.log('🎭 Sky loaded! Transitioning from your loading component to master experience!');
-                }, 500); // Brief delay for smooth transition
-            }
-        }
-
-        // Handle navigation messages (for compatibility with your nav component)
-        window.addEventListener('message', function(event) {
-            // Handle navigation messages from your nav component
-            if (event.data.type === 'navigate') {
-                // Scroll to section in main document
-                const targetElement = document.getElementById(event.data.target);
-                if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                } else {
-                    // Try to find element by class or other selector
-                    const element = document.querySelector(`[data-section="${event.data.target}"]`) ||
-                                   document.querySelector(`.${event.data.target}`);
-                    if (element) {
-                        element.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                }
-            }
-
-            // Handle scroll locking from nav
-            if (event.data.type === 'lockScroll') {
-                document.body.style.overflow = 'hidden';
-            }
-
-            if (event.data.type === 'unlockScroll') {
-                document.body.style.overflow = 'auto';
-            }
-
-            // Handle scroll to top
-            if (event.data.type === 'scrollToTop') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        });
-
-        // Initialize everything
-        window.addEventListener('load', async () => {
-            console.log('🚀 Initializing Jaguar Master Experience...');
-            console.log('📐 Loading layers: Loading → Sky → Nav → Study');
-
-            // Load your components (correct paths based on your file structure)
-            await loadComponent('../loading.html', 'loadingLayer');
-            await loadComponent('../nav.html', 'navLayer');
-            await loadComponent('study.html', 'studyContent');
-
-            const forceTransparent = document.createElement('style');
-            forceTransparent.textContent = `
-              html, body, .content-layer, #studyContent,
-              section, header, main, article {
-                background: transparent !important;
-              }
-            `;
-            document.head.appendChild(forceTransparent);
-
-
-            // Initialize sky scene
-            initSkyScene();
-            animate();
-        });
-
-        window.addEventListener('resize', onWindowResize);
-
-        // Remove the iframe-specific cursor hiding logic since we don't have iframes anymore
-        document.addEventListener('mouseleave', () => {
-            cursor.style.opacity = '0';
-        });
-
-        document.addEventListener('mouseenter', () => {
-            cursor.style.opacity = '1';
-        });
-
-        console.log('🌟 Jaguar Master Index - NO IFRAMES! Using YOUR Components! ✨🐆');
-    </script>
+      }
+    })();
+  </script>
 </body>
 </html>
