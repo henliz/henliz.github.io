@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
     // Check if we're coming from loading (has 'loaded' parameter)
     const urlParams = new URLSearchParams(window.location.search);
@@ -524,6 +525,88 @@
     }
 
 
+    /* --- Hen Footer (Zelda Scene) --- */
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    footer.hen-footer{
+      width:100%;
+      display:grid;
+      place-items:center;
+      gap:1rem;
+      padding:1.25rem 1rem 1.75rem;
+      border-top:1px solid rgba(168,218,220,0.18);
+      background:linear-gradient(180deg, rgba(168,218,220,0.06), rgba(15,20,25,0));
+    }
+
+    .dangerous-scene{
+      position:relative;
+      width:min(980px,96%);
+      min-height:220px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      gap:clamp(12px,4vw,40px);
+      padding:clamp(10px,3vw,20px);
+      isolation:isolate;
+    }
+
+    .hen-sprite,
+    .sword-btn img,
+    .bubble-img{ image-rendering:pixelated; image-rendering:crisp-edges; }
+
+    .hen-sprite{
+      width:clamp(72px,16vw,130px);
+      height:auto;
+      filter:drop-shadow(0 2px 0 rgba(0,0,0,0.2));
+      flex:0 0 auto;
+    }
+
+    .bubble{
+      position:absolute;
+      inset:clamp(-8px,-2.5vw,-18px) 0 auto 0; /* top only */
+      display:grid;
+      place-items:center;
+      pointer-events:none; /* clicks pass through */
+    }
+    .bubble-inner{ position:relative; width:min(780px,92%); }
+    .bubble-img{ width:100%; height:auto; display:block; opacity:.95; }
+
+    .bubble-text{
+      position:absolute; inset:0; display:grid; place-items:center;
+      padding:clamp(8px,2.2vw,18px);
+      text-align:center;
+      font-family:'Press Start 2P', monospace;
+      font-size:clamp(10px,2.4vw,16px);
+      line-height:1.35;
+      color:#102027;
+      text-shadow:0 1px 0 rgba(255,255,255,0.5);
+    }
+
+    .sword-wrap{ display:flex; flex-direction:column; align-items:center; }
+    .sword-btn{
+      background:transparent; border:0; padding:0; margin:0; cursor:pointer; outline:none;
+      flex:0 0 auto; translate:0 6px;
+    }
+    .sword-btn img{
+      width:clamp(72px,12vw,120px);
+      height:auto; display:block;
+      filter:drop-shadow(0 4px 12px rgba(69,123,157,0.45));
+      transition:transform 160ms ease, filter 160ms ease;
+    }
+    .sword-btn:hover img, .sword-btn:focus-visible img{
+      transform:translateY(-4px) scale(1.05);
+      filter:drop-shadow(0 6px 16px rgba(42,157,143,0.55));
+    }
+    .sword-caption{ text-align:center; font-size:.9rem; opacity:.75; margin-top:.25rem; }
+
+    .credit{
+      text-align:center; opacity:.8; font-size:.95rem; margin:.25rem 0 0; color:#f1faee;
+    }
+
+    @media (max-width:640px){
+      .dangerous-scene{ min-height:190px; }
+      .bubble-text{ font-size:clamp(10px,3.2vw,14px); }
+    }
 
 
 
@@ -587,22 +670,35 @@
         <div class="testimonials-section">
             <iframe id="testimonialsFrame" src="testimonials.html" class="testimonial-iframe"></iframe>
         </div>
-
-        <section class="section contact" id="contact">
-            <h2>Let's Connect</h2>
-            <p style="text-align: center; opacity: 1; font-size: 1.1rem; margin-bottom: 2rem; color: #f1faee;">
-                Interested in collaborating or have a project in mind? Let's create something amazing together.
-            </p>
-            <div class="contact-links">
-                <a href="mailto:henrietta@skrimp.ai" class="contact-link">Email</a>
-                <a href="https://github.com/henliz" class="contact-link" target="_blank">GitHub</a>
-                <a href="https://linkedin.com/in/henriettavanniekerk" class="contact-link" target="_blank">LinkedIn</a>
-            </div>
-            <p style="text-align: center; opacity: 0.8; font-size: 0.9rem; margin-top: 4rem; margin-bottom: 1rem; color: #f1faee;">
-                built by Hen with lots of   ❤   and copious amounts of ☕
-            </p>
-        </section>
     </div>
+
+
+    <div id="contact"></div>
+    <script>
+        (async () => {
+          const res = await fetch('footer.html');
+          const html = await res.text();
+          const doc = new DOMParser().parseFromString(html, 'text/html');
+
+          // bring over styles defined in footer.html
+          doc.querySelectorAll('style, link[rel="stylesheet"]').forEach(node => {
+            document.head.appendChild(node.cloneNode(true));
+          });
+
+          // insert the actual footer and give it the #contact anchor
+          const footer = doc.querySelector('footer');
+          const mount = document.getElementById('contact');
+          if (footer && mount) {
+            footer.id = 'contact';
+            mount.replaceWith(footer);
+            // after: mount.replaceWith(footer);
+            if (window.lucide) window.lucide.createIcons(footer);  // hydrate only inside the footer
+
+          }
+        })();
+        </script>
+
+
 
     <script>
         // Detect if device supports hover (desktop)
@@ -814,7 +910,7 @@
     </div>
 
     <!-- PDF Embed -->
-    <embed src="HenResume.pdf#zoom=130" type="application/pdf" style="
+    <embed src="HenResume.pdf" type="application/pdf" style="
         width: 100%;
         height: 100%;
         border: none;
