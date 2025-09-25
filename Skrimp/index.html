@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Jaguar Redesign – Full Project</title>
-
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
@@ -554,6 +554,29 @@
 
   <!-- Injected FOOTER (anchor target) -->
   <div id="contact" data-include="../footer.html"></div>
+  <script>
+        (async () => {
+          const res = await fetch('footer.html');
+          const html = await res.text();
+          const doc = new DOMParser().parseFromString(html, 'text/html');
+
+          // bring over styles defined in footer.html
+          doc.querySelectorAll('style, link[rel="stylesheet"]').forEach(node => {
+            document.head.appendChild(node.cloneNode(true));
+          });
+
+          // insert the actual footer and give it the #contact anchor
+          const footer = doc.querySelector('footer');
+          const mount = document.getElementById('contact');
+          if (footer && mount) {
+            footer.id = 'contact';
+            mount.replaceWith(footer);
+            // after: mount.replaceWith(footer);
+            if (window.lucide) window.lucide.createIcons(footer);  // hydrate only inside the footer
+
+          }
+        })();
+        </script>
 
   <!-- ===== JS: Cursor, Reveal, Progress, Background, Partials ===== -->
   <script type="module">
