@@ -553,30 +553,34 @@
   </section>
 
   <!-- Injected FOOTER (anchor target) -->
-  <div id="contact" data-include="../footer.html"></div>
-  <script>
-        (async () => {
-          const res = await fetch('footer.html');
-          const html = await res.text();
-          const doc = new DOMParser().parseFromString(html, 'text/html');
+  <!-- Replace your current footer fetch block with this -->
+    <div id="contact"></div>
+    <script>
+      (async () => {
+        const res = await fetch('/footer.html'); // absolute path
+        if (!res.ok) return console.warn('Footer fetch failed:', res.status);
+        const html = await res.text();
+        const doc  = new DOMParser().parseFromString(html, 'text/html');
 
-          // bring over styles defined in footer.html
-          doc.querySelectorAll('style, link[rel="stylesheet"]').forEach(node => {
-            document.head.appendChild(node.cloneNode(true));
-          });
+        // keep your style cloning
+        doc.querySelectorAll('style, link[rel="stylesheet"]').forEach(n =>
+          document.head.appendChild(n.cloneNode(true))
+        );
 
-          // insert the actual footer and give it the #contact anchor
-          const footer = doc.querySelector('footer');
-          const mount = document.getElementById('contact');
-          if (footer && mount) {
-            footer.id = 'contact';
-            mount.replaceWith(footer);
-            // after: mount.replaceWith(footer);
-            if (window.lucide) window.lucide.createIcons(footer);  // hydrate only inside the footer
+        const footer = doc.querySelector('footer');
+        const mount  = document.getElementById('contact');
+        if (footer && mount) {
+          footer.id = 'contact';
+          mount.replaceWith(footer);
 
-          }
-        })();
-        </script>
+          // hydrate lucide AFTER footer is in DOM and script is loaded
+          const hydrate = () => (window.lucide && window.lucide.createIcons());
+          if (document.readyState === 'complete') hydrate();
+          else window.addEventListener('load', hydrate, { once: true });
+        }
+      })();
+    </script>
+
 
   <!-- ===== JS: Cursor, Reveal, Progress, Background, Partials ===== -->
   <script type="module">
