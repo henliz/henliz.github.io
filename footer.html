@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Footer (Universal + Mobile‑fixed)</title>
+  <title>Footer (Universal + Mobile-fixed)</title>
   <link rel="icon" type="image/png" href="/HenLogo.png" />
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <style>
@@ -12,38 +12,45 @@
     :root{
       --fg:#f1faee;
       --outline:rgba(168,218,220,0.18);
-      /* Stage tuning (keeps desktop composition everywhere) */
-      --stage-w: 980;    /* desktop design width in px */
-      --stage-h: 300;    /* taller stage so elements sit closer together */    /* desktop design height in px */
-      /* element positions as % of stage (so layout scales as a unit) */
+
+      /* Tighter scene so the “back to top” sits close */
+      --stage-w: 980;
+      --stage-h: 175; /* was 240 */
+
+      /* Hen */
       --hen-left: 40%;
       --hen-bottom: 0%;
-      --hen-w: 11.25%;   /* 110px / 980px */
+      --hen-w: 11.25%;
 
-      --bubble-left: 47%;  /* sits between Hen (40%) and fairy (61%), closer to Hen */
-      --bubble-bottom: 34%;  /* slightly closer vertically */
-      --bubble-w: 17%;  /* smaller bubble */ /* ~180px / 980px */
+      /* Bubble: tiny nudge LEFT, and a bit higher to eat blank space */
+      --bubble-left-base: 46%;
+      --bubble-w: 17%;
+      /* previously + (0.6 * width) + ~0.5% ; now slide left ~0.4% */
+      --bubble-left: calc(var(--bubble-left-base) + (0.4 * var(--bubble-w)) - 0.4%);
+      --bubble-bottom: 44%; /* was 38% */
 
-      --sword-left: 61%;--sword-bottom: 10%;
-      --sword-w: 17%;  /* 2× current size */  /* ~1.7x bigger */   /* ~64px / 980px */
+      /* GIF: to the RIGHT of Hen, centered correctly, under the bubble */
+      --sword-w: 17%;
+      /* center = hen left + hen width + gap + (gif width / 2) */
+      --sword-left: calc(var(--hen-left) + var(--hen-w) + 7.5% + (var(--sword-w) / 2));
+      --sword-bottom: 11.5%;
     }
 
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;color:var(--fg);font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,'Helvetica Neue',Arial,sans-serif}
+    html,body{margin:0;padding:0;color:var(--fg);font-family:'Montserrat',-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Ubuntu,'Helvetica Neue',Arial,sans-serif}
 
-    /* Footer shell */
+    /* Footer shell (minimal spacing above the scene) */
     footer.hen-footer{
       width:100%;
       display:grid;
       place-items:center;
-      gap:1rem;
-      padding:1.25rem 1rem 1.75rem;
+      gap:.02rem;                 /* almost zero gap */
+      padding:.25rem 1rem 1.35rem;/* tighter top padding */
       border-top:1px solid var(--outline);
-      background:#0f1419; /* same as nav backdrop */
-      scroll-margin-top: 80px; /* so #contact anchors nicely below fixed nav */
+      background:#0f1419;
+      scroll-margin-top: 80px;
     }
 
-    /* Fixed-composition stage that scales uniformly */
     .dangerous-stage{
       position:relative;
       width:min(var(--stage-w)*1px, 96vw);
@@ -61,58 +68,93 @@
       filter:drop-shadow(0 2px 0 rgba(0,0,0,.2));
     }
 
-    /* Speech bubble (locked to stage, not the img => no sliding) */
+    /* Speech bubble */
     .bubble-float{
       position:absolute; left:var(--bubble-left); bottom:var(--bubble-bottom);
-      width:var(--bubble-w); height:auto; transform:rotate(-2deg);
-      pointer-events:none; /* decorative */
-      filter:drop-shadow(0 3px 0 rgba(0,0,0,.25)) drop-shadow(0 8px 14px rgba(69,123,157,.35));
+      width:var(--bubble-w); height:auto;
+      transform:translate(-50%,0);
+      filter:drop-shadow(0 10px 30px rgba(0,0,0,.35));
+      pointer-events:none;
     }
 
-    /* Sword button */
-    .sword-btn{position:absolute; left:var(--sword-left); bottom:var(--sword-bottom); cursor:pointer; background:transparent; border:0; padding:0}
-    .sword-btn img{width:var(--sword-w); height:auto; display:block;
-      filter:drop-shadow(0 4px 12px rgba(69,123,157,.45)); transition:transform 160ms ease,filter 160ms ease}
-    .sword-btn:hover img,.sword-btn:focus-visible img{transform:translateY(-4px) scale(1.05); filter:drop-shadow(0 6px 16px rgba(42,157,143,.55))}
+    /* GIF (Faerie) */
+    .sword-btn{
+      position:absolute; left:var(--sword-left); bottom:var(--sword-bottom);
+      transform:translate(-50%,0); /* center on computed left */
+      cursor:pointer; background:transparent; border:0; padding:0
+    }
+    .sword-btn img{
+      width:var(--sword-w); height:auto; display:block;
+      filter:drop-shadow(0 4px 12px rgba(69,123,157,.45));
+      transition:transform 160ms ease,filter 160ms ease
+    }
+    .sword-btn:hover img,.sword-btn:focus-visible img{
+      transform:translateY(-2px) scale(1.05);
+      filter:drop-shadow(0 6px 16px rgba(42,157,143,.55))
+    }
 
-    /* Socials (hero-style) */
-    .social-links{display:flex;gap:1.25rem;align-items:center;justify-content:center;margin-top:.25rem;flex-wrap:wrap}
+    /* Socials */
+    .social-links{display:flex;gap:1.25rem;align-items:center;justify-content:center;margin-top:.2rem;flex-wrap:wrap}
     .social-icon{
       width:52px;height:52px;border-radius:50%;
       background:rgba(168,218,220,0.1); border:2px solid rgba(168,218,220,0.3);
-      display:flex;align-items:center;justify-content:center; position:relative;overflow:hidden;transition:all .3s ease; backdrop-filter:blur(10px)
+      display:flex;align-items:center;justify-content:center; position:relative; overflow:hidden;transition:all .3s ease; backdrop-filter:blur(10px)
     }
-    .social-icon::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,218,220,.2),transparent);transition:left .5s}
+    .social-icon::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent,rgba(168,218,220,.2),transparent);transition:left .5s}
     .social-icon:hover{transform:translateY(-3px) scale(1.05);border-color:rgba(168,218,220,.6);background:rgba(168,218,220,.2);box-shadow:0 8px 25px rgba(168,218,220,.3)}
     .social-icon:hover::before{left:100%}
     .social-icon svg{width:22px;height:22px;stroke:#a8dadc;transition:all .3s ease;z-index:1}
     .social-icon:hover svg{stroke:#f1faee;transform:scale(1.1)}
-    .social-tooltip{position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:rgba(15,20,25,.98);color:#f1faee;padding:.5rem 1rem;border-radius:6px;font-size:.8rem;white-space:nowrap;opacity:0;pointer-events:none;transition:all .3s ease;border:1px solid rgba(168,218,220,.4);backdrop-filter:blur(15px);z-index:100;font-weight:500}
+    .social-tooltip{position:absolute;bottom:120%;left:50%;transform:translateX(-50%);padding:.3rem .5rem;border-radius:.5rem;font-size:.8rem;background:rgba(15,20,25,.8);color:#f1faee;opacity:0;pointer-events:none;transition:all .2s ease;border:1px solid rgba(168,218,220,.4);backdrop-filter:blur(15px);z-index:100;font-weight:500}
     .social-icon:hover .social-tooltip{opacity:1;transform:translateX(-50%) translateY(-5px)}
 
-    /* Credit */
-    .credit{text-align:center;opacity:.8;font-size:.95rem;margin:.5rem 0 0}
+    .credit{text-align:center;opacity:.8;font-size:.95rem;margin:.2rem 0 0}
 
-    /* Mobile niceties */
     @media (max-width:640px){
       .social-links{gap:1rem}
-      .social-icon{width:56px;height:56px} /* bigger touch target */
+      .social-icon{width:56px;height:56px}
       .credit{font-size:.9rem}
     }
+
+    /* back to top */
+    .back-to-top{ display:grid; place-items:center; margin:.02rem 0 0; }
+    .to-top-btn{
+      all:unset; cursor:pointer;
+      display:grid; place-items:center; gap:.3rem;
+      color:var(--fg); font-weight:500; opacity:.9;
+    }
+    .to-top-btn .arrow-wrap{ width:18px; height:18px; display:grid; place-items:center; }
+    /* Lucide swaps <i> for <svg>; spin the svg around its true center */
+    .to-top-btn .arrow-wrap svg{
+      width:18px; height:18px; stroke:#a8dadc;
+      transform-origin:center;
+      transform-box:fill-box;
+      animation: topSpin 8s linear infinite;
+      will-change: transform;
+    }
+    .to-top-btn:hover .arrow-wrap svg{ animation-duration: 3s; }
+    @keyframes topSpin{ to{ transform: rotate(360deg) } }
+    @media (prefers-reduced-motion: reduce){ .to-top-btn .arrow-wrap svg{ animation:none } }
   </style>
 </head>
 <body>
-  <!-- Give the footer the #contact anchor so the nav can always jump here -->
   <footer id="contact" class="hen-footer" role="contentinfo">
-    <div class="dangerous-stage" aria-label="It’s dangerous to go alone — take this! (visual only)">
-      <img class="hen-sprite" src="/HenSprite.png" alt="Hen, tiny 8‑bit adventurer" />
-      <img class="bubble-float" src="/Dangerous_Bubble.png" alt="" aria-hidden="true" />
-      <button class="sword-btn" aria-label="Open resume" title="Open resume" onclick="(window.openResumePopup? openResumePopup() : window.location.href='/HenResume.pdf')">
-        <img src="https://i.pinimg.com/originals/ef/92/86/ef92866ae3725f7148677928e585c11f.gif" alt="8‑bit sword" />
+    <div class="back-to-top">
+      <button class="to-top-btn" aria-label="back to top"
+              onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
+        <span class="arrow-wrap"><i data-lucide="arrow-up"></i></span>
+        <span class="label">back to top</span>
       </button>
     </div>
 
-    <!-- Socials -->
+    <div class="dangerous-stage" aria-label="It’s dangerous to go alone — take this! (visual only)">
+      <img class="hen-sprite" src="/HenSprite.png" alt="Hen, tiny 8-bit adventurer" />
+      <img class="bubble-float" src="/Dangerous_Bubble.png" alt="" aria-hidden="true" />
+      <button class="sword-btn" aria-label="Open resume" title="Open resume" onclick="(window.openResumePopup? openResumePopup() : window.location.href='/HenResume.pdf')">
+        <img src="https://i.pinimg.com/originals/ef/92/86/ef92866ae3725f7148677928e585c11f.gif" alt="8-bit sword" />
+      </button>
+    </div>
+
     <div class="social-links">
       <button class="social-icon" onclick="window.open('https://www.linkedin.com/in/henriettavanniekerk','_blank')" aria-label="LinkedIn">
         <i data-lucide="linkedin"></i><div class="social-tooltip">LinkedIn</div>
@@ -120,16 +162,15 @@
       <button class="social-icon" onclick="window.open('https://github.com/henliz','_blank')" aria-label="GitHub">
         <i data-lucide="github"></i><div class="social-tooltip">GitHub</div>
       </button>
-      <button class="social-icon" onclick="window.open('mailto:henrietta@skrimp.ai','_self')" aria-label="Email">
+      <button class="social-icon" onclick="window.open('mailto:hen@skrimp.ai','_blank')" aria-label="Email">
         <i data-lucide="mail"></i><div class="social-tooltip">Email</div>
       </button>
     </div>
 
-    <p class="credit">built by Hen with lots of ❤ and copious amounts of ☕</p>
+    <p class="credit"><br>built by Hen with lots of ❤ and copious amounts of ☕</p>
   </footer>
 
   <script>
-    // Make Lucide icons render even if the host page didn't init them
     document.addEventListener('DOMContentLoaded', function(){
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
         window.lucide.createIcons();
