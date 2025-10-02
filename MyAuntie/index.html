@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="../HenLogo.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jaguar Redesign – Case Study</title>
+  <title>My Auntie – Case Study</title>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
   <!-- Fonts -->
@@ -295,7 +295,15 @@
           <p>New parents don’t quit because they’re “unmotivated.” They quit because the system makes help feel like homework. In the fourth trimester, energy and attention are the scarcest resources—precisely when most “solutions” demand the most: download an app, create an account, complete a 20-question intake, then wait.</p>
           <p>My Auntie reframes support around the reality of 3 a.m.: a crying baby, 4% battery, and a brain made of mashed potatoes. No apps, no dashboards—just a warm voice or a short text that meets you where you are, offers one gentle next step, and (when needed) routes you to real care without judgment.</p>
             <p>Our goal for the 36-hour sprint: ship a live, phone-first safety-aware companion that feels like calling a trusted auntie—tiny, kind, and doable. We launched SMS + voice, intent triage (Comfort · Resource · Escalate), privacy-first memory, and deterministic resource lookup—end-to-end and demo-ready.</p>
-          <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/96860304_PcIkCNlaZ4Dp9nO.png" alt="Cover Art" class="overview-cover">
+          <iframe
+              src="https://www.myauntie.tech/"
+              class="overview-cover"
+              loading="lazy"
+              allowfullscreen
+              referrerpolicy="no-referrer"
+              style="border:0; aspect-ratio: 16 / 9;">
+            </iframe>
+
         </div>
       </section>
 
@@ -304,13 +312,13 @@
           <h2>Section 2 // The Challenge</h2>
           <div class="challenge-row">
             <div class="challenge-col left">
-              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774691_oOn2ZjIy4KXb65z.png" alt="Black box image">
+              <img src="auntiemood.png" alt="Black box image">
             </div>
             <div class="challenge-col right">
-              <p>Postpartum depression and anxiety affect ~1 in 7 birthing people; many never receive timely care. Stigma (“I should be happy”), sleep fragmentation, and logistical friction push parents away from support at the exact moment they need it.</p>
+              <p>Postpartum depression and anxiety affect ~1 in 7 women; many never receive timely care. Stigma (“I should be happy”), sleep fragmentation, and logistical friction push parents away from support at the exact moment they need it.</p>
               <p>The dominant pattern in digital mental health—apps that shift the burden back to the parent (log in, track, remember)—is backwards at 3 a.m. We needed a low-friction, high-comfort channel that lowers cognitive load, is safe by design, and can escalate appropriately.</p>
               <p>Reframe: Don’t build another mental-health app. Build what new parents actually use at 3 a.m.: the phone. A kind voice. A short text. A connector that knows when to comfort, when to send resources, and when to escalate. </p>
-              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774810_wh3JXF1rmKHDNtC.png" alt="Skinny screenshot" class="challenge-skinny-image">
+              <img src="auntiesearch.png" alt="Skinny screenshot" class="challenge-skinny-image">
               <div class="highlight-box">You don’t want an app. You want your Auntie. Information-only this weekend; deterministic escalation; short-lived context for safety.</div>
             </div>
           </div>
@@ -322,7 +330,7 @@
           <h2>Section 3.1 // Let's set the scene</h2>
           <div class="scene-row">
             <div class="scene-col left">
-              <h4>At 3 a.m., a parent asks: “Is this normal?”</h4>
+              <h4>At 3 a.m. a new parent asks: “Is this normal?”</h4>
               <p>They don’t need a portal, they need a person. Real aunties aren’t always awake, and advice can be dated or risky. My Auntie keeps the warmth and removes the guesswork: zero setup, human-sounding support, and vetted resources when needed.</p>
               <p>Two design constraints guided everything:
                   <br> 1. Cognitive load must be near zero. One-breath messages, one next step.
@@ -336,7 +344,7 @@
             </div>
           </div>
           <div class="scene-big-image">
-            <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98776582_6Zw9ruYy2NCHf3q.png" alt="Problem Statement">
+            <img src="auntieproblem.png" alt="Problem Statement">
           </div>
         </div>
       </section>
@@ -381,7 +389,7 @@
       </div>
       <h3 class="reveal" style="margin-top: 3rem; margin-bottom: 2rem; color: var(--text-secondary); font-family: 'Montserrat Alternates', sans-serif;">Key Findings</h3>
       <div class="stats-grid reveal">
-        <div class="stats-card reveal" data-percent="81">
+        <div class="stats-card reveal" data-percent="15">
           <div class="circle-container">
             <svg width="100" height="100" viewBox="0 0 100 100">
               <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
@@ -389,12 +397,24 @@
             </svg>
             <div class="circle-text">0%</div>
           </div>
-          <h3 class="stats-title reveal">Could recall BMW's tagline— only 26% remembered Jaguar's</h3>
+          <h3 class="stats-title reveal">about 1 in 7 new mothers</h3>
           <p class="stats-desc reveal">
-					Brand slogans like "The Ultimate Driving Machine" had higher stickiness than Jaguar's recent messaging.
+              Experience postpartum depression. Up to half go undiagnosed — stigma, lack of screening, or mis-attribution are common barriers.          </p>
+        </div>
+        <div class="stats-card reveal" data-percent="50">
+          <div class="circle-container">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="circle-text">0%</div>
+          </div>
+          <h3 class="stats-title reveal">Of postpartum cases go undetected</h3>
+          <p class="stats-desc reveal">
+            Many mothers never tell a provider about symptoms; lack of awareness and stigma play big roles.
           </p>
         </div>
-        <div class="stats-card reveal" data-percent="59">
+        <div class="stats-card reveal" data-percent="7.2">
           <div class="circle-container">
             <svg width="100" height="100" viewBox="0 0 100 100">
               <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
@@ -402,12 +422,12 @@
             </svg>
             <div class="circle-text">0%</div>
           </div>
-          <h3 class="stats-title reveal">Said Jaguar "looks great," but couldn't name a single ad or campaign</h3>
+          <h3 class="stats-title reveal">Still show depressive symptoms 9–10 months postpartum</h3>
           <p class="stats-desc reveal">
-            Visual appeal remains strong, but narrative connection is weak.
+              Of those, over half had no symptoms earlier (2–6 months)
           </p>
         </div>
-        <div class="stats-card reveal" data-percent="64">
+        <div class="stats-card reveal" data-percent="19">
           <div class="circle-container">
             <svg width="100" height="100" viewBox="0 0 100 100">
               <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
@@ -415,23 +435,9 @@
             </svg>
             <div class="circle-text">0%</div>
           </div>
-          <h3 class="stats-title reveal">Of drivers under 35 associated Jaguar with "older generations"</h3>
+          <h3 class="stats-title reveal">Is the new PPD diagnosis rate- it DOUBLED</h3>
           <p class="stats-desc reveal">
-    A major perception gap exists between emerging markets and legacy image.
-          </p>
-        </div>
-        <div class="stats-card reveal" data-percent="72">
-          <div class="circle-container">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
-              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
-            </svg>
-            <div class="circle-text">0%</div>
-          </div>
-          <h3 class="stats-title reveal">Agreed Jaguar needs to "pick a lane"</h3>
-          <p class="stats-desc reveal">
-            Consumers expressed confusion over whether Jaguar was performance-first, luxury-first, or electric-forward.
-          </p>
+              From 2010 to 2021, more mothers were diagnosed — perhaps better awareness, but still large gaps remain          </p>
         </div>
       </div>
     </div>
@@ -659,7 +665,7 @@
       </p>
     </div>
       <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">🍼 What we learned (and will keep)</h3>
+      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">🚼 What we learned (and will keep)</h3>
       <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
           → Scope like surgeons. Tier-1 (tags/micro-RAG) beat “let’s vectorize the world.” It made answers faster and the system easier to reason about under pressure. </p>
           <p>→ Conversation design is product design. One-breath messages, tone guides, and red-flag scripts did more for trust than any UI flourish.  <p>
@@ -668,7 +674,7 @@
       </p>
     </div>
       <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">👩Why we think we won</h3>
+      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">🤰 Why we think we won</h3>
       <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
           We designed for the real 3 a.m.—no apps, no accounts, no homework—and we proved it live. Judges didn’t just hear a story; they called, texted, and watched Auntie route help. That blend of empathy, reliability, and receipts made the impact legible: tech that reduces cognitive load for exhausted new parents, with safety you can trust. That’s what earned us a spot among the hackathon winners—and it’s the bar we’ll keep meeting as we expand regions, languages, and clinical review. </p>
       <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">And we did it in 36 hours. Not a slideware promise, a working service. We wired the sponsor stack wall-to-wall—Twilio (SMS/Voice), OpenAI Realtime (TTS for calls), Gemini (intent + safety), MongoDB Atlas (short-lived memory), Snowflake (deterministic, region-aware resources), all orchestrated in TypeScript/Node and deployed live. While most teams built “an app”, we shipped the channel parents already use at 3 a.m. —call and text—then proved it on stage with real flows, visible triage JSON, and sub-5s SMS round-trip. That combination of empathy + reliability + receipts is what made Auntie legible to judges as more than a demo—and why we landed among the winners.</p>
