@@ -226,12 +226,8 @@
               if (i === 1 && j === 0) addOverlayTo(model, overlayURL,       [4.52, 2.8], [0, 0.35,  1.06]); // Steam Deck overlay
               if (i === 4 && j === 0) addOverlayTo(model, laptopOverlayURL, [29,   17 ], [0,10.7, -10.5]); // Laptop overlay (note index change)
               // MyAuntie iPhone overlay (station index 2, left model j===0)
-                if (i === 2 && j === 0) {
-                  // Starting guesses—tweak by eye:
-                  const sizeXY = [0.4, 0.2];    // width, height (model units after scale)
-                  const posXYZ = [0, 0.18, 1]; // x (left/right), y (up/down), z (toward camera)
-                  addOverlayTo(model, auntieOverlayURL, sizeXY, posXYZ);
-                }
+              if (i === 2 && j === 0) addOverlayTo(model, auntieOverlayURL, [40, 88 ], [0, 45.7, 8.5]); // Laptop overlay (note index change)
+
 
             });
           });
