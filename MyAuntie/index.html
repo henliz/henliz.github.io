@@ -123,11 +123,43 @@
     .skip-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s}
     .skip-button:hover::before{left:100%}
 
-    /* shared section spacing INSIDE the container */
+   /* shared section spacing INSIDE the container */
     section{width:100%;padding: clamp(36px, 6vh, 64px) 0;position:relative}
-    .section-content{max-width:100%;margin:0 auto;text-align:left}
-    .section-content h2{font-size:2.25rem;margin-bottom:1.25rem;background:linear-gradient(45deg,#a8dadc,#457b9d,#f1faee,#66fcf1,#2a9d8f);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 8s ease infinite;font-weight:700}
-    .section-content p{font-size:1.08rem;max-width:780px;margin-bottom:1.5rem;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+
+    .section-content {
+      max-width: 100%;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .section-content h2 {
+      font-size: 2.25rem;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(45deg,#a8dadc,#457b9d,#f1faee,#66fcf1,#2a9d8f);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 8s ease infinite;
+      font-weight: 700;
+    }
+
+    /* Mobile-first: full width paragraphs, readable line length via ch cap */
+    .section-content p {
+      font-size: 1.08rem;
+      line-height: 1.6;
+      max-width: min(100%, 75ch);   /* ← no premature wrapping, good readability */
+      margin-bottom: 1.5rem;
+      text-shadow: 0 1px 2px rgba(0,0,0,.2);
+      overflow-wrap: anywhere;      /* long URLs/words don’t blow layout */
+    }
+
+    /* On wider screens, allow a wider line if you want */
+    @media (min-width: 1200px) {
+      .section-content p {
+        max-width: min(100%, 90ch); /* optional: give 5.1 more width on desktop */
+      }
+    }
 
     /* cards etc. */
     .glass-card{background:var(--inner-card);backdrop-filter:blur(25px);border-radius:20px;padding:2rem;border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08);transition:.3s;position:relative;overflow:hidden}
@@ -246,6 +278,55 @@
     /* (Optional) gentle polish */
     .mini-images img{ box-shadow:0 8px 24px rgba(0,0,0,.18); }
 
+    /* Put this *after* your existing .mini-images styles */
+    .mini-images { --mini-img: 70%; }                 /* base width per image */
+    .mini-images img { width: var(--mini-img); }      /* keep Sketch 3 at 48% */
+    .mini-images img:nth-child(2) {                   /* Sketch 4 → 80% of that */
+      width: calc(var(--mini-img) * 0.8);             /* 38.4% total */
+    }
+
+
+      /* Two-column layout for "Brainstorming our must-haves" */
+        .must-haves-container{
+          display: grid;
+          grid-template-columns: minmax(280px, 0.9fr) 1.4fr; /* left | right */
+          gap: 1.5rem 1.75rem;
+          align-items: start;
+          margin: 2rem auto 0;
+          text-align: left;
+        }
+
+        /* Optional: keep the left column in view on tall screens */
+        .must-haves-left{
+          position: sticky;
+          top: 24px;
+        }
+
+        /* Right column becomes a single vertical list (1 col, 4 rows) */
+        .must-haves-right{
+          display: grid;
+          grid-template-columns: 1fr;   /* ← force 1 column */
+          gap: 1rem;
+        }
+
+
+        /* Card polish (use your existing card styles; this just ensures consistency) */
+        .must-haves-card{
+          background: var(--inner-card);
+          border: 1px solid var(--glass-border);
+          border-radius: 16px;
+          padding: 1.1rem 1.25rem;
+          box-shadow: 0 8px 32px rgba(0,0,0,.2);
+        }
+
+        /* Mobile: stack into a single column */
+        @media (max-width: 900px){
+          .must-haves-container{ grid-template-columns: 1fr; }
+          .must-haves-left{ position: static; }
+          .must-haves-right{ grid-template-columns: 1fr; }
+        }
+
+
   </style>
 </head>
 <body>
@@ -332,15 +413,16 @@
             <div class="scene-col left">
               <h4>At 3 a.m. a new parent asks: “Is this normal?”</h4>
               <p>They don’t need a portal, they need a person. Real aunties aren’t always awake, and advice can be dated or risky. My Auntie keeps the warmth and removes the guesswork: zero setup, human-sounding support, and vetted resources when needed.</p>
-              <p>Two design constraints guided everything:
+              <p><strong>Two design constraints guided everything:</strong>
                   <br> 1. Cognitive load must be near zero. One-breath messages, one next step.
-                  <br> 2. Safety must be explicit, not implied. Intent classification and clear red-flag routes to urgent care—without alarmism</p>
+                  <br><br> 2. Safety must be explicit, not implied. Intent classification and clear red-flag routes to urgent care—without alarmism</p>
             </div>
             <div class="scene-col right">
-              <div class="highlight-box">This created an interesting opportunity, Jaguar has heritage, but it's not owning a lane. Unlike competitors, its identity isn't clear or confidently positioned.
-</div>
-              <div class="highlight-box">I wanted to build a brand that doesn't just look sleek, but feels emotionally specific— something you remember, not just recognize.
-</div>
+              <div class="highlight-box">This created an unusual design challenge: how do you make technology feel like kin, not like software? Unlike an app with buttons and charts, Auntie had to carry her identity entirely in voice and text.
+              </div>
+              <div class="highlight-box">Auntie couldn’t just be helpful, she had to be safe. The line between comfort and harm is razor-thin in postpartum care.</div>
+                <div class="highlight-box">
+                   We aimed for emotional specificity: short, kind phrases a parent could actually believe at 3 a.m.—something you remember the feeling of, not just the words.</div>
             </div>
           </div>
           <div class="scene-big-image">
@@ -382,9 +464,9 @@
         </div>
         <div class="quote-card reveal">
           <div class="quote-text">
-            "Jaguar hasn't had a defining campaign since 'It's Good to Be Bad.' Everything since has felt like filler."
+            "I still remember when my son was a baby and had a fever, I was on a help line for hours, and they did their best but weren't really for that kind of thing."
           </div>
-          <div class="quote-author">— Autocar, 2024 Brand Retrospective</div>
+          <div class="quote-author">— Mom of three, children are older</div>
         </div>
       </div>
       <h3 class="reveal" style="margin-top: 3rem; margin-bottom: 2rem; color: var(--text-secondary); font-family: 'Montserrat Alternates', sans-serif;">Key Findings</h3>
@@ -455,25 +537,25 @@
           <div class="highlight-box reveal">
             <strong>⏳ 36 hour hackathon deadline</strong>
             <p style="margin-top: 0.5rem;">
-				To ship live telephony, AI, memory, and resources—safely.
+				To ship live telephony, AI, memory, and resources—safely. WhatsApp, dashboards, and semantic embeddings were cut so we could demo sub-5 second replies focused on what moms really needed from Auntie.
             </p>
           </div>
           <div class="highlight-box reveal">
             <strong>🎯 Safety over scope</strong>
             <p style="margin-top: 0.5rem;">
-             Information-only, with deterministic escalation language.
+             Information-only meant Auntie never free-styled medical advice. Every output had to fall into Comfort · Resource · Escalate, with deterministic handoffs.
             </p>
           </div>
           <div class="highlight-box reveal">
             <strong>🗣 Privacy by default</strong>
             <p style="margin-top: 0.5rem;">
-                Hashed phone, short-lived context, minimal fields (delivery, feeding, weeks postpartum, region).
+                Short-lived context, minimal fields (delivery, feeding, weeks postpartum, region) meant we remembered only what helped — e.g., C-section recovery — and nothing more. Hashes over phone numbers, retention notes documented.
             </p>
           </div>
           <div class="highlight-box reveal">
             <strong>⚖️ Judge-proof demo</strong>
             <p style="margin-top: 0.5rem;">
-                Visible logs (PII-redacted), intent output, and resource lookup.
+                Visible logs showing triage JSON, Atlas collections, and Snowflake queries live, so credibility came from receipts, not vibes.
             </p>
           </div>
         </div>
@@ -497,13 +579,16 @@
         <div class="ideation-col left reveal">
           <p>
          We treated “Auntie” as a persona with safety rails: warm, concise for SMS; fuller for voice; always evidence-grounded; never diagnostic.
+          </p>
+            <p>Example 1 — Comfort: <br>SMS: “Baby hasn’t latched in 3 hours—normal?” <br>Auntie: “You’re not alone. Skin-to-skin can help. If no latch in 4–6 hours, call your provider. Two lactation lines near you: [links].”</p>
+            <p>Example 2 — Escalate: <br>Parent: “My 6-week-old has a fever of 38°C / 100.4°F.” <br>Auntie Voice: “Love, with a baby this young, that can be serious. Let’s head to the nearest emergency department now. I’m sending the address to your phone. You’re not alone.”</p>
         </div>
         <div class="ideation-col right reveal">
           <div class="highlight-box reveal">
              We sketched dozens of micro-flows (latch basics, C-section pain, baby blues vs red flags, sleep triage), then cut to the flows that a tired parent could use one-handed.
           </div>
           <div class="ideation-images reveal">
-            <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98821399_vOUK29Ba9ku8bkL.png" alt="Sketch 1">
+            <img src="auntiestickies.png" alt="Sketch 1">
             <img src="auntiemoodboard.png" alt="Sketch 2">
           </div>
         </div>
@@ -514,29 +599,32 @@
       <div class="must-haves-container reveal">
         <div class="must-haves-left reveal">
           <h3>Brainstorming our must‑haves</h3>
-          <p>Designing with legacy and longevity in mind.</p>
+          <p>Auntie isn’t a UI; she’s a voice. Our tone system was a non-negotiable: texts are one-breath, kind, and end with a single next step (“Love, try X. Watch for Y. Call if Z.”).</p>
+            <p>Calls are warmer and slower, with human pauses and plain language—tuned to sound like a real aunt, not a bot reading a script. When risk appears, the tone stays steady: no sirens, no blame—just a gentle, actionable handoff (“Love, it’s time we call for extra help. I’m sending the number.”).</p>
+            <p>To keep Auntie seamless across channels, we use one persona and one playbook: the same lexicon, signature phrases (“Love,” “one thing to try,” “what to watch”), and intent frames (Comfort · Resource · Escalate) power both SMS and voice, just sized to the medium.</p>
+            <p>SMS compresses to one breath; voice expands with natural pauses—but word choice, reassurance cadence, and escalation language never drift. We also pin reading level, contractions, and “no-clinical-jargon” rules so you don’t get a bubbly text and a sterile call. Net effect: one Auntie, two surfaces—no uncanny costume changes.</p>
         </div>
         <div class="must-haves-right reveal">
           <div class="must-haves-card reveal">
-            <h4>🏁 Phone-first distribution</h4>
+            <h4>☎️ Phone-first distribution</h4>
             <p>
-                It’s where parents already are.
+                Distribution is the product. We chose phone/SMS because it meets parents where they already are at 3 a.m. SMS shipped first for reliability and speed; voice layered on when stable. No dashboards, no portals—just the lowest-friction path to comfort and care.
             </p>
           </div>
           <div class="must-haves-card reveal">
-            <h4>🎯 One-breath, easy messaging
+            <h4>😌 One-breath, easy messaging
             </h4>
-            <p>Warm line + one action + what to watch for.            </p>
+            <p>Sleep-deprived parents get overwhelmed, so we designed with that in mind. Every SMS/call follows the same shape: a caring line to lower panic, one clear action they can take with one hand, and a short “what to watch” so they know when to reach back out. If a message took two breaths to read, it got cut.            </p>
             </div>
             <div class="must-haves-card reveal">
-            <h4>🎨 Tone System
+            <h4>⚠️ Deterministic answers, not vibes
             </h4>
-            <p>Same Auntie across SMS/voice—no uncanny shifts.            </p>
+            <p>Safety over scope meant no freestyling medical takes. Gemini returns a structured intent—Comfort, Resource, or Escalate—plus topic and region. From there, we compose the reply and, when relevant, attach 2–3 vetted, region-aware resources. No black-box rummaging, no link dumps—just the few things that help now.           </p>
           </div>
           <div class="must-haves-card reveal">
             <h4>🔁 Safety Contracts
             </h4>
-            <p>Clear inputs/outputs across services; no hidden coupling.            </p>
+            <p>Trust grows when Auntie remembers what matters and forgets what doesn’t. We store only short-lived context (delivery type, feeding, weeks postpartum, region) tied to a hashed number. It’s enough to avoid making parents repeat themselves, but not so much that it feels like surveillance.           </p>
           </div>
         </div>
       </div>
@@ -552,9 +640,16 @@
         <h3 class="reveal">5.1 // Identity System Development</h3>
         <p class="reveal"> Instead of a visual design system, our core identity is how Auntie speaks and escalates. We defined:        </p>
         <p class="reveal">
-            <li>Intent taxonomy: Comfort · Resource · Escalate</li>
-            <li>Evidence micro-cards: short, vetted snippets (WHO/CDC/ACOG/PSI) fed deterministically to ground answers</li>
-            <li>Red-flag lexicon + scripts: gentle, non-alarmist escalation language</li>
+            → Intent taxonomy: Comfort · Resource · Escalate
+            <br>→ Evidence micro-cards: short, vetted snippets (WHO/CDC/ACOG/PSI) fed deterministically to ground answers
+            <br>→ Red-flag lexicon + scripts: gentle, non-alarmist escalation language
+        </p>
+          <p class="reveal">
+            We didn’t prototype an app. We prototyped conversations.</p>
+            <p>SMS Copy Testing: Early drafts were too wordy — a tired parent skimmed and missed the action. We cut to “one breath” rules: one line of comfort, one step, one “what to watch.”</p>
+            <p>Voice Tuning: OpenAI’s TTS gave warmth, but some voices sounded uncanny. We iterated until Auntie sounded human, not robotic.</p>
+          <p>Escalation Language: First drafts felt clinical (“seek medical attention”). We softened: “Love, let’s call your provider now — here’s the number.” Clinicians confirmed it balanced safety and calm.</p>
+          <p>These iterations weren’t polish — they were product design. Tone, pacing, and escalation scripts shaped trust more than any UI ever could.
         </p>
         <div class="process-dense-row reveal">
           <div class="process-dense-left">
@@ -572,7 +667,7 @@
           <div class="process-dense-right">
             <div class="mini-images reveal">
               <img src="auntiestack.png" alt="Sketch 3">
-              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98822003_TdB2Ris3hXom90u.png" alt="Sketch 4">
+              <img src="../auntiephone.png" alt="Sketch 4">
             </div>
           </div>
         </div>
@@ -585,11 +680,11 @@
       <div class="process-subsection reveal">
         <h3 class="reveal">5.2 // Prototyping &amp; Iteration</h3>
         <p class="reveal">
-        After defining our core features, we transitioned from paper sketches to interactive digital prototypes for both mobile and desktop. This dual-platform approach let us test how seniors engaged with the experience in different contexts — from tablets at home to full-screen interfaces at community centers.
-        </p>
+            We didn’t prototype screens—we prototyped conversations. By Sunday, we had two shippable prototypes that felt like the same Auntie across channels: SMS for the fastest, lowest-friction support, and Voice for hands-free reassurance when you’re holding a baby at 3 a.m.        </p>
         <p class="reveal">
-        Each prototype underwent multiple rounds of usability testing, with direct feedback shaping refinements like clearer iconography, larger tap targets, and simplified flows. We prioritized accessibility every step of the way to ensure confidence, not confusion, at every tap or click.
-        </p>
+            Final SMS prototype (what it feels like) <br>The SMS flow uses our “one-breath” rule: a caring line to lower panic, one clear step, and one “what to watch.” Every reply is grounded by Gemini’s structured intent (Comfort · Resource · Escalate), and when relevant, Auntie attaches 2–3 vetted, region-aware resources so nothing turns into a link dump. After any call, Auntie follows up by text so guidance isn’t lost in the moment.        </p>
+          <p class="reveal">
+            Final Voice prototype (what it sounds like) <br>The voice line uses the same persona and language, just sized for audio: warmer pacing, natural pauses, and the same escalation copy. If risk appears, Auntie’s handoff is gentle and specific—no alarms, no blame—“Love, let’s call for extra help. I’m sending the hospital address.” Post-call, Auntie texts the key steps and links so a sleep-deprived parent doesn’t have to remember.     </p>
           <!-- Call demo -->
             <div class="video-embed reveal">
   <iframe
