@@ -109,9 +109,24 @@
       animation:gradientShift 4s ease infinite;
     }
     .intro-left h2{font-size: clamp(1.25rem, 2.4vw, 2rem); font-weight:400; color:var(--text-secondary)}
-    .intro-right{max-width:40%; display:flex; flex-direction:column; gap:1rem; align-items:flex-end}
-    .header-info p{font-size:1rem; text-align:right; margin-bottom:.5rem; color:var(--text-primary)}
-    .header-info ul{margin-left:1.5rem; color:var(--text-secondary)}
+    .intro-right{max-width:40%; display:flex; flex-direction:column; gap:1rem; align-items:flex-left}
+    /* Apply left alignment to the whole block */
+    .header-info { text-align: left; }
+
+    .header-info p{
+      font-size: 1rem;
+      margin-bottom: .5rem;
+      color: var(--text-primary);
+      /* text-align removed (inherits left) */
+    }
+
+    .header-info ul{
+      color: var(--text-secondary);
+      margin: .25rem 0 0 1.5rem;   /* left indent instead of right */
+      /* optional for bullets: */
+      /* padding-left: 1rem; */
+    }
+
 
     .skip-link{margin-top:1rem}
     .skip-button{
@@ -326,6 +341,36 @@
           .must-haves-right{ grid-template-columns: 1fr; }
         }
 
+      .tldr-pills{
+          display:grid; gap:6px 14px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+          list-style:none; padding:0; margin:12px 0 0;
+        }
+        .tldr-pills li{
+          padding:8px 10px; border-radius:999px; backdrop-filter: blur(6px);
+          background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08);
+        }
+        .tldr-jumps{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+        .btn{ padding:10px 14px; border-radius:999px; font-weight:600; text-decoration:none; }
+        .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,0.18); }
+
+      /* ultra-compact TL;DR chips under the left paragraph */
+    .intro-left .tldr-pills{
+      display:flex; flex-wrap:wrap; gap:6px 8px; margin-top:1rem; padding:0; list-style:none;
+    }
+    .intro-left .tldr-pills .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:.78rem; line-height:1.15;
+      padding:2px 8px; border-radius:999px;
+      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
+    }
+    .intro-left .tldr-pills .i{ line-height:1; }
+    .intro-left .tldr-pills .metric{ /* keeps number tight to label without smushing */
+      display:inline-block;
+    }
+
+
+
+
 
   </style>
 </head>
@@ -344,6 +389,25 @@
         <div class="intro-left">
           <h1 class="reveal">My Auntie</h1>
           <h2 class="reveal">The first AI companion for postpartum parents—because at 3 a.m. you don’t want an app; you want your Auntie.</h2>
+            <br>
+             <ul class="tldr-pills">
+              <li class="pill">
+                <span class="i">🕑</span><span class="metric"><b>&lt;5s</b></span><span class="label">voice/SMS round-trip</span>
+              </li>
+              <li class="pill">
+                <span class="i">🫂</span><span class="metric"><b>3 intents</b></span><span class="label">Comfort · Resource · Escalate</span>
+              </li>
+              <li class="pill">
+                <span class="i">🔒</span><span class="metric"><b>Short-lived</b></span><span class="label">memory (helpful but private)</span>
+              </li>
+              <li class="pill">
+                <span class="i">📞</span><span class="metric"><b>0 apps</b></span><span class="label">phone/SMS only</span>
+              </li>
+              <li class="pill">
+                <span class="i">🏆</span><span class="metric"><b>WINNER</b></span><span class="label">Technova 2025</span>
+              </li>
+            </ul>
+
         </div>
         <div class="intro-right reveal">
           <div class="header-info">
@@ -361,7 +425,6 @@
                 <li>TypeScript</li>
                 <li>MongoDB Atlas</li>
               <li>Snowflake</li>
-            </ul>
           </div>
           <div class="skip-link">
             <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
@@ -435,7 +498,7 @@
     <div class="section-content reveal">
       <h2 class="reveal">Section 3.2 // Research &amp; Survey Results</h2>
       <p class="reveal">
-      We ran four Indi-Young–style listening sessions—no surveys, just deep listening—to map inner thinking, constraints, and language. Consistently we heard: “I don’t want to be onboarded; I want to be held together.”
+      We ran Indi-Young–style listening sessions—no surveys, just deep listening—to map inner thinking, constraints, and language. Consistently we heard: “I don’t want to be onboarded; I want to be held together.”
       </p>
       <div class="quote-grid reveal">
         <div class="quote-card reveal">
@@ -479,7 +542,7 @@
             </svg>
             <div class="circle-text">0%</div>
           </div>
-          <h3 class="stats-title reveal">about 1 in 7 new mothers</h3>
+          <h3 class="stats-title reveal">Or about 1 in 7 new mothers</h3>
           <p class="stats-desc reveal">
               Experience postpartum depression. Up to half go undiagnosed — stigma, lack of screening, or mis-attribution are common barriers.          </p>
         </div>
