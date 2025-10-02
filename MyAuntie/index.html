@@ -261,20 +261,25 @@
       <!-- top two-column intro -->
       <div class="intro reveal">
         <div class="intro-left">
-          <h1 class="reveal">Jaguar Redesign</h1>
-          <h2 class="reveal">Preserving their iconic legacy by fixing the 2024 rebrand disaster.</h2>
+          <h1 class="reveal">My Auntie</h1>
+          <h2 class="reveal">The first AI companion for postpartum parents—because at 3 a.m. you don’t want an app; you want your Auntie.</h2>
         </div>
         <div class="intro-right reveal">
           <div class="header-info">
-            <p><strong>Role:</strong> Lead Designer</p>
-            <p><strong>Timeline:</strong> 3 Weeks</p>
+            <p><strong>Role:</strong> Product Lead (AI + UX + Telephony)</p>
+            <p><strong>Timeline:</strong> 36 Hours</p>
             <p><strong>Tools &amp; Skills:</strong></p>
             <ul>
-              <li>User Research</li>
-              <li>Prototyping</li>
-              <li>Design Systems</li>
-              <li>Typography</li>
-              <li>Figma</li>
+              <li>Deep listening interviews</li>
+              <li>Safety Design</li>
+              <li>Conversation Design</li>
+              <li>Twilio (SMS/Voice)</li>
+                <li>Gemini (intent + safety)</li>
+                <li>OpenAI (Realtime TTS) </li>
+                <li>Node/Express</li>
+                <li>TypeScript</li>
+                <li>MongoDB Atlas</li>
+              <li>Snowflake</li>
             </ul>
           </div>
           <div class="skip-link">
@@ -287,8 +292,9 @@
       <section id="project-overview">
         <div class="section-content reveal">
           <h2>Section 1 // Project Overview</h2>
-          <p>Jaguar is a brand with legacy — bold, fast, and unmistakably British. But in recent years, that legacy has stalled. This project set out to reignite Jaguar's cultural relevance for a new generation of drivers by redefining how the brand speaks, looks, and feels.</p>
-          <p>        Our goal: craft a modern identity system that honors Jaguar's heritage while capturing the spirit of innovation, edge, and luxury performance that once made it iconic. Through strategic brand analysis, visual exploration, and experience-driven storytelling, we set the stage for Jaguar's next era.</p>
+          <p>New parents don’t quit because they’re “unmotivated.” They quit because the system makes help feel like homework. In the fourth trimester, energy and attention are the scarcest resources—precisely when most “solutions” demand the most: download an app, create an account, complete a 20-question intake, then wait.</p>
+          <p>My Auntie reframes support around the reality of 3 a.m.: a crying baby, 4% battery, and a brain made of mashed potatoes. No apps, no dashboards—just a warm voice or a short text that meets you where you are, offers one gentle next step, and (when needed) routes you to real care without judgment.</p>
+            <p>Our goal for the 36-hour sprint: ship a live, phone-first safety-aware companion that feels like calling a trusted auntie—tiny, kind, and doable. We launched SMS + voice, intent triage (Comfort · Resource · Escalate), privacy-first memory, and deterministic resource lookup—end-to-end and demo-ready.</p>
           <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/96860304_PcIkCNlaZ4Dp9nO.png" alt="Cover Art" class="overview-cover">
         </div>
       </section>
@@ -301,14 +307,11 @@
               <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774691_oOn2ZjIy4KXb65z.png" alt="Black box image">
             </div>
             <div class="challenge-col right">
-              <p>Jaguar's 2024 rebrand attempted to modernize the brand with sleek visuals and a vague tagline — but lacked a clear emotional hook or story. Unlike BMW's performance-driven identity or Mercedes' luxury-first image, Jaguar struggled to answer a simple question: "What do we stand for now?"</p>
-              <p>This brand ambiguity left Jaguar stuck between categories — too premium to be scrappy, too legacy to feel innovative. As one industry review noted:</p>
-              <p>"Jaguar seems unsure whether to chase Tesla or hold onto its heritage — and ends up doing neither." — Top Gear, 2023</p>
-             <p class="reveal">
-                To bring Jaguar back to cultural relevance, we needed more than another aesthetic refresh. We needed a compelling, resonant brand identity grounded in emotion, meaning, and modern expectations.
-              </p>
+              <p>Postpartum depression and anxiety affect ~1 in 7 birthing people; many never receive timely care. Stigma (“I should be happy”), sleep fragmentation, and logistical friction push parents away from support at the exact moment they need it.</p>
+              <p>The dominant pattern in digital mental health—apps that shift the burden back to the parent (log in, track, remember)—is backwards at 3 a.m. We needed a low-friction, high-comfort channel that lowers cognitive load, is safe by design, and can escalate appropriately.</p>
+              <p>Reframe: Don’t build another mental-health app. Build what new parents actually use at 3 a.m.: the phone. A kind voice. A short text. A connector that knows when to comfort, when to send resources, and when to escalate. </p>
               <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98774810_wh3JXF1rmKHDNtC.png" alt="Skinny screenshot" class="challenge-skinny-image">
-              <div class="highlight-box">"But the original jaguar is so cool" - this is true, yes. The original Jaguar 'leaper' logo will forever be iconic, but after 5+ years of not making a profit, it had become clear their brand identity wasn't working.</div>
+              <div class="highlight-box">You don’t want an app. You want your Auntie. Information-only this weekend; deterministic escalation; short-lived context for safety.</div>
             </div>
           </div>
         </div>
@@ -316,13 +319,14 @@
 
       <section id="scene">
         <div class="section-content reveal">
-          <h2>Section 3 // Let's set the scene</h2>
+          <h2>Section 3.1 // Let's set the scene</h2>
           <div class="scene-row">
             <div class="scene-col left">
-              <h4>What went wrong with the 2024 rebrand? How can we fix it?</h4>
-              <p>Jaguar attempted various brand taglines, such as "The Art of Performance" and "Alive," but these failed to resonate with audiences in the same way as competitors' more iconic slogans, such as BMW's "Ultimate Driving Machine."</p>
-              <p>This inconsistency left consumers unclear about Jaguar's identity—was it a performance brand, a luxury brand, or something in between? In contrast, BMW, Mercedes, and Audi each maintained strong, well-defined positions in the market, with BMW focusing on performance, Mercedes on luxury, and Audi on technological innovation.
-</p>
+              <h4>At 3 a.m., a parent asks: “Is this normal?”</h4>
+              <p>They don’t need a portal, they need a person. Real aunties aren’t always awake, and advice can be dated or risky. My Auntie keeps the warmth and removes the guesswork: zero setup, human-sounding support, and vetted resources when needed.</p>
+              <p>Two design constraints guided everything:
+                  <br> 1. Cognitive load must be near zero. One-breath messages, one next step.
+                  <br> 2. Safety must be explicit, not implied. Intent classification and clear red-flag routes to urgent care—without alarmism</p>
             </div>
             <div class="scene-col right">
               <div class="highlight-box">This created an interesting opportunity, Jaguar has heritage, but it's not owning a lane. Unlike competitors, its identity isn't clear or confidently positioned.
@@ -339,37 +343,34 @@
 
     <section class="research" id="research-results">
     <div class="section-content reveal">
-      <h2 class="reveal">Section 3.4 // Research &amp; Survey Results</h2>
+      <h2 class="reveal">Section 3.2 // Research &amp; Survey Results</h2>
       <p class="reveal">
-      In 2024, Jaguar's Super Bowl ad went viral — but not for the right reasons. Elon Musk famously responded on X: "Do you sell cars?" The moment highlighted a broader perception issue: consumers knew Jaguar looked good, but weren't sure what it actually stood for.
-      </p>
-      <p class="reveal">
-        We conducted a mix of brand perception interviews, survey feedback, and cultural audits to understand how Jaguar is seen today. The results revealed a consistent message: while the product is still respected, the brand story isn't landing. Jaguar is admired — but not loved. Consumers struggle to define what Jaguar stands for, and many younger drivers see it as either "premium dad car" or "stuck in the past." This lack of clarity is costing Jaguar its edge in an increasingly identity-driven market.
+      We ran four Indi-Young–style listening sessions—no surveys, just deep listening—to map inner thinking, constraints, and language. Consistently we heard: “I don’t want to be onboarded; I want to be held together.”
       </p>
       <div class="quote-grid reveal">
         <div class="quote-card reveal">
           <div class="quote-text">
-            "I know Jaguar's fast… but I don't know what they mean anymore."
+            “When I’m exhausted, even opening an app feels like a test.”
           </div>
-          <div class="quote-author">— Interviewee</div>
+          <div class="quote-author">— Mom of one toddler and one infant</div>
         </div>
         <div class="quote-card reveal">
           <div class="quote-text">
-            "Feels like they're afraid to pick a side — sporty? classy? electric?"
+            “I need someone to tell me what’s normal… and what’s not.”
           </div>
-          <div class="quote-author">— Twitter User</div>
+          <div class="quote-author">— First-time mom with infant</div>
         </div>
         <div class="quote-card reveal">
           <div class="quote-text">
-            "It's still a beautiful car — but the brand's lost its edge."
+            “If it’s serious, I want the handoff to be gentle, not scary.”
           </div>
-          <div class="quote-author">— Top Gear, 2024</div>
+          <div class="quote-author">— Expectant mother due soon</div>
         </div>
         <div class="quote-card reveal">
           <div class="quote-text">
-            "Jaguar's cool, but it's not part of the conversation."
+            “Please remember I had a C-section so I don’t have to retell it.”
           </div>
-          <div class="quote-author">— Marketing week analysis, 2023</div>
+          <div class="quote-author">— First-time mother of twins</div>
         </div>
         <div class="quote-card reveal">
           <div class="quote-text">
@@ -438,7 +439,7 @@
 
       <section class="constraints" id="constraints">
     <div class="section-content reveal">
-      <h2 class="reveal">Section 3.5 // Our Constraints</h2>
+      <h2 class="reveal">Section 3.3 // Our Constraints</h2>
       <p class="reveal" style="font-size: 1.1rem; line-height: 1.5; margin-bottom: 2rem;">
        With a legacy brand like Jaguar, reimagining identity isn't just a creative exercise — it's a balancing act. We had to move fast, work within non-negotiable brand equities, and create a solution that would resonate internally and externally.
       </p>
@@ -448,40 +449,34 @@
       <div class="constraints-row">
         <div class="constraints-left">
           <div class="highlight-box reveal">
-            <strong>⏳ A three-week sprint</strong>
+            <strong>⏳ 36 hour hackathon deadline</strong>
             <p style="margin-top: 0.5rem;">
-						We worked within a tight timeframe to deliver a clear, provable brand direction before Jaguar's Q2 review.
+				To ship live telephony, AI, memory, and resources—safely.
             </p>
           </div>
           <div class="highlight-box reveal">
-            <strong>🎯 Legacy brand tension</strong>
+            <strong>🎯 Safety over scope</strong>
             <p style="margin-top: 0.5rem;">
-             Every design decision had to respect heritage elements — the leaper, the typography, the tone — without defaulting to nostalgia.
+             Information-only, with deterministic escalation language.
             </p>
           </div>
           <div class="highlight-box reveal">
-            <strong>🗣 Public perception fatigue</strong>
+            <strong>🗣 Privacy by default</strong>
             <p style="margin-top: 0.5rem;">
-              Multiple past rebrands had created skepticism. We needed to say something new, but still Jaguar.
+                Hashed phone, short-lived context, minimal fields (delivery, feeding, weeks postpartum, region).
             </p>
           </div>
           <div class="highlight-box reveal">
-            <strong>⚖️ Internal alignment</strong>
+            <strong>⚖️ Judge-proof demo</strong>
             <p style="margin-top: 0.5rem;">
-              Our scope had to be clear enough to rally cross-functional teams— from visual designers to product owners, around a unified identity.
+                Visible logs (PII-redacted), intent output, and resource lookup.
             </p>
           </div>
         </div>
         <div class="constraints-right">
           <h3 class="reveal">The Problem &amp; Our Scope</h3>
           <p class="reveal">
-            Redefining Jaguar's brand identity required balancing creative ambition with business realities. The challenge wasn't just aesthetic — it was strategic: how do we evolve a legacy brand without alienating loyalists or diluting heritage?
-          </p>
-          <p class="reveal">
-            Instead of reinventing every element, we scoped our intervention around a focused set of moves: clarifying Jaguar's narrative voice, realigning visual identity with performance values, and shaping a brand system that could flex across digital and experiential channels.
-          </p>
-          <p class="reveal">
-            Our goal was to create a cohesive, contemporary brand framework that stayed true to Jaguar's DNA — while reigniting relevance for a new generation.
+            We scoped to what mattered most in a weekend: a reliable SMS core, optional voice call, Gemini-based triage returning structured intent (Comfort/Resource/Escalate), a Mongo Atlas memory scaffold, and Snowflake resource matching by topic+region. Everything else—WhatsApp, embeddings, dashboards—comes later.
           </p>
         </div>
       </div>
@@ -494,18 +489,11 @@
       <div class="ideation-row">
         <div class="ideation-col left reveal">
           <p>
-         In this phase, we explored not just what Jaguar could say — but how it should feel. We sketched campaign concepts, mapped brand tone against competitor archetypes, and tested moodboards that ranged from bold and rebellious to timeless and understated.
-          </p>
-          <p>
-            Every creative direction asked the same question: If Jaguar were a person, what would they be like today? Through word association, tone-mapping, and visual exploration, we narrowed down the emotional lane that felt both iconic and future-facing — edgy without being aggressive, premium without being cold.
-          </p>
+         We treated “Auntie” as a persona with safety rails: warm, concise for SMS; fuller for voice; always evidence-grounded; never diagnostic.
         </div>
         <div class="ideation-col right reveal">
           <div class="highlight-box reveal">
-            We explored dozens of brand tones— from heritage luxury to renegade precision — to find a vibe that felt unmistakably Jaguar.
-          </div>
-          <div class="highlight-box reveal">
-            We prioritized tone directions that felt emotionally specific, visually distinct, and able to flex across digital and physical touchpoints.
+             We sketched dozens of micro-flows (latch basics, C-section pain, baby blues vs red flags, sleep triage), then cut to the flows that a tired parent could use one-handed.
           </div>
           <div class="ideation-images reveal">
             <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98821399_vOUK29Ba9ku8bkL.png" alt="Sketch 1">
@@ -523,31 +511,25 @@
         </div>
         <div class="must-haves-right reveal">
           <div class="must-haves-card reveal">
-            <h4>🏁 A Distinct Brand Lane</h4>
+            <h4>🏁 Phone-first distribution</h4>
             <p>
-                Jaguar needed a clarified market position—was it performance-first, luxury-first, or future-facing? We prioritized a narrative that could confidently anchor Jaguar within the premium performance space, without mimicking competitors like BMW or Audi.
+                It’s where parents already are.
             </p>
           </div>
           <div class="must-haves-card reveal">
-            <h4>🎯 Emotive, Modern Messaging
+            <h4>🎯 One-breath, easy messaging
             </h4>
-            <p>
-            The brand voice had to evoke aspiration, precision, and seduction—without sounding outdated or trying too hard. We explored campaign copy that could land emotionally, not just aesthetically.
-            </p>
+            <p>Warm line + one action + what to watch for.            </p>
             </div>
             <div class="must-haves-card reveal">
-            <h4>🎨 A Cohesive Visual Identity
+            <h4>🎨 Tone System
             </h4>
-            <p>
-            We explored a refined visual system—dark greens, serif typography, dynamic lighting—that could feel premium without being sterile. Every design choice was filtered through: "Would this belong in the next Jaguar showroom? Or on a startup pitch deck?"
-            </p>
+            <p>Same Auntie across SMS/voice—no uncanny shifts.            </p>
           </div>
           <div class="must-haves-card reveal">
-            <h4>🔁 Scalable Brand Architecture
+            <h4>🔁 Safety Contracts
             </h4>
-            <p>
-            From digital experiences to showroom signage, we focused on creating modular brand elements—taglines, submarks, motion rules—that could flex across campaigns, platforms, and audiences without losing cohesion.
-            </p>
+            <p>Clear inputs/outputs across services; no hidden coupling.            </p>
           </div>
         </div>
       </div>
@@ -560,21 +542,25 @@
 
       <!-- 5.1 Sub-section: Logo & Identity System Development -->
       <div class="process-subsection reveal">
-        <h3 class="reveal">5.1 // Logo &amp; Identity System Development</h3>
+        <h3 class="reveal">5.1 // Identity System Development</h3>
+        <p class="reveal"> Instead of a visual design system, our core identity is how Auntie speaks and escalates. We defined:        </p>
         <p class="reveal">
-         The leaper is iconic — but nostalgia doesn't move product. Jaguar has lost cultural and commercial momentum for over five years, despite a globally recognized logo. Our goal wasn't to erase heritage, but to evolve it into something meaningful for today's drivers.
-        </p>
-        <p class="reveal">
-          The diamond mark emerged as a bold response: sleek, electric, and modular. It honors Jaguar's legacy through embedded initials (J, R), while signaling speed, tension, and electrification through its lightning-inspired form. It's not just a logo — it's a recalibrated identity.
+            <li>Intent taxonomy: Comfort · Resource · Escalate</li>
+            <li>Evidence micro-cards: short, vetted snippets (WHO/CDC/ACOG/PSI) fed deterministically to ground answers</li>
+            <li>Red-flag lexicon + scripts: gentle, non-alarmist escalation language</li>
         </p>
         <div class="process-dense-row reveal">
           <div class="process-dense-left">
             <div class="highlight-box reveal">
-              We refined the logo into a versatile, minimal identity system built for motion and digital use.
-            </div>
+            Contracts:
+                <br>
+            Brain → Telephony returns { intent, topic, region, reply_text, red_flags }
+                <br>
+            Telephony ↔ Snowflake: topic + region → top 2–3 vetted resources
+                <br>
+            Telephony ↔ Mongo: short-lived session + minimal context for personalization on message #2            </div>
             <div class="highlight-box reveal">
-              We're not ditching the leaper. We're acknowledging it no longer leads.
-            </div>
+                The result is an “auntie” who feels human yet stays within safe, constrained rails—and a stack where no teammate needs to reach into another’s internals.             </div>
           </div>
           <div class="process-dense-right">
             <div class="mini-images reveal">
@@ -598,32 +584,28 @@
         <p class="reveal">
         Each prototype underwent multiple rounds of usability testing, with direct feedback shaping refinements like clearer iconography, larger tap targets, and simplified flows. We prioritized accessibility every step of the way to ensure confidence, not confusion, at every tap or click.
         </p>
-        <div class="process-dense-row reveal">
-          <div class="process-dense-left">
-            <div class="highlight-box reveal">
-              Accessibility checks led to high contrast, large targets, and intuitive navigation.
-            </div>
-            <div class="highlight-box reveal">
-              User testing prompted key changes, including a universal "Help" panel and onboarding support.
-            </div>
-          </div>
-          <div class="process-dense-right">
-            <div class="mini-images reveal">
-              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98823042_6o6EVws4bbAYLob.png" alt="Prototype 1">
-              <img src="https://f2.toyhou.se/file/f2-toyhou-se/images/98823062_CKkqWBw287VmxRT.png" alt="Prototype 2">
-            </div>
-          </div>
-        </div>
-        <!-- New container for three video embeds side by side (YouTube Shorts) with standard 16:9 ratio -->
-        <div class="shorts-container reveal">
-          <iframe src="https://www.youtube.com/embed/fp2IUXuk0h0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          <iframe src="https://www.youtube.com/embed/ViNgz9cA2F0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          <iframe src="https://www.youtube.com/embed/Z9tMeMOs35I" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-        <!-- One long video embed below the shorts -->
-        <div class="video-embed reveal">
-          <iframe src="https://www.youtube.com/embed/byAXR21e04s" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
+          <!-- Call demo -->
+            <div class="video-embed reveal">
+  <iframe
+    id="yt-auntie-call"
+    src="https://www.youtube.com/embed/BUi3fAiD7To?rel=0&modestbranding=1&playsinline=1"
+    title="Auntie Call Demo"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+  ></iframe>
+</div>
+
+<div class="video-embed reveal">
+  <iframe
+    id="yt-auntie-text"
+    src="https://www.youtube.com/embed/kARMZuwfmMA?rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+    title="Auntie Text Demo"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+  ></iframe>
+</div>
+
+
       </div>
     </div>
   </section>
@@ -636,41 +618,69 @@
       <div class="card reveal">
         <!-- Using the number and headline together -->
         <h4 class="reveal">01</h4>
-        <h3 class="reveal">Strategy drives style</h3>
+        <h3 class="reveal">Ship the channel, not the chore</h3>
         <p class="reveal">
-          Rebranding isn't just about visuals — it's about choosing what the brand stands for. Every color, shape, and word had to trace back to a clear position: bold, electric, and timeless.
-        </p>
+            Phone/SMS beat any elegant app onboarding when attention is scarce.        </p>
       </div>
       <div class="card reveal">
         <h4 class="reveal">02</h4>
-        <h3 class="reveal">Legacy is not a limitation</h3>
+        <h3 class="reveal">Warmth is a feature</h3>
         <p class="reveal">
-          Working with a historic brand challenged me to respect what came before without getting stuck in it. The key was transformation, not abandonment.
-        </p>
+            A one-breath message and a kind line reduce panic better than paragraphs.        </p>
       </div>
       <div class="card reveal">
         <h4 class="reveal">03</h4>
-        <h3 class="reveal">Tools don't make taste</h3>
+        <h3 class="reveal">Safety needs contracts</h3>
         <p class="reveal">
-          AI and motion tools accelerated the work, but never led it. The creative direction — the tone, restraint, and attitude — always came first.
-        </p>
+            Structured intents, deterministic resources, and explicit escalation language prevent silent failure.         </p>
       </div>
       <div class="card reveal">
         <h4 class="reveal">04</h4>
-        <h3 class="reveal">Identity is lived, not just launched</h3>
+        <h3 class="reveal">Personalize light, not forever</h3>
         <p class="reveal">
-          A logo is just the beginning. I learned to think about how identity scales: across screens, in motion, in voice, in culture.
-        </p>
+            Remember just enough (delivery, feeding, weeks postpartum, region) and make retention short and documented.        </p>
       </div>
     </div>
     <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">🗜️ From Research to Relevance</h3>
+      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">👩‍🍼️ What we shipped— and why it mattered</h3>
       <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
-        This project pushed me beyond just making things look good — it asked me to make them matter. Rebranding Jaguar meant bridging the past and future with purpose: creating a system that felt fast, focused, and emotionally resonant.
-      </p>
+          In 36 hours we turned a fragile idea into a working lifeline: SMS first, voice optional, same warm Auntie across both. That mattered because our users aren’t looking for a new app at 3 a.m.—they’re looking for a human-sounding helper who answers in seconds and gives one doable next step. We proved that with live call + text flows on stage, letting a judge dial in and see Auntie’s gentle reassurance, concise guidance, and the follow-up text so nothing gets lost.      </p>
       <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
-        What surprised me most? The hardest part wasn't simplifying — it was being specific. Great branding isn't just consistent. It's confident. And now, Jaguar can be again.
+          Behind the warmth, the system held up: structured intent triage (Comfort · Resource · Escalate), privacy-first “light memory,” and deterministic local resources—clear contracts between services instead of ad-hoc glue. That made the demo reliable, the handoffs safe, and the story credible to both judges and clinicians in the room.      </p>
+    </div>
+      <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">🍼 What we're proud of</h3>
+      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
+          → Multi-modal in a weekend. Live SMS + (optional) voice with natural TTS—same persona, tuned per channel—so parents could choose the lowest-friction path in the moment.</p>
+          <p>→ Triaging that feels kind, not clinical. Comfort/Resource/Escalate showed up in the copy, the routing, and the escalation language (“Love…”)—a safety feature disguised as empathy. <p>
+          <p>→ Privacy-first memory. Short-lived context (delivery, feeding, region) so Auntie remembers what matters without hoarding more than she needs. </p>
+          <p>→ Deterministic resources. Topic + region → 2–3 vetted links you can actually call—no model hand-waving. </p>
+          <p>→ Judge-proof artifacts. We showed the triage JSON, Atlas collections, and Snowflake lookups—receipts that the thing worked, not just vibes. </p>
       </p>
+    </div>
+      <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">🍼 What we learned (and will keep)</h3>
+      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
+          → Scope like surgeons. Tier-1 (tags/micro-RAG) beat “let’s vectorize the world.” It made answers faster and the system easier to reason about under pressure. </p>
+          <p>→ Conversation design is product design. One-breath messages, tone guides, and red-flag scripts did more for trust than any UI flourish.  <p>
+          <p>→ Contracts prevent meltdowns. Clear inputs/outputs between Brain ↔ Telephony ↔ Snowflake ↔ Mongo let four people ship like one mind.  </p>
+          <p>→ Safety is a feature, not a disclaimer. Escalation copy that sounds like Auntie—warm, specific, actionable—turns a scary moment into a guided handoff. </p>
+      </p>
+    </div>
+      <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">👩Why we think we won</h3>
+      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
+          We designed for the real 3 a.m.—no apps, no accounts, no homework—and we proved it live. Judges didn’t just hear a story; they called, texted, and watched Auntie route help. That blend of empathy, reliability, and receipts made the impact legible: tech that reduces cognitive load for exhausted new parents, with safety you can trust. That’s what earned us a spot among the hackathon winners—and it’s the bar we’ll keep meeting as we expand regions, languages, and clinical review. </p>
+      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">And we did it in 36 hours. Not a slideware promise, a working service. We wired the sponsor stack wall-to-wall—Twilio (SMS/Voice), OpenAI Realtime (TTS for calls), Gemini (intent + safety), MongoDB Atlas (short-lived memory), Snowflake (deterministic, region-aware resources), all orchestrated in TypeScript/Node and deployed live. While most teams built “an app”, we shipped the channel parents already use at 3 a.m. —call and text—then proved it on stage with real flows, visible triage JSON, and sub-5s SMS round-trip. That combination of empathy + reliability + receipts is what made Auntie legible to judges as more than a demo—and why we landed among the winners.</p>
+    </div>
+      <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">Works Cited</h3>
+      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
+          Carlson, K., Mughal, S., Azhar, Y., & Siddiqui, W. (2025). Perinatal depression. StatPearls.      </p>
+      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
+          CDC. Symptoms of depression among women (2024).      </p>
+      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
+          WHO. Maternal Mental Health (n.d.).     </p>
     </div>
   </div>
 </section>
@@ -682,6 +692,23 @@
   <div id="contact"></div>
 
   <!-- footer loader -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+      let textPlayer;
+      function onYouTubeIframeAPIReady() {
+        textPlayer = new YT.Player('yt-auntie-text', {
+          events: {
+            onReady: (e) => e.target.setPlaybackRate(1.25),
+            onStateChange: (e) => {
+              if (e.data === YT.PlayerState.PLAYING) e.target.setPlaybackRate(1.25);
+            },
+          },
+        });
+      }
+    </script>
+
+
+
   <script>
     (async () => {
       const res = await fetch('/footer.html');
