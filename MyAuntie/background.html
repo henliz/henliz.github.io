@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Henrietta's Bento Resume 🍱</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+
+    *{margin:0;padding:0;box-sizing:border-box}
+
+    body{
+      font-family:'Montserrat',sans-serif;
+      background:linear-gradient(135deg,#0f1419 0%,#1a2332 25%,#2d3748 50%,#1e3a5f 75%,#0f1419 100%);
+      background-size:400% 400%;
+      animation:gradientShift 20s ease infinite;
+      color:#f1faee;
+      overflow-x:hidden;
+      min-height:100vh;
+      padding:2rem;
+      position:relative;
+    }
+
+    /* Desktop-only custom cursor */
+    @media (hover:hover) and (pointer:fine){
+      body{cursor:none!important}
+      *,*::before,*::after{cursor:none!important}
+    }
+
+    .custom-cursor{
+      position:fixed;width:20px;height:20px;background:rgba(42,157,143,.3);
+      border:2px solid rgba(42,157,143,.8);border-radius:50%;pointer-events:none;z-index:10000;
+      backdrop-filter:blur(8px);transition:all .08s ease-out;transform:translate(-50%,-50%);
+      box-shadow:0 0 15px rgba(42,157,143,.4), inset 0 0 10px rgba(42,157,143,.1);
+      display:none
+    }
+    @media (hover:hover) and (pointer:fine){.custom-cursor{display:block}}
+    .custom-cursor.clicking{background:rgba(42,157,143,.9);border-color:rgba(42,157,143,1);transform:translate(-50%,-50%) scale(.8);box-shadow:0 0 25px rgba(42,157,143,.8), inset 0 0 15px rgba(42,157,143,.3)}
+    .custom-cursor.hovering{width:30px;height:30px;background:rgba(42,157,143,.4);border-color:rgba(42,157,143,.9);box-shadow:0 0 20px rgba(42,157,143,.6), inset 0 0 12px rgba(42,157,143,.2)}
+
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    /* Sky background stays behind; cannot block input */
+    .sky-background{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;opacity:.6;pointer-events:none}
+    .sky-canvas{width:100%;height:100%}
+
+    /* Overlay container stays above sky */
+    .iframes-overlay{
+      position:relative;
+      z-index:10;           /* above the sky (z:1), below custom cursor (z:10000) */
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+      display:block;
+    }
+
+    /* (Existing styles kept as-is below) */
+    .bento-container{max-width:1200px;margin:0 auto;padding:2rem 0;position:relative;z-index:10}
+    .bento-header{text-align:center;margin-bottom:3rem}
+    .bento-header h1{
+      font-family:'Montserrat Alternates',sans-serif;font-size:3.5rem;font-weight:700;
+      background:linear-gradient(45deg,#f1faee,#a8dadc,#66fcf1,#2a9d8f,#457b9d);
+      background-size:200% 200%;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      margin-bottom:.5rem;animation:gradientShift 8s ease infinite;position:relative
+    }
+    .bento-header p{font-size:1.3rem;opacity:.8;color:#a8dadc;text-shadow:0 2px 4px rgba(0,0,0,.4),0 4px 8px rgba(0,0,0,.2)}
+    .bento-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,auto);gap:1.5rem;max-width:1000px;margin:0 auto}
+    .bento-box{
+      background:rgba(15,20,25,.15);backdrop-filter:blur(35px);border-radius:24px;padding:2rem;
+      border:1px solid rgba(168,218,220,.2);transition:all .5s cubic-bezier(.4,0,.2,1);
+      position:relative;overflow:hidden;cursor:pointer;
+      box-shadow:0 8px 32px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.05), inset 0 0 20px rgba(168,218,220,.03)
+    }
+    .bento-box::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,218,220,.08),transparent);transition:left .8s ease}
+    .bento-box::after{content:'';position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;background:linear-gradient(45deg,rgba(168,218,220,.1),rgba(42,157,143,.1),rgba(168,218,220,.1));border-radius:26px;z-index:-1;opacity:0;transition:opacity .5s ease}
+    .bento-box:hover{transform:translateY(-8px) scale(1.02);background:rgba(15,20,25,.25);border:1px solid rgba(168,218,220,.3);backdrop-filter:blur(40px);box-shadow:0 20px 60px rgba(0,0,0,.3),0 0 40px rgba(42,157,143,.15), inset 0 1px 0 rgba(255,255,255,.1), inset 0 0 30px rgba(168,218,220,.08)}
+    .bento-box:hover::before{left:100%}
+    .bento-box:hover::after{opacity:1}
+    .bento-box.expanded{background:rgba(15,20,25,.35);border:1px solid rgba(42,157,143,.4);transform:scale(1.03);backdrop-filter:blur(45px);box-shadow:0 25px 80px rgba(0,0,0,.4),0 0 60px rgba(42,157,143,.2), inset 0 1px 0 rgba(255,255,255,.15), inset 0 0 40px rgba(42,157,143,.08)}
+    .bento-box.expanded::after{opacity:1;background:linear-gradient(45deg,rgba(42,157,143,.2),rgba(168,218,220,.2),rgba(42,157,143,.2))}
+    .intro{grid-column:1/3;grid-row:1}.photo{grid-column:3/5;grid-row:1}.experience{grid-column:1/3;grid-row:2}
+    .skills{grid-column:3;grid-row:2}.projects{grid-column:4;grid-row:2}.education{grid-column:1;grid-row:3}
+    .contact{grid-column:2;grid-row:3}.fun-facts{grid-column:3/5;grid-row:3}
+    .bento-icon{font-size:2.5rem;margin-bottom:1rem;display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+    .bento-title{font-family:'Montserrat Alternates',sans-serif;font-size:1.5rem;font-weight:600;margin-bottom:1rem;color:#a8dadc;text-shadow:0 2px 4px rgba(0,0,0,.3)}
+    .bento-content{font-size:1rem;line-height:1.6;opacity:.9;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+    .bento-details{max-height:0;overflow:hidden;transition:max-height .5s ease,padding-top .5s ease;margin-top:0}
+    .bento-box.expanded .bento-details{max-height:500px;padding-top:1rem}
+    .photo-container{width:120px;height:120px;border-radius:50%;overflow:hidden;margin:0 auto 1rem;border:3px solid rgba(168,218,220,.4);background:linear-gradient(45deg,#2a9d8f,#457b9d);display:flex;align-items:center;justify-content:center;font-size:3rem;box-shadow:0 8px 32px rgba(0,0,0,.3), inset 0 2px 4px rgba(255,255,255,.1)}
+    .skill-tag{display:inline-block;background:rgba(42,157,143,.15);backdrop-filter:blur(10px);border:1px solid rgba(42,157,143,.3);border-radius:15px;padding:.3rem .8rem;margin:.2rem;font-size:.8rem;color:#a8dadc;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.1);transition:all .3s ease}
+    .skill-tag:hover{background:rgba(42,157,143,.25);border-color:rgba(42,157,143,.5);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15)}
+    .experience-item{margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid rgba(168,218,220,.1)}
+    .experience-item:last-child{border-bottom:none;margin-bottom:0}
+    .job-title{font-weight:600;color:#a8dadc;font-size:1.1rem;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+    .company{color:#2a9d8f;font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+    .date{font-size:.9rem;opacity:.7;margin-bottom:.5rem}
+    .close-btn{position:absolute;top:1rem;right:1rem;background:rgba(168,218,220,.15);backdrop-filter:blur(10px);border:1px solid rgba(168,218,220,.3);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#f1faee;opacity:0;transition:all .3s ease;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.1)}
+    .bento-box.expanded .close-btn{opacity:1}
+    .close-btn:hover{background:rgba(168,218,220,.3);border-color:rgba(168,218,220,.5);transform:scale(1.1);box-shadow:0 4px 12px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15)}
+
+    @media (max-width:768px){
+      .bento-grid{grid-template-columns:1fr;grid-template-rows:auto;gap:1rem}
+      .intro,.photo,.experience,.skills,.projects,.education,.contact,.fun-facts{grid-column:1;grid-row:auto}
+      .bento-header h1{font-size:2.5rem}
+      .bento-box{padding:1.5rem}
+      body{padding:1rem}
+    }
+    @media (max-width:480px){
+      .bento-header h1{font-size:2rem}
+      .bento-box{padding:1rem}
+      body{padding:.5rem}
+    }
+  </style>
+
+  <!-- Keep your import map exactly as-is -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- Custom cursor (unchanged) -->
+  <div class="custom-cursor" id="cursor"></div>
+
+  <!-- Sky background (unchanged) -->
+  <div class="sky-background">
+    <canvas class="sky-canvas" id="skyCanvas"></canvas>
+  </div>
+
+  <!-- ===== Overlaid content (now inline-loaded, NOT iframes) ===== -->
+
+  <!-- Cursor behavior (unchanged) -->
+  <script>
+    const cursor = document.getElementById('cursor');
+    let mouseX=0, mouseY=0, animId;
+    const update = ()=>{cursor.style.left=mouseX+'px';cursor.style.top=mouseY+'px'};
+    document.addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;if(!animId){animId=requestAnimationFrame(()=>{update();animId=null})}});
+    document.addEventListener('mousedown',()=>cursor.classList.add('clicking'));
+    document.addEventListener('mouseup',()=>cursor.classList.remove('clicking'));
+    document.addEventListener('mouseleave',()=>cursor.style.opacity='0');
+    document.addEventListener('mouseenter',()=>cursor.style.opacity='1');
+
+    // (Old iframe auto-size left in place; it no-ops now since there are no iframes)
+    function autoSizeIframe(ifr){
+      try{
+        const doc = ifr.contentDocument || ifr.contentWindow?.document;
+        if(!doc) return;
+        const h = Math.max(
+          doc.body?.scrollHeight || 0,
+          doc.documentElement?.scrollHeight || 0
+        );
+        ifr.style.height = (h || 600) + 'px';
+      }catch(e){
+        ifr.style.height = '600px';
+      }
+    }
+    window.addEventListener('DOMContentLoaded', ()=>{
+      document.querySelectorAll('.iframes-overlay iframe').forEach(ifr=>{
+        ifr.addEventListener('load', ()=>autoSizeIframe(ifr));
+      });
+    });
+    window.addEventListener('resize', ()=>{
+      document.querySelectorAll('.iframes-overlay iframe').forEach(ifr=>autoSizeIframe(ifr));
+    });
+  </script>
+
+  <!-- NEW: tiny loader to inline external HTML files into the slots above -->
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      const slots = document.querySelectorAll('[data-include]');
+      for (const slot of slots) {
+        const url = slot.getAttribute('data-include');
+        if (!url) continue;
+
+        try {
+          const res = await fetch(url, { credentials: 'same-origin' });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const html = await res.text();
+
+          // Build a fragment so we can safely rewrite relative URLs before insertion
+          const baseURL = new URL(url, location.href);
+          const tpl = document.createElement('template');
+          tpl.innerHTML = html;
+
+          // Rewrite relative src/href inside the included snippet so assets resolve
+          tpl.content.querySelectorAll('[src],[href]').forEach(el => {
+            if (el.hasAttribute('src')) {
+              const v = el.getAttribute('src');
+              if (v && !/^(?:[a-z]+:|\/|#)/i.test(v)) el.setAttribute('src', new URL(v, baseURL).href);
+            }
+            if (el.hasAttribute('href')) {
+              const v = el.getAttribute('href');
+              if (v && !/^(?:[a-z]+:|\/|#)/i.test(v)) el.setAttribute('href', new URL(v, baseURL).href);
+            }
+          });
+
+          // Capture scripts so we can re-execute them after insertion
+          const scriptNodes = Array.from(tpl.content.querySelectorAll('script'));
+
+          // Insert the content
+          const frag = document.createDocumentFragment();
+          Array.from(tpl.content.childNodes).forEach(n => frag.appendChild(n));
+          slot.replaceWith(frag);
+
+          // Re-run scripts (both inline and with src)
+          for (const old of scriptNodes) {
+            const s = document.createElement('script');
+            // Copy attributes (type/module/src/etc.)
+            for (const { name, value } of Array.from(old.attributes)) s.setAttribute(name, value);
+            if (!old.src) s.textContent = old.textContent || '';
+            (document.body || document.documentElement).appendChild(s);
+          }
+        } catch (err) {
+          console.error('Include failed for', url, err);
+          // Graceful fallback
+          const fallback = document.createElement('div');
+          fallback.textContent = `Failed to load ${url}`;
+          slot.replaceWith(fallback);
+        }
+      }
+    });
+  </script>
+
+  <!-- Three.js sky block (LEFT UNCHANGED) -->
+  <script type="module">
+    import * as THREE from "three";
+    import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
+
+    // Three.js Sky Scene - IDENTICAL to your current implementation
+    let scene, camera, renderer, skyMesh;
+    const clock = new THREE.Clock();
+
+    function initSkyScene() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 0, 12);
+
+      const canvas = document.getElementById('skyCanvas');
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 3);
+      scene.add(ambientLight);
+
+      const loader = new GLTFLoader();
+      loader.load('../models/skyblue.glb', function (gltf) {
+        skyMesh = gltf.scene;
+
+        if (skyMesh) {
+          skyMesh.scale.set(5, 5, 5);
+          skyMesh.position.set(0, 0, 0);
+
+          skyMesh.traverse((child) => {
+            if (child.isMesh) {
+              if (gltf.parser && gltf.parser.json && gltf.parser.json.textures) {
+                const textureIndex = 0;
+                if (gltf.parser.json.textures[textureIndex]) {
+                  gltf.parser.loadTexture(textureIndex).then((texture) => {
+                    child.material.map = texture;
+                    child.material.color.setHex(0xffffff);
+                    child.material.transparent = false;
+                    child.material.opacity = 1;
+                    child.material.needsUpdate = true;
+                  });
+                }
+              } else {
+                child.material = new THREE.MeshBasicMaterial({
+                  color: 0x87CEEB,
+                  side: THREE.FrontSide,
+                  wireframe: false
+                });
+              }
+            }
+          });
+
+          scene.add(skyMesh);
+        }
+      }, undefined, function () {
+        const geometry = new THREE.SphereGeometry(1, 32, 32);
+        const colors = [];
+        const pos = geometry.attributes.position;
+        for (let i = 0; i < pos.count; i++) colors.push(0.3, 0.6, 1);
+        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        const material = new THREE.MeshBasicMaterial({ vertexColors: true, wireframe: false });
+        skyMesh = new THREE.Mesh(geometry, material);
+        scene.add(skyMesh);
+      });
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+      if (skyMesh) {
+        skyMesh.rotation.y = t * 0.02;
+        skyMesh.rotation.x = Math.sin(t * 0.03) * 0.1;
+      }
+      renderer.render(scene, camera);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    window.addEventListener('load', () => { initSkyScene(); animate(); });
+    window.addEventListener('resize', onWindowResize);
+  </script>
+</body>
+</html>
