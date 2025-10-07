@@ -402,6 +402,12 @@
 
             body {
                 padding: 1rem;
+                min-height: 100%;
+                min-height: -webkit-fill-available;
+            }
+            .sky-background {
+                height: 100vh;
+                height: -webkit-fill-available; /* iOS fix */
             }
         }
 
@@ -439,7 +445,7 @@
     <div class="bento-container">
         <div class="bento-header">
             <h1>About Me</h1>
-            <p>Check out my mini resume for the TLDR of me!</p>
+            <p>Click on my mini resume for the TLDR of me!</p>
         </div>
 
         <div class="bento-grid">
@@ -448,7 +454,7 @@
                 <span class="bento-icon">👋</span>
                 <h3 class="bento-title">Hey there!</h3>
                 <div class="bento-content">
-                    I'm a chaotic creative who collects careers like Barbie! Currently founding AI startups and building epic RPG expansions.
+                    I'm a design engineer who collects careers like Barbie! Currently founding AI startups and building epic RPG expansions.
                 </div>
                 <div class="bento-details">
                     <p>I'm passionate about bridging the gap between cutting-edge technology and human-centered design. My journey spans from AAA game development to AI innovation, always with a focus on creating meaningful experiences that solve real problems.</p>
@@ -495,10 +501,10 @@
                         <p>Leading a 100+ person indie studio creating a 50+ hour expansion for Baldur's Gate 3.</p>
                     </div>
                     <div class="experience-item">
-                        <div class="job-title">Senior Developer</div>
-                        <div class="company">Previous Roles</div>
-                        <div class="date">2020 - 2023</div>
-                        <p>Built AAA RPGs with global impact and won awards for digital innovation.</p>
+                        <div class="job-title">AI Designer & Consultant</div>
+                        <div class="company">HalalMeals</div>
+                        <div class="date">Fall 2024 co-op</div>
+                        <p>NLP workflows and ML models for personalized meal recommendations,  achieving a projected 20% increase in user engagement retention through iterative development and optimization.</p>
                     </div>
                 </div>
                 <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
