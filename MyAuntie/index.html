@@ -392,16 +392,13 @@
             <br>
              <ul class="tldr-pills">
               <li class="pill">
-                <span class="i">🕑</span><span class="metric"><b>&lt;5s</b></span><span class="label">voice/SMS round-trip</span>
-              </li>
-              <li class="pill">
                 <span class="i">🫂</span><span class="metric"><b>3 intents</b></span><span class="label">Comfort · Resource · Escalate</span>
               </li>
               <li class="pill">
                 <span class="i">🔒</span><span class="metric"><b>Short-lived</b></span><span class="label">memory (helpful but private)</span>
               </li>
               <li class="pill">
-                <span class="i">📞</span><span class="metric"><b>0 apps</b></span><span class="label">phone/SMS only</span>
+                <span class="i">📞</span><span class="metric"><b>0 apps</b></span><span class="label">phone/SMS <5s round trip only</span>
               </li>
               <li class="pill">
                 <span class="i">🏆</span><span class="metric"><b>WINNER</b></span><span class="label">Technova 2025</span>
@@ -664,7 +661,6 @@
           <h3>Brainstorming our must‑haves</h3>
           <p>Auntie isn’t a UI; she’s a voice. Our tone system was a non-negotiable: texts are one-breath, kind, and end with a single next step (“Love, try X. Watch for Y. Call if Z.”).</p>
             <p>Calls are warmer and slower, with human pauses and plain language—tuned to sound like a real aunt, not a bot reading a script. When risk appears, the tone stays steady: no sirens, no blame—just a gentle, actionable handoff (“Love, it’s time we call for extra help. I’m sending the number.”).</p>
-            <p>To keep Auntie seamless across channels, we use one persona and one playbook: the same lexicon, signature phrases (“Love,” “one thing to try,” “what to watch”), and intent frames (Comfort · Resource · Escalate) power both SMS and voice, just sized to the medium.</p>
             <p>SMS compresses to one breath; voice expands with natural pauses—but word choice, reassurance cadence, and escalation language never drift. We also pin reading level, contractions, and “no-clinical-jargon” rules so you don’t get a bubbly text and a sterile call. Net effect: one Auntie, two surfaces—no uncanny costume changes.</p>
         </div>
         <div class="must-haves-right reveal">
@@ -711,7 +707,7 @@
             We didn’t prototype an app. We prototyped conversations.</p>
             <p>SMS Copy Testing: Early drafts were too wordy — a tired parent skimmed and missed the action. We cut to “one breath” rules: one line of comfort, one step, one “what to watch.”</p>
             <p>Voice Tuning: OpenAI’s TTS gave warmth, but some voices sounded uncanny. We iterated until Auntie sounded human, not robotic.</p>
-          <p>Escalation Language: First drafts felt clinical (“seek medical attention”). We softened: “Love, let’s call your provider now — here’s the number.” Clinicians confirmed it balanced safety and calm.</p>
+          <p>Escalation Language: First drafts felt clinical (“seek medical attention”). We softened: “Love, let’s call your provider now — here’s the number.” The moms we worked with confirmed they felt it balanced safety and calm.</p>
           <p>These iterations weren’t polish — they were product design. Tone, pacing, and escalation scripts shaped trust more than any UI ever could.
         </p>
         <div class="process-dense-row reveal">
@@ -725,7 +721,7 @@
                 <br>
             Telephony ↔ Mongo: short-lived session + minimal context for personalization on message #2            </div>
             <div class="highlight-box reveal">
-                The result is an “auntie” who feels human yet stays within safe, constrained rails—and a stack where no teammate needs to reach into another’s internals.             </div>
+                The result is an “auntie” who feels human yet stays within safe, constrained rails—and a stack where no teammate needs to reach into another’s internals. Crucial for the very limited timeframe of the hackathon.             </div>
           </div>
           <div class="process-dense-right">
             <div class="mini-images reveal">
@@ -749,25 +745,25 @@
           <p class="reveal">
             Final Voice prototype (what it sounds like) <br>The voice line uses the same persona and language, just sized for audio: warmer pacing, natural pauses, and the same escalation copy. If risk appears, Auntie’s handoff is gentle and specific—no alarms, no blame—“Love, let’s call for extra help. I’m sending the hospital address.” Post-call, Auntie texts the key steps and links so a sleep-deprived parent doesn’t have to remember.     </p>
           <!-- Call demo -->
-            <div class="video-embed reveal">
-  <iframe
-    id="yt-auntie-call"
-    src="https://www.youtube.com/embed/BUi3fAiD7To?rel=0&modestbranding=1&playsinline=1"
-    title="Auntie Call Demo"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    allowfullscreen
-  ></iframe>
-</div>
 
-<div class="video-embed reveal">
-  <iframe
-    id="yt-auntie-text"
-    src="https://www.youtube.com/embed/kARMZuwfmMA?rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
-    title="Auntie Text Demo"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    allowfullscreen
-  ></iframe>
-</div>
+          <div class="video-embed reveal">
+              <iframe
+                id="yt-auntie-text"
+                src="https://www.youtube.com/embed/kARMZuwfmMA?rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+                title="Auntie Text Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              ></iframe>
+            </div>
+            <div class="video-embed reveal">
+              <iframe
+                id="yt-auntie-call"
+                src="https://www.youtube.com/embed/BUi3fAiD7To?rel=0&modestbranding=1&playsinline=1"
+                title="Auntie Call Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              ></iframe>
+            </div>
 
 
       </div>
@@ -835,7 +831,7 @@
       <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">🤰 Why we think we won</h3>
       <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
           We designed for the real 3 a.m.—no apps, no accounts, no homework—and we proved it live. Judges didn’t just hear a story; they called, texted, and watched Auntie route help. That blend of empathy, reliability, and receipts made the impact legible: tech that reduces cognitive load for exhausted new parents, with safety you can trust. That’s what earned us a spot among the hackathon winners—and it’s the bar we’ll keep meeting as we expand regions, languages, and clinical review. </p>
-      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">And we did it in 36 hours. Not a slideware promise, a working service. We wired the sponsor stack wall-to-wall—Twilio (SMS/Voice), OpenAI Realtime (TTS for calls), Gemini (intent + safety), MongoDB Atlas (short-lived memory), Snowflake (deterministic, region-aware resources), all orchestrated in TypeScript/Node and deployed live. While most teams built “an app”, we shipped the channel parents already use at 3 a.m. —call and text—then proved it on stage with real flows, visible triage JSON, and sub-5s SMS round-trip. That combination of empathy + reliability + receipts is what made Auntie legible to judges as more than a demo—and why we landed among the winners.</p>
+      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">And we did it in 36 hours. Not a slideware promise, a working service. We wired the sponsor stack wall-to-wall— Gemini (intent + safety), MongoDB Atlas (short-lived memory), Snowflake API (deterministic, region-aware resources) — in addition to Twilio (SMS/Voice) and OpenAI Realtime voice for natural-sounding calls. All orchestrated in TypeScript/Node and deployed live. While most teams built “an app”, we shipped the channel parents already use at 3 a.m. (call and text) then proved it on stage with real flows, visible triage JSON, and sub-5s SMS round-trip. That combination of empathy + reliability + receipts is what made Auntie legible to judges as more than a demo—and why we landed among the winners.</p>
     </div>
       <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
       <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">Works Cited</h3>
