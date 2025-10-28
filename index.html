@@ -875,6 +875,128 @@
       })();
     </script>
 
+    <script>
+/**
+ * Snap the viewport to fully show `.models-section` whenever it's partially visible
+ * on user scroll (wheel/touch/keyboard), in both directions.
+ * Includes slower custom scrolling.
+ */
+(function () {
+  const section = document.querySelector('.models-section');
+  if (!section) return;
+
+  /* --------- Tunables --------- */
+  const SCROLL_THROTTLE_MS = 900;   // wait before another snap
+  const DURATION_MS        = 900;   // slower scroll (increase for slower)
+  const EASING             = (t)=> t<.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2; // easeInOutQuad
+  const PARTIAL_MIN        = 0.04;  // consider even a small sliver "partial"
+  const PARTIAL_MAX        = 0.96;
+
+  let lastSnapAt = 0;
+  let animId = 0;
+
+  const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+
+  function rectInfo(el){
+    const r = el.getBoundingClientRect();
+    const top = r.top, bottom = r.bottom, vh = innerHeight;
+    const visible = Math.max(0, Math.min(bottom, vh) - Math.max(top, 0)); // overlap with viewport
+    const ratio = visible / vh;
+    return { r, top, bottom, vh, visible, ratio };
+  }
+
+  function isFullyInView(info){
+    return Math.abs(info.top) < 1 && Math.abs(info.bottom - info.vh) < 1;
+  }
+
+  function cancelAnim(){ if (animId) { cancelAnimationFrame(animId); animId = 0; } }
+
+  function animatedScrollTo(targetTop, duration=DURATION_MS){
+    cancelAnim();
+    const start = scrollY;
+    const dist  = targetTop - start;
+    const t0    = performance.now();
+
+    function step(t){
+      const p = clamp((t - t0) / duration, 0, 1);
+      const eased = EASING(p);
+      scrollTo(0, start + dist * eased);
+      if (p < 1) animId = requestAnimationFrame(step);
+    }
+    animId = requestAnimationFrame(step);
+  }
+
+  function snapTo(targetTop){
+    lastSnapAt = Date.now();
+    animatedScrollTo(targetTop);
+  }
+
+  function snapIfPartial(direction /* +1 down, -1 up */){
+    const now = Date.now();
+    if (now - lastSnapAt < SCROLL_THROTTLE_MS) return false;
+
+    const info = rectInfo(section);
+    const { r, ratio, top, bottom, vh } = info;
+
+    // If it's fully in view, do nothing.
+    if (isFullyInView(info)) return false;
+
+    // If not visible at all, do nothing (we only snap when already partially visible).
+    if (ratio <= 0) return false;
+
+    // Snap when partially visible within relaxed thresholds OR when just barely visible at an edge.
+    const isPartial = (ratio > PARTIAL_MIN && ratio < PARTIAL_MAX) ||
+                      (direction > 0 && top < 0 && bottom > 0 && bottom < vh * (1 + PARTIAL_MIN)) ||
+                      (direction < 0 && bottom > vh && top < vh && top > -vh * PARTIAL_MIN);
+
+    if (!isPartial) return false;
+
+    if (direction > 0) {
+      // Scrolling DOWN → align section top to viewport top
+      const target = scrollY + r.top;
+      snapTo(target);
+    } else {
+      // Scrolling UP → align section bottom to viewport bottom
+      const target = scrollY + (r.bottom - vh);
+      snapTo(target);
+    }
+    return true;
+  }
+
+  /* --------- Wheel (desktop) --------- */
+  function onWheel(e){
+    const dir = e.deltaY > 0 ? 1 : -1;
+    if (snapIfPartial(dir)) e.preventDefault();
+  }
+  addEventListener('wheel', onWheel, { passive: false });
+
+  /* --------- Touch (mobile) --------- */
+  let touchY = 0;
+  function onTouchStart(e){ touchY = e.changedTouches[0].clientY; }
+  function onTouchMove(e){
+    const y = e.changedTouches[0].clientY;
+    const dir = (touchY - y) > 0 ? 1 : -1; // swipe up => down-scroll
+    touchY = y;
+    if (snapIfPartial(dir)) e.preventDefault();
+  }
+  addEventListener('touchstart', onTouchStart, { passive: true });
+  addEventListener('touchmove',  onTouchMove,  { passive: false });
+
+  /* --------- Keyboard --------- */
+  function onKey(e){
+    const down = ['ArrowDown', 'PageDown', 'End', ' '].includes(e.key);
+    const up   = ['ArrowUp',   'PageUp',   'Home'].includes(e.key);
+    if (!down && !up) return;
+
+    const dir = down ? 1 : -1;
+    if (snapIfPartial(dir)) e.preventDefault();
+  }
+  addEventListener('keydown', onKey, { passive: false });
+
+})();
+</script>
+
+
 
  <!-- Resume Popup -->
 <div id="resume-popup" style="
