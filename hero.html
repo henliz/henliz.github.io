@@ -828,6 +828,40 @@
           .greeting:hover span {
             animation: textRipple 0.6s ease forwards;
           }
+        }
+
+
+        /* --- Mobile polish: hero image clears navbar; tidy the POV headline --- */
+@media (max-width: 768px){
+  /* Account for the fixed navbar so the photo can't clip underneath it */
+  :root { --nav-h: 72px; }                  /* adjust if your nav is taller/shorter */
+  .hero { padding-top: calc(var(--nav-h) + 90px); }
+
+  /* Replace the letter-by-letter layout with clean lines on phones */
+  .greeting-line1,
+  .greeting-line2 { display: none !important; }
+
+  .greeting {
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+  .greeting::before {
+    content: "POV: she gets more done before";
+    display: block;
+  }
+  .greeting::after {
+    content: "9am than other people do all day 👋";
+    display: block;
+  }
+
+  /* Slightly smaller bob so the image never drifts into the nav */
+  .floating-image-container { margin-top: 6px; animation: floatImageMobile 8s ease-in-out infinite; }
+  @keyframes floatImageMobile {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(4px); }
+  }
+}
+
 
 
 
