@@ -18,7 +18,7 @@
 
       /* Card size */
       --card-h: 650px;            /* kept for reference; no longer used for fixed height */
-      --min-card-h: 360px;        /* NEW: baseline for short quotes */
+      --min-card-h: 360px;        /* baseline for short quotes */
       --radius: 28px;
 
       /* Motion */
@@ -75,8 +75,7 @@
     /* Transparent columns with fade mask */
     .col{
       width:100%;
-      /* was: calc(var(--card-h) * var(--visible-cards) + (var(--visible-cards) - 1) * var(--item-gap)) */
-      height: auto; /* JS will set explicit pixel height to show ~3 cards */
+      height: auto; /* JS will set explicit pixel height to show ~3 cards (desktop/tablet) */
       overflow:hidden;
       position:relative;
       border-radius: calc(var(--radius) * 1.05);
@@ -120,7 +119,6 @@
       box-sizing: border-box;  /* keeps all 4 rounded corners visible */
       position: relative;      /* for the link icon */
       width: 100%;
-      /* was: height: var(--card-h); */
       height: auto;            /* auto-height based on content */
       min-height: var(--min-card-h);
       border-radius: var(--radius);
@@ -193,7 +191,7 @@
       line-height: 1.78;
     }
 
-    /* Byline: stronger gradient + DROP SHADOW (requested) */
+    /* Byline */
     .byline{
       margin-top: 6px;
       font-weight:800;
@@ -203,7 +201,6 @@
       color: transparent;
       font-family: "Montserrat Alternates", Montserrat, sans-serif;
       letter-spacing:.2px;
-      /* visible drop shadow + glow */
       text-shadow:
         0 3px 6px rgba(0,0,0,.35),
         0 8px 22px rgba(32,190,255,.45),
@@ -221,10 +218,62 @@
     @media (prefers-reduced-motion: reduce){ .marquee{ animation:none; } }
 
     @media (max-width: 1080px){ .rails{ grid-template-columns: repeat(2, minmax(220px, 1fr)); } }
-    @media (max-width: 700px){
-      :root{ --card-h: 510px; } /* retained (unused for auto-height); harmless */
-      .rails{ grid-template-columns: 1fr; }
+
+    /* ===== Mobile refinements (fix big between-row spacing) ===== */
+    @media (max-width:700px){
+      /* tighter gaps when stacked + in the horizontal track */
+      :root{
+        --col-gap: clamp(20px, 2.5vw, 14px);
+        --item-gap: clamp(14px, 3vw, 16px);
+      }
+
+      .rails{ grid-template-columns: 1fr; } /* stacks rows */
+
+      .col{
+        /* softer fade so it doesn't read like extra top/bottom padding */
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          rgba(0,0,0,0) 0%,
+          rgba(0,0,0,.88) 6%,
+          #000 18%,
+          #000 82%,
+          rgba(0,0,0,.88) 94%,
+          rgba(0,0,0,0) 100%
+        );
+                mask-image: linear-gradient(
+          to bottom,
+          rgba(0,0,0,0) 0%,
+          rgba(0,0,0,.88) 6%,
+          #000 18%,
+          #000 82%,
+          rgba(0,0,0,.88) 94%,
+          rgba(0,0,0,0) 100%
+        );
+        height:auto; /* let rows size naturally on mobile */
+      }
+
+      .marquee{
+        flex-direction: row;
+        animation-name: scrollX;            /* use horizontal keyframes */
+        padding: calc(var(--item-gap) * 0.5); /* trim padding so rows feel tighter */
+      }
+
+      /* Force each inner list to lay cards in a ROW (overrides inline style) */
+      .marquee > div{
+        display:flex;
+        flex-direction: row !important;
+        gap: var(--item-gap);
+      }
+
+      /* Directions: up = left, down = right */
+      .col[data-dir="up"]   .marquee{ animation-direction: normal;  } /* left */
+      .col[data-dir="down"] .marquee{ animation-direction: reverse; } /* right */
+
+      .card{ min-width: clamp(260px, 82vw, 420px); }
     }
+
+    /* horizontal keyframes */
+    @keyframes scrollX{ from{ transform: translateX(0); } to{ transform: translateX(-250%); } }
 
     @keyframes scrollY{ from{ transform: translateY(0); } to{ transform: translateY(-50%); } }
   </style>
@@ -236,6 +285,9 @@
   </div>
 
   <script>
+    /* helper used by both blocks */
+    const isMobile = () => window.matchMedia('(max-width:700px)').matches;
+
     /* Add an optional `url` to show the top-right link icon for that card */
     const ITEMS = [
       { title: "Easy, Family Friendly (Skrimp.ai)", by: "Lisa Freeman",   body: "It’s pretty easy to use, very straightforward. I appreciated that the recipes weren’t making me go find 11 random ingredients I’d never use again — or things I know my kids wouldn’t even try.", stars: 5, url: "https://www.ctvnews.ca/kitchener/article/university-of-waterloo-student-uses-ai-to-save-families-money-on-grocery-bills/" },
@@ -298,11 +350,11 @@
       rails.appendChild(column(mid,   'down'));   /* middle scrolls down */
       rails.appendChild(column(right, 'up'));
 
-      /* NEW: size columns to show ~3 real cards (auto-height cards supported) */
       const VISIBLE_CARDS = parseInt(getComputedStyle(document.documentElement)
                             .getPropertyValue('--visible-cards')) || 3;
 
       function setColumnViewportHeight(col){
+        if (isMobile()) { col.style.height = 'auto'; return; } /* NEW: skip on mobile */
         const marquee = col.querySelector('.marquee');
         const cards   = col.querySelectorAll('.card');
         if (!marquee || cards.length === 0) return;
@@ -350,7 +402,10 @@
             .getPropertyValue('--visible-cards')
         ) || 3;
 
+        const isMobile = () => window.matchMedia('(max-width:700px)').matches;
+
         function measureViewportHeight(col){
+          if (isMobile()) return 0; /* NEW: no unification on mobile */
           const marquee = col.querySelector('.marquee');
           const cards   = col.querySelectorAll('.card');
           if (!marquee || cards.length === 0) return 0;
@@ -367,6 +422,11 @@
         function unifyColumnHeights(){
           const cols = Array.from(document.querySelectorAll('.col'));
           if (!cols.length) return;
+
+          if (isMobile()) { /* NEW: reset heights on mobile */
+            cols.forEach(col => col.style.height = 'auto');
+            return;
+          }
 
           // 1) measure each column's needed height
           const heights = cols.map(measureViewportHeight);
