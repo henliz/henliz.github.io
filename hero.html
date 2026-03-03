@@ -44,29 +44,7 @@
             height: 100vh;
         }
 
-        /* ─── Custom Cursor ─────────────────────────────── */
-        .custom-cursor {
-            position: fixed;
-            width: 18px; height: 18px;
-            background: rgba(102, 252, 241, 0.15);
-            border: 1.5px solid rgba(102, 252, 241, 0.65);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10000;
-            backdrop-filter: blur(6px);
-            transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, transform 0.08s ease-out;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px rgba(102, 252, 241, 0.25);
-        }
-        .custom-cursor.hovering {
-            width: 30px; height: 30px;
-            background: rgba(102, 252, 241, 0.1);
-            border-color: rgba(102, 252, 241, 0.8);
-        }
-        .custom-cursor.clicking {
-            transform: translate(-50%, -50%) scale(0.72);
-            background: rgba(102, 252, 241, 0.5);
-        }
+        /* cursor:none is set on * — parent page handles the cursor */
 
         /* ─── Hero Layout ───────────────────────────────── */
         .hero {
@@ -709,8 +687,7 @@
         </defs>
     </svg>
 
-    <!-- Custom cursor -->
-    <div class="custom-cursor" id="cursor"></div>
+
 
     <!-- ── Hero ──────────────────────────────────────────── -->
     <div class="hero">
@@ -827,28 +804,19 @@
         import * as THREE from "three";
         import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
 
-        // ── Cursor ───────────────────────────────────────────
-        const cursor = document.getElementById('cursor');
-        let mouseX = 0, mouseY = 0, raf;
-
+        // ── Cursor relay → parent ────────────────────────────
         document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX; mouseY = e.clientY;
-            if (!raf) raf = requestAnimationFrame(() => {
-                cursor.style.left = mouseX + 'px';
-                cursor.style.top  = mouseY + 'px';
-                raf = null;
-            });
+            window.parent.postMessage({ type: 'iframeMouse', x: e.clientX, y: e.clientY }, '*');
         });
-        document.addEventListener('mousedown',  () => cursor.classList.add('clicking'));
-        document.addEventListener('mouseup',    () => cursor.classList.remove('clicking'));
-        document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; });
-        document.addEventListener('mouseenter', () => { cursor.style.opacity = '1'; });
+        document.addEventListener('mousedown',  () => window.parent.postMessage({ type: 'iframeDown' }, '*'));
+        document.addEventListener('mouseup',    () => window.parent.postMessage({ type: 'iframeUp' }, '*'));
+        document.addEventListener('mouseleave', () => window.parent.postMessage({ type: 'iframeLeave' }, '*'));
 
         document.querySelectorAll(
             '.eyebrow-link, .social-btn, .photo-inner, #taglineMerged, .btn-cta-primary, .btn-cta-secondary, .modal-close'
         ).forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+            el.addEventListener('mouseenter', () => window.parent.postMessage({ type: 'iframeHover', on: true }, '*'));
+            el.addEventListener('mouseleave', () => window.parent.postMessage({ type: 'iframeHover', on: false }, '*'));
         });
 
         // ── Three.js Sky Scene ───────────────────────────────

@@ -55,24 +55,23 @@
             }
         }
 
-        /* Custom Glassmorphism Cursor - Only show on desktop */
+        /* Custom Cursor - Only show on desktop */
         .custom-cursor {
             position: fixed;
-            width: 20px;
-            height: 20px;
-            background: rgba(168, 218, 220, 0.1);
-            border: 1px solid rgba(168, 218, 220, 0.3);
+            width: 18px;
+            height: 18px;
+            background: rgba(102, 252, 241, 0.15);
+            border: 1.5px solid rgba(102, 252, 241, 0.65);
             border-radius: 50%;
             pointer-events: none;
             z-index: 10000;
-            backdrop-filter: blur(10px);
-            transition: all 0.08s ease-out;
+            backdrop-filter: blur(6px);
+            transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, transform 0.08s ease-out;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 20px rgba(168, 218, 220, 0.2);
-            display: none; /* Hidden by default */
+            box-shadow: 0 0 10px rgba(102, 252, 241, 0.25);
+            display: none;
         }
 
-        /* Only show custom cursor on desktop */
         @media (hover: hover) and (pointer: fine) {
             .custom-cursor {
                 display: block;
@@ -80,18 +79,15 @@
         }
 
         .custom-cursor.clicking {
-            background: rgba(168, 218, 220, 0.8);
-            border-color: rgba(168, 218, 220, 0.9);
-            transform: translate(-50%, -50%) scale(0.8);
-            box-shadow: 0 0 30px rgba(168, 218, 220, 0.6);
+            transform: translate(-50%, -50%) scale(0.72);
+            background: rgba(102, 252, 241, 0.5);
         }
 
         .custom-cursor.hovering {
             width: 30px;
             height: 30px;
-            background: rgba(168, 218, 220, 0.15);
-            border-color: rgba(168, 218, 220, 0.5);
-            box-shadow: 0 0 25px rgba(168, 218, 220, 0.4);
+            background: rgba(102, 252, 241, 0.1);
+            border-color: rgba(102, 252, 241, 0.8);
         }
 
         #app {
@@ -926,6 +922,7 @@
             document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
+                cursor.style.opacity = '1';
 
                 if (!animationId) {
                     animationId = requestAnimationFrame(() => {
@@ -957,26 +954,24 @@
                 });
             });
 
-            // Hide cursor when entering iframes
-            const iframes = document.querySelectorAll('iframe');
-            iframes.forEach(iframe => {
-                iframe.addEventListener('mouseenter', () => {
-                    cursor.style.opacity = '0';
-                });
-
-                iframe.addEventListener('mouseleave', () => {
-                    cursor.style.opacity = '1';
-                });
-            });
-
-            // Listen for messages from iframes to hide/show cursor
+            // Relay cursor position/state from iframes via postMessage
             window.addEventListener('message', (event) => {
-                if (event.data.type === 'hideCursor') {
-                    cursor.style.opacity = '0';
-                }
-                if (event.data.type === 'showCursor') {
+                const d = event.data;
+                const frame = event.source && event.source.frameElement;
+                if (!frame) return;
+                if (d.type === 'iframeMouse') {
+                    const rect = frame.getBoundingClientRect();
+                    mouseX = rect.left + d.x;
+                    mouseY = rect.top + d.y;
+                    cursor.style.left = mouseX + 'px';
+                    cursor.style.top  = mouseY + 'px';
                     cursor.style.opacity = '1';
                 }
+                if (d.type === 'iframeDown')  cursor.classList.add('clicking');
+                if (d.type === 'iframeUp')    cursor.classList.remove('clicking');
+                if (d.type === 'iframeLeave') cursor.style.opacity = '0';
+                if (d.type === 'iframeHover' && d.on)  cursor.classList.add('hovering');
+                if (d.type === 'iframeHover' && !d.on) cursor.classList.remove('hovering');
             });
 
             // Hide cursor when leaving window

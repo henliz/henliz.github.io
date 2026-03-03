@@ -95,6 +95,9 @@
     header, footer{padding:18vh 8vw;opacity:.9}
     header h1, footer h1{margin:0 0 1rem 0}
     header p, footer p{max-width:52ch;line-height:1.5}
+
+    /* cursor:none — parent page handles the cursor */
+    *, *::before, *::after { cursor: none !important; }
   </style>
 
   <script type="importmap">
@@ -420,6 +423,14 @@
       camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
     });
+
+    /* =============== Cursor relay → parent =============== */
+    document.addEventListener('mousemove', (e) => {
+      window.parent.postMessage({ type: 'iframeMouse', x: e.clientX, y: e.clientY }, '*');
+    });
+    document.addEventListener('mousedown',  () => window.parent.postMessage({ type: 'iframeDown' }, '*'));
+    document.addEventListener('mouseup',    () => window.parent.postMessage({ type: 'iframeUp' }, '*'));
+    document.addEventListener('mouseleave', () => window.parent.postMessage({ type: 'iframeLeave' }, '*'));
   </script>
 </body>
 </html>

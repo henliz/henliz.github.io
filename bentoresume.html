@@ -56,44 +56,7 @@
             }
         }
 
-        /* Custom Glassmorphism Cursor - Only show on desktop */
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: rgba(42, 157, 143, 0.3);
-            border: 2px solid rgba(42, 157, 143, 0.8);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10000;
-            backdrop-filter: blur(8px);
-            transition: all 0.08s ease-out;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
-            display: none; /* Hidden by default */
-        }
-
-        /* Only show custom cursor on desktop */
-        @media (hover: hover) and (pointer: fine) {
-            .custom-cursor {
-                display: block;
-            }
-        }
-
-        .custom-cursor.clicking {
-            background: rgba(42, 157, 143, 0.9);
-            border-color: rgba(42, 157, 143, 1);
-            transform: translate(-50%, -50%) scale(0.8);
-            box-shadow: 0 0 25px rgba(42, 157, 143, 0.8), inset 0 0 15px rgba(42, 157, 143, 0.3);
-        }
-
-        .custom-cursor.hovering {
-            width: 30px;
-            height: 30px;
-            background: rgba(42, 157, 143, 0.4);
-            border-color: rgba(42, 157, 143, 0.9);
-            box-shadow: 0 0 20px rgba(42, 157, 143, 0.6), inset 0 0 12px rgba(42, 157, 143, 0.2);
-        }
+        /* cursor:none is set on * — parent page handles the cursor */
 
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
@@ -459,7 +422,6 @@
 </head>
 <body>
     <!-- Custom Glassmorphism Cursor -->
-    <div class="custom-cursor" id="cursor"></div>
 
     <!-- Sky Background -->
     <div class="sky-background">
@@ -692,56 +654,17 @@
         import * as THREE from "three";
         import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
 
-        // Custom Cursor Logic
-        const cursor = document.getElementById('cursor');
-        let mouseX = 0;
-        let mouseY = 0;
-        let animationId;
-
-        function updateCursor() {
-            cursor.style.left = mouseX + 'px';
-            cursor.style.top = mouseY + 'px';
-        }
-
+        // ── Cursor relay → parent ────────────────────────────
         document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-
-            if (!animationId) {
-                animationId = requestAnimationFrame(() => {
-                    updateCursor();
-                    animationId = null;
-                });
-            }
+            window.parent.postMessage({ type: 'iframeMouse', x: e.clientX, y: e.clientY }, '*');
         });
+        document.addEventListener('mousedown',  () => window.parent.postMessage({ type: 'iframeDown' }, '*'));
+        document.addEventListener('mouseup',    () => window.parent.postMessage({ type: 'iframeUp' }, '*'));
+        document.addEventListener('mouseleave', () => window.parent.postMessage({ type: 'iframeLeave' }, '*'));
 
-        document.addEventListener('mousedown', () => {
-            cursor.classList.add('clicking');
-        });
-
-        document.addEventListener('mouseup', () => {
-            cursor.classList.remove('clicking');
-        });
-
-        // Hover states for interactive elements
-        const hoverElements = document.querySelectorAll('.bento-box, .close-btn, .skill-tag');
-
-        hoverElements.forEach(element => {
-            element.addEventListener('mouseenter', () => {
-                cursor.classList.add('hovering');
-            });
-
-            element.addEventListener('mouseleave', () => {
-                cursor.classList.remove('hovering');
-            });
-        });
-
-        document.addEventListener('mouseleave', () => {
-            cursor.style.opacity = '0';
-        });
-
-        document.addEventListener('mouseenter', () => {
-            cursor.style.opacity = '1';
+        document.querySelectorAll('.bento-box, .close-btn, .skill-tag').forEach(el => {
+            el.addEventListener('mouseenter', () => window.parent.postMessage({ type: 'iframeHover', on: true }, '*'));
+            el.addEventListener('mouseleave', () => window.parent.postMessage({ type: 'iframeHover', on: false }, '*'));
         });
 
         // Three.js Sky Scene - IDENTICAL to hero implementation
