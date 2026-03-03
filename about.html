@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>about me — Henrietta van Niekerk</title>
+  <link rel="icon" type="image/png" href="/HenLogo.png" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('/fonts/DotempDemo.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    .px { font-family: 'DotempDemo', monospace; font-style: normal; font-weight: 400; font-size: 0.88em; }
+    .di { font-family: 'Didot', serif; font-style: italic; font-weight: 700; }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @media (hover: hover) and (pointer: fine) {
+      *, *::before, *::after { cursor: none !important; }
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+      color: #f1faee;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    @keyframes gradientShift {
+      0%   { background-position: 0%   50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0%   50%; }
+    }
+
+    /* ── Custom cursor ── */
+    .custom-cursor {
+      position: fixed;
+      width: 20px; height: 20px;
+      background: rgba(42, 157, 143, 0.3);
+      border: 2px solid rgba(42, 157, 143, 0.8);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      backdrop-filter: blur(8px);
+      transition: width 0.15s ease, height 0.15s ease, background 0.15s ease;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px rgba(42, 157, 143, 0.4), inset 0 0 10px rgba(42, 157, 143, 0.1);
+    }
+    .custom-cursor.hovering {
+      width: 30px; height: 30px;
+      background: rgba(42, 157, 143, 0.45);
+      border-color: rgba(42, 157, 143, 0.9);
+    }
+
+    /* ── Page content (sits below fixed nav) ── */
+    .page-content {
+      padding-top: 80px;
+      min-height: 100vh;
+    }
+
+    /* ── Bento ── */
+    .bento-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .bento-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .bento-header h1 {
+      font-family: 'Didot', serif;
+      font-style: italic;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #f1faee, #a8dadc, #66fcf1, #2a9d8f, #457b9d);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      animation: gradientShift 8s ease infinite;
+    }
+    .bento-header p {
+      font-size: 1.1rem;
+      opacity: 0.7;
+      color: #a8dadc;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Glassmorphism bento boxes */
+    .bento-box {
+      background: rgba(15, 20, 25, 0.15);
+      backdrop-filter: blur(35px);
+      border-radius: 24px;
+      padding: 2rem;
+      border: 1px solid rgba(168, 218, 220, 0.2);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05), inset 0 0 20px rgba(168,218,220,0.03);
+    }
+    .bento-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(168,218,220,0.08), transparent);
+      transition: left 0.8s ease;
+    }
+    .bento-box::after {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: linear-gradient(45deg, rgba(168,218,220,0.1), rgba(42,157,143,0.1), rgba(168,218,220,0.1));
+      border-radius: 26px;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .bento-box:hover {
+      transform: translateY(-8px) scale(1.02);
+      background: rgba(15,20,25,0.25);
+      border: 1px solid rgba(168,218,220,0.3);
+      backdrop-filter: blur(40px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 40px rgba(42,157,143,0.15), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 0 30px rgba(168,218,220,0.08);
+    }
+    .bento-box:hover::before { left: 100%; }
+    .bento-box:hover::after  { opacity: 1; }
+
+    .bento-box.expanded {
+      background: rgba(15,20,25,0.35);
+      border: 1px solid rgba(42,157,143,0.4);
+      transform: scale(1.03);
+      backdrop-filter: blur(45px);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.4), 0 0 60px rgba(42,157,143,0.2), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 0 40px rgba(42,157,143,0.08);
+    }
+    .bento-box.expanded::after {
+      opacity: 1;
+      background: linear-gradient(45deg, rgba(42,157,143,0.2), rgba(168,218,220,0.2), rgba(42,157,143,0.2));
+    }
+
+    /* Grid layout */
+    .intro      { grid-column: 1 / 3; grid-row: 1; }
+    .photo      { grid-column: 3 / 5; grid-row: 1; }
+    .experience { grid-column: 1 / 3; grid-row: 2; }
+    .skills     { grid-column: 3;     grid-row: 2; }
+    .projects   { grid-column: 4;     grid-row: 2; }
+    .education  { grid-column: 1;     grid-row: 3; }
+    .contact    { grid-column: 2;     grid-row: 3; }
+    .fun-facts  { grid-column: 3 / 5; grid-row: 3; }
+
+    .bento-icon  { font-size: 2.5rem; margin-bottom: 1rem; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+    .bento-title {
+      font-family: 'Didot', serif;
+      font-style: italic;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #a8dadc;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .bento-content { font-size: 1rem; line-height: 1.6; opacity: 0.9; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .bento-details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, padding-top 0.5s ease;
+      margin-top: 0;
+    }
+    .bento-box.expanded .bento-details { max-height: 500px; padding-top: 1rem; }
+
+    .photo-container {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto 1rem;
+      border: 3px solid rgba(168,218,220,0.4);
+      background: linear-gradient(45deg, #2a9d8f, #457b9d);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.1);
+    }
+
+    .skill-tag {
+      display: inline-block;
+      background: rgba(42,157,143,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(42,157,143,0.3);
+      border-radius: 15px;
+      padding: 0.3rem 0.8rem;
+      margin: 0.2rem;
+      font-size: 0.8rem;
+      color: #a8dadc;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .skill-tag:hover {
+      background: rgba(42,157,143,0.25);
+      border-color: rgba(42,157,143,0.5);
+      transform: translateY(-1px);
+    }
+
+    .experience-item {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(168,218,220,0.1);
+    }
+    .experience-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .job-title { font-weight: 600; color: #a8dadc; font-size: 1.1rem; }
+    .company   { color: #2a9d8f; font-weight: 500; }
+    .date      { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }
+
+    .close-btn {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: rgba(168,218,220,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(168,218,220,0.3);
+      border-radius: 50%;
+      width: 30px; height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #f1faee;
+      opacity: 0;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .bento-box.expanded .close-btn { opacity: 1; }
+    .close-btn:hover {
+      background: rgba(168,218,220,0.3);
+      border-color: rgba(168,218,220,0.5);
+      transform: scale(1.1);
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .bento-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .intro, .photo, .experience, .skills, .projects, .education, .contact, .fun-facts {
+        grid-column: 1;
+        grid-row: auto;
+      }
+      .bento-header h1 { font-size: 2.5rem; }
+      .bento-box { padding: 1.5rem; }
+      .bento-container { padding: 2rem 1rem 4rem; }
+    }
+    @media (max-width: 480px) {
+      .bento-header h1 { font-size: 2rem; }
+      .bento-box { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="custom-cursor" id="cursor"></div>
+
+  <!-- nav partial -->
+  <div id="nav-slot" data-include="/nav.html"></div>
+
+  <div class="page-content">
+    <div class="bento-container">
+
+      <div class="bento-header">
+        <h1>A<span class="px">bo</span>ut <span class="px">M</span>e</h1>
+        <p>Click on the cards for the TL;DR of me :)</p>
+      </div>
+
+      <div class="bento-grid">
+
+        <!-- Intro -->
+        <div class="bento-box intro" onclick="toggleBox(this)">
+          <span class="bento-icon">👋</span>
+          <h3 class="bento-title"><span class="px">Hey</span> there!</h3>
+          <div class="bento-content">
+            Design engineer, founder, & occasional chaos architect.
+          </div>
+          <div class="bento-details">
+            <p>I build at the intersection of structure and experience — diagnostic games, ARGs inside AI tools, studio-scale mods, and chat platforms from scratch. Every project starts with a question I can't put down.</p>
+            <p style="margin-top:0.75rem;">4A Interaction Design &amp; Business at Waterloo, founding between lectures.</p>
+          </div>
+          <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+        </div>
+
+        <!-- Photo -->
+        <div class="bento-box photo" onclick="toggleBox(this)">
+          <div class="photo-container">
+            <img src="/HenChibi.png" alt="Henrietta" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <div style="display:none;font-size:3rem;align-items:center;justify-content:center;width:100%;height:100%;">📸</div>
+          </div>
+          <h3 class="bento-title"><span class="px">That's</span> Me!</h3>
+          <div class="bento-content">The mastermind behind the chaos ✨</div>
+          <div class="bento-details">
+            <p>Based in Ontario, Canada 🇨🇦</p>
+            <p style="margin-top:0.75rem;">Always chasing the next impossible question to answer.</p>
+          </div>
+          <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+        </div>
+
+        <!-- Experience -->
+        <div class="bento-box experience" onclick="toggleBox(this)">
+          <span class="bento-icon">💼</span>
+          <h3 class="bento-title">Ex<span class="px">per</span>ien<span class="px">ce</span></h3>
+          <div class="bento-content">From indie studios to AI startups</div>
+          <div class="bento-details">
+            <div class="experience-item">
+              <div class="job-title">Founder &amp; CEO</div>
+              <div class="company">Skrimp AI</div>
+              <div class="date">2025 – Present</div>
+              <p>AI-powered meal planning &amp; grocery platform.</p>
+            </div>
+            <div class="experience-item">
+              <div class="job-title">Technical Director</div>
+              <div class="company">Path to Menzoberranzan</div>
+              <div class="date">2025 – Present</div>
+              <p>Leading a 100+ person indie studio building a 50+ hour expansion for Baldur's Gate 3.</p>
+            </div>
+            <div class="experience-item">
+              <div class="job-title">AI Designer &amp; Consultant</div>
+              <div class="company">HalalMeals</div>
+              <div class="date">Fall 2024 co-op</div>
+              <p>NLP workflows and ML models for personalized meal recommendations.</p>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+        </div>
+
+        <!-- Skills -->
+        <div class="bento-box skills" onclick="toggleBox(this)">
+          <span class="bento-icon">🛠️</span>
+          <h3 class="bento-title">S<span class="px">kill</span>s</h3>
+          <div class="bento-content">
+            <span class="skill-tag">TypeScript</span>
+            <span class="skill-tag">React</span>
+            <span class="skill-tag">Three.js</span>
+          </div>
+          <div class="bento-details">
+            <div style="margin-bottom:1rem;">
+              <strong>Frontend:</strong><br>
+              <span class="skill-tag">React</span><span class="skill-tag">Next.js</span><span class="skill-tag">Three.js</span><span class="skill-tag">TypeScript</span>
+            </div>
+            <div style="margin-bottom:1rem;">
+              <strong>Backend:</strong><br>
+              <span class="skill-tag">Node.js</span><span class="skill-tag">NestJS</span><span class="skill-tag">Python</span><span class="skill-tag">PostgreSQL</span>
+            </div>
+            <div>
+              <strong>Other:</strong><br>
+              <span class="skill-tag">AI/ML</span><span class="skill-tag">Godot</span><span class="skill-tag">UI/UX</span><span class="skill-tag">Game Dev</span>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+        </div>
+
+        <!-- Projects -->
+        <div class="bento-box projects" onclick="toggleBox(this)">
+          <span class="bento-icon">🚀</span>
+          <h3 class="bento-title">Pro<span class="px">jec</span>ts</h3>
+          <div class="bento-content">Cool stuff I've built</div>
+          <div class="bento-details">
+            <div class="experience-item">
+              <div class="job-title">THRESHOLD / ELIZA</div>
+              <p><small>ARG embedded inside an AI interface. Designed to catch the moment a student stops reading.</small></p>
+            </div>
+            <div class="experience-item">
+              <div class="job-title">EndoQuest</div>
+              <p><small>Endometriosis diagnostic RPG. Combat mechanics as a screener — because people finish games.</small></p>
+            </div>
+            <div class="experience-item">
+              <div class="job-title">Magic Mirror (HtN 2024)</div>
+              <p><small>AI try-before-you-buy for online shopping. Finalist at Hack the North.</small></p>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+        </div>
+
+        <!-- Education -->
+        <div class="bento-box education" onclick="toggleBox(this)">
+          <span class="bento-icon">🎓</span>
+          <h3 class="bento-title"><span class="px">Edu</span>cat<span class="px">ion</span></h3>
+          <div class="bento-content">Always learning!</div>
+          <div class="bento-details">
+            <div class="experience-item">
+              <div class="job-title">Interaction Design &amp; Business</div>
+              <div class="company">University of Waterloo</div>
+              <p>4A — software engineering, AI, human-computer interaction.</p>
+            </div>
+            <div class="experience-item">
+              <div class="job-title">IB Diploma Programme</div>
+              <div class="company">International Baccalaureate</div>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+        </div>
+
+        <!-- Contact -->
+        <div class="bento-box contact" onclick="toggleBox(this)">
+          <span class="bento-icon">📧</span>
+          <h3 class="bento-title">Con<span class="px">tac</span>t</h3>
+          <div class="bento-content">Let's connect!</div>
+          <div class="bento-details">
+            <p style="margin-bottom:1rem;"><strong>Email:</strong><br>henrietta@skrimp.ai</p>
+            <p style="margin-bottom:1rem;"><strong>LinkedIn:</strong><br><small>/in/henriettavanniekerk</small></p>
+            <p><strong>GitHub:</strong><br>/henliz</p>
+          </div>
+          <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+        </div>
+
+        <!-- Fun Facts -->
+        <div class="bento-box fun-facts" onclick="toggleBox(this)">
+          <span class="bento-icon">✨</span>
+          <h3 class="bento-title"><span class="px">Fun</span> Fac<span class="px">ts</span></h3>
+          <div class="bento-content">The chaotic details that make me, me!</div>
+          <div class="bento-details">
+            <div class="experience-item">
+              <div class="job-title">🎮 RPG Obsessed</div>
+              <p>Baldur's Gate 3, Disco Elysium. Currently also building one.</p>
+            </div>
+            <div class="experience-item">
+              <div class="job-title">📖 Literature Nerd</div>
+              <p>Master &amp; Margarita is my beloved. Also working on my own novel :)</p>
+            </div>
+            <div class="experience-item">
+              <div class="job-title">🏋️‍♀️ Gym Rat</div>
+              <p>Training since ~2021. Nothing like a new PR after working up to it.</p>
+            </div>
+          </div>
+          <button class="close-btn" onclick="closeBox(event, this.parentElement)">×</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- footer partial -->
+  <div id="footer-slot" data-include="/footer.html"></div>
+
+  <script>
+    // Bento interactions
+    function toggleBox(box) {
+      document.querySelectorAll('.bento-box.expanded').forEach(open => {
+        if (open !== box) open.classList.remove('expanded');
+      });
+      box.classList.toggle('expanded');
+    }
+    function closeBox(event, box) {
+      event.stopPropagation();
+      box.classList.remove('expanded');
+    }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.bento-box')) {
+        document.querySelectorAll('.bento-box.expanded').forEach(b => b.classList.remove('expanded'));
+      }
+    });
+  </script>
+
+  <script>
+    // Partials loader (nav + footer)
+    (async function includePartials() {
+      for (const el of document.querySelectorAll('[data-include]')) {
+        const url = el.getAttribute('data-include');
+        try {
+          const res = await fetch(url, { credentials: 'same-origin' });
+          if (!res.ok) throw new Error(`${res.status}`);
+          const html = await res.text();
+          const doc = new DOMParser().parseFromString(html, 'text/html');
+          doc.querySelectorAll('style, link[rel="stylesheet"]').forEach(n =>
+            document.head.appendChild(n.cloneNode(true)));
+          [...doc.body.childNodes].forEach(n => el.before(n.cloneNode(true)));
+          // re-run scripts
+          el.parentNode.querySelectorAll('script:not([src])').forEach(old => {
+            const s = document.createElement('script');
+            s.textContent = old.textContent;
+            old.replaceWith(s);
+          });
+          el.remove();
+          if (window.lucide) window.lucide.createIcons();
+        } catch (e) { console.warn('partial failed:', url, e); }
+      }
+    })();
+
+    // Custom cursor (desktop only)
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const cursor = document.getElementById('cursor');
+      document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top  = e.clientY + 'px';
+      });
+      document.addEventListener('mouseover', e => {
+        if (e.target.closest('a, button, [onclick], .bento-box')) cursor.classList.add('hovering');
+      });
+      document.addEventListener('mouseout', e => {
+        if (e.target.closest('a, button, [onclick], .bento-box')) cursor.classList.remove('hovering');
+      });
+    }
+  </script>
+
+</body>
+</html>

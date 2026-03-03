@@ -10,169 +10,110 @@
     @font-face {
       font-family: 'DotempDemo';
       src: url('fonts/DotempDemo.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
+      font-weight: normal; font-style: normal;
     }
 
     .px { font-family:'DotempDemo',monospace; font-style:normal; font-weight:400; font-size:0.88em; }
     .di { font-family:'Didot',serif; font-style:italic; font-weight:700; }
 
-    :root { --bg:#0f1419; --fg:#e6f2f2; --a:#2a9d8f; --b:#457b9d; }
+    :root { --bg:#070b10; }
 
-    html, body { margin:0; background:var(--bg); color:var(--fg); font-family:'Cormorant Garamond',serif; }
+    html, body { margin:0; background:var(--bg); color:#e6f2f2; font-family:'Cormorant Garamond',serif; }
 
     #scene { position:relative; height:220vh; }
 
     .scene-pin {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: hidden;
-      touch-action: pan-y;
+      position: sticky; top:0; height:100vh;
+      overflow:hidden; touch-action:pan-y;
     }
 
-    canvas#webgl {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+    canvas#webgl { position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none; }
 
-    /* ── Drag hint — fades once user interacts ── */
+    /* drag hint */
     .drag-hint {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 6;
-      pointer-events: none;
+      z-index: 6; pointer-events: none;
       font-family: 'DotempDemo', monospace;
-      font-size: clamp(0.5rem, 0.7vw, 0.62rem);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: rgba(168, 218, 220, 0.28);
-      transition: opacity 0.6s ease;
-      white-space: nowrap;
+      font-size: clamp(0.48rem, 0.68vw, 0.6rem);
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: rgba(168, 218, 220, 0.22);
+      transition: opacity 0.8s ease; white-space: nowrap;
     }
-    .drag-hint.hidden { opacity: 0; }
+    .drag-hint.hidden { opacity:0; }
 
-    /* ── Bottom vignette ── */
+    /* bottom vignette */
     .ed-gradient {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 4;
-      background: linear-gradient(
-        to top,
-        rgba(15,20,25,0.92) 0%,
-        rgba(15,20,25,0.50) 22%,
-        transparent 48%
+      position:absolute; inset:0; pointer-events:none; z-index:4;
+      background: linear-gradient(to top,
+        rgba(7,11,16,0.94) 0%,
+        rgba(7,11,16,0.52) 20%,
+        transparent 46%
       );
     }
 
-    /* ── Editorial strip — lives at the bottom of the scene ── */
+    /* editorial strip */
     .ed-strip {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 6;
-      padding: 0 6vw 4.5vh 6vw;
-      pointer-events: none;
-      opacity: 1;
-      transform: translateY(0);
+      position:absolute; bottom:0; left:0; right:0;
+      z-index:6; padding:0 6vw 4.5vh 6vw;
+      pointer-events:none;
+      opacity:1; transform:translateY(0);
       transition: opacity 0.22s ease, transform 0.22s ease;
     }
-    .ed-strip.fading {
-      opacity: 0;
-      transform: translateY(7px);
-    }
+    .ed-strip.fading { opacity:0; transform:translateY(7px); }
 
-    /* category left — number right — above the rule */
     .ed-meta-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 0.75rem;
+      display:flex; justify-content:space-between;
+      align-items:flex-end; margin-bottom:0.75rem;
     }
     .ed-category {
-      font-family: 'DotempDemo', monospace;
-      font-size: clamp(0.52rem, 0.78vw, 0.66rem);
-      color: rgba(102, 252, 241, 0.40);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
+      font-family:'DotempDemo',monospace;
+      font-size:clamp(0.5rem,0.76vw,0.64rem);
+      color:rgba(102,252,241,0.38); letter-spacing:0.22em; text-transform:uppercase;
     }
     .ed-number {
-      font-family: 'DotempDemo', monospace;
-      font-size: clamp(0.55rem, 0.8vw, 0.68rem);
-      color: rgba(102, 252, 241, 0.45);
-      letter-spacing: 0.26em;
+      font-family:'DotempDemo',monospace;
+      font-size:clamp(0.53rem,0.78vw,0.66rem);
+      color:rgba(102,252,241,0.44); letter-spacing:0.26em;
     }
-
-    .ed-rule {
-      width: 100%;
-      height: 1px;
-      background: rgba(168, 218, 220, 0.16);
-      margin-bottom: 1.4rem;
-    }
-
-    .ed-bottom-row {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 3rem;
-    }
-    .ed-left { flex: 1; min-width: 0; }
-
+    .ed-rule { width:100%; height:1px; background:rgba(168,218,220,0.15); margin-bottom:1.4rem; }
+    .ed-bottom-row { display:flex; align-items:flex-end; justify-content:space-between; gap:3rem; }
+    .ed-left { flex:1; min-width:0; }
     .ed-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-weight: 400;
-      font-size: clamp(2.4rem, 4.8vw, 4.6rem);
-      color: #f1faee;
-      margin: 0 0 0.5rem 0;
-      letter-spacing: -0.01em;
-      line-height: 1.04;
+      font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:400;
+      font-size:clamp(2.4rem,4.8vw,4.6rem);
+      color:#f1faee; margin:0 0 0.5rem 0; letter-spacing:-0.01em; line-height:1.04;
     }
-    .ed-title .px { font-style: normal; }
-
+    .ed-title .px { font-style:normal; }
     .ed-desc {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: clamp(0.8rem, 1.08vw, 0.92rem);
-      color: rgba(168, 218, 220, 0.58);
-      margin: 0;
-      max-width: 52ch;
-      line-height: 1.5;
+      font-family:'Cormorant Garamond',serif; font-style:italic;
+      font-size:clamp(0.8rem,1.08vw,0.92rem);
+      color:rgba(168,218,220,0.58); margin:0; max-width:52ch; line-height:1.5;
     }
-
+    .ed-cta-group {
+      display:flex; flex-direction:column; align-items:flex-end;
+      gap:0.55rem; flex-shrink:0; align-self:flex-end; margin-bottom:0.12rem;
+    }
     .ed-cta {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: clamp(0.8rem, 1.0vw, 0.88rem);
-      color: rgba(102, 252, 241, 0.65);
-      text-decoration: none;
-      letter-spacing: 0.07em;
-      pointer-events: all;
-      white-space: nowrap;
-      border-bottom: 1px solid rgba(102, 252, 241, 0.24);
-      padding-bottom: 0.14rem;
-      flex-shrink: 0;
-      align-self: flex-end;
-      margin-bottom: 0.12rem;
-      transition: color 0.2s, border-color 0.2s;
+      font-family:'Cormorant Garamond',serif; font-style:italic;
+      font-size:clamp(0.8rem,1.0vw,0.88rem);
+      color:rgba(102,252,241,0.65); text-decoration:none; letter-spacing:0.07em;
+      pointer-events:all; white-space:nowrap;
+      border-bottom:1px solid rgba(102,252,241,0.24); padding-bottom:0.14rem;
+      transition:color 0.2s, border-color 0.2s;
     }
-    .ed-cta:hover {
-      color: rgba(102, 252, 241, 1);
-      border-color: rgba(102, 252, 241, 0.6);
+    .ed-cta:hover { color:rgba(102,252,241,1); border-color:rgba(102,252,241,0.6); }
+    .ed-play {
+      color:rgba(168,255,160,0.72); border-color:rgba(168,255,160,0.28);
     }
+    .ed-play:hover { color:rgba(168,255,160,1); border-color:rgba(168,255,160,0.65); }
 
-    *, *::before, *::after { cursor: none !important; }
+    *, *::before, *::after { cursor:none !important; }
 
-    @media (max-width: 768px) {
-      .ed-bottom-row { flex-direction: column; gap: 1rem; align-items: flex-start; }
-      .ed-cta { align-self: flex-start; }
+    @media(max-width:768px){
+      .ed-bottom-row{ flex-direction:column; gap:1rem; align-items:flex-start; }
+      .ed-cta-group{ align-self:flex-start; align-items:flex-start; }
     }
   </style>
 
@@ -181,16 +122,12 @@
   </script>
 </head>
 <body>
-
   <section id="scene">
     <div class="scene-pin" id="scenePin">
       <canvas id="webgl"></canvas>
-
       <div class="ed-gradient"></div>
+      <div class="drag-hint" id="dragHint">drag to orbit</div>
 
-      <div class="drag-hint" id="dragHint">drag to rotate</div>
-
-      <!-- Editorial bottom strip -->
       <div class="ed-strip" id="edStrip">
         <div class="ed-meta-row">
           <span class="ed-category" id="ed-category"></span>
@@ -202,9 +139,14 @@
             <h2 class="ed-title" id="ed-title"></h2>
             <p  class="ed-desc"  id="ed-desc"></p>
           </div>
-          <a class="ed-cta" id="ed-cta" href="#" target="_blank" rel="noopener noreferrer">
-            Explore case study →
-          </a>
+          <div class="ed-cta-group">
+            <a class="ed-cta ed-play" id="ed-play" href="#" target="_blank" rel="noopener noreferrer" style="display:none">
+              Play game →
+            </a>
+            <a class="ed-cta" id="ed-cta" href="#" target="_blank" rel="noopener noreferrer">
+              Explore case study →
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -214,98 +156,148 @@
     import * as THREE from 'three';
     import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
 
-    /* ─── Config ─── */
+    /* ─── stations ─── */
     const stations = [
       {
-        name:      'Skrimp AI',
-        category:  'Product Design / AI',
-        desc:      'Founder & CEO — AI sous chef making the cost of living feel livable',
-        href:      'Skrimp/index.html',
-        model:     './models/yummymeal.glb',
-        scale:     0.25 * 1.5,
-        baseEuler: [10, 15, 0]
+        name:'Skrimp AI', category:'Product Design / AI',
+        desc:'Founder & CEO — AI sous chef making the cost of living feel livable',
+        href:'Skrimp/index.html', model:'./models/yummymeal.glb',
+        scale:0.25*1.5, baseEuler:[10,15,0]
       },
       {
-        name:      'Path to Menzoberranzan',
-        category:  'Technical Direction / Game',
-        desc:      "Technical Director — Unofficial Baldur's Gate 3 expansion, 100+ person studio",
-        href:      'https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/',
-        model:     './models/steamdeck.glb',
-        scale:     0.30 * 1.5,
-        baseEuler: [0, -10, 0]
+        name:'Path to Menzoberranzan', category:'Technical Direction / Game',
+        desc:"Technical Director — Unofficial Baldur's Gate 3 expansion, 100+ person studio",
+        href:'https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/',
+        model:'./models/steamdeck.glb', scale:0.30*1.5, baseEuler:[0,-10,0]
       },
       {
-        name:      'MyAuntie',
-        category:  'UX Design / AI',
-        desc:      '🏆 TechNova 2025 Winner — The first AI companion for postpartum women',
-        href:      'MyAuntie/index.html',
-        models: [
-          { url:'./models/iphone.glb',    scale:0.02*1.5, baseEuler:[0,  15, 10], pos:[-1.2, -1, 0] },
-          { url:'./models/robodrone.glb', scale:0.9*1.5,  baseEuler:[0, -15,  0], pos:[ 1.2,  0, 0] }
+        name:'MyAuntie', category:'UX Design / AI',
+        desc:'🏆 TechNova 2025 Winner — The first AI companion for postpartum women',
+        href:'MyAuntie/index.html',
+        models:[
+          {url:'./models/iphone.glb',    scale:0.02*1.5, baseEuler:[0, 15,10], pos:[-1.2,-1,0]},
+          {url:'./models/robodrone.glb', scale:0.9*1.5,  baseEuler:[0,-15, 0], pos:[ 1.2, 0,0]}
         ]
       },
       {
-        name:      'Seniors Connect',
-        category:  'UX Design / Social',
-        desc:      'High-fidelity prototype to end senior loneliness — winning hearts one screen at a time',
-        href:      'SeniorsConnect/index.html',
-        model:     './models/laptop.glb',
-        scale:     0.07 * 1.5,
-        baseEuler: [5, 35, 0]
+        name:'Equinox', category:'Game Design / Godot',
+        desc:'🏆 WINNER — COMFY JAM: WINTER 2025 — The wind howls, ice cracks beneath your feet. Spring isn\'t coming. You have been tasked with investigating why.',
+        href:'https://github.com/henliz/game-jam',
+        playHref:'https://emstergrace.itch.io/equinox',
+        parallax:true, noDrag:true,
+      },
+      {
+        name:'Seniors Connect', category:'UX Design / Social',
+        desc:'High-fidelity prototype to end senior loneliness — winning hearts one screen at a time',
+        href:'SeniorsConnect/index.html', model:'./models/laptop.glb',
+        scale:0.07*1.5, baseEuler:[5,35,0]
       },
     ];
 
-    const RADIUS   = 6, TURNS = 3.6, PITCH = 1.7;
+    const RADIUS=6, TURNS=3.6, PITCH=1.7;
     const THETA_MAX = TURNS * Math.PI * 2;
-    const tStops   = [0.07, 0.36, 0.64, 0.93];
+    const tStops   = [0.07, 0.27, 0.50, 0.72, 0.93];
+    const SCROLL_K = 1/2600, TOUCH_K = 1/1400, EPS = 0.0015;
+    const BG       = 0x070b10;
+    const EQUINOX_IDX = stations.findIndex(s => s.parallax);
 
-    const SCROLL_K = 1/2600;
-    const TOUCH_K  = 1/1400;
-    const EPS      = 0.0015;
-
-    /* ─── Renderer ─── */
+    /* ─── renderer ─── */
     const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      canvas: document.getElementById('webgl'),
-      alpha: true,
-      powerPreference: 'high-performance'
+      antialias:true, canvas:document.getElementById('webgl'),
+      alpha:false, powerPreference:'high-performance'
     });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
 
     const scene = new THREE.Scene();
-    scene.background = null;
+    scene.background = new THREE.Color(BG);
+    scene.fog        = new THREE.FogExp2(BG, 0.038);
 
     const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 1000);
     camera.position.set(RADIUS, 0, 0);
 
-    /* ─── Editorial lighting: dramatic key + cyan rim + dark fill ─── */
-    // Very low ambient so shadows are deep
-    const ambient = new THREE.AmbientLight(0x0c1118, 0.45);
-    scene.add(ambient);
+    /* ─── editorial lighting ─── */
+    scene.add(new THREE.AmbientLight(0x0c1118, 0.5));
 
-    // Strong key from upper-left front — creates one-side drama
     const key = new THREE.DirectionalLight(0xfff8f0, 2.6);
-    key.position.set(-10, 14, 8);
-    scene.add(key);
+    key.position.set(-10, 14, 8); scene.add(key);
 
-    // Cyan rim from behind-right — silhouettes in brand colour
     const rim = new THREE.DirectionalLight(0x66fcf1, 1.5);
-    rim.position.set(12, 5, -16);
-    scene.add(rim);
+    rim.position.set(12, 5, -16); scene.add(rim);
 
-    // Subtle cool fill from below — lifts the deepest shadows just enough
     const fill = new THREE.DirectionalLight(0xa8dadc, 0.22);
-    fill.position.set(2, -8, 6);
-    scene.add(fill);
+    fill.position.set(2, -8, 6); scene.add(fill);
 
-    /* ─── Helpers ─── */
+    /* ─── environment ─── */
+
+    // Large backdrop sphere (camera is inside it, so BackSide rendering)
+    {
+      const geo = new THREE.SphereGeometry(80, 24, 16);
+      const mat = new THREE.MeshBasicMaterial({ color:0x050810, side:THREE.BackSide });
+      scene.add(new THREE.Mesh(geo, mat));
+    }
+
+    // Subtle studio grid floor that tracks camera Y
+    const gridHelper = new THREE.GridHelper(60, 28, 0x16202e, 0x0d1520);
+    gridHelper.material.transparent = true;
+    gridHelper.material.opacity     = 0.32;
+    scene.add(gridHelper);
+
+    // Floating dust particles with brand accent colours
+    function buildDust() {
+      const N   = 560;
+      const pos = new Float32Array(N * 3);
+      const col = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        const r   = 6 + Math.random() * 24;
+        const th  = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        pos[i*3]   = r * Math.sin(phi) * Math.cos(th);
+        pos[i*3+1] = (Math.random() - 0.5) * 28;
+        pos[i*3+2] = r * Math.sin(phi) * Math.sin(th);
+        if (Math.random() < 0.28) {         // cyan accent
+          col[i*3] = 102/255; col[i*3+1] = 252/255; col[i*3+2] = 241/255;
+        } else {                            // pale white
+          const v = 0.18 + Math.random() * 0.28;
+          col[i*3] = col[i*3+1] = col[i*3+2] = v;
+        }
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      geo.setAttribute('color',    new THREE.BufferAttribute(col, 3));
+      return new THREE.Points(geo, new THREE.PointsMaterial({
+        size:0.048, vertexColors:true, transparent:true, opacity:0.55, sizeAttenuation:true
+      }));
+    }
+    const dustField = buildDust();
+    scene.add(dustField);
+
+    // Glow sprite behind focused model (created via canvas gradient)
+    function makeGlowTex() {
+      const sz = 256;
+      const c  = Object.assign(document.createElement('canvas'), {width:sz, height:sz});
+      const ctx = c.getContext('2d');
+      const g   = ctx.createRadialGradient(sz/2,sz/2,0, sz/2,sz/2,sz/2);
+      g.addColorStop(0,    'rgba(102,252,241,0.32)');
+      g.addColorStop(0.28, 'rgba(69,123,157,0.14)');
+      g.addColorStop(0.65, 'rgba(42,157,143,0.05)');
+      g.addColorStop(1,    'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.fillRect(0,0,sz,sz);
+      return new THREE.CanvasTexture(c);
+    }
+    const glowSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: makeGlowTex(), blending:THREE.AdditiveBlending,
+      transparent:true, opacity:0.55, depthWrite:false
+    }));
+    glowSprite.scale.setScalar(9);
+    scene.add(glowSprite);
+
+    /* ─── helpers ─── */
     const eul = (x,y,z) => new THREE.Euler(
       THREE.MathUtils.degToRad(x),
       THREE.MathUtils.degToRad(y),
       THREE.MathUtils.degToRad(z)
     );
-
     function helixAt(t) {
       const θ = THREE.MathUtils.clamp(t,0,1) * THETA_MAX;
       return new THREE.Vector3(RADIUS*Math.cos(θ), -PITCH*θ, RADIUS*Math.sin(θ));
@@ -315,40 +307,34 @@
       return new THREE.Vector3(0, -PITCH*θ, 0);
     }
     function lerpAngle(a,b,t) {
-      const d = ((b-a+Math.PI)%(Math.PI*2))-Math.PI;
-      return a + d*t;
+      return a + (((b-a+Math.PI)%(Math.PI*2))-Math.PI)*t;
     }
 
-    /* ─── Stations ─── */
+    /* ─── stations ─── */
     const loader    = new GLTFLoader();
     const texLoader = new THREE.TextureLoader();
-
     const overlayURL       = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png';
     const laptopOverlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';
     const auntieOverlayURL = './auntiephone.png';
 
-    function addOverlayTo(model, url, sizeXY, posXYZ) {
+    function addOverlay(model, url, sizeXY, posXYZ) {
       texLoader.load(url, tex => {
         tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
-        tex.minFilter  = THREE.LinearMipmapLinearFilter;
-        tex.magFilter  = THREE.LinearFilter;
-        const mesh = new THREE.Mesh(
+        tex.minFilter = THREE.LinearMipmapLinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        const m = new THREE.Mesh(
           new THREE.PlaneGeometry(sizeXY[0], sizeXY[1]),
-          new THREE.MeshBasicMaterial({ map:tex, transparent:true })
+          new THREE.MeshBasicMaterial({map:tex, transparent:true})
         );
-        mesh.position.set(...posXYZ);
-        mesh.renderOrder = 10;
-        model.add(mesh);
+        m.position.set(...posXYZ); m.renderOrder=10; model.add(m);
       });
     }
 
-    const TOTAL_MODEL_LOADS = stations.reduce(
-      (acc,s) => acc + (Array.isArray(s.models) ? s.models.length : 1), 0
-    );
-    let modelsSettled = 0;
-    function onModelSettled() {
-      if (++modelsSettled >= TOTAL_MODEL_LOADS && window.parent !== window)
-        window.parent.postMessage({ type:'modelsReady' }, '*');
+    const TOTAL = stations.reduce((a,s) => a + (s.parallax ? 1 : Array.isArray(s.models)?s.models.length:1), 0);
+    let settled = 0;
+    function onSettled() {
+      if (++settled >= TOTAL && window.parent !== window)
+        window.parent.postMessage({type:'modelsReady'},'*');
     }
 
     const stationNodes = stations.map((cfg,i) => {
@@ -357,37 +343,77 @@
       scene.add(anchor);
       const pivot = new THREE.Group();
       anchor.add(pivot);
+      const node = { anchor, pivot, yaw:0, scale:0.82, dragQuat:new THREE.Quaternion() };
 
-      if (Array.isArray(cfg.models)) {
+      if (cfg.parallax) {
+        // Parallax billboard: 3 stacked planes, each layer driven by camera azimuth + mouse
+        node.parallaxLayers = [];
+        const planeGroup = new THREE.Group();
+        pivot.add(planeGroup);
+        // Planes are 16×9 (wider than camera FOV at r=6) so edges never show
+        const pxDefs = [
+          { url:'./equinox/bg.png',    w:16, h:9, z:-0.12, strength:0.55, sign: 1,  mouseMult:1.00 },
+          { url:'./equinox/tower.png', w:16, h:9, z: 0,    strength:0.10, sign:-1, mouseMult:0.18 },
+          { url:'./equinox/fg.png',    w:16, h:9, z: 0.12, strength:0.55, sign:-1, mouseMult:1.00 },
+        ];
+        pxDefs.forEach(def => {
+          texLoader.load(def.url, tex => {
+            tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
+            const mat = new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false });
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(def.w, def.h), mat);
+            mesh.position.z = def.z;
+            planeGroup.add(mesh);
+            node.parallaxLayers.push({ mesh, strength:def.strength, sign:def.sign, mouseMult:def.mouseMult });
+          });
+        });
+        // Dark vignette overlay — atmospheric depth, doesn't parallax shift
+        {
+          const sz = 512;
+          const vc = Object.assign(document.createElement('canvas'), {width:sz, height:sz});
+          const vctx = vc.getContext('2d');
+          const vg = vctx.createRadialGradient(sz/2, sz/2, sz*0.10, sz/2, sz/2, sz*0.72);
+          vg.addColorStop(0,   'rgba(0,4,12,0)');
+          vg.addColorStop(0.5, 'rgba(1,5,18,0.25)');
+          vg.addColorStop(1,   'rgba(0,2,10,0.90)');
+          vctx.fillStyle = vg; vctx.fillRect(0, 0, sz, sz);
+          const vig = new THREE.Mesh(
+            new THREE.PlaneGeometry(16, 9),
+            new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(vc), transparent:true, depthWrite:false })
+          );
+          vig.position.z = 0.35;
+          planeGroup.add(vig);
+        }
+        onSettled(); // count as one station
+
+      } else if (Array.isArray(cfg.models)) {
         cfg.models.forEach((m,j) => {
           loader.load(m.url, gltf => {
-            const model = gltf.scene;
-            model.scale.setScalar(m.scale ?? 1);
-            model.rotation.copy(eul(...(m.baseEuler ?? [0,0,0])));
-            const p = m.pos ?? [(j===0?-1.4:1.4), 0, 0];
-            model.position.set(p[0],p[1],p[2]);
-            pivot.add(model);
-            if (i===2&&j===0) addOverlayTo(model, auntieOverlayURL, [40,88], [0,45.7,8.5]);
-            onModelSettled();
-          }, undefined, () => onModelSettled());
+            const mdl = gltf.scene;
+            mdl.scale.setScalar(m.scale ?? 1);
+            mdl.rotation.copy(eul(...(m.baseEuler??[0,0,0])));
+            const p = m.pos ?? [(j===0?-1.4:1.4),0,0];
+            mdl.position.set(p[0],p[1],p[2]);
+            pivot.add(mdl);
+            if(i===2&&j===0) addOverlay(mdl, auntieOverlayURL, [40,88], [0,45.7,8.5]);
+            onSettled();
+          }, undefined, onSettled);
         });
       } else {
         loader.load(cfg.model, gltf => {
-          const model = gltf.scene;
-          model.scale.setScalar(cfg.scale);
-          model.rotation.copy(eul(...cfg.baseEuler));
-          pivot.add(model);
-          if (i===1) addOverlayTo(model, overlayURL,       [4.52,2.8],  [0, 0.35, 1.06]);
-          if (i===3) addOverlayTo(model, laptopOverlayURL, [29,17],     [0, 10.7,-10.5]);
-          onModelSettled();
-        }, undefined, () => onModelSettled());
+          const mdl = gltf.scene;
+          mdl.scale.setScalar(cfg.scale);
+          mdl.rotation.copy(eul(...cfg.baseEuler));
+          pivot.add(mdl);
+          if(i===1) addOverlay(mdl, overlayURL,       [4.52,2.8], [0, 0.35, 1.06]);
+          if(i===4) addOverlay(mdl, laptopOverlayURL, [29,17],    [0,10.7,-10.5]);
+          onSettled();
+        }, undefined, onSettled);
       }
 
-      // scale: lerped per frame for focus animation; starts at 0.85 (off-stage feel)
-      return { anchor, pivot, yaw:0, scale:0.85 };
+      return node;
     });
 
-    /* ─── Editorial HUD elements ─── */
+    /* ─── HUD ─── */
     const stripEl    = document.getElementById('edStrip');
     const categoryEl = document.getElementById('ed-category');
     const numberEl   = document.getElementById('ed-number');
@@ -396,148 +422,265 @@
     const ctaEl      = document.getElementById('ed-cta');
 
     function mixFonts(text) {
-      const pattern = [3,2];
-      let out='', runIdx=0, inRun=0, isPx=false;
-      for (let i=0;i<text.length;i++) {
-        const ch = text[i];
-        if (ch===' ') { out+=' '; continue; }
-        if (inRun===0) { isPx=runIdx%2===1; inRun=pattern[runIdx%2]; runIdx++; }
-        out += isPx ? `<span class="px">${ch}</span>` : `<span class="di">${ch}</span>`;
-        inRun--;
+      const pat=[3,2]; let out='',ri=0,run=0,px=false;
+      for(let i=0;i<text.length;i++){
+        const ch=text[i]; if(ch===' '){out+=' ';continue;}
+        if(run===0){px=ri%2===1;run=pat[ri%2];ri++;}
+        out+=px?`<span class="px">${ch}</span>`:`<span class="di">${ch}</span>`;
+        run--;
       }
       return out;
     }
-
-    function applyHud(i) {
-      const s = stations[i];
-      categoryEl.textContent = s.category;
-      numberEl.textContent   = String(i+1).padStart(2,'0');
-      titleEl.innerHTML      = mixFonts(s.name);
-      descEl.textContent     = s.desc;
-      ctaEl.href             = s.href;
+    const playEl = document.getElementById('ed-play');
+    function applyHud(i){
+      const s=stations[i];
+      categoryEl.textContent=s.category; numberEl.textContent=String(i+1).padStart(2,'0');
+      titleEl.innerHTML=mixFonts(s.name); descEl.textContent=s.desc; ctaEl.href=s.href;
+      if (s.playHref) {
+        playEl.href = s.playHref; playEl.style.display = '';
+      } else {
+        playEl.style.display = 'none';
+      }
     }
-
-    function setHud(i, animate=true) {
-      if (!animate) { applyHud(i); return; }
+    function setHud(i,anim=true){
+      if(!anim){applyHud(i);return;}
       stripEl.classList.add('fading');
-      setTimeout(() => { applyHud(i); stripEl.classList.remove('fading'); }, 230);
+      setTimeout(()=>{applyHud(i);stripEl.classList.remove('fading');},230);
     }
 
-    /* ─── Scroll ─── */
-    let progress     = tStops[0];
-    let progressGoal = tStops[0];
-    let currentIndex = 0;
-    setHud(0, false);
+    /* ─── scroll ─── */
+    let progress=tStops[0], progressGoal=tStops[0], currentIndex=0;
+    setHud(0,false);
 
-    const pin = document.getElementById('scenePin');
+    const pin    = document.getElementById('scenePin');
     const atTop    = () => progressGoal <= EPS;
-    const atBottom = () => progressGoal >= 1 - EPS;
+    const atBottom = () => progressGoal >= 1-EPS;
 
-    function onWheel(e) {
-      const dy = e.deltaY;
-      if ((atTop()&&dy<0)||(atBottom()&&dy>0)) return;
+    function onWheel(e){
+      if((atTop()&&e.deltaY<0)||(atBottom()&&e.deltaY>0)) return;
       e.preventDefault();
-      progressGoal = THREE.MathUtils.clamp(progressGoal + dy*SCROLL_K, 0, 1);
+      progressGoal = THREE.MathUtils.clamp(progressGoal+e.deltaY*SCROLL_K,0,1);
     }
-    let touchY = 0;
-    function onTouchStart(e) { touchY = e.changedTouches[0].screenY; }
-    function onTouchMove(e) {
-      const dy = touchY - e.changedTouches[0].screenY;
-      touchY = e.changedTouches[0].screenY;
-      if ((atTop()&&dy<0)||(atBottom()&&dy>0)) return;
+    let touchY=0;
+    function onTouchStart(e){touchY=e.changedTouches[0].screenY;}
+    function onTouchMove(e){
+      const dy=touchY-e.changedTouches[0].screenY; touchY=e.changedTouches[0].screenY;
+      if((atTop()&&dy<0)||(atBottom()&&dy>0)) return;
       e.preventDefault();
-      progressGoal = THREE.MathUtils.clamp(progressGoal + dy*TOUCH_K, 0, 1);
+      progressGoal=THREE.MathUtils.clamp(progressGoal+dy*TOUCH_K,0,1);
     }
-    function onKey(e) {
-      const up   = e.key==='ArrowUp'  ||e.key==='PageUp'  ||e.key==='Home';
-      const down = e.key==='ArrowDown'||e.key==='PageDown'||e.key==='End'||e.key===' ';
-      if ((up&&atTop())||(down&&atBottom())) return;
-      if (down){ e.preventDefault(); progressGoal=Math.min(1,progressGoal+0.04); }
-      if (up)  { e.preventDefault(); progressGoal=Math.max(0,progressGoal-0.04); }
+    function onKey(e){
+      const up=e.key==='ArrowUp'||e.key==='PageUp'||e.key==='Home';
+      const dn=e.key==='ArrowDown'||e.key==='PageDown'||e.key==='End'||e.key===' ';
+      if((up&&atTop())||(dn&&atBottom())) return;
+      if(dn){e.preventDefault();progressGoal=Math.min(1,progressGoal+0.04);}
+      if(up){e.preventDefault();progressGoal=Math.max(0,progressGoal-0.04);}
     }
-
     pin.addEventListener('wheel',      onWheel,      {passive:false});
     pin.addEventListener('touchstart', onTouchStart, {passive:true });
     pin.addEventListener('touchmove',  onTouchMove,  {passive:false});
     pin.addEventListener('touchend',   ()=>{},       {passive:true });
     addEventListener('keydown', onKey, {passive:false});
 
-    /* ─── Drag-to-rotate ─── */
-    let dragYaw    = 0;   // extra yaw applied to focused model
-    let isDragging = false;
-    let dragLastX  = 0;
-    const dragHint = document.getElementById('dragHint');
-    let hintDismissed = false;
+    /* ─── full-orbit drag ─── */
+    // Per-station dragQuat persists while on same model; resets on station change.
+    // Gesture lock: first movement direction decides orbit vs station-scroll.
+    // Touch = yaw only (less confusing on mobile); mouse = full pitch + yaw.
+    let isDragging  = false, gestureType = null;
+    let gestureStartX = 0,  gestureStartY = 0;
+    let dragLastX   = 0,    dragLastY    = 0;
+    let lastDragTime = 0;
+    let ptrX = 0, ptrY = 0;       // current pointer for parallax, normalized -1..1
+    let smoothPtrX = 0, smoothPtrY = 0;
+    const _identity = new THREE.Quaternion(); // target for slow return
+    const dragHint  = document.getElementById('dragHint');
+    let hintGone    = false;
 
     const canvas = document.getElementById('webgl');
     canvas.addEventListener('pointerdown', e => {
-      if (e.button !== 0) return;
-      isDragging = true;
-      dragLastX  = e.clientX;
+      if (e.button !== 0 && e.pointerType !== 'touch') return;
+      isDragging = true; gestureType = null;
+      gestureStartX = dragLastX = e.clientX;
+      gestureStartY = dragLastY = e.clientY;
       canvas.setPointerCapture(e.pointerId);
-      if (!hintDismissed) { hintDismissed=true; dragHint.classList.add('hidden'); }
+      if (!hintGone) { hintGone = true; dragHint.classList.add('hidden'); }
     });
+
     canvas.addEventListener('pointermove', e => {
       if (!isDragging) return;
-      dragYaw  += (e.clientX - dragLastX) * 0.008;
-      dragLastX = e.clientX;
-    });
-    canvas.addEventListener('pointerup',     () => { isDragging = false; });
-    canvas.addEventListener('pointercancel', () => { isDragging = false; });
+      const dx = e.clientX - dragLastX;
+      const dy = e.clientY - dragLastY;
+      dragLastX = e.clientX; dragLastY = e.clientY;
 
-    /* ─── Animate ─── */
+      // Lock gesture type once there's enough movement to tell direction
+      if (!gestureType) {
+        const adx = Math.abs(e.clientX - gestureStartX);
+        const ady = Math.abs(e.clientY - gestureStartY);
+        if (adx + ady > 8) gestureType = adx > ady * 0.65 ? 'drag' : 'scroll';
+        return; // wait for decision before acting
+      }
+
+      if (gestureType === 'scroll') {
+        // Vertical gesture → station navigation (mirror the touch handler)
+        if (!((atTop() && dy > 0) || (atBottom() && dy < 0)))
+          progressGoal = THREE.MathUtils.clamp(progressGoal - dy * TOUCH_K, 0, 1);
+        return;
+      }
+
+      // Horizontal gesture → orbit or parallax-nudge
+      if (!stations[currentIndex].noDrag) {
+        const node = stationNodes[currentIndex];
+        const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), dx * 0.011);
+        node.dragQuat.premultiply(qY);
+        // Full pitch on desktop mouse; horizontal-only on touch (no conflict with scroll)
+        if (e.pointerType !== 'touch') {
+          const qX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0), dy * 0.011);
+          node.dragQuat.multiply(qX);
+        }
+        node.dragQuat.normalize();
+        lastDragTime = Date.now();
+      } else {
+        // Parallax station: touch drag nudges the parallax pointer
+        ptrX = THREE.MathUtils.clamp(ptrX + dx * 0.004, -1, 1);
+        ptrY = THREE.MathUtils.clamp(ptrY + dy * 0.004, -1, 1);
+      }
+    });
+
+    canvas.addEventListener('pointerup',     () => { isDragging = false; gestureType = null; });
+    canvas.addEventListener('pointercancel', () => { isDragging = false; gestureType = null; });
+
+    // Mouse position drives parallax on desktop (hover, no click needed)
+    document.addEventListener('mousemove', e => {
+      ptrX = (e.clientX / innerWidth  - 0.5) * 2;
+      ptrY = (e.clientY / innerHeight - 0.5) * 2;
+    });
+
+    /* ─── glow target position (lerped) ─── */
+    const glowTarget = new THREE.Vector3();
+
+    /* ─── animate ─── */
     const clock = new THREE.Clock();
-    function animate() {
+    const _v3   = new THREE.Vector3();
+    const _q    = new THREE.Quaternion();
+    let prevT   = 0;
+
+    function animate(){
       requestAnimationFrame(animate);
+      const t     = clock.getElapsedTime();
+      const delta = Math.min(t - prevT, 0.1); // cap spikes on tab-refocus
+      prevT = t;
+
+      // Smooth parallax pointer (lazy follow so it never feels jerky)
+      smoothPtrX = THREE.MathUtils.lerp(smoothPtrX, ptrX, 0.05);
+      smoothPtrY = THREE.MathUtils.lerp(smoothPtrY, ptrY, 0.05);
 
       progress = THREE.MathUtils.lerp(progress, progressGoal, 0.08);
 
-      camera.position.copy(helixAt(progress));
+      const camPos = helixAt(progress);
+      camera.position.copy(camPos);
       const ahead = helixAt(Math.min(1, progress+0.006));
-      camera.lookAt(axisAt(progress).lerp(ahead, 0.22));
-
-      // Spring drag yaw back to 0 when not dragging
-      if (!isDragging) dragYaw = THREE.MathUtils.lerp(dragYaw, 0, 0.04);
+      // Subtle idle camera sway (cinematic breathing)
+      _v3.copy(axisAt(progress).lerp(ahead, 0.22));
+      _v3.x += Math.sin(t*0.28)*0.018;
+      _v3.y += Math.sin(t*0.19)*0.010;
+      camera.lookAt(_v3);
 
       // Nearest station
       let nearest=0, best=Infinity;
-      for (let i=0;i<tStops.length;i++) {
-        const d = Math.abs(progress-tStops[i]);
-        if (d<best) { best=d; nearest=i; }
+      for(let i=0;i<tStops.length;i++){
+        const d=Math.abs(progress-tStops[i]); if(d<best){best=d;nearest=i;}
       }
-      if (nearest!==currentIndex) { currentIndex=nearest; setHud(nearest); }
+      if(nearest!==currentIndex){
+        currentIndex=nearest; setHud(nearest);
+        stationNodes[nearest].dragQuat.identity();
+        lastDragTime = 0;
+        dragHint.textContent = stations[nearest].noDrag ? 'scroll to continue' : 'drag to orbit';
+      }
 
-      const t = clock.getElapsedTime();
-      stationNodes.forEach((node,i) => {
-        // Auto-face camera + drag offset for focused model
-        const toCamX   = camera.position.x - node.anchor.position.x;
-        const toCamZ   = camera.position.z - node.anchor.position.z;
-        const targetYaw = Math.atan2(toCamX, toCamZ) + THREE.MathUtils.degToRad(-20);
-        node.yaw = lerpAngle(node.yaw, targetYaw, 0.12);
-        node.pivot.rotation.y = node.yaw + (i===currentIndex ? dragYaw : 0);
+      // Per-station light levels: Equinox is self-lit (off), MyAuntie dialled back
+      const onEq     = currentIndex === EQUINOX_IDX;
+      const onAuntie = currentIndex === 2;
+      key.intensity  = THREE.MathUtils.lerp(key.intensity,  onEq ? 0 : onAuntie ? 2.2 : 2.6,  0.06);
+      rim.intensity  = THREE.MathUtils.lerp(rim.intensity,  onEq ? 0 : onAuntie ? 0.2 : 1.5,  0.06);
+      fill.intensity = THREE.MathUtils.lerp(fill.intensity, onEq ? 0 : 0.22, 0.06);
+      glowSprite.material.opacity = THREE.MathUtils.lerp(glowSprite.material.opacity, onEq ? 0 : 0.55, 0.06);
 
-        // Focus scale: in-focus model grows slightly, background shrinks
-        const dist = Math.abs(progress - tStops[i]);
-        const targetScale = dist < 0.14 ? 1.0 : 0.80;
+      stationNodes.forEach((node,i)=>{
+        // Focus scale: in-focus model steps forward, background recedes
+        const dist=Math.abs(progress-tStops[i]);
+        const targetScale = dist<0.14 ? 1.0 : 0.78;
         node.scale = THREE.MathUtils.lerp(node.scale, targetScale, 0.035);
         node.pivot.scale.setScalar(node.scale);
 
-        // Gentle idle float
+        // Idle float
         node.anchor.position.y = axisAt(tStops[i]).y + Math.sin(t*0.4+i)*0.06;
+
+        if (stations[i].parallax) {
+          // Billboard: directly face camera (no 3/4 offset, no dragQuat)
+          const toCamX=camera.position.x-node.anchor.position.x;
+          const toCamZ=camera.position.z-node.anchor.position.z;
+          node.pivot.rotation.set(0, Math.atan2(toCamX, toCamZ), 0);
+          // Parallax shift: orbit angle + mouse/touch pointer
+          if (node.parallaxLayers && node.parallaxLayers.length) {
+            const MOUSE_RANGE = 0.4;
+            const orbitOffset = Math.sin((progress - tStops[i]) * THETA_MAX);
+            node.parallaxLayers.forEach(l => {
+              const orbit = l.sign * l.strength * orbitOffset;
+              const mx    = l.sign * l.strength * smoothPtrX * MOUSE_RANGE * l.mouseMult;
+              const my    = -l.sign * l.strength * smoothPtrY * MOUSE_RANGE * l.mouseMult * 0.45;
+              l.mesh.position.x = orbit + mx;
+              l.mesh.position.y = my;
+            });
+          }
+          return;
+        }
+
+        // Auto-face camera with 3/4 offset
+        const toCamX=camera.position.x-node.anchor.position.x;
+        const toCamZ=camera.position.z-node.anchor.position.z;
+        node.yaw = lerpAngle(node.yaw, Math.atan2(toCamX,toCamZ)+THREE.MathUtils.degToRad(-20), 0.12);
+
+        // Apply base face rotation, then layer the per-model drag quaternion on top
+        _q.setFromEuler(new THREE.Euler(0, node.yaw, 0));
+        node.pivot.quaternion.copy(_q).multiply(node.dragQuat);
       });
+
+      // Slow return to default orientation after 2.5s of no dragging
+      // ~40% per second so it takes ~4-5s to fully return — slow, editorial
+      if (!isDragging && lastDragTime > 0 && (Date.now() - lastDragTime) > 2500) {
+        const node = stationNodes[currentIndex];
+        node.dragQuat.slerp(_identity, Math.min(1, 0.4 * delta));
+        // Once basically back, snap clean and stop ticking
+        if (node.dragQuat.angleTo(_identity) < 0.004) {
+          node.dragQuat.identity();
+          lastDragTime = 0;
+        }
+      }
+
+      // Glow follows focused model smoothly
+      glowTarget.copy(stationNodes[currentIndex].anchor.position);
+      glowTarget.z -= 1.5;
+      glowSprite.position.lerp(glowTarget, 0.06);
+
+      // Dust Y tracks camera position — fixes "missing particles" on lower stations
+      dustField.position.y = THREE.MathUtils.lerp(dustField.position.y, camera.position.y, 0.04);
+      dustField.rotation.y += 0.00018;
+
+      // Grid floor tracks camera vertical position
+      gridHelper.position.y = axisAt(progress).y - 4.5;
 
       renderer.render(scene, camera);
     }
     animate();
 
-    /* ─── Resize ─── */
-    addEventListener('resize', () => {
-      camera.aspect = innerWidth/innerHeight;
+    /* ─── resize ─── */
+    addEventListener('resize', ()=>{
+      camera.aspect=innerWidth/innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
     });
 
-    /* ─── Cursor relay → parent ─── */
+    /* ─── cursor relay ─── */
     document.addEventListener('mousemove',  e  => window.parent.postMessage({type:'iframeMouse',x:e.clientX,y:e.clientY},'*'));
     document.addEventListener('mousedown',  ()  => window.parent.postMessage({type:'iframeDown'},'*'));
     document.addEventListener('mouseup',    ()  => window.parent.postMessage({type:'iframeUp'},'*'));
