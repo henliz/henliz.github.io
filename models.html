@@ -5,6 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Helix Scroll • One-Scene Portfolio (Smooth Scroll-Scrub + Escape at Ends)</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap');
+
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('fonts/DotempDemo.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    .px { font-family:'DotempDemo',monospace; font-style:normal; font-weight:400; font-size:0.88em; }
+    .di { font-family:'Didot',serif; font-style:italic; font-weight:700; }
+
     :root{
       --bg:#0f1419; --fg:#e6f2f2; --a:#2a9d8f; --b:#457b9d;
     }
@@ -54,9 +66,11 @@
     }
     .hud h2{
       margin:0 0 .35rem 0;
-      font-weight:800;
+      font-family:'Didot',serif;
+      font-style:italic;
+      font-weight:700;
       letter-spacing:-.01em;
-      font-size:clamp(1.6rem,2.6vw,2.4rem);
+      font-size:clamp(1.4rem,2.2vw,2.1rem);
       background:linear-gradient(45deg,#a8dadc,#457b9d,#2a9d8f);
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
     }
@@ -268,9 +282,30 @@
     const linkEl  = document.getElementById('hud-link');
     const lockEl  = document.getElementById('locknote');
 
+    // Mix Didot italic and DotEmp pixel within the same title.
+    // Pattern: 3 Didot chars → 2 pixel chars, repeat. Spaces pass through unstyled.
+    function mixFonts(text) {
+      const pattern = [3, 2]; // [didot run, pixel run]
+      let out = '', charIdx = 0, runIdx = 0, inRun = 0, isPx = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (ch === ' ') { out += ' '; continue; }
+        if (inRun === 0) {
+          isPx   = runIdx % 2 === 1;
+          inRun  = pattern[runIdx % 2];
+          runIdx++;
+        }
+        out += isPx
+          ? `<span class="px">${ch}</span>`
+          : `<span class="di">${ch}</span>`;
+        inRun--;
+      }
+      return out;
+    }
+
     function setHud(i){
       const s = stations[i];
-      titleEl.textContent = s.name;
+      titleEl.innerHTML = mixFonts(s.name);
       descEl.textContent  = s.desc;
       linkEl.href         = s.href;
     }

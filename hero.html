@@ -7,6 +7,27 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Inter:opsz,wght@14..32,200;14..32,300;14..32,400;14..32,500;14..32,600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap');
+
+        @font-face {
+            font-family: 'DotempDemo';
+            src: url('fonts/DotempDemo.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* Mixed-font editorial classes */
+        .px {
+            font-family: 'DotempDemo', monospace;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 0.88em;
+        }
+        .di {
+            font-family: 'Didot', serif;
+            font-style: italic;
+            font-weight: 700;
+        }
 
         *, *::before, *::after {
             margin: 0;
@@ -86,12 +107,16 @@
             z-index: 10;
             display: grid;
             grid-template-columns: 1fr auto;
-            align-items: center;
+            row-gap: 0;
             column-gap: 5rem;
             max-width: 1300px;
             width: 100%;
             margin: 0 auto;
             padding: 0 2.5rem;
+        }
+        .eyebrow-wrapper {
+            align-self: end;
+            padding-bottom: 0.45rem;
         }
 
         /* ─── Left: Text Column ─────────────────────────── */
@@ -104,14 +129,15 @@
         .eyebrow {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.65rem;
-            font-weight: 500;
-            letter-spacing: 0.20em;
-            text-transform: uppercase;
+            gap: 0.6rem;
+            font-family: 'Didot', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 0.92rem;
+            letter-spacing: 0.01em;
             color: rgba(168, 218, 220, 0.55);
-            margin-bottom: 1.4rem;
+            margin-bottom: 1.1rem;
+            flex-wrap: wrap;
         }
         .eyebrow-line {
             display: block;
@@ -119,26 +145,44 @@
             background: rgba(168, 218, 220, 0.35);
             flex-shrink: 0;
         }
+        .eyebrow-link {
+            color: rgba(240, 242, 240, 0.5);
+            text-decoration: none;
+            white-space: nowrap;
+            transition: color 0.2s ease;
+        }
+        .eyebrow-link:hover { color: rgba(168, 218, 220, 0.95); }
+        .link-arrow {
+            display: inline-block;
+            transition: transform 0.22s ease, opacity 0.22s ease;
+            opacity: 0.35;
+        }
+        .eyebrow-link:hover .link-arrow {
+            transform: translate(3px, -3px);
+            opacity: 1;
+        }
+        .eyebrow-dot { opacity: 0.3; font-style: normal; }
+        .eyebrow-prev { color: rgba(240, 242, 240, 0.28); white-space: nowrap; }
 
-        /* Display name — Cormorant, massive, editorial */
         .display-name {
-            font-family: 'Cormorant Garamond', serif;
             line-height: 0.90;
             margin-bottom: 1.8rem;
         }
         .name-first {
             display: block;
+            font-family: 'Didot', serif;
             font-size: clamp(3.8rem, 7.2vw, 8.8rem);
-            font-weight: 300;
+            font-weight: 700;
             font-style: italic;
             color: #f0f2f0;
             letter-spacing: -0.025em;
         }
         .name-last {
             display: block;
-            font-size: clamp(2.8rem, 5.0vw, 6.2rem);
-            font-weight: 300;
-            font-style: normal;
+            font-family: 'Didot', serif;
+            font-size: clamp(2.2rem, 4.2vw, 5.4rem);
+            font-weight: 700;
+            font-style: italic;
             color: rgba(240, 242, 240, 0.42);
             letter-spacing: 0.06em;
         }
@@ -160,6 +204,10 @@
             transition: color 0.25s ease;
             user-select: none;
         }
+        .tagline { cursor: pointer; }
+        /* quotes only visible during GG phrase; star always shows */
+        .quote-mark { display: none; font-style: normal; }
+        .tagline.gg-active .quote-mark { display: inline; }
         .tagline:hover {
             color: rgba(168, 218, 220, 0.90);
         }
@@ -218,16 +266,6 @@
             transform: translateY(0);
         }
 
-        /* Typewriter role line */
-        .role-line {
-            font-family: 'Inter', sans-serif;
-            font-size: clamp(0.78rem, 1.0vw, 0.92rem);
-            font-weight: 300;
-            color: rgba(240, 242, 240, 0.55);
-            letter-spacing: 0.015em;
-            margin-bottom: 1.6rem;
-            min-height: 1.4em;
-        }
         .typing-text {
             color: rgba(168, 218, 220, 0.85);
             border-right: 1.5px solid rgba(168, 218, 220, 0.7);
@@ -239,81 +277,12 @@
             50%, 100% { border-color: transparent; }
         }
 
-        /* Company tags — liquid glass chips */
-        .company-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 2.2rem;
-        }
-
-        .company-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.68rem;
-            font-weight: 500;
-            letter-spacing: 0.05em;
-            color: rgba(240, 242, 240, 0.75);
-            padding: 0.42rem 1.0rem;
-            border-radius: 999px;
-            cursor: pointer;
-            position: relative;
-            /* Liquid glass */
-            background: rgba(12, 18, 28, 0.50);
-            backdrop-filter: url(#hero-glass-sm) blur(3px);
-            -webkit-backdrop-filter: blur(12px) saturate(155%);
-            border: 1px solid rgba(168, 218, 220, 0.20);
-            box-shadow:
-                0 4px 14px rgba(0,0,0,0.30),
-                inset 1px 1.5px 3px rgba(255,255,255,0.22),
-                inset -0.5px -0.5px 2px rgba(255,255,255,0.04);
-            transition: all 0.22s ease;
-            text-decoration: none;
-        }
-        .company-tag:hover {
-            background: rgba(42, 157, 143, 0.18);
-            border-color: rgba(168, 218, 220, 0.42);
-            color: #f0f2f0;
-            transform: translateY(-1px);
-            box-shadow:
-                0 6px 20px rgba(0,0,0,0.35),
-                0 0 10px rgba(42, 157, 143, 0.18),
-                inset 1px 1.5px 3px rgba(255,255,255,0.28),
-                inset -0.5px -0.5px 2px rgba(255,255,255,0.06);
-        }
-        .company-tag-info {
-            position: absolute;
-            bottom: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%) translateY(4px);
-            background: rgba(5, 9, 15, 0.97);
-            color: rgba(240, 242, 240, 0.75);
-            padding: 0.45rem 0.85rem;
-            border-radius: 7px;
-            font-size: 0.70rem;
-            font-weight: 400;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            border: 1px solid rgba(168, 218, 220, 0.22);
-            backdrop-filter: blur(10px);
-            z-index: 50;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-        }
-        .company-tag:hover .company-tag-info {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
         /* CTA + social row */
         .hero-actions {
             display: flex;
-            align-items: center;
-            gap: 2rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.1rem;
         }
 
         .cta-group {
@@ -606,6 +575,7 @@
         .hero-photo {
             grid-column: 2;
             grid-row: 1 / span 2;
+            align-self: center;
         }
 
         /* ─── Mobile ────────────────────────────────────── */
@@ -630,10 +600,11 @@
                 text-align: center;
             }
             /* order: eyebrow → photo → name+content */
-            .hero-eyebrow { order: 1; }
-            .hero-photo   { order: 2; grid-column: auto; grid-row: auto; }
-            .hero-text    { order: 3; align-items: center; padding-bottom: 2rem; }
-            /* reset eyebrow margin — grid gap handles spacing */
+            .eyebrow-wrapper { order: 1; }
+            .hero-photo      { order: 2; grid-column: auto; grid-row: auto; align-self: auto; }
+            .hero-text       { order: 3; align-items: center; padding-bottom: 2rem; }
+            /* reset eyebrow spacing — grid gap handles it */
+            .eyebrow-wrapper { padding-bottom: 0; }
             .eyebrow { margin-bottom: 0; justify-content: center; }
             /* internal spacing for mobile */
             .display-name   { margin-bottom: 1.5rem; }
@@ -642,7 +613,7 @@
             .tagline-tooltip { left: 50%; transform: translateX(-50%) translateY(4px); }
             .tagline:hover .tagline-tooltip { transform: translateX(-50%) translateY(0); }
             .role-line      { margin-bottom: 1.5rem; }
-            .company-tags   { margin-bottom: 2.5rem; justify-content: center; }
+            .eyebrow        { justify-content: center; }
             .hero-actions   { flex-wrap: wrap; justify-content: center; gap: 1rem; }
             .social-row     { justify-content: center; }
             .photo-frame    { width: 220px; height: 285px; }
@@ -653,6 +624,17 @@
             .name-last   { font-size: 2.0rem; }
             .hero-overlay { background: rgba(5,9,15,0.78); }
             .photo-frame { width: 175px; height: 228px; }
+        }
+
+        /* ─── Reveal Canvas ─────────────────────────────── */
+        .reveal-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
         }
 
         /* Respect reduced motion */
@@ -680,6 +662,9 @@
             const iframe = document.getElementById('parisVideo');
             modal.classList.remove('open');
             iframe.src = iframe.src; // reset video
+        }
+        function handleTaglineClick() {
+            openParisModal();
         }
         window.onclick = function(e) {
             if (e.target === document.getElementById('parisModal')) closeParisModal();
@@ -709,6 +694,15 @@
                 <feDisplacementMap in="SourceGraphic" in2="lensMap"
                                    scale="14" xChannelSelector="R" yChannelSelector="G"/>
             </filter>
+            <!-- Fractal glass reveal — displacement scale animated by JS -->
+            <filter id="reveal-fractal" x="-8%" y="-8%" width="116%" height="116%"
+                    color-interpolation-filters="sRGB">
+                <feTurbulence type="fractalNoise" baseFrequency="0.018 0.014"
+                              numOctaves="4" seed="99" result="noise"/>
+                <feGaussianBlur in="noise" stdDeviation="4" result="lensMap"/>
+                <feDisplacementMap id="revealDisplace" in="SourceGraphic" in2="lensMap"
+                                   scale="18" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
         </defs>
     </svg>
 
@@ -722,11 +716,15 @@
 
         <div class="hero-grid">
 
-            <!-- Eyebrow: own grid child so mobile can reorder it independently -->
-            <div class="hero-eyebrow">
+            <!-- Eyebrow: job descriptors — separate grid child so mobile can order it above photo -->
+            <div class="eyebrow-wrapper">
                 <div class="eyebrow">
                     <span class="eyebrow-line"></span>
-                    Creative Technologist &nbsp;·&nbsp; Full-Stack Dev &nbsp;·&nbsp; Game Maker
+                    <a class="eyebrow-link" href="https://skrimp.ai" target="_blank" rel="noopener">Foun<span class="px">der</span> @ <span class="px">Skr</span>imp <span class="link-arrow">↗</span></a>
+                    <span class="eyebrow-dot">·</span>
+                    <a class="eyebrow-link" href="https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/" target="_blank" rel="noopener"><span class="px">CTO</span> @ Pa<span class="px">th</span> to Men<span class="px">zo</span>berr<span class="px">an</span>zan <span class="link-arrow">↗</span></a>
+                    <span class="eyebrow-dot">·</span>
+                    <span class="eyebrow-prev">prev @ Sun Life</span>
                 </div>
             </div>
 
@@ -734,32 +732,15 @@
             <div class="hero-text">
 
                 <h1 class="display-name">
-                    <span class="name-first">Henriëtta</span>
-                    <span class="name-last">van Niekerk</span>
+                    <span class="name-first">H<span class="px">en</span>rië<span class="px">tt</span>a</span>
+                    <span class="name-last">v<span class="px">an</span> Nie<span class="px">ke</span>rk</span>
                 </h1>
 
-                <!-- Gilmore Girls easter egg — editorial pull quote -->
-                <div class="tagline" onclick="openParisModal()">
+                <!-- Typewriter tagline — GG easter egg fires on the Gilmore Girls phrase -->
+                <div class="tagline" id="taglineMerged" onclick="handleTaglineClick()">
                     <span class="tagline-tooltip">click for a Gilmore Girls easter egg ✨</span>
-                    POV: she gets more done before 9am than other people do all day
+                    She is a versatile design engineer who <span class="quote-mark">&#8220;</span><span id="typingText" class="typing-text"></span><span class="quote-mark">&#8221;</span>
                     <span class="tagline-star">✦</span>
-                </div>
-
-                <p class="role-line">
-                    She&nbsp;<span id="typingText" class="typing-text"></span>
-                </p>
-
-                <div class="company-tags">
-                    <span class="company-tag"
-                          onclick="window.open('https://skrimp.ai', '_blank')">
-                        Founder @ Skrimp &nbsp;↗
-                        <span class="company-tag-info">AI sous chef revolutionizing meal planning</span>
-                    </span>
-                    <span class="company-tag"
-                          onclick="window.open('https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/', '_blank')">
-                        CTO @ Path to Menzoberranzan &nbsp;↗
-                        <span class="company-tag-info">100+ person team, 50+ hr BG3 expansion</span>
-                    </span>
                 </div>
 
                 <div class="hero-actions">
@@ -812,12 +793,12 @@
                         <div class="orbit-dot"></div>
                         <div class="orbit-dot"></div>
                     </div>
-                    <div class="photo-inner"
-                         onclick="window.open('https://www.linkedin.com/in/henriettavanniekerk', '_blank')">
+                    <div class="photo-inner" id="photoInner">
                         <img src="./herogirl.jpg" alt="Henriëtta van Niekerk"
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <div class="photo-fallback">📸</div>
-                        <div class="photo-caption">✨ chaotic mastermind behind the magic</div>
+                        <canvas class="reveal-canvas" id="revealCanvas"></canvas>
+                        <div class="photo-caption" id="photoCaption">✨ chaotic mastermind behind the magic</div>
                     </div>
                 </div>
             </div><!-- /hero-photo -->
@@ -861,7 +842,7 @@
         document.addEventListener('mouseenter', () => { cursor.style.opacity = '1'; });
 
         document.querySelectorAll(
-            '.company-tag, .social-btn, .photo-inner, .tagline, .btn-cta-primary, .btn-cta-secondary, .modal-close'
+            '.eyebrow-link, .social-btn, .photo-inner, #taglineMerged, .btn-cta-primary, .btn-cta-secondary, .modal-close'
         ).forEach(el => {
             el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
             el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
@@ -942,27 +923,37 @@
         // ── Typewriter ───────────────────────────────────────
         function startTypewriter() {
             const phrases = [
-                "turns caffeine into shipped products",
-                "leads 100+ person teams before 9am",
-                "speaks design AND engineering fluently",
-                "makes mischief, then deploys it",
-                "probably has 47 browser tabs open"
+                { text: 'turns caffeine into shipped products',                    gg: false },
+                { text: 'has won hackathons and game jams',                         gg: false },
+                { text: 'speaks design AND engineering fluently',                   gg: false },
+                { text: 'makes mischief, then deploys it',                         gg: false },
+                { text: 'probably has 47 browser tabs open',                       gg: false },
+                { text: 'was featured on CTV x3 in 2025 for skrimp',              gg: false },
+                { text: 'gets more done before 9am than other people do all day',  gg: true  },
             ];
             let current = 0;
-            const el = document.getElementById('typingText');
+            const el      = document.getElementById('typingText');
+            const tagline = document.getElementById('taglineMerged');
             if (!el) { setTimeout(startTypewriter, 500); return; }
+
+            function setGGMode(isGG) {
+                if (!tagline) return;
+                if (isGG) tagline.classList.add('gg-active');
+                else      tagline.classList.remove('gg-active');
+            }
 
             function type(phrase, cb) {
                 let i = 0; el.textContent = '';
+                setGGMode(phrase.gg);
                 (function tick() {
-                    if (i < phrase.length) { el.textContent += phrase[i++]; setTimeout(tick, 58 + Math.random() * 42); }
+                    if (i < phrase.text.length) { el.textContent += phrase.text[i++]; setTimeout(tick, 58 + Math.random() * 42); }
                     else setTimeout(cb, 2400);
                 })();
             }
             function del(cb) {
                 (function tick() {
                     if (el.textContent.length > 0) { el.textContent = el.textContent.slice(0,-1); setTimeout(tick, 28 + Math.random() * 22); }
-                    else setTimeout(cb, 480);
+                    else { setGGMode(false); setTimeout(cb, 480); }
                 })();
             }
             function cycle() {
@@ -974,12 +965,313 @@
             cycle();
         }
 
+        // ── Glass Shard Reveal ────────────────────────────────
+        //
+        // The photo is made of triangular glass panes (Delaunay triangulation).
+        // Hovering the mouse pushes nearby shards outward — fairchild.png shows
+        // through the cracks/gaps. Glowing cyan lines trace the fracture network.
+        // Mobile: tap once to explode all shards apart; tap again to reassemble.
+        //
+        function initReveal() {
+            const photoInner = document.getElementById('photoInner');
+            const revealCanvas = document.getElementById('revealCanvas');
+            const photoCaption = document.getElementById('photoCaption');
+            if (!revealCanvas) return;
+            const rCtx = revealCanvas.getContext('2d');
+
+            const heroImg    = photoInner.querySelector('img');
+            const fairchildImg = new Image();
+            fairchildImg.src = './fairchild.png';
+
+            const isMobile = () => window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+            let cw = 0, ch = 0;
+            function sizeCanvas() {
+                cw = photoInner.offsetWidth;
+                ch = photoInner.offsetHeight;
+                revealCanvas.width  = cw;
+                revealCanvas.height = ch;
+            }
+
+            // ── Bowyer-Watson Delaunay triangulation ──────────
+            function circumcircle(a, b, c) {
+                const ax = a.x - c.x, ay = a.y - c.y;
+                const bx = b.x - c.x, by = b.y - c.y;
+                const D  = 2 * (ax * by - ay * bx);
+                if (Math.abs(D) < 1e-8) return null;
+                const ux = (by*(ax*ax+ay*ay) - ay*(bx*bx+by*by)) / D;
+                const uy = (ax*(bx*bx+by*by) - bx*(ax*ax+ay*ay)) / D;
+                return { x: ux+c.x, y: uy+c.y, r2: ux*ux+uy*uy };
+            }
+
+            function triangulate(pts) {
+                const M  = 1e6;
+                const st = [{x:-M,y:-M},{x:0,y:M*3},{x:M*3,y:-M}];
+                let T = [st.slice()];
+                for (const p of pts) {
+                    let edges = [];
+                    T = T.filter(t => {
+                        const cc = circumcircle(t[0],t[1],t[2]);
+                        if (!cc) return true;
+                        const dx = p.x-cc.x, dy = p.y-cc.y;
+                        if (dx*dx+dy*dy < cc.r2) {
+                            edges.push([t[0],t[1]],[t[1],t[2]],[t[2],t[0]]);
+                            return false;
+                        }
+                        return true;
+                    });
+                    edges = edges.filter((e,i) =>
+                        !edges.some((f,j) => i!==j &&
+                            ((e[0]===f[0]&&e[1]===f[1])||(e[0]===f[1]&&e[1]===f[0])))
+                    );
+                    for (const e of edges) T.push([e[0],e[1],p]);
+                }
+                return T.filter(t => !t.some(v => st.includes(v)));
+            }
+
+            let mx = -999, my = -999, hovering = false;
+
+            // ── Reeded (ribbed) glass texture ─────────────────
+            let reedTex = null;
+            function buildReededTexture() {
+                if (!heroImg.complete || !heroImg.naturalWidth || !cw || !ch) return;
+                const osc = document.createElement('canvas');
+                osc.width = cw; osc.height = ch;
+                const oc = osc.getContext('2d');
+                const W = 5, D = 3; // stripe width (px), lateral shift (px)
+                for (let x = 0; x < cw; x += W) {
+                    const shift = (Math.floor(x / W) % 2 === 0) ? -D : D;
+                    const srcX  = Math.max(0, Math.min(cw - W, x + shift));
+                    oc.drawImage(heroImg, srcX, 0, W, ch, x, 0, W, ch);
+                }
+                // Subtle cool-water tint
+                oc.fillStyle = 'rgba(168,218,220,0.06)';
+                oc.fillRect(0, 0, cw, ch);
+                // Hairline ridge highlights between each stripe
+                oc.strokeStyle = 'rgba(255,255,255,0.18)';
+                oc.lineWidth = 0.5;
+                for (let x = 0; x <= cw; x += W) {
+                    oc.beginPath(); oc.moveTo(x, 0); oc.lineTo(x, ch); oc.stroke();
+                }
+                reedTex = osc;
+            }
+
+            // ── Build shards once per session ─────────────────
+            let shards = [];
+            function buildShards() {
+                sizeCanvas();
+                if (!cw || !ch) return;
+                // Jittered grid → natural-looking glass crack distribution
+                const COLS = 6, ROWS = 8;
+                const pts  = [];
+                for (let r = 0; r <= ROWS; r++) {
+                    for (let c = 0; c <= COLS; c++) {
+                        pts.push({
+                            x: Math.max(1, Math.min(cw-1, c/COLS*cw + (Math.random()-0.5)*cw/COLS*0.5)),
+                            y: Math.max(1, Math.min(ch-1, r/ROWS*ch + (Math.random()-0.5)*ch/ROWS*0.5))
+                        });
+                    }
+                }
+                const tris = triangulate(pts);
+                shards = tris.map(v => ({
+                    v,
+                    cx: (v[0].x+v[1].x+v[2].x)/3,
+                    cy: (v[0].y+v[1].y+v[2].y)/3,
+                    dx:0, dy:0, rot:0,
+                    tdx:0, tdy:0, trot:0
+                }));
+                buildReededTexture();
+            }
+
+            // ── Render loop ───────────────────────────────────
+            let rafPending = false;
+            function scheduleFrame() {
+                if (!rafPending) { rafPending = true; requestAnimationFrame(renderFrame); }
+            }
+
+            function renderFrame() {
+                rafPending = false;
+                if (!cw || !heroImg.complete || !heroImg.naturalWidth
+                        || !fairchildImg.complete || !fairchildImg.naturalWidth) return;
+
+                // Lerp shards toward targets
+                let moving = false;
+                shards.forEach(s => {
+                    s.dx  += (s.tdx  - s.dx)  * 0.11;
+                    s.dy  += (s.tdy  - s.dy)  * 0.11;
+                    s.rot += (s.trot - s.rot) * 0.11;
+                    if (Math.abs(s.tdx-s.dx)>0.25 || Math.abs(s.tdy-s.dy)>0.25) moving = true;
+                });
+
+                rCtx.clearRect(0, 0, cw, ch);
+
+                // 1 ── fairchild underneath (shows through the gaps)
+                const fw = fairchildImg.naturalWidth, fh = fairchildImg.naturalHeight;
+                const fsc = Math.max(cw/fw, ch/fh);
+                rCtx.drawImage(fairchildImg, (cw-fw*fsc)/2, (ch-fh*fsc)/2, fw*fsc, fh*fsc);
+
+                // 2 ── each glass shard: clipped to its triangle, displaced
+                shards.forEach(s => {
+                    rCtx.save();
+                    // Translate shard by (dx,dy), rotate around its centroid
+                    rCtx.translate(s.cx + s.dx, s.cy + s.dy);
+                    rCtx.rotate(s.rot);
+                    rCtx.translate(-s.cx, -s.cy);
+                    // Clip to the original triangle vertices (in the rotated space)
+                    rCtx.beginPath();
+                    s.v.forEach((p,i) => i ? rCtx.lineTo(p.x,p.y) : rCtx.moveTo(p.x,p.y));
+                    rCtx.closePath();
+                    rCtx.clip();
+                    // Draw herogirl (reeded glass texture) — it moves WITH the shard
+                    rCtx.drawImage(reedTex || heroImg, 0, 0, cw, ch);
+                    // Faint glass-surface specular
+                    rCtx.fillStyle = 'rgba(255,255,255,0.04)';
+                    rCtx.fill();
+                    rCtx.restore();
+                });
+
+                // 3 ── crack lines at original positions (the fracture network)
+                rCtx.save();
+                rCtx.strokeStyle = 'rgba(168,218,220,0.60)';
+                rCtx.lineWidth   = 0.8;
+                rCtx.shadowBlur  = 5;
+                rCtx.shadowColor = 'rgba(102,252,241,0.35)';
+                const seen = new Set();
+                shards.forEach(s => {
+                    for (let i = 0; i < 3; i++) {
+                        const a = s.v[i], b = s.v[(i+1)%3];
+                        const k = [a.x,a.y,b.x,b.y].map(n=>Math.round(n)).join(',');
+                        const r = [b.x,b.y,a.x,a.y].map(n=>Math.round(n)).join(',');
+                        if (seen.has(k)||seen.has(r)) continue;
+                        seen.add(k);
+                        rCtx.beginPath();
+                        rCtx.moveTo(a.x, a.y);
+                        rCtx.lineTo(b.x, b.y);
+                        rCtx.stroke();
+                    }
+                });
+                rCtx.restore();
+
+                // 4 ── spotlight vignette: darken outside cursor circle
+                if (hovering && mx > -900) {
+                    const R_VIG = 90;
+                    rCtx.save();
+                    rCtx.fillStyle = 'rgba(0,0,0,0.52)';
+                    rCtx.beginPath();
+                    rCtx.rect(0, 0, cw, ch);
+                    rCtx.arc(mx, my, R_VIG, 0, Math.PI * 2);
+                    rCtx.fill('evenodd');
+                    rCtx.restore();
+                }
+
+                if (moving || hovering) scheduleFrame();
+            }
+
+            function fadeOutAndClear() {
+                // CSS transition handles the opacity fade
+                revealCanvas.style.opacity = '0';
+                setTimeout(() => {
+                    rCtx.clearRect(0, 0, cw, ch);
+                    revealCanvas.style.opacity = '1';
+                }, 380);
+            }
+
+            // ── Desktop: mouse disturbs nearby shards ─────────
+            if (!isMobile()) {
+                photoInner.addEventListener('mouseenter', () => {
+                    hovering = true;
+                    scheduleFrame();
+                });
+
+                photoInner.addEventListener('mousemove', (e) => {
+                    if (!shards.length) return;
+                    const rect = photoInner.getBoundingClientRect();
+                    mx = e.clientX - rect.left;
+                    my = e.clientY - rect.top;
+                    const R = 90, BUFFER = 50;
+                    shards.forEach(s => {
+                        const dx = s.cx - mx, dy = s.cy - my;
+                        const d  = Math.hypot(dx, dy);
+                        if (d < R && d > 0.1) {
+                            // Push centroid fully OUTSIDE the spotlight radius
+                            const pushDist = R + BUFFER - d;
+                            s.tdx  = (dx / d) * pushDist;
+                            s.tdy  = (dy / d) * pushDist;
+                            s.trot = (1 - d / R) * 0.09;
+                        } else if (d < R * 1.7) {
+                            // Soft rim push for shards just outside the radius
+                            const f = (1 - (d - R) / (R * 0.7)) * 8;
+                            s.tdx  = (dx / d) * f;
+                            s.tdy  = (dy / d) * f;
+                            s.trot = 0;
+                        } else {
+                            s.tdx = s.tdy = s.trot = 0;
+                        }
+                    });
+                    scheduleFrame();
+                });
+
+                photoInner.addEventListener('mouseleave', () => {
+                    hovering = false;
+                    mx = -999; my = -999;
+                    shards.forEach(s => { s.tdx = s.tdy = s.trot = 0; });
+                    scheduleFrame();
+                    setTimeout(() => { if (!hovering) fadeOutAndClear(); }, 800);
+                });
+
+                photoInner.addEventListener('click', () => {
+                    window.open('https://www.linkedin.com/in/henriettavanniekerk', '_blank');
+                });
+            }
+
+            // ── Mobile: tap to explode shards / reassemble ────
+            if (isMobile()) {
+                let revealed = false;
+
+                photoInner.addEventListener('click', e => {
+                    e.preventDefault();
+                    revealed = !revealed;
+
+                    if (revealed) {
+                        // Shards fly outward from centre
+                        shards.forEach(s => {
+                            const dx = s.cx - cw/2, dy = s.cy - ch/2;
+                            const d  = Math.hypot(dx, dy) || 1;
+                            const dist_frac = d / Math.hypot(cw/2, ch/2);
+                            const f = (0.5 + dist_frac * 0.7) * 85;
+                            s.tdx  = dx/d * f;
+                            s.tdy  = dy/d * f;
+                            s.trot = (Math.random() - 0.5) * 0.30;
+                        });
+                        scheduleFrame();
+                        photoCaption.textContent = '✨ tap to reassemble';
+                    } else {
+                        // Shards return home
+                        shards.forEach(s => { s.tdx = s.tdy = s.trot = 0; });
+                        scheduleFrame();
+                        setTimeout(() => { if (!revealed) fadeOutAndClear(); }, 900);
+                        photoCaption.textContent = '✨ chaotic mastermind behind the magic';
+                    }
+                });
+            }
+
+            window.addEventListener('resize', buildShards);
+
+            // Initialise — build shards once fairchild is ready
+            if (fairchildImg.complete && fairchildImg.naturalWidth) {
+                buildShards();
+            } else {
+                fairchildImg.onload = buildShards;
+            }
+        }
+
         // ── Init ─────────────────────────────────────────────
         window.addEventListener('load', () => {
             initSkyScene();
             animate();
             startTypewriter();
             lucide.createIcons();
+            initReveal();
         });
     </script>
 

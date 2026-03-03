@@ -10,6 +10,26 @@
     <link rel="shortcut icon" type="image/png" href="HenLogo.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap');
+
+        @font-face {
+            font-family: 'DotempDemo';
+            src: url('fonts/DotempDemo.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .px {
+            font-family: 'DotempDemo', monospace;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 0.88em;
+        }
+        .di {
+            font-family: 'Didot', serif;
+            font-style: italic;
+            font-weight: 700;
+        }
 
         * {
             margin: 0;
@@ -136,10 +156,13 @@
         }
 
         .navbar .nav-links a {
+            font-family: 'Didot', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 0.95rem;
             color: #f1faee;
             text-decoration: none;
             transition: all 0.3s;
-            font-weight: 500;
             position: relative;
         }
 
@@ -273,10 +296,12 @@
         }
 
         .mobile-menu ul li a {
+            font-family: 'Didot', serif;
+            font-style: italic;
+            font-weight: 700;
             color: #f1faee;
             text-decoration: none;
             font-size: 1.2rem;
-            font-weight: 500;
             display: block;
             padding: 1rem 0;
             border-bottom: 1px solid rgba(168, 218, 220, 0.1);
@@ -330,13 +355,15 @@
         }
 
         .section h2 {
-            font-family: 'Montserrat Alternates', sans-serif;
+            font-family: 'Didot', serif;
+            font-style: italic;
             font-size: 3rem;
             text-align: center;
             margin-bottom: 3rem;
             background: linear-gradient(45deg, #a8dadc, #457b9d, #2a9d8f);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             font-weight: 700;
         }
 
@@ -614,9 +641,10 @@
       background: rgba(168, 218, 220, 0.1);
     }
     .scene-overlay-title {
-      font-family: 'Montserrat Alternates', sans-serif;
+      font-family: 'Didot', serif;
+      font-style: italic;
       font-size: 1.6rem;
-      font-weight: 700;
+      font-weight: 400;
       background: linear-gradient(45deg, #f1faee, #a8dadc, #66fcf1);
       background-size: 200% 200%;
       -webkit-background-clip: text;
@@ -802,10 +830,9 @@
                 <img src="HenLogo.png" alt="Henlogo">
             </a>
             <ul class="nav-links">
-                <li><a href="#" onclick="openResumePopup()">Resume</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="#" onclick="openResumePopup()">Re<span class="px">sum</span>e</a></li>
+                <li><a href="#projects">W<span class="px">or</span>k</a></li>
+                <li><a href="#about">A<span class="px">bo</span>ut</a></li>
             </ul>
             <div class="hamburger" onclick="toggleMobileMenu()">
                 <span></span>
@@ -817,10 +844,9 @@
         <div class="overlay" onclick="closeMobileMenu()"></div>
         <div class="mobile-menu">
             <ul>
-                <li><a href="#" onclick="openResumePopup(); closeMobileMenu()">Resume</a></li>
-                <li><a href="#projects" onclick="closeMobileMenu()">Projects</a></li>
-                <li><a href="#about" onclick="closeMobileMenu()">About</a></li>
-                <li><a href="#contact" onclick="closeMobileMenu()">Contact</a></li>
+                <li><a href="#" onclick="openResumePopup(); closeMobileMenu()">Re<span class="px">sum</span>e</a></li>
+                <li><a href="#projects" onclick="closeMobileMenu()">W<span class="px">or</span>k</a></li>
+                <li><a href="#about" onclick="closeMobileMenu()">A<span class="px">bo</span>ut</a></li>
             </ul>
         </div>
 
@@ -829,7 +855,7 @@
         </section>
 
         <section class="section" id="projects">
-            <h2>Featured Projects</h2>
+            <h2>F<span class="px">ea</span>tur<span class="px">ed</span> Pro<span class="px">jec</span>ts</h2>
             <p style="text-align: center; opacity: 0.8; font-size: 1.1rem; color: #f1faee; margin-bottom: 2rem;">
                 A collection of interactive experiences and creative digital projects
             </p>

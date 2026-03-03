@@ -6,6 +6,26 @@
     <title>Henrietta's Bento Resume 🍱</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap');
+
+        @font-face {
+            font-family: 'DotempDemo';
+            src: url('fonts/DotempDemo.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .px {
+            font-family: 'DotempDemo', monospace;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 0.88em;
+        }
+        .di {
+            font-family: 'Didot', serif;
+            font-style: italic;
+            font-weight: 700;
+        }
 
         * {
             margin: 0;
@@ -112,8 +132,9 @@
         }
 
         .bento-header h1 {
-            font-family: 'Montserrat Alternates', sans-serif;
-            font-size: 3.5rem;
+            font-family: 'Didot', serif;
+            font-style: italic;
+            font-size: 3rem;
             font-weight: 700;
             background: linear-gradient(45deg, #f1faee, #a8dadc, #66fcf1, #2a9d8f, #457b9d);
             background-size: 200% 200%;
@@ -244,9 +265,10 @@
         }
 
         .bento-title {
-            font-family: 'Montserrat Alternates', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-family: 'Didot', serif;
+            font-style: italic;
+            font-size: 1.3rem;
+            font-weight: 700;
             margin-bottom: 1rem;
             color: #a8dadc;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -446,7 +468,7 @@
 
     <div class="bento-container">
         <div class="bento-header">
-            <h1>About Me</h1>
+            <h1>A<span class="px">bo</span>ut <span class="px">M</span>e</h1>
             <p>Click on my mini resume for the TLDR of me!</p>
         </div>
 
@@ -454,7 +476,7 @@
             <!-- Intro Box -->
             <div class="bento-box intro" onclick="toggleBox(this)">
                 <span class="bento-icon">👋</span>
-                <h3 class="bento-title">Hey there!</h3>
+                <h3 class="bento-title"><span class="px">Hey</span> there!</h3>
                 <div class="bento-content">
                     I'm a design engineer who collects careers like Barbie! Currently founding AI startups and building epic RPG expansions.
                 </div>
@@ -471,7 +493,7 @@
                     <img src="./HenChibi.png" alt="Henrietta" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div style="display: none; font-size: 3rem; align-items: center; justify-content: center; width: 100%; height: 100%;">📸</div>
                 </div>
-                <h3 class="bento-title">That's Me!</h3>
+                <h3 class="bento-title"><span class="px">That's</span> Me!</h3>
                 <div class="bento-content">
                     The mastermind behind the chaos ✨
                 </div>
@@ -485,7 +507,7 @@
             <!-- Experience Box -->
             <div class="bento-box experience" onclick="toggleBox(this)">
                 <span class="bento-icon">💼</span>
-                <h3 class="bento-title">Experience</h3>
+                <h3 class="bento-title">Ex<span class="px">per</span>ien<span class="px">ce</span></h3>
                 <div class="bento-content">
                     From indie studios to AI startups
                 </div>
@@ -515,7 +537,7 @@
             <!-- Skills Box -->
             <div class="bento-box skills" onclick="toggleBox(this)">
                 <span class="bento-icon">🛠️</span>
-                <h3 class="bento-title">Skills</h3>
+                <h3 class="bento-title">S<span class="px">kill</span>s</h3>
                 <div class="bento-content">
                     <span class="skill-tag">JavaScript</span>
                     <span class="skill-tag">React</span>
@@ -551,7 +573,7 @@
             <!-- Projects Box -->
             <div class="bento-box projects" onclick="toggleBox(this)">
                 <span class="bento-icon">🚀</span>
-                <h3 class="bento-title">Projects</h3>
+                <h3 class="bento-title">Pro<span class="px">jec</span>ts</h3>
                 <div class="bento-content">
                     Cool stuff I've built
                 </div>
@@ -575,7 +597,7 @@
             <!-- Education Box -->
             <div class="bento-box education" onclick="toggleBox(this)">
                 <span class="bento-icon">🎓</span>
-                <h3 class="bento-title">Education</h3>
+                <h3 class="bento-title"><span class="px">Edu</span>cat<span class="px">ion</span></h3>
                 <div class="bento-content">
                     Learning never stops!
                 </div>
@@ -597,7 +619,7 @@
             <!-- Contact Box -->
             <div class="bento-box contact" onclick="toggleBox(this)">
                 <span class="bento-icon">📧</span>
-                <h3 class="bento-title">Contact</h3>
+                <h3 class="bento-title">Con<span class="px">tac</span>t</h3>
                 <div class="bento-content">
                     Let's connect!
                 </div>
@@ -613,7 +635,7 @@
             <!-- Fun Facts Box -->
             <div class="bento-box fun-facts" onclick="toggleBox(this)">
                 <span class="bento-icon">✨</span>
-                <h3 class="bento-title">Fun Facts</h3>
+                <h3 class="bento-title"><span class="px">Fun</span> Fac<span class="px">ts</span></h3>
                 <div class="bento-content">
                     The chaotic details that make me, me!
                 </div>
