@@ -1081,11 +1081,14 @@
                 return shards;
             }
 
-            // Append jagged hole path to existing path (no beginPath -- caller manages)
+            // Append jagged hole path — wobbles over time, slowly rotates
             function appendHolePath(cx, cy, r) {
                 crackPts.forEach((pt, i) => {
-                    const x = cx + Math.cos(pt.angle) * pt.rScale * r;
-                    const y = cy + Math.sin(pt.angle) * pt.rScale * r;
+                    const wob   = 0.055 * Math.sin(renderNow * 0.65 + i * 0.8);
+                    const angle = pt.angle + rotOffset;
+                    const scale = pt.rScale + wob;
+                    const x = cx + Math.cos(angle) * scale * r;
+                    const y = cy + Math.sin(angle) * scale * r;
                     if (i === 0) rCtx.moveTo(x, y); else rCtx.lineTo(x, y);
                 });
                 rCtx.closePath();
@@ -1096,6 +1099,8 @@
             let accentShards = [];
             let holeR       = 0;
             let holeTarget  = 0;
+            let rotOffset   = 0;   // slow rotation of hole shape
+            let renderNow   = 0;   // current time passed to render each frame
             let mx = -999, my = -999, hovering = false, animating = false;
 
             function render() {
@@ -1128,7 +1133,20 @@
 
                 const t = holeR / ZONE_R;
 
-                // 3. Soft glow at hole edge (blurred stroke, not sharp)
+                // 4. Chromatic aberration on the reveal — screen blend with offset copies
+                //    screen on the light glass = near-invisible; on dark fairchild pixels = vivid fringe
+                const caX = 2.8 * t;
+                rCtx.save();
+                rCtx.globalCompositeOperation = 'screen';
+                rCtx.globalAlpha = 0.18 * t;
+                rCtx.filter = 'saturate(8) hue-rotate(-38deg)';   // red fringe right
+                rCtx.drawImage(fb, caX, 0);
+                rCtx.filter = 'saturate(8) hue-rotate(188deg)';   // cyan fringe left
+                rCtx.drawImage(fb, -caX, 0);
+                rCtx.filter = 'none';
+                rCtx.restore();
+
+                // 5. Soft glow at hole edge (blurred stroke, not sharp)
                 rCtx.save();
                 rCtx.filter = 'blur(3px)';
                 rCtx.beginPath();
@@ -1156,12 +1174,11 @@
                     rCtx.stroke();
                 });
 
-                // 5. Floating accent shards
-                const now = performance.now() * 0.001;
+                // 6. Floating accent shards
                 accentShards.forEach(s => {
                     if (s.px < -900) return;
-                    const wobX = Math.sin(now * s.freq + s.phase)              * s.wobAmp;
-                    const wobY = Math.cos(now * s.freq * 0.72 + s.phase + 1.1) * s.wobAmp * 0.65;
+                    const wobX = Math.sin(renderNow * s.freq + s.phase)              * s.wobAmp;
+                    const wobY = Math.cos(renderNow * s.freq * 0.72 + s.phase + 1.1) * s.wobAmp * 0.65;
                     const px   = s.px + wobX;
                     const py   = s.py + wobY;
                     const sz   = s.size;
@@ -1210,6 +1227,10 @@
 
             function tick() {
                 let moving = false;
+                renderNow = performance.now() * 0.001;
+
+                // Slowly rotate the hole shape
+                rotOffset += 0.003;
 
                 // Animate hole open/close
                 const dHole = holeTarget - holeR;

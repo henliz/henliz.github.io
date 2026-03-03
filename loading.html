@@ -5,7 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loading... ✨</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap');
+
+        @font-face {
+            font-family: 'DotempDemo';
+            src: url('fonts/DotempDemo.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .px {
+            font-family: 'DotempDemo', monospace;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 0.88em;
+        }
+        .di {
+            font-family: 'Didot', serif;
+            font-style: italic;
+            font-weight: 700;
+        }
 
         * {
             margin: 0;
@@ -14,10 +33,8 @@
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 20s ease infinite;
+            font-family: 'Cormorant Garamond', serif;
+            background: #080c12;
             color: #f1faee;
             overflow: hidden;
             height: 100vh;
@@ -25,21 +42,14 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            /* SHOW IMMEDIATELY - no opacity: 0 */
         }
 
-        /* Only hide cursor on desktop */
         @media (hover: hover) and (pointer: fine) {
-            body {
-                cursor: none !important;
-            }
-
-            *, *::before, *::after {
-                cursor: none !important;
-            }
+            body { cursor: none !important; }
+            *, *::before, *::after { cursor: none !important; }
         }
 
-        /* Custom Cursor - Only show on desktop */
+        /* Custom Cursor */
         .custom-cursor {
             position: fixed;
             width: 18px;
@@ -55,47 +65,42 @@
             box-shadow: 0 0 10px rgba(102, 252, 241, 0.25);
             display: none;
         }
-
         @media (hover: hover) and (pointer: fine) {
-            .custom-cursor {
-                display: block;
-            }
+            .custom-cursor { display: block; }
         }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Matrix canvas — full viewport, behind everything */
+        #matrix-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            opacity: 0.75;
         }
 
         .loading-container {
             position: relative;
             z-index: 10;
             text-align: center;
-            background: rgba(15, 20, 25, 0.15);
-            backdrop-filter: blur(35px);
+            background: rgba(8, 12, 18, 0.18);
+            backdrop-filter: blur(38px);
+            -webkit-backdrop-filter: blur(38px);
             border-radius: 32px;
             padding: 3rem 2.5rem;
-            border: 1px solid rgba(168, 218, 220, 0.2);
+            border: 1px solid rgba(168, 218, 220, 0.22);
             box-shadow:
-                0 20px 60px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05),
-                inset 0 0 30px rgba(168, 218, 220, 0.05);
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06),
+                inset 0 0 30px rgba(168, 218, 220, 0.04);
             max-width: 500px;
             width: 90%;
             animation: floatContainer 6s ease-in-out infinite;
-            /* Show immediately */
             opacity: 1;
             transition: all 0.8s ease-out;
         }
 
         @keyframes floatContainer {
-            0%, 100% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-10px); }
         }
 
         .vaporeon-container {
@@ -122,15 +127,11 @@
         @keyframes vaporeonFloat {
             0%, 100% {
                 transform: translateY(0px) scale(1);
-                box-shadow:
-                    0 0 30px rgba(42, 157, 143, 0.3),
-                    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 30px rgba(42, 157, 143, 0.3), inset 0 2px 4px rgba(255,255,255,0.1);
             }
             50% {
                 transform: translateY(-8px) scale(1.02);
-                box-shadow:
-                    0 0 40px rgba(42, 157, 143, 0.5),
-                    inset 0 2px 4px rgba(255, 255, 255, 0.15);
+                box-shadow: 0 0 40px rgba(42, 157, 143, 0.5), inset 0 2px 4px rgba(255,255,255,0.15);
             }
         }
 
@@ -143,102 +144,74 @@
 
         .sparkle {
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: linear-gradient(45deg, #66fcf1, #a8dadc);
             border-radius: 50%;
             animation: sparkleFloat 3s ease-in-out infinite;
-            opacity: 0.8;
-            box-shadow: 0 0 10px rgba(102, 252, 241, 0.6);
+            opacity: 0.7;
+            box-shadow: 0 0 8px rgba(102, 252, 241, 0.5);
         }
-
-        .sparkle:nth-child(1) {
-            top: 20%;
-            left: 15%;
-            animation-delay: 0s;
-        }
-
-        .sparkle:nth-child(2) {
-            top: 30%;
-            right: 20%;
-            animation-delay: 0.5s;
-        }
-
-        .sparkle:nth-child(3) {
-            bottom: 25%;
-            left: 25%;
-            animation-delay: 1s;
-        }
-
-        .sparkle:nth-child(4) {
-            bottom: 35%;
-            right: 15%;
-            animation-delay: 1.5s;
-        }
-
-        .sparkle:nth-child(5) {
-            top: 50%;
-            left: 5%;
-            animation-delay: 2s;
-        }
-
-        .sparkle:nth-child(6) {
-            top: 15%;
-            right: 5%;
-            animation-delay: 2.5s;
-        }
+        .sparkle:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 30%; right: 20%; animation-delay: 0.5s; }
+        .sparkle:nth-child(3) { bottom: 25%; left: 25%; animation-delay: 1s; }
+        .sparkle:nth-child(4) { bottom: 35%; right: 15%; animation-delay: 1.5s; }
+        .sparkle:nth-child(5) { top: 50%; left: 5%; animation-delay: 2s; }
+        .sparkle:nth-child(6) { top: 15%; right: 5%; animation-delay: 2.5s; }
 
         @keyframes sparkleFloat {
-            0%, 100% {
-                transform: translateY(0px) scale(1);
-                opacity: 0.4;
-            }
-            50% {
-                transform: translateY(-15px) scale(1.2);
-                opacity: 1;
-            }
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.35; }
+            50%       { transform: translateY(-14px) scale(1.2); opacity: 0.9; }
         }
 
         .loading-title {
-            font-family: 'Montserrat Alternates', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #f1faee, #a8dadc, #66fcf1, #2a9d8f, #457b9d);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.6rem;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            background: linear-gradient(45deg, #f1faee, #a8dadc, #66fcf1, #2a9d8f);
             background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: gradientShift 8s ease infinite;
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 0.9rem;
+        }
+
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .loading-message {
-            font-size: 1.2rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.25rem;
+            font-weight: 400;
             color: #a8dadc;
             margin-bottom: 1.5rem;
             opacity: 0.9;
-            font-weight: 500;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.01em;
         }
 
         .easter-egg-hint {
+            font-family: 'Cormorant Garamond', serif;
             font-size: 1rem;
+            font-weight: 300;
             color: #66fcf1;
-            opacity: 0.8;
+            opacity: 0.75;
             font-style: italic;
             margin-bottom: 2rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .progress-bar-container {
             width: 100%;
-            height: 8px;
-            background: rgba(168, 218, 220, 0.1);
+            height: 6px;
+            background: rgba(168, 218, 220, 0.08);
             border-radius: 10px;
             overflow: hidden;
-            border: 1px solid rgba(168, 218, 220, 0.2);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(168, 218, 220, 0.18);
         }
 
         .progress-bar {
@@ -248,73 +221,31 @@
             border-radius: 10px;
             width: 0%;
             animation: progressShimmer 2s ease-in-out infinite;
-            box-shadow: 0 0 15px rgba(42, 157, 143, 0.4);
+            box-shadow: 0 0 12px rgba(42, 157, 143, 0.4);
             transition: width 0.3s ease;
         }
 
         @keyframes progressShimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+            0%   { background-position: -200% 0; }
+            100% { background-position:  200% 0; }
         }
 
         .loading-percentage {
-            font-family: 'Montserrat Alternates', sans-serif;
-            font-size: 1.1rem;
-            color: #f1faee;
-            margin-top: 1rem;
-            font-weight: 600;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            font-family: 'DotempDemo', monospace;
+            font-size: 1rem;
+            color: #66fcf1;
+            margin-top: 0.9rem;
+            letter-spacing: 0.12em;
+            opacity: 0.85;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .loading-container {
-                padding: 2.5rem 2rem;
-                margin: 1rem;
-            }
-
-            .loading-title {
-                font-size: 2rem;
-            }
-
-            .loading-message {
-                font-size: 1.1rem;
-            }
-
-            .easter-egg-hint {
-                font-size: 0.9rem;
-            }
-
-            .vaporeon-gif {
-                width: 100px;
-                height: 100px;
-            }
+            .loading-container { padding: 2.5rem 2rem; }
+            .loading-title { font-size: 2.1rem; }
+            .loading-message { font-size: 1.1rem; }
+            .vaporeon-gif { width: 100px; height: 100px; }
         }
 
-        @media (max-width: 480px) {
-            .loading-container {
-                padding: 2rem 1.5rem;
-            }
-
-            .loading-title {
-                font-size: 1.8rem;
-            }
-
-            .loading-message {
-                font-size: 1rem;
-            }
-
-            .easter-egg-hint {
-                font-size: 0.85rem;
-            }
-
-            .vaporeon-gif {
-                width: 90px;
-                height: 90px;
-            }
-        }
-
-        /* LOADED STATE - fade out when ready */
         .loaded {
             opacity: 0;
             visibility: hidden;
@@ -323,8 +254,9 @@
     </style>
 </head>
 <body>
-    <!-- Custom Glassmorphism Cursor -->
     <div class="custom-cursor" id="cursor"></div>
+
+    <canvas id="matrix-canvas"></canvas>
 
     <div class="loading-container" id="loadingContainer">
         <div class="vaporeon-container">
@@ -342,14 +274,13 @@
                 class="vaporeon-gif"
                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
             >
-            <!-- Fallback with animated Vaporeon emoji -->
-            <div style="display: none; width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(45deg, #4FC3F7, #29B6F6, #0288D1); align-items: center; justify-content: center; font-size: 3rem; border: 3px solid rgba(168, 218, 220, 0.4); animation: vaporeonFloat 4s ease-in-out infinite;">
+            <div style="display:none; width:120px; height:120px; border-radius:50%; background:linear-gradient(45deg,#4FC3F7,#29B6F6,#0288D1); align-items:center; justify-content:center; font-size:3rem; border:3px solid rgba(168,218,220,0.4); animation:vaporeonFloat 4s ease-in-out infinite;">
                 🌊
             </div>
         </div>
 
-        <h1 class="loading-title">Loading Magic...</h1>
-        <p class="loading-message">Preparing your chaotic experience ✨</p>
+        <h1 class="loading-title"><span class="px">Loa</span>ding <span class="di">Magic</span>...</h1>
+        <p class="loading-message" id="loadingMessage">Preparing your <span class="di">chaotic</span> experience ✨</p>
         <p class="easter-egg-hint" id="easterEggHint">
             💫 Hover around my site to discover nostalgic easter eggs!
         </p>
@@ -361,143 +292,182 @@
         <div class="loading-percentage" id="loadingPercentage">0%</div>
     </div>
 
-
     <script>
-        // Custom Cursor Logic (keep existing cursor code)
+        // ── Cursor ────────────────────────────────────────────
         const cursor = document.getElementById('cursor');
-        let mouseX = 0;
-        let mouseY = 0;
-        let animationId;
-
-        function updateCursor() {
-            cursor.style.left = mouseX + 'px';
-            cursor.style.top = mouseY + 'px';
-        }
+        let mouseX = 0, mouseY = 0, animationId;
 
         document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            if (!animationId) {
-                animationId = requestAnimationFrame(() => {
-                    updateCursor();
-                    animationId = null;
-                });
-            }
+            mouseX = e.clientX; mouseY = e.clientY;
+            if (!animationId) animationId = requestAnimationFrame(() => {
+                cursor.style.left = mouseX + 'px';
+                cursor.style.top  = mouseY + 'px';
+                animationId = null;
+            });
         });
-
-        document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
-        document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+        document.addEventListener('mousedown',  () => cursor.classList.add('clicking'));
+        document.addEventListener('mouseup',    () => cursor.classList.remove('clicking'));
         document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
         document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
 
-        // Detect mobile/touch device
-        function updateEasterEggHint() {
-            const easterEggHint = document.getElementById('easterEggHint');
-            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            if (isTouchDevice) {
-                easterEggHint.textContent = '💫 Tap around my site to discover nostalgic easter eggs!';
-            } else {
-                easterEggHint.textContent = '💫 Hover around my site to discover nostalgic easter eggs!';
-            }
+        // ── Matrix Rain ───────────────────────────────────────
+        const matCanvas = document.getElementById('matrix-canvas');
+        const mCtx = matCanvas.getContext('2d');
+
+        const FONT_SIZE = 14;
+        const COL_W     = 17;
+
+        // Site-palette stream colours
+        const STREAM_PALETTE = [
+            { head: '#66fcf1', trail: '#2a9d8f' },
+            { head: '#66fcf1', trail: '#2a9d8f' },
+            { head: '#a8dadc', trail: '#457b9d' },
+            { head: '#66fcf1', trail: '#2a9d8f' },
+        ];
+
+        // Charset: code-feel, all ASCII so DotempDemo renders it well
+        const CHARSET = 'abcdefghijklmnopqrstuvwxyz0123456789{}[]<>/|\\#$@!;:=+-*%^&~';
+
+        let drops = [], colPalette = [];
+
+        function initMatrix() {
+            matCanvas.width  = window.innerWidth;
+            matCanvas.height = window.innerHeight;
+            // Fill black so first frames don't look empty
+            mCtx.fillStyle = '#080c12';
+            mCtx.fillRect(0, 0, matCanvas.width, matCanvas.height);
+
+            const numCols = Math.floor(matCanvas.width / COL_W);
+            drops = Array.from({ length: numCols }, () =>
+                Math.floor(Math.random() * -(matCanvas.height / FONT_SIZE))
+            );
+            colPalette = Array.from({ length: numCols }, () =>
+                STREAM_PALETTE[Math.floor(Math.random() * STREAM_PALETTE.length)]
+            );
         }
 
-        // Progress tracking
+        function drawMatrix() {
+            // Semi-transparent overlay — fades old chars into background
+            mCtx.fillStyle = 'rgba(8, 12, 18, 0.065)';
+            mCtx.fillRect(0, 0, matCanvas.width, matCanvas.height);
+
+            mCtx.font      = `${FONT_SIZE}px DotempDemo, monospace`;
+            mCtx.textAlign = 'left';
+
+            drops.forEach((row, i) => {
+                const x = i * COL_W;
+                const y = row * FONT_SIZE;
+
+                if (y >= 0) {
+                    const char = CHARSET[Math.floor(Math.random() * CHARSET.length)];
+                    // Head character — bright cyan
+                    mCtx.fillStyle  = colPalette[i].head;
+                    mCtx.globalAlpha = 0.92;
+                    mCtx.fillText(char, x, y);
+                    // Tiny secondary char just behind head (gives depth)
+                    if (y > FONT_SIZE) {
+                        mCtx.fillStyle   = colPalette[i].trail;
+                        mCtx.globalAlpha = 0.55;
+                        mCtx.fillText(
+                            CHARSET[Math.floor(Math.random() * CHARSET.length)],
+                            x, y - FONT_SIZE
+                        );
+                    }
+                }
+
+                mCtx.globalAlpha = 1;
+                drops[i]++;
+
+                if (drops[i] * FONT_SIZE > matCanvas.height && Math.random() > 0.975) {
+                    drops[i] = Math.floor(Math.random() * -30);
+                }
+            });
+        }
+
+        // ── Progress & loading logic ──────────────────────────
         let totalProgress = 0;
 
         function updateProgress(progress) {
             totalProgress = Math.min(progress, 100);
-            const progressBar = document.getElementById('progressBar');
-            const loadingPercentage = document.getElementById('loadingPercentage');
-            progressBar.style.width = totalProgress + '%';
-            loadingPercentage.textContent = Math.floor(totalProgress) + '%';
-
-            if (totalProgress >= 100) {
-                finishLoading();
-            }
+            document.getElementById('progressBar').style.width      = totalProgress + '%';
+            document.getElementById('loadingPercentage').textContent = Math.floor(totalProgress) + '%';
+            if (totalProgress >= 100) finishLoading();
         }
 
         function finishLoading() {
             setTimeout(() => {
-                const loadingContainer = document.getElementById('loadingContainer');
-                loadingContainer.classList.add('loaded');
-                setTimeout(() => {
-                    window.location.href = './index.html?loaded=true';
-                }, 800);
+                document.getElementById('loadingContainer').classList.add('loaded');
+                setTimeout(() => { window.location.href = './index.html?loaded=true'; }, 800);
             }, 1000);
         }
 
-        // PRELOAD all 3D model files so they hit the browser cache before the main pages load them
         async function preloadHeroAssets() {
             const models = [
-                './models/skyblue.glb',    // hero.html background sky
-                './models/yummymeal.glb',  // models.html – Skrimp
-                './models/steamdeck.glb',  // models.html – Path to Menzoberranzan
-                './models/jaguar.glb',     // models.html – Jaguar Rebrand
-                './models/laptop.glb',     // models.html – Seniors Connect
+                './models/skyblue.glb',
+                './models/yummymeal.glb',
+                './models/steamdeck.glb',
+                './models/jaguar.glb',
+                './models/laptop.glb',
             ];
-
             for (let i = 0; i < models.length; i++) {
-                try {
-                    await fetch(models[i]);
-                } catch (e) {
-                    console.log('Could not preload:', models[i]);
-                }
+                try { await fetch(models[i]); } catch (e) {}
                 updateProgress(35 + ((i + 1) / models.length) * 60);
             }
-
             updateProgress(100);
         }
 
-        // Loading messages
         const loadingMessages = [
-            "Preparing your chaotic experience ✨",
-            "Summoning digital nostalgia 🌈",
-            "Loading pixels with love 💖",
-            "Brewing some coding magic ⚡",
-            "Organizing beautiful chaos 🎨",
-            "Awakening the 3D sky ☁️",
-            "Calibrating liquid glass 🌊"
+            'Preparing your <span class="di">chaotic</span> experience ✨',
+            'Summoning <span class="di">digital</span> nostalgia 🌈',
+            '<span class="px">load</span>ing pixels with love 💖',
+            'Brewing some <span class="di">coding</span> magic ⚡',
+            'Organising <span class="di">beautiful</span> chaos 🎨',
+            'Awakening the <span class="di">3D sky</span> ☁️',
+            'Calibrating <span class="di">liquid glass</span> 🌊',
         ];
 
         function cycleLoadingMessages() {
-            const messageElement = document.querySelector('.loading-message');
-            let messageIndex = 0;
-            const interval = setInterval(() => {
+            const el = document.getElementById('loadingMessage');
+            let idx = 0;
+            setInterval(() => {
                 if (totalProgress >= 100) {
-                    messageElement.textContent = "Ready to explore! 🎉";
-                    clearInterval(interval);
+                    el.innerHTML = 'Ready to <span class="di">explore</span>! 🎉';
                     return;
                 }
-                messageIndex = (messageIndex + 1) % loadingMessages.length;
-                messageElement.textContent = loadingMessages[messageIndex];
+                idx = (idx + 1) % loadingMessages.length;
+                el.innerHTML = loadingMessages[idx];
             }, 1500);
         }
 
-        // Main loading sequence
         function startLoading() {
             updateProgress(10);
-
-            // Wait for fonts, then start preloading models immediately
             if (document.fonts) {
-                document.fonts.ready.then(() => {
-                    updateProgress(30);
-                    preloadHeroAssets();
-                });
+                document.fonts.ready.then(() => { updateProgress(30); preloadHeroAssets(); });
             } else {
-                setTimeout(() => {
-                    updateProgress(30);
-                    preloadHeroAssets();
-                }, 500);
+                setTimeout(() => { updateProgress(30); preloadHeroAssets(); }, 500);
             }
         }
 
-        // Initialize
+        function updateEasterEggHint() {
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            document.getElementById('easterEggHint').textContent = isTouchDevice
+                ? '💫 Tap around my site to discover nostalgic easter eggs!'
+                : '💫 Hover around my site to discover nostalgic easter eggs!';
+        }
+
+        // ── Init ──────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
+            initMatrix();
+            window.addEventListener('resize', initMatrix);
+            // Wait for DotempDemo to load, then start matrix
+            document.fonts.ready.then(() => {
+                setInterval(drawMatrix, 55); // ~18 fps — chunky pixel feel
+            });
+
             updateEasterEggHint();
             cycleLoadingMessages();
             startLoading();
         });
     </script>
-
 </body>
 </html>
