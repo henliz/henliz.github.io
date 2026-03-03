@@ -17,20 +17,12 @@
     .px { font-family:'DotempDemo',monospace; font-style:normal; font-weight:400; font-size:0.88em; }
     .di { font-family:'Didot',serif; font-style:italic; font-weight:700; }
 
-    :root{ --bg:#0f1419; --fg:#e6f2f2; --a:#2a9d8f; --b:#457b9d; }
+    :root { --bg:#0f1419; --fg:#e6f2f2; --a:#2a9d8f; --b:#457b9d; }
 
-    html, body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--fg);
-      font-family: 'Cormorant Garamond', serif;
-    }
+    html, body { margin:0; background:var(--bg); color:var(--fg); font-family:'Cormorant Garamond',serif; }
 
-    /* Scene section: tall so you can scroll into/out of it */
-    #scene {
-      position: relative;
-      height: 220vh;
-    }
+    #scene { position:relative; height:220vh; }
+
     .scene-pin {
       position: sticky;
       top: 0;
@@ -39,7 +31,6 @@
       touch-action: pan-y;
     }
 
-    /* Canvas fills the pinned area */
     canvas#webgl {
       position: absolute;
       inset: 0;
@@ -48,7 +39,25 @@
       display: block;
     }
 
-    /* ── Bottom vignette gradient — lets type sit clean on any model ── */
+    /* ── Drag hint — fades once user interacts ── */
+    .drag-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      pointer-events: none;
+      font-family: 'DotempDemo', monospace;
+      font-size: clamp(0.5rem, 0.7vw, 0.62rem);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(168, 218, 220, 0.28);
+      transition: opacity 0.6s ease;
+      white-space: nowrap;
+    }
+    .drag-hint.hidden { opacity: 0; }
+
+    /* ── Bottom vignette ── */
     .ed-gradient {
       position: absolute;
       inset: 0;
@@ -56,28 +65,13 @@
       z-index: 4;
       background: linear-gradient(
         to top,
-        rgba(15,20,25,0.90) 0%,
-        rgba(15,20,25,0.48) 24%,
-        transparent 50%
+        rgba(15,20,25,0.92) 0%,
+        rgba(15,20,25,0.50) 22%,
+        transparent 48%
       );
     }
 
-    /* ── Top-right category tag ── */
-    .ed-category {
-      position: absolute;
-      top: 5.5vh;
-      right: 5.5vw;
-      z-index: 6;
-      font-family: 'DotempDemo', monospace;
-      font-size: clamp(0.52rem, 0.78vw, 0.68rem);
-      color: rgba(102, 252, 241, 0.42);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-    }
-
-    /* ── Editorial strip — bottom of scene ── */
+    /* ── Editorial strip — lives at the bottom of the scene ── */
     .ed-strip {
       position: absolute;
       bottom: 0;
@@ -86,14 +80,41 @@
       z-index: 6;
       padding: 0 6vw 4.5vh 6vw;
       pointer-events: none;
-      transition: opacity 0.25s ease;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .ed-strip.fading {
+      opacity: 0;
+      transform: translateY(7px);
+    }
+
+    /* category left — number right — above the rule */
+    .ed-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 0.75rem;
+    }
+    .ed-category {
+      font-family: 'DotempDemo', monospace;
+      font-size: clamp(0.52rem, 0.78vw, 0.66rem);
+      color: rgba(102, 252, 241, 0.40);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    .ed-number {
+      font-family: 'DotempDemo', monospace;
+      font-size: clamp(0.55rem, 0.8vw, 0.68rem);
+      color: rgba(102, 252, 241, 0.45);
+      letter-spacing: 0.26em;
     }
 
     .ed-rule {
       width: 100%;
       height: 1px;
-      background: rgba(168, 218, 220, 0.17);
-      margin-bottom: 1.5rem;
+      background: rgba(168, 218, 220, 0.16);
+      margin-bottom: 1.4rem;
     }
 
     .ed-bottom-row {
@@ -102,16 +123,7 @@
       justify-content: space-between;
       gap: 3rem;
     }
-
     .ed-left { flex: 1; min-width: 0; }
-
-    .ed-number {
-      font-family: 'DotempDemo', monospace;
-      font-size: clamp(0.58rem, 0.82vw, 0.7rem);
-      color: rgba(102, 252, 241, 0.48);
-      letter-spacing: 0.24em;
-      margin-bottom: 0.5rem;
-    }
 
     .ed-title {
       font-family: 'Cormorant Garamond', serif;
@@ -119,7 +131,7 @@
       font-weight: 400;
       font-size: clamp(2.4rem, 4.8vw, 4.6rem);
       color: #f1faee;
-      margin: 0 0 0.55rem 0;
+      margin: 0 0 0.5rem 0;
       letter-spacing: -0.01em;
       line-height: 1.04;
     }
@@ -129,7 +141,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-size: clamp(0.8rem, 1.08vw, 0.92rem);
-      color: rgba(168, 218, 220, 0.60);
+      color: rgba(168, 218, 220, 0.58);
       margin: 0;
       max-width: 52ch;
       line-height: 1.5;
@@ -138,28 +150,24 @@
     .ed-cta {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: clamp(0.8rem, 1.02vw, 0.88rem);
-      color: rgba(102, 252, 241, 0.68);
+      font-size: clamp(0.8rem, 1.0vw, 0.88rem);
+      color: rgba(102, 252, 241, 0.65);
       text-decoration: none;
       letter-spacing: 0.07em;
       pointer-events: all;
       white-space: nowrap;
-      border-bottom: 1px solid rgba(102, 252, 241, 0.26);
+      border-bottom: 1px solid rgba(102, 252, 241, 0.24);
       padding-bottom: 0.14rem;
       flex-shrink: 0;
       align-self: flex-end;
-      margin-bottom: 0.14rem;
+      margin-bottom: 0.12rem;
       transition: color 0.2s, border-color 0.2s;
     }
     .ed-cta:hover {
       color: rgba(102, 252, 241, 1);
-      border-color: rgba(102, 252, 241, 0.65);
+      border-color: rgba(102, 252, 241, 0.6);
     }
 
-    /* fade class for station transitions */
-    .ed-strip.fading, .ed-category.fading { opacity: 0; }
-
-    /* cursor:none — parent page owns the cursor */
     *, *::before, *::after { cursor: none !important; }
 
     @media (max-width: 768px) {
@@ -178,22 +186,25 @@
     <div class="scene-pin" id="scenePin">
       <canvas id="webgl"></canvas>
 
-      <!-- Bottom gradient vignette -->
       <div class="ed-gradient"></div>
 
-      <!-- Top-right category tag -->
-      <div class="ed-category" id="ed-category"></div>
+      <div class="drag-hint" id="dragHint">drag to rotate</div>
 
       <!-- Editorial bottom strip -->
-      <div class="ed-strip">
+      <div class="ed-strip" id="edStrip">
+        <div class="ed-meta-row">
+          <span class="ed-category" id="ed-category"></span>
+          <span class="ed-number"   id="ed-number"></span>
+        </div>
         <div class="ed-rule"></div>
         <div class="ed-bottom-row">
           <div class="ed-left">
-            <div class="ed-number" id="ed-number">01</div>
             <h2 class="ed-title" id="ed-title"></h2>
-            <p class="ed-desc" id="ed-desc"></p>
+            <p  class="ed-desc"  id="ed-desc"></p>
           </div>
-          <a class="ed-cta" id="ed-cta" href="#" target="_blank" rel="noopener noreferrer">Explore case study →</a>
+          <a class="ed-cta" id="ed-cta" href="#" target="_blank" rel="noopener noreferrer">
+            Explore case study →
+          </a>
         </div>
       </div>
     </div>
@@ -203,57 +214,56 @@
     import * as THREE from 'three';
     import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
 
-    /* ================= Config ================= */
+    /* ─── Config ─── */
     const stations = [
       {
-        name:     'Skrimp AI',
-        category: 'Product Design / AI',
-        desc:     'Founder & CEO — AI sous chef making the cost of living feel livable',
-        href:     'Skrimp/index.html',
-        model:    './models/yummymeal.glb',
-        scale:    0.25 * 1.5,
+        name:      'Skrimp AI',
+        category:  'Product Design / AI',
+        desc:      'Founder & CEO — AI sous chef making the cost of living feel livable',
+        href:      'Skrimp/index.html',
+        model:     './models/yummymeal.glb',
+        scale:     0.25 * 1.5,
         baseEuler: [10, 15, 0]
       },
       {
-        name:     'Path to Menzoberranzan',
-        category: 'Technical Direction / Game',
-        desc:     "Technical Director — Unofficial Baldur's Gate 3 expansion, 100+ person studio",
-        href:     'https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/',
-        model:    './models/steamdeck.glb',
-        scale:    0.30 * 1.5,
+        name:      'Path to Menzoberranzan',
+        category:  'Technical Direction / Game',
+        desc:      "Technical Director — Unofficial Baldur's Gate 3 expansion, 100+ person studio",
+        href:      'https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/',
+        model:     './models/steamdeck.glb',
+        scale:     0.30 * 1.5,
         baseEuler: [0, -10, 0]
       },
       {
-        name:     'MyAuntie',
-        category: 'UX Design / AI',
-        desc:     '🏆 TechNova 2025 Winner — The first AI companion for postpartum women',
-        href:     'MyAuntie/index.html',
+        name:      'MyAuntie',
+        category:  'UX Design / AI',
+        desc:      '🏆 TechNova 2025 Winner — The first AI companion for postpartum women',
+        href:      'MyAuntie/index.html',
         models: [
-          { url:'./models/iphone.glb',    scale:0.02*1.5, baseEuler:[0, 15, 10], pos:[-1.2, -1, 0] },
-          { url:'./models/robodrone.glb', scale:0.9*1.5,  baseEuler:[0, -15, 0], pos:[ 1.2,  0, 0] }
+          { url:'./models/iphone.glb',    scale:0.02*1.5, baseEuler:[0,  15, 10], pos:[-1.2, -1, 0] },
+          { url:'./models/robodrone.glb', scale:0.9*1.5,  baseEuler:[0, -15,  0], pos:[ 1.2,  0, 0] }
         ]
       },
       {
-        name:     'Seniors Connect',
-        category: 'UX Design / Social',
-        desc:     'High-fidelity prototype to end senior loneliness — winning hearts one screen at a time',
-        href:     'SeniorsConnect/index.html',
-        model:    './models/laptop.glb',
-        scale:    0.07 * 1.5,
+        name:      'Seniors Connect',
+        category:  'UX Design / Social',
+        desc:      'High-fidelity prototype to end senior loneliness — winning hearts one screen at a time',
+        href:      'SeniorsConnect/index.html',
+        model:     './models/laptop.glb',
+        scale:     0.07 * 1.5,
         baseEuler: [5, 35, 0]
       },
     ];
 
-    // Helix path settings
-    const RADIUS = 6, TURNS = 3.6, PITCH = 1.7;
+    const RADIUS   = 6, TURNS = 3.6, PITCH = 1.7;
     const THETA_MAX = TURNS * Math.PI * 2;
-    const tStops = [0.07, 0.36, 0.64, 0.93];
+    const tStops   = [0.07, 0.36, 0.64, 0.93];
 
     const SCROLL_K = 1/2600;
     const TOUCH_K  = 1/1400;
     const EPS      = 0.0015;
 
-    /* ================= Scene ================= */
+    /* ─── Renderer ─── */
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       canvas: document.getElementById('webgl'),
@@ -269,11 +279,27 @@
     const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 1000);
     camera.position.set(RADIUS, 0, 0);
 
-    const hemi = new THREE.HemisphereLight(0xbfd8ff, 0x304050, 0.7); scene.add(hemi);
-    const key  = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(6, 8, 10); scene.add(key);
-    const rim  = new THREE.DirectionalLight(0x6ecfcf, 0.6); rim.position.set(-8, 6, -10); scene.add(rim);
+    /* ─── Editorial lighting: dramatic key + cyan rim + dark fill ─── */
+    // Very low ambient so shadows are deep
+    const ambient = new THREE.AmbientLight(0x0c1118, 0.45);
+    scene.add(ambient);
 
-    /* =============== Helpers =============== */
+    // Strong key from upper-left front — creates one-side drama
+    const key = new THREE.DirectionalLight(0xfff8f0, 2.6);
+    key.position.set(-10, 14, 8);
+    scene.add(key);
+
+    // Cyan rim from behind-right — silhouettes in brand colour
+    const rim = new THREE.DirectionalLight(0x66fcf1, 1.5);
+    rim.position.set(12, 5, -16);
+    scene.add(rim);
+
+    // Subtle cool fill from below — lifts the deepest shadows just enough
+    const fill = new THREE.DirectionalLight(0xa8dadc, 0.22);
+    fill.position.set(2, -8, 6);
+    scene.add(fill);
+
+    /* ─── Helpers ─── */
     const eul = (x,y,z) => new THREE.Euler(
       THREE.MathUtils.degToRad(x),
       THREE.MathUtils.degToRad(y),
@@ -281,25 +307,19 @@
     );
 
     function helixAt(t) {
-      const clamped = THREE.MathUtils.clamp(t, 0, 1);
-      const theta = clamped * THETA_MAX;
-      return new THREE.Vector3(
-        RADIUS * Math.cos(theta),
-        -PITCH * theta,
-        RADIUS * Math.sin(theta)
-      );
+      const θ = THREE.MathUtils.clamp(t,0,1) * THETA_MAX;
+      return new THREE.Vector3(RADIUS*Math.cos(θ), -PITCH*θ, RADIUS*Math.sin(θ));
     }
     function axisAt(t) {
-      const clamped = THREE.MathUtils.clamp(t, 0, 1);
-      const theta = clamped * THETA_MAX;
-      return new THREE.Vector3(0, -PITCH * theta, 0);
+      const θ = THREE.MathUtils.clamp(t,0,1) * THETA_MAX;
+      return new THREE.Vector3(0, -PITCH*θ, 0);
     }
-    function lerpAngle(a, b, t) {
-      let d = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI;
-      return a + d * t;
+    function lerpAngle(a,b,t) {
+      const d = ((b-a+Math.PI)%(Math.PI*2))-Math.PI;
+      return a + d*t;
     }
 
-    /* =============== Stations =============== */
+    /* ─── Stations ─── */
     const loader    = new GLTFLoader();
     const texLoader = new THREE.TextureLoader();
 
@@ -308,94 +328,81 @@
     const auntieOverlayURL = './auntiephone.png';
 
     function addOverlayTo(model, url, sizeXY, posXYZ) {
-      texLoader.load(url, (texture) => {
-        texture.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
-        texture.minFilter  = THREE.LinearMipmapLinearFilter;
-        texture.magFilter  = THREE.LinearFilter;
-        const mat  = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-        const geo  = new THREE.PlaneGeometry(sizeXY[0], sizeXY[1]);
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.position.set(posXYZ[0], posXYZ[1], posXYZ[2]);
+      texLoader.load(url, tex => {
+        tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
+        tex.minFilter  = THREE.LinearMipmapLinearFilter;
+        tex.magFilter  = THREE.LinearFilter;
+        const mesh = new THREE.Mesh(
+          new THREE.PlaneGeometry(sizeXY[0], sizeXY[1]),
+          new THREE.MeshBasicMaterial({ map:tex, transparent:true })
+        );
+        mesh.position.set(...posXYZ);
         mesh.renderOrder = 10;
         model.add(mesh);
       });
     }
 
-    /* Track when all models have settled */
     const TOTAL_MODEL_LOADS = stations.reduce(
-      (acc, s) => acc + (Array.isArray(s.models) ? s.models.length : 1), 0
+      (acc,s) => acc + (Array.isArray(s.models) ? s.models.length : 1), 0
     );
     let modelsSettled = 0;
     function onModelSettled() {
-      if (++modelsSettled >= TOTAL_MODEL_LOADS) {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'modelsReady' }, '*');
-        }
-      }
+      if (++modelsSettled >= TOTAL_MODEL_LOADS && window.parent !== window)
+        window.parent.postMessage({ type:'modelsReady' }, '*');
     }
 
-    const stationNodes = stations.map((cfg, i) => {
+    const stationNodes = stations.map((cfg,i) => {
       const anchor = new THREE.Group();
       anchor.position.copy(axisAt(tStops[i]));
       scene.add(anchor);
-
       const pivot = new THREE.Group();
       anchor.add(pivot);
 
       if (Array.isArray(cfg.models)) {
-        cfg.models.forEach((m, j) => {
-          loader.load(m.url, (gltf) => {
+        cfg.models.forEach((m,j) => {
+          loader.load(m.url, gltf => {
             const model = gltf.scene;
-            model.scale.setScalar(m.scale ?? cfg.scale ?? 1);
-            model.rotation.copy(eul(...(m.baseEuler ?? cfg.baseEuler ?? [0,0,0])));
-            const p = m.pos ?? [(j === 0 ? -1.4 : 1.4), 0, 0];
-            model.position.set(p[0], p[1], p[2]);
+            model.scale.setScalar(m.scale ?? 1);
+            model.rotation.copy(eul(...(m.baseEuler ?? [0,0,0])));
+            const p = m.pos ?? [(j===0?-1.4:1.4), 0, 0];
+            model.position.set(p[0],p[1],p[2]);
             pivot.add(model);
-            // MyAuntie phone overlay (station 2, left model)
-            if (i === 2 && j === 0) addOverlayTo(model, auntieOverlayURL, [40, 88], [0, 45.7, 8.5]);
+            if (i===2&&j===0) addOverlayTo(model, auntieOverlayURL, [40,88], [0,45.7,8.5]);
             onModelSettled();
           }, undefined, () => onModelSettled());
         });
       } else {
-        loader.load(cfg.model, (gltf) => {
+        loader.load(cfg.model, gltf => {
           const model = gltf.scene;
           model.scale.setScalar(cfg.scale);
           model.rotation.copy(eul(...cfg.baseEuler));
           pivot.add(model);
-          // Steam Deck overlay (station 1)
-          if (i === 1) addOverlayTo(model, overlayURL,       [4.52, 2.8], [0,  0.35,  1.06]);
-          // Laptop overlay (station 3)
-          if (i === 3) addOverlayTo(model, laptopOverlayURL, [29,   17 ], [0, 10.7, -10.5]);
+          if (i===1) addOverlayTo(model, overlayURL,       [4.52,2.8],  [0, 0.35, 1.06]);
+          if (i===3) addOverlayTo(model, laptopOverlayURL, [29,17],     [0, 10.7,-10.5]);
           onModelSettled();
         }, undefined, () => onModelSettled());
       }
 
-      return { anchor, pivot, yaw: 0 };
+      // scale: lerped per frame for focus animation; starts at 0.85 (off-stage feel)
+      return { anchor, pivot, yaw:0, scale:0.85 };
     });
 
-    /* =============== Editorial HUD =============== */
+    /* ─── Editorial HUD elements ─── */
+    const stripEl    = document.getElementById('edStrip');
     const categoryEl = document.getElementById('ed-category');
     const numberEl   = document.getElementById('ed-number');
     const titleEl    = document.getElementById('ed-title');
     const descEl     = document.getElementById('ed-desc');
     const ctaEl      = document.getElementById('ed-cta');
-    const stripEl    = document.querySelector('.ed-strip');
 
-    // Mix Didot italic and DotempDemo pixel within title text
     function mixFonts(text) {
-      const pattern = [3, 2]; // [didot run, pixel run]
-      let out = '', runIdx = 0, inRun = 0, isPx = false;
-      for (let i = 0; i < text.length; i++) {
+      const pattern = [3,2];
+      let out='', runIdx=0, inRun=0, isPx=false;
+      for (let i=0;i<text.length;i++) {
         const ch = text[i];
-        if (ch === ' ') { out += ' '; continue; }
-        if (inRun === 0) {
-          isPx  = runIdx % 2 === 1;
-          inRun = pattern[runIdx % 2];
-          runIdx++;
-        }
-        out += isPx
-          ? `<span class="px">${ch}</span>`
-          : `<span class="di">${ch}</span>`;
+        if (ch===' ') { out+=' '; continue; }
+        if (inRun===0) { isPx=runIdx%2===1; inRun=pattern[runIdx%2]; runIdx++; }
+        out += isPx ? `<span class="px">${ch}</span>` : `<span class="di">${ch}</span>`;
         inRun--;
       }
       return out;
@@ -403,121 +410,138 @@
 
     function applyHud(i) {
       const s = stations[i];
-      numberEl.textContent   = String(i + 1).padStart(2, '0');
+      categoryEl.textContent = s.category;
+      numberEl.textContent   = String(i+1).padStart(2,'0');
       titleEl.innerHTML      = mixFonts(s.name);
       descEl.textContent     = s.desc;
       ctaEl.href             = s.href;
-      categoryEl.textContent = s.category;
     }
 
-    function setHud(i, animate = true) {
+    function setHud(i, animate=true) {
       if (!animate) { applyHud(i); return; }
       stripEl.classList.add('fading');
-      categoryEl.classList.add('fading');
-      setTimeout(() => {
-        applyHud(i);
-        stripEl.classList.remove('fading');
-        categoryEl.classList.remove('fading');
-      }, 230);
+      setTimeout(() => { applyHud(i); stripEl.classList.remove('fading'); }, 230);
     }
 
+    /* ─── Scroll ─── */
     let progress     = tStops[0];
     let progressGoal = tStops[0];
     let currentIndex = 0;
-    setHud(0, false); // initial, no fade
+    setHud(0, false);
 
-    /* =============== Scroll handling =============== */
     const pin = document.getElementById('scenePin');
-
-    function atTop()    { return progressGoal <= EPS; }
-    function atBottom() { return progressGoal >= 1 - EPS; }
+    const atTop    = () => progressGoal <= EPS;
+    const atBottom = () => progressGoal >= 1 - EPS;
 
     function onWheel(e) {
       const dy = e.deltaY;
-      if ((atTop() && dy < 0) || (atBottom() && dy > 0)) return;
+      if ((atTop()&&dy<0)||(atBottom()&&dy>0)) return;
       e.preventDefault();
-      progressGoal = THREE.MathUtils.clamp(progressGoal + dy * SCROLL_K, 0, 1);
+      progressGoal = THREE.MathUtils.clamp(progressGoal + dy*SCROLL_K, 0, 1);
     }
-
     let touchY = 0;
     function onTouchStart(e) { touchY = e.changedTouches[0].screenY; }
     function onTouchMove(e) {
-      const y  = e.changedTouches[0].screenY;
-      const dy = touchY - y;
-      touchY = y;
-      if ((atTop() && dy < 0) || (atBottom() && dy > 0)) return;
+      const dy = touchY - e.changedTouches[0].screenY;
+      touchY = e.changedTouches[0].screenY;
+      if ((atTop()&&dy<0)||(atBottom()&&dy>0)) return;
       e.preventDefault();
-      progressGoal = THREE.MathUtils.clamp(progressGoal + dy * TOUCH_K, 0, 1);
+      progressGoal = THREE.MathUtils.clamp(progressGoal + dy*TOUCH_K, 0, 1);
     }
-    function onTouchEnd() {}
-
     function onKey(e) {
-      const upKey   = (e.key === 'ArrowUp'   || e.key === 'PageUp'   || e.key === 'Home');
-      const downKey = (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'End' || e.key === ' ');
-      if ((upKey && atTop()) || (downKey && atBottom())) return;
-      if (downKey) { e.preventDefault(); progressGoal = Math.min(1, progressGoal + 0.04); }
-      if (upKey)   { e.preventDefault(); progressGoal = Math.max(0, progressGoal - 0.04); }
+      const up   = e.key==='ArrowUp'  ||e.key==='PageUp'  ||e.key==='Home';
+      const down = e.key==='ArrowDown'||e.key==='PageDown'||e.key==='End'||e.key===' ';
+      if ((up&&atTop())||(down&&atBottom())) return;
+      if (down){ e.preventDefault(); progressGoal=Math.min(1,progressGoal+0.04); }
+      if (up)  { e.preventDefault(); progressGoal=Math.max(0,progressGoal-0.04); }
     }
 
-    pin.addEventListener('wheel',      onWheel,      { passive: false });
-    pin.addEventListener('touchstart', onTouchStart, { passive: true  });
-    pin.addEventListener('touchmove',  onTouchMove,  { passive: false });
-    pin.addEventListener('touchend',   onTouchEnd,   { passive: true  });
-    addEventListener('keydown', onKey, { passive: false });
+    pin.addEventListener('wheel',      onWheel,      {passive:false});
+    pin.addEventListener('touchstart', onTouchStart, {passive:true });
+    pin.addEventListener('touchmove',  onTouchMove,  {passive:false});
+    pin.addEventListener('touchend',   ()=>{},       {passive:true });
+    addEventListener('keydown', onKey, {passive:false});
 
-    /* =============== Animate =============== */
+    /* ─── Drag-to-rotate ─── */
+    let dragYaw    = 0;   // extra yaw applied to focused model
+    let isDragging = false;
+    let dragLastX  = 0;
+    const dragHint = document.getElementById('dragHint');
+    let hintDismissed = false;
+
+    const canvas = document.getElementById('webgl');
+    canvas.addEventListener('pointerdown', e => {
+      if (e.button !== 0) return;
+      isDragging = true;
+      dragLastX  = e.clientX;
+      canvas.setPointerCapture(e.pointerId);
+      if (!hintDismissed) { hintDismissed=true; dragHint.classList.add('hidden'); }
+    });
+    canvas.addEventListener('pointermove', e => {
+      if (!isDragging) return;
+      dragYaw  += (e.clientX - dragLastX) * 0.008;
+      dragLastX = e.clientX;
+    });
+    canvas.addEventListener('pointerup',     () => { isDragging = false; });
+    canvas.addEventListener('pointercancel', () => { isDragging = false; });
+
+    /* ─── Animate ─── */
     const clock = new THREE.Clock();
     function animate() {
       requestAnimationFrame(animate);
 
       progress = THREE.MathUtils.lerp(progress, progressGoal, 0.08);
 
-      const camPos = helixAt(progress);
-      camera.position.copy(camPos);
+      camera.position.copy(helixAt(progress));
+      const ahead = helixAt(Math.min(1, progress+0.006));
+      camera.lookAt(axisAt(progress).lerp(ahead, 0.22));
 
-      const ahead = helixAt(Math.min(1, progress + 0.006));
-      const axis  = axisAt(progress);
-      camera.lookAt(axis.lerp(ahead, 0.22));
+      // Spring drag yaw back to 0 when not dragging
+      if (!isDragging) dragYaw = THREE.MathUtils.lerp(dragYaw, 0, 0.04);
 
-      stationNodes.forEach((node) => {
+      // Nearest station
+      let nearest=0, best=Infinity;
+      for (let i=0;i<tStops.length;i++) {
+        const d = Math.abs(progress-tStops[i]);
+        if (d<best) { best=d; nearest=i; }
+      }
+      if (nearest!==currentIndex) { currentIndex=nearest; setHud(nearest); }
+
+      const t = clock.getElapsedTime();
+      stationNodes.forEach((node,i) => {
+        // Auto-face camera + drag offset for focused model
         const toCamX   = camera.position.x - node.anchor.position.x;
         const toCamZ   = camera.position.z - node.anchor.position.z;
-        const targetYaw = Math.atan2(toCamX, toCamZ);
-        const threeQ    = THREE.MathUtils.degToRad(-20);
-        node.yaw = lerpAngle(node.yaw, targetYaw + threeQ, 0.12);
-        node.pivot.rotation.y = node.yaw;
-      });
+        const targetYaw = Math.atan2(toCamX, toCamZ) + THREE.MathUtils.degToRad(-20);
+        node.yaw = lerpAngle(node.yaw, targetYaw, 0.12);
+        node.pivot.rotation.y = node.yaw + (i===currentIndex ? dragYaw : 0);
 
-      // Update editorial strip when closest station changes
-      let nearest = 0, best = Infinity;
-      for (let i = 0; i < tStops.length; i++) {
-        const d = Math.abs(progress - tStops[i]);
-        if (d < best) { best = d; nearest = i; }
-      }
-      if (nearest !== currentIndex) { currentIndex = nearest; setHud(nearest); }
+        // Focus scale: in-focus model grows slightly, background shrinks
+        const dist = Math.abs(progress - tStops[i]);
+        const targetScale = dist < 0.14 ? 1.0 : 0.80;
+        node.scale = THREE.MathUtils.lerp(node.scale, targetScale, 0.035);
+        node.pivot.scale.setScalar(node.scale);
 
-      // Gentle idle float
-      const t = clock.getElapsedTime();
-      stationNodes.forEach((n, i) => {
-        n.anchor.position.y = axisAt(tStops[i]).y + Math.sin(t * 0.4 + i) * 0.06;
+        // Gentle idle float
+        node.anchor.position.y = axisAt(tStops[i]).y + Math.sin(t*0.4+i)*0.06;
       });
 
       renderer.render(scene, camera);
     }
     animate();
 
-    /* =============== Resize =============== */
+    /* ─── Resize ─── */
     addEventListener('resize', () => {
-      camera.aspect = innerWidth / innerHeight;
+      camera.aspect = innerWidth/innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
     });
 
-    /* =============== Cursor relay → parent =============== */
-    document.addEventListener('mousemove',  (e) => window.parent.postMessage({ type: 'iframeMouse', x: e.clientX, y: e.clientY }, '*'));
-    document.addEventListener('mousedown',  ()  => window.parent.postMessage({ type: 'iframeDown' }, '*'));
-    document.addEventListener('mouseup',    ()  => window.parent.postMessage({ type: 'iframeUp' }, '*'));
-    document.addEventListener('mouseleave', ()  => window.parent.postMessage({ type: 'iframeLeave' }, '*'));
+    /* ─── Cursor relay → parent ─── */
+    document.addEventListener('mousemove',  e  => window.parent.postMessage({type:'iframeMouse',x:e.clientX,y:e.clientY},'*'));
+    document.addEventListener('mousedown',  ()  => window.parent.postMessage({type:'iframeDown'},'*'));
+    document.addEventListener('mouseup',    ()  => window.parent.postMessage({type:'iframeUp'},'*'));
+    document.addEventListener('mouseleave', ()  => window.parent.postMessage({type:'iframeLeave'},'*'));
   </script>
 </body>
 </html>

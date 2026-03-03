@@ -1215,8 +1215,9 @@
     animId = requestAnimationFrame(step);
   }
 
-  const navH = () => (navbar?.offsetHeight || 0);
-  const topTarget    = () => section.offsetTop - navH();
+  // Navbar is position:fixed — doesn't affect offsetTop.
+  // Snap to section.offsetTop so the 3D scene fills the viewport from y=0.
+  const topTarget    = () => section.offsetTop;
   const bottomTarget = () => section.offsetTop + section.offsetHeight - innerHeight;
 
   const alignedTop    = (y) => Math.abs(y - topTarget())    < 2;
