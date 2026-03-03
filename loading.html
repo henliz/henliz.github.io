@@ -314,74 +314,110 @@
         const matCanvas = document.getElementById('matrix-canvas');
         const mCtx = matCanvas.getContext('2d');
 
-        const FONT_SIZE = 14;
-        const COL_W     = 17;
+        const FONT_SIZE = 16;
+        const COL_W     = 18;
+        const TRAIL_LEN = 22;
 
-        // Site-palette stream colours
-        const STREAM_PALETTE = [
-            { head: '#66fcf1', trail: '#2a9d8f' },
-            { head: '#66fcf1', trail: '#2a9d8f' },
-            { head: '#a8dadc', trail: '#457b9d' },
-            { head: '#66fcf1', trail: '#2a9d8f' },
-        ];
-
-        // Charset: code-feel, all ASCII so DotempDemo renders it well
+        // Charset: code-feel ASCII — DotempDemo pixel font renders these great
         const CHARSET = 'abcdefghijklmnopqrstuvwxyz0123456789{}[]<>/|\\#$@!;:=+-*%^&~';
+        const randChar = () => CHARSET[Math.floor(Math.random() * CHARSET.length)];
 
-        let drops = [], colPalette = [];
+        // Per-column state: head position + per-row character cache
+        let cols = [];
 
         function initMatrix() {
             matCanvas.width  = window.innerWidth;
             matCanvas.height = window.innerHeight;
-            // Fill black so first frames don't look empty
             mCtx.fillStyle = '#080c12';
             mCtx.fillRect(0, 0, matCanvas.width, matCanvas.height);
 
             const numCols = Math.floor(matCanvas.width / COL_W);
-            drops = Array.from({ length: numCols }, () =>
-                Math.floor(Math.random() * -(matCanvas.height / FONT_SIZE))
-            );
-            colPalette = Array.from({ length: numCols }, () =>
-                STREAM_PALETTE[Math.floor(Math.random() * STREAM_PALETTE.length)]
-            );
+            const numRows = Math.ceil(matCanvas.height / FONT_SIZE) + 4;
+
+            cols = Array.from({ length: numCols }, () => ({
+                // 65% start already on-screen, 35% stagger in from above
+                head: Math.random() < 0.65
+                    ? Math.floor(Math.random() * numRows)
+                    : -Math.floor(Math.random() * 18),
+                chars: Array.from({ length: numRows }, randChar)
+            }));
+        }
+
+        // Depth-to-colour: white head → bright cyan → teal → dark → invisible
+        const DEPTH_COLOURS = [
+            { color: '#f0ffff', alpha: 0.97 },  // 0  head
+            { color: '#c8fef8', alpha: 0.88 },  // 1
+            { color: '#66fcf1', alpha: 0.78 },  // 2
+            { color: '#3dbdb7', alpha: 0.65 },  // 3
+            { color: '#2a9d8f', alpha: 0.52 },  // 4
+            { color: '#2a9d8f', alpha: 0.40 },  // 5
+            { color: '#1e7a72', alpha: 0.30 },  // 6
+            { color: '#1e7a72', alpha: 0.22 },  // 7
+            { color: '#12504a', alpha: 0.15 },  // 8
+            { color: '#0d3530', alpha: 0.10 },  // 9
+            { color: '#0d3530', alpha: 0.07 },  // 10
+            { color: '#0d3530', alpha: 0.04 },  // 11
+        ];
+
+        function depthStyle(d) {
+            if (d < DEPTH_COLOURS.length) return DEPTH_COLOURS[d];
+            // beyond lookup — exponential fade to nothing
+            return { color: '#0d3530', alpha: Math.max(0, 0.03 - (d - DEPTH_COLOURS.length) * 0.003) };
         }
 
         function drawMatrix() {
-            // Semi-transparent overlay — fades old chars into background
-            mCtx.fillStyle = 'rgba(8, 12, 18, 0.065)';
+            // Thin dark veil — fades previous frame gently
+            mCtx.fillStyle = 'rgba(8, 12, 18, 0.08)';
             mCtx.fillRect(0, 0, matCanvas.width, matCanvas.height);
 
             mCtx.font      = `${FONT_SIZE}px DotempDemo, monospace`;
             mCtx.textAlign = 'left';
 
-            drops.forEach((row, i) => {
-                const x = i * COL_W;
-                const y = row * FONT_SIZE;
+            const numRows = cols[0]?.chars.length ?? 0;
 
-                if (y >= 0) {
-                    const char = CHARSET[Math.floor(Math.random() * CHARSET.length)];
-                    // Head character — bright cyan
-                    mCtx.fillStyle  = colPalette[i].head;
-                    mCtx.globalAlpha = 0.92;
-                    mCtx.fillText(char, x, y);
-                    // Tiny secondary char just behind head (gives depth)
-                    if (y > FONT_SIZE) {
-                        mCtx.fillStyle   = colPalette[i].trail;
-                        mCtx.globalAlpha = 0.55;
-                        mCtx.fillText(
-                            CHARSET[Math.floor(Math.random() * CHARSET.length)],
-                            x, y - FONT_SIZE
-                        );
-                    }
+            for (let i = 0; i < cols.length; i++) {
+                const col  = cols[i];
+                const x    = i * COL_W;
+                const head = Math.floor(col.head);
+
+                // Head row: always a fresh random char
+                if (head >= 0 && head < numRows) {
+                    col.chars[head] = randChar();
+                }
+
+                // Glitch: ~3% chance per frame to scramble a random trail char
+                if (Math.random() < 0.03) {
+                    const gRow = head - 1 - Math.floor(Math.random() * (TRAIL_LEN - 1));
+                    if (gRow >= 0 && gRow < numRows) col.chars[gRow] = randChar();
+                }
+
+                // Draw trail from head down to TRAIL_LEN behind
+                for (let d = 0; d < TRAIL_LEN; d++) {
+                    const row = head - d;
+                    if (row < 0 || row >= numRows) continue;
+                    const y = row * FONT_SIZE;
+                    if (y > matCanvas.height) continue;
+
+                    const { color, alpha } = depthStyle(d);
+                    if (alpha < 0.005) continue;
+
+                    mCtx.globalAlpha = alpha;
+                    mCtx.fillStyle   = color;
+                    mCtx.fillText(col.chars[row], x, y + FONT_SIZE);
                 }
 
                 mCtx.globalAlpha = 1;
-                drops[i]++;
 
-                if (drops[i] * FONT_SIZE > matCanvas.height && Math.random() > 0.975) {
-                    drops[i] = Math.floor(Math.random() * -30);
+                // Advance head one row per tick
+                col.head++;
+
+                // Reset after fully scrolled off + random delay
+                if ((head - TRAIL_LEN) * FONT_SIZE > matCanvas.height && Math.random() > 0.975) {
+                    col.head  = -Math.floor(Math.random() * 25);
+                    // Randomise all chars in this column for variety
+                    col.chars = col.chars.map(randChar);
                 }
-            });
+            }
         }
 
         // ── Progress & loading logic ──────────────────────────
@@ -459,10 +495,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             initMatrix();
             window.addEventListener('resize', initMatrix);
-            // Wait for DotempDemo to load, then start matrix
-            document.fonts.ready.then(() => {
-                setInterval(drawMatrix, 55); // ~18 fps — chunky pixel feel
-            });
+            // Start immediately — canvas re-reads ctx.font every frame,
+            // so DotempDemo kicks in automatically once it loads
+            setInterval(drawMatrix, 55); // ~18 fps — chunky pixel feel
 
             updateEasterEggHint();
             cycleLoadingMessages();

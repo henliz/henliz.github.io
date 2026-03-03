@@ -89,7 +89,7 @@
     .ed-desc {
       font-family:'Cormorant Garamond',serif; font-style:italic;
       font-size:clamp(0.8rem,1.08vw,0.92rem);
-      color:rgba(168,218,220,0.58); margin:0; max-width:52ch; line-height:1.5;
+      color:rgba(168,218,220,0.58); margin:0; line-height:1.5;
     }
     .ed-cta-group {
       display:flex; flex-direction:column; align-items:flex-end;
@@ -172,7 +172,7 @@
       },
       {
         name:'MyAuntie', category:'UX Design / AI',
-        desc:'🏆 TechNova 2025 Winner — The first AI companion for postpartum women',
+        desc:'[ 🏆 WINNER — TechNova 2025 ] The first AI companion for postpartum women',
         href:'MyAuntie/index.html',
         models:[
           {url:'./models/iphone.glb',    scale:0.02*1.5, baseEuler:[0, 15,10], pos:[-1.2,-1,0]},
@@ -181,8 +181,8 @@
       },
       {
         name:'Equinox', category:'Game Design / Godot',
-        desc:'🏆 WINNER — COMFY JAM: WINTER 2025 — The wind howls, ice cracks beneath your feet. Spring isn\'t coming. You have been tasked with investigating why.',
-        href:'https://github.com/henliz/game-jam',
+        desc:'[ 🏆 WINNER — Comfy Jam: Winter 2025 ] 3D cozy-mystery built in 2 weeks — custom UV dirt shader with pixel-accurate cleaning detection, WebGL save/load, and 9 hand-crafted restoration puzzles.',
+        href:'https://github.com/henliz/equinox',
         playHref:'https://emstergrace.itch.io/equinox',
         parallax:true, noDrag:true,
       },
@@ -201,6 +201,11 @@
     const BG       = 0x070b10;
     const EQUINOX_IDX = stations.findIndex(s => s.parallax);
 
+    // Portrait mobile: wider FOV + smaller model scale so nothing towers over the screen
+    const isPortrait = () => innerWidth < innerHeight && innerWidth < 768;
+    const getFOV     = () => isPortrait() ? 74 : 55;
+    const mobileMult = () => isPortrait() ? 0.62 : 1.0;
+
     /* ─── renderer ─── */
     const renderer = new THREE.WebGLRenderer({
       antialias:true, canvas:document.getElementById('webgl'),
@@ -213,7 +218,7 @@
     scene.background = new THREE.Color(BG);
     scene.fog        = new THREE.FogExp2(BG, 0.038);
 
-    const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(getFOV(), innerWidth/innerHeight, 0.1, 1000);
     camera.position.set(RADIUS, 0, 0);
 
     /* ─── editorial lighting ─── */
@@ -349,6 +354,7 @@
         // Parallax billboard: 3 stacked planes, each layer driven by camera azimuth + mouse
         node.parallaxLayers = [];
         const planeGroup = new THREE.Group();
+        node.planeGroup = planeGroup;
         pivot.add(planeGroup);
         // Planes are 16×9 (wider than camera FOV at r=6) so edges never show
         const pxDefs = [
@@ -359,7 +365,7 @@
         pxDefs.forEach(def => {
           texLoader.load(def.url, tex => {
             tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
-            const mat = new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false });
+            const mat = new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false, fog:false });
             const mesh = new THREE.Mesh(new THREE.PlaneGeometry(def.w, def.h), mat);
             mesh.position.z = def.z;
             planeGroup.add(mesh);
@@ -378,7 +384,7 @@
           vctx.fillStyle = vg; vctx.fillRect(0, 0, sz, sz);
           const vig = new THREE.Mesh(
             new THREE.PlaneGeometry(16, 9),
-            new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(vc), transparent:true, depthWrite:false })
+            new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(vc), transparent:true, depthWrite:false, fog:false })
           );
           vig.position.z = 0.35;
           planeGroup.add(vig);
@@ -558,6 +564,10 @@
     /* ─── glow target position (lerped) ─── */
     const glowTarget = new THREE.Vector3();
 
+    // Background colours for cross-fade: editorial dark vs Equinox game-accurate deep purple
+    const bgDefault = new THREE.Color(BG);
+    const bgEquinox = new THREE.Color(0x0a0515);
+
     /* ─── animate ─── */
     const clock = new THREE.Clock();
     const _v3   = new THREE.Vector3();
@@ -597,11 +607,10 @@
         dragHint.textContent = stations[nearest].noDrag ? 'scroll to continue' : 'drag to orbit';
       }
 
-      // Per-station light levels: Equinox is self-lit (off), MyAuntie dialled back
-      const onEq     = currentIndex === EQUINOX_IDX;
-      const onAuntie = currentIndex === 2;
-      key.intensity  = THREE.MathUtils.lerp(key.intensity,  onEq ? 0 : onAuntie ? 2.2 : 2.6,  0.06);
-      rim.intensity  = THREE.MathUtils.lerp(rim.intensity,  onEq ? 0 : onAuntie ? 0.2 : 1.5,  0.06);
+      // Fade editorial lights + glow out on Equinox only — all other stations full editorial
+      const onEq = currentIndex === EQUINOX_IDX;
+      key.intensity  = THREE.MathUtils.lerp(key.intensity,  onEq ? 0 : 2.6,  0.06);
+      rim.intensity  = THREE.MathUtils.lerp(rim.intensity,  onEq ? 0 : 1.5,  0.06);
       fill.intensity = THREE.MathUtils.lerp(fill.intensity, onEq ? 0 : 0.22, 0.06);
       glowSprite.material.opacity = THREE.MathUtils.lerp(glowSprite.material.opacity, onEq ? 0 : 0.55, 0.06);
 
@@ -610,7 +619,7 @@
         const dist=Math.abs(progress-tStops[i]);
         const targetScale = dist<0.14 ? 1.0 : 0.78;
         node.scale = THREE.MathUtils.lerp(node.scale, targetScale, 0.035);
-        node.pivot.scale.setScalar(node.scale);
+        node.pivot.scale.setScalar(node.scale * mobileMult());
 
         // Idle float
         node.anchor.position.y = axisAt(tStops[i]).y + Math.sin(t*0.4+i)*0.06;
@@ -620,6 +629,14 @@
           const toCamX=camera.position.x-node.anchor.position.x;
           const toCamZ=camera.position.z-node.anchor.position.z;
           node.pivot.rotation.set(0, Math.atan2(toCamX, toCamZ), 0);
+          // Fade billboard in/out as camera approaches or leaves
+          if (node.planeGroup) {
+            const fadeTarget = dist < 0.32 ? 1.0 : 0.0;
+            node.planeGroup.children.forEach(mesh => {
+              mesh.material.opacity = THREE.MathUtils.lerp(mesh.material.opacity, fadeTarget, 0.045);
+            });
+          }
+
           // Parallax shift: orbit angle + mouse/touch pointer
           if (node.parallaxLayers && node.parallaxLayers.length) {
             const MOUSE_RANGE = 0.4;
@@ -665,9 +682,15 @@
       // Dust Y tracks camera position — fixes "missing particles" on lower stations
       dustField.position.y = THREE.MathUtils.lerp(dustField.position.y, camera.position.y, 0.04);
       dustField.rotation.y += 0.00018;
+      dustField.material.opacity = THREE.MathUtils.lerp(dustField.material.opacity, onEq ? 0 : 0.55, 0.06);
 
-      // Grid floor tracks camera vertical position
+      // Grid floor tracks camera vertical position, fades out on Equinox
       gridHelper.position.y = axisAt(progress).y - 4.5;
+      gridHelper.material.opacity = THREE.MathUtils.lerp(gridHelper.material.opacity, onEq ? 0 : 0.32, 0.06);
+
+      // Scene background cross-fades to match Equinox game palette (deep purple-black)
+      scene.background.lerp(onEq ? bgEquinox : bgDefault, 0.04);
+      scene.fog.color.copy(scene.background);
 
       renderer.render(scene, camera);
     }
@@ -675,7 +698,8 @@
 
     /* ─── resize ─── */
     addEventListener('resize', ()=>{
-      camera.aspect=innerWidth/innerHeight;
+      camera.fov    = getFOV();
+      camera.aspect = innerWidth/innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
     });
