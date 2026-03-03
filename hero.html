@@ -937,12 +937,6 @@
         }
 
         // ── Reeded Glass + Interactive Shard Break ────────────
-        //
-        // Performance design:
-        //  • reedCanvas is pre-rendered once — undisturbed glass = 1 drawImage/frame
-        //  • Only displaced shards get save/rotate/gradient treatment
-        //  • CA runs on a small zone every 3 frames (getImageData is expensive)
-        //
         function initReveal() {
             const photoInner   = document.getElementById('photoInner');
             const revealCanvas = document.getElementById('revealCanvas');
@@ -957,9 +951,17 @@
             fairchildImg.src   = './fairchild.png';
 
             let cw = 0, ch = 0;
-            let coverCanvas = null; // hero image, cover-fitted
-            let revealCover = null; // fairchild.png, cover-fitted
-            let reedCanvas  = null; // pre-rendered full reeded glass (hero)
+            let coverCanvas = null;
+            let revealCover = null;
+            let reedCanvas  = null;
+
+            // ── Constants ──────────────────────────────────────
+            const REED_W   = 18;   // visual reed column width
+            const SHARD_W  = 42;   // shard cell width (wider → fewer, more glass-like)
+            const SHARD_H  = 82;   // shard cell height
+            const AMP      = 6;    // reed refraction amplitude (reduced)
+            const ZONE_R   = 125;  // cursor influence radius
+            const MAX_PUSH = 72;   // max displacement at cursor centre
 
             function sizeCanvas() {
                 cw = photoInner.offsetWidth;
@@ -981,12 +983,20 @@
                 return c;
             }
 
-            // Pre-bake the full reeded glass once — replaces 300+ drawImage calls/frame
+            // Pre-bake frosted reeded glass — blur substrate + displacement + frost veil
             function buildReedCanvas() {
                 if (!coverCanvas || !cw || !ch) return null;
                 const c  = document.createElement('canvas');
                 c.width  = cw; c.height = ch;
                 const rc = c.getContext('2d');
+
+                // 1. Blurred substrate (frosted look, GPU-accelerated, no getImageData)
+                rc.filter = 'blur(3.5px)';
+                rc.drawImage(coverCanvas, 0, 0);
+                rc.filter = 'none';
+
+                // 2. Reed displacement strips at partial opacity over the blur
+                rc.globalAlpha = 0.52;
                 const STRIP = 2;
                 for (let x = 0; x < cw; x += STRIP) {
                     const w    = Math.min(STRIP, cw - x);
@@ -995,42 +1005,59 @@
                     const sx   = Math.max(0, Math.min(cw - w, x + disp));
                     rc.drawImage(coverCanvas, sx, 0, w, ch, x, 0, w, ch);
                 }
-                rc.fillStyle = 'rgba(168,218,220,0.06)';
+                rc.globalAlpha = 1.0;
+
+                // 3. Frost veil
+                rc.fillStyle = 'rgba(210,235,248,0.32)';
                 rc.fillRect(0, 0, cw, ch);
-                rc.strokeStyle = 'rgba(255,255,255,0.26)'; rc.lineWidth = 0.7;
+
+                // 4. Subtle reed lines
+                rc.strokeStyle = 'rgba(255,255,255,0.18)'; rc.lineWidth = 0.6;
                 for (let x = 0; x < cw; x += REED_W) {
                     rc.beginPath(); rc.moveTo(x, 0); rc.lineTo(x, ch); rc.stroke();
                 }
-                rc.strokeStyle = 'rgba(0,0,0,0.20)'; rc.lineWidth = 1.0;
+                rc.strokeStyle = 'rgba(0,0,0,0.09)'; rc.lineWidth = 0.8;
                 for (let x = REED_W * 0.55; x < cw; x += REED_W) {
                     rc.beginPath(); rc.moveTo(x, 0); rc.lineTo(x, ch); rc.stroke();
                 }
+
                 return c;
             }
 
-            // ── Shard grid ────────────────────────────────────
-            const REED_W   = 18;
-            const SHARD_H  = 55;
-            const AMP      = 14;
-            const ZONE_R   = 115;  // cursor influence radius
-            const MAX_PUSH = 72;   // max displacement at cursor centre
+            // Build organic 8-point polygon for each glass shard (centered at origin)
+            function buildShardPoly(w, h) {
+                const hw = w * 0.5, hh = h * 0.5;
+                const J  = Math.min(w, h) * 0.22;
+                const j  = () => (Math.random() - 0.5) * J;
+                return [
+                    [-hw + j(),       -hh + j()      ],  // top-left
+                    [      j(),       -hh + j() * 0.5],  // top-mid
+                    [ hw + j(),       -hh + j()      ],  // top-right
+                    [ hw + j() * 0.5,       j()      ],  // right-mid
+                    [ hw + j(),        hh + j()      ],  // bottom-right
+                    [      j(),        hh + j() * 0.5],  // bottom-mid
+                    [-hw + j(),        hh + j()      ],  // bottom-left
+                    [-hw + j() * 0.5,       j()      ],  // left-mid
+                ];
+            }
 
             let shards = [];
 
             function buildShards() {
                 shards = [];
                 for (let y = 0; y < ch; y += SHARD_H) {
-                    for (let x = 0; x < cw; x += REED_W) {
+                    for (let x = 0; x < cw; x += SHARD_W) {
+                        const sw = Math.min(SHARD_W, cw - x);
+                        const sh = Math.min(SHARD_H, ch - y);
                         shards.push({
-                            x, y,
-                            w: Math.min(REED_W, cw - x),
-                            h: Math.min(SHARD_H, ch - y),
+                            x, y, w: sw, h: sh,
                             dx: 0, dy: 0, tdx: 0, tdy: 0,
                             rot: 0, trot: 0,
                             wobX: 0, wobY: 0, wobRot: 0,
                             phase:   Math.random() * Math.PI * 2,
                             freq:    0.65 + Math.random() * 0.55,
                             tiltDir: (Math.random() > 0.5 ? 1 : -1) * (0.5 + Math.random() * 0.5),
+                            poly:    buildShardPoly(sw, sh),
                         });
                     }
                 }
@@ -1047,110 +1074,86 @@
                         const f    = (1 - d / ZONE_R) * (1 - d / ZONE_R) * MAX_PUSH;
                         s.tdx  = (ddx / d) * f;
                         s.tdy  = (ddy / d) * f;
-                        s.trot = s.tiltDir * (f / MAX_PUSH) * 0.28;
+                        s.trot = s.tiltDir * (f / MAX_PUSH) * 0.25;
                     } else {
                         s.tdx = 0; s.tdy = 0; s.trot = 0;
                     }
                 });
             }
 
-            // CA: pixel channel shift — only run every 3 frames on a small zone
-            // so getImageData/putImageData doesn't kill the frame budget
-            function applyCA(zx, zy, zw, zh) {
-                if (zw <= 0 || zh <= 0) return;
-                const orig = rCtx.getImageData(zx, zy, zw, zh);
-                const od   = orig.data;
-                const out  = new Uint8ClampedArray(od.length);
-                const CA   = 3;
-                for (let row = 0; row < zh; row++) {
-                    for (let col = 0; col < zw; col++) {
-                        const i  = (row * zw + col) * 4;
-                        const ri = (row * zw + Math.min(zw - 1, col + CA)) * 4;
-                        const bi = (row * zw + Math.max(0,        col - CA)) * 4;
-                        out[i]     = od[ri];
-                        out[i + 1] = od[i  + 1];
-                        out[i + 2] = od[bi + 2];
-                        out[i + 3] = od[i  + 3];
-                    }
-                }
-                rCtx.putImageData(new ImageData(out, zw, zh), zx, zy);
+            function tracePoly(ctx, poly) {
+                ctx.beginPath();
+                ctx.moveTo(poly[0][0], poly[0][1]);
+                for (let k = 1; k < poly.length; k++) ctx.lineTo(poly[k][0], poly[k][1]);
+                ctx.closePath();
             }
 
             function render() {
                 if (!reedCanvas) return;
                 rCtx.clearRect(0, 0, cw, ch);
 
-                // 1. Fairchild underneath — peeks through every gap
+                // 1. Fairchild underneath — revealed by pushed shards
                 rCtx.drawImage(revealCover || coverCanvas, 0, 0);
 
-                // 2. Full pre-rendered reeded glass on top (1 drawImage for the whole canvas)
+                // 2. Full frosted reeded glass on top
                 rCtx.drawImage(reedCanvas, 0, 0);
 
-                // 3. Displaced shards
+                // 3. Displaced glass shards
                 const displaced = shards.filter(
                     s => Math.hypot(s.dx, s.dy) >= 0.8 || Math.abs(s.rot) >= 0.002
                 );
                 if (displaced.length) {
-                    // 3a. Punch holes: show fairchild at each shard's original position
+                    // 3a. Punch holes at original positions
                     const fb = revealCover || coverCanvas;
                     displaced.forEach(s => {
                         rCtx.drawImage(fb, s.x, s.y, s.w, s.h, s.x, s.y, s.w, s.h);
                     });
 
-                    // 3b. Draw each shard floating at its displaced + rotated position
+                    // 3b. Draw each shard clipped to organic polygon
                     displaced.forEach(s => {
                         const pushed = Math.hypot(s.dx, s.dy);
-                        const tx  = s.dx  + s.wobX;
-                        const ty  = s.dy  + s.wobY;
+                        const tx  = s.dx + s.wobX;
+                        const ty  = s.dy + s.wobY;
                         const rot = s.rot + s.wobRot;
                         const hw  = s.w * 0.5, hh = s.h * 0.5;
+                        const cx  = s.x + hw + tx;
+                        const cy  = s.y + hh + ty;
+                        const alpha = Math.min(0.40, pushed / MAX_PUSH * 0.46);
 
+                        // — Clipped glass content —
                         rCtx.save();
-                        rCtx.translate(s.x + hw + tx, s.y + hh + ty);
+                        rCtx.translate(cx, cy);
                         rCtx.rotate(rot);
+                        tracePoly(rCtx, s.poly);
+                        rCtx.clip();
 
-                        // Glass content from pre-baked reed canvas
                         rCtx.drawImage(reedCanvas, s.x, s.y, s.w, s.h, -hw, -hh, s.w, s.h);
 
-                        // Diagonal light-to-shadow sheen
-                        const alpha = Math.min(0.42, pushed / MAX_PUSH * 0.48);
+                        // Extra frost per shard
+                        rCtx.fillStyle = `rgba(220,238,248,${(0.13 + 0.10 * pushed / MAX_PUSH).toFixed(3)})`;
+                        rCtx.fillRect(-hw, -hh, s.w, s.h);
+
+                        // Light-to-shadow sheen
                         const g = rCtx.createLinearGradient(-hw, -hh, hw, hh);
-                        g.addColorStop(0,    `rgba(255,255,255,${+(alpha * 1.15).toFixed(3)})`);
+                        g.addColorStop(0,    `rgba(255,255,255,${+(alpha * 1.2).toFixed(3)})`);
                         g.addColorStop(0.25, 'rgba(255,255,255,0.02)');
                         g.addColorStop(0.75, 'rgba(0,0,0,0.01)');
-                        g.addColorStop(1,    `rgba(0,0,0,${+(alpha * 0.6).toFixed(3)})`);
+                        g.addColorStop(1,    `rgba(0,0,0,${+(alpha * 0.5).toFixed(3)})`);
                         rCtx.fillStyle = g;
                         rCtx.fillRect(-hw, -hh, s.w, s.h);
 
-                        // Top + left bright glint
-                        const glint = Math.min(0.9, alpha * 2.4);
-                        rCtx.strokeStyle = `rgba(255,255,255,${+glint.toFixed(3)})`;
+                        rCtx.restore();
+
+                        // — Polygon edge glint (drawn outside clip) —
+                        rCtx.save();
+                        rCtx.translate(cx, cy);
+                        rCtx.rotate(rot);
+                        tracePoly(rCtx, s.poly);
+                        rCtx.strokeStyle = `rgba(255,255,255,${Math.min(0.88, alpha * 2.2).toFixed(3)})`;
                         rCtx.lineWidth   = 0.85;
-                        rCtx.beginPath();
-                        rCtx.moveTo(-hw, -hh); rCtx.lineTo( hw, -hh);
-                        rCtx.moveTo(-hw, -hh); rCtx.lineTo(-hw,  hh);
                         rCtx.stroke();
-
-                        // Bottom + right shadow
-                        rCtx.strokeStyle = `rgba(0,0,0,${+(alpha * 0.85).toFixed(3)})`;
-                        rCtx.lineWidth   = 1.1;
-                        rCtx.beginPath();
-                        rCtx.moveTo( hw, -hh); rCtx.lineTo( hw,  hh);
-                        rCtx.moveTo(-hw,  hh); rCtx.lineTo( hw,  hh);
-                        rCtx.stroke();
-
                         rCtx.restore();
                     });
-                }
-
-                // 4. CA — small zone centred on cursor, every frame
-                if (hovering && mx > 0) {
-                    const caR = Math.round(ZONE_R * 0.45);
-                    const zx = Math.max(0, Math.round(mx - caR));
-                    const zy = Math.max(0, Math.round(my - caR));
-                    const zw = Math.min(cw - zx, caR * 2);
-                    const zh = Math.min(ch - zy, caR * 2);
-                    applyCA(zx, zy, zw, zh);
                 }
             }
 
