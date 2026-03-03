@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <title>Henrietta's Portfolio</title>
     <link rel="icon" type="image/png" href="HenLogo.png">
     <link rel="shortcut icon" type="image/png" href="HenLogo.png">
@@ -81,15 +82,32 @@
         .navbar {
             position: fixed;
             top: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
-            background: rgba(15, 20, 25, 0.95);
-            backdrop-filter: blur(15px);
+            /* Fully transparent at rest — just the icons/links floating */
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: 1px solid transparent;
+            border-radius: 0;
+            box-shadow: none;
             z-index: 1000;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(168, 218, 220, 0.1);
+            box-sizing: border-box;
+            overflow: hidden;
+            transition:
+                top           0.55s cubic-bezier(0.34, 1.2, 0.64, 1),
+                width         0.55s cubic-bezier(0.34, 1.2, 0.64, 1),
+                border-radius 0.55s cubic-bezier(0.34, 1.2, 0.64, 1),
+                padding       0.35s ease,
+                background    0.40s ease,
+                border-color  0.40s ease,
+                box-shadow    0.40s ease;
+            will-change: top, width, border-radius;
         }
 
         .navbar .logo {
@@ -142,6 +160,53 @@
 
         .navbar .nav-links a:hover::after {
             width: 100%;
+        }
+
+        /* Pill state — liquid glass appears + shrinks + rounds on scroll */
+        .navbar.pill {
+            top: calc(14px + var(--pill-parallax, 0px));
+            width: min(1300px, 95%);
+            border-radius: 999px;
+            padding: 0.65rem 1.7rem;
+            background: rgba(15, 20, 25, 0.68);
+            backdrop-filter: url(#navbar-lg) blur(2px);
+            -webkit-backdrop-filter: blur(14px) saturate(170%);
+            border-color: rgba(168, 218, 220, 0.28);
+            box-shadow:
+                0 10px 36px rgba(0, 0, 0, 0.52),
+                0 2px 8px rgba(0, 0, 0, 0.28);
+        }
+
+        /* Specular rim — fades in with the pill */
+        .navbar::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            box-shadow:
+                inset 1.5px 2px 4px rgba(255, 255, 255, 0.48),
+                inset -1px -1.5px 3px rgba(255, 255, 255, 0.13);
+            background: linear-gradient(
+                145deg,
+                rgba(255, 255, 255, 0.13) 0%,
+                rgba(255, 255, 255, 0.04) 22%,
+                transparent 48%
+            );
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.40s ease;
+        }
+        .navbar.pill::before { opacity: 1; }
+
+        /* Keep nav content above the ::before shimmer layer */
+        .navbar > * { position: relative; z-index: 1; }
+
+        @media (max-width: 768px) {
+            .navbar.pill {
+                width: 94%;
+                padding: 0.55rem 1.2rem;
+            }
         }
 
         .hamburger {
@@ -501,6 +566,74 @@
             margin: 0.5rem 0;
           }
         }
+    /* === 3D scene loading overlay === */
+    @keyframes overlayGradient {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes gifFloat {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-8px); }
+    }
+    #scene-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
+      background-size: 400% 400%;
+      animation: overlayGradient 20s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    #scene-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .scene-overlay-card {
+      text-align: center;
+      background: rgba(15, 20, 25, 0.15);
+      backdrop-filter: blur(35px);
+      border-radius: 32px;
+      padding: 3rem 2.5rem;
+      border: 1px solid rgba(168, 218, 220, 0.2);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 380px;
+      width: 90%;
+    }
+    .scene-overlay-gif {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid rgba(168, 218, 220, 0.4);
+      box-shadow: 0 0 30px rgba(42, 157, 143, 0.3);
+      animation: gifFloat 4s ease-in-out infinite;
+      object-fit: cover;
+      background: rgba(168, 218, 220, 0.1);
+    }
+    .scene-overlay-title {
+      font-family: 'Montserrat Alternates', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #f1faee, #a8dadc, #66fcf1);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: overlayGradient 6s ease infinite;
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+    .scene-overlay-msg {
+      font-family: 'Montserrat', sans-serif;
+      color: #a8dadc;
+      font-size: 1rem;
+      opacity: 0.9;
+      font-style: italic;
+    }
+
     .testimonials-section {
       height: auto;          /* grow with content */
       min-height: 60svh;     /* optional: show a nice first fold */
@@ -627,6 +760,39 @@
     </style>
 </head>
 <body>
+    <!--
+        Liquid glass SVG displacement filter.
+        backdrop-filter: url(#navbar-lg) geometrically warps background pixels
+        through feDisplacementMap — that's the actual refraction/lensing, not
+        just a blur. The feTurbulence provides the organic noise surface. Chrome
+        supports backdrop-filter + SVG; Safari falls back to the blur value.
+    -->
+    <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+      <defs>
+        <filter id="navbar-lg" x="-4%" y="-50%" width="108%" height="200%"
+                color-interpolation-filters="sRGB">
+          <!-- Organic noise as the lens-surface displacement source -->
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.011 0.007"
+            numOctaves="2"
+            seed="12"
+            result="noise" />
+          <!-- Smooth the noise — large gentle waves, not grainy static -->
+          <feGaussianBlur in="noise" stdDeviation="6" result="lensMap" />
+          <!-- This is the refraction: each pixel is re-mapped based on the
+               lens surface normal encoded in R/G channels of lensMap.
+               scale controls the strength of the distortion. -->
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="lensMap"
+            scale="18"
+            xChannelSelector="R"
+            yChannelSelector="G" />
+        </filter>
+      </defs>
+    </svg>
+
     <div id="app">
         <!-- Custom Glassmorphism Cursor -->
         <div class="custom-cursor" id="cursor"></div>
@@ -929,6 +1095,15 @@
   function cancelAnim(){ if (animId) { cancelAnimationFrame(animId); animId = 0; } }
   function animatedScrollTo(targetTop, duration=DURATION_MS){
     cancelAnim();
+    // Use Lenis when available so the snap plays through the butter-scroll pipeline
+    if (window.lenis) {
+      window.lenis.scrollTo(Math.round(targetTop), {
+        duration: duration / 1000,
+        easing: easeInOutQuad,
+      });
+      return;
+    }
+    // Fallback: plain RAF animation
     const start = window.scrollY;
     const dist  = targetTop - start;
     const t0    = performance.now();
@@ -1042,6 +1217,125 @@
 </div>
 
 
+
+    <script>
+    /* ============================================================
+       Lenis — butter smooth scroll
+       ============================================================ */
+    window.lenis = new Lenis({
+      duration: 1.2,
+      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      smoothTouch: false,
+      wheelMultiplier: 0.85,
+      touchMultiplier: 1.5,
+    });
+
+    (function tick(time) {
+      window.lenis.raf(time);
+      requestAnimationFrame(tick);
+    })(0);
+
+    /* ============================================================
+       Navbar — liquid glass pill + parallax float
+       ============================================================ */
+    (function () {
+      const navbar = document.querySelector('.navbar');
+      if (!navbar) return;
+
+      const THRESHOLD         = 80;   // px scrolled before pill kicks in
+      const PARALLAX_STRENGTH = 0.5;  // velocity → px shift
+      const PARALLAX_MAX      = 9;    // clamp (px)
+
+      let lastY    = window.scrollY;
+      let parallax = 0;
+      let isPill   = false;
+
+      /* Decay loop — springs parallax back to 0 every frame */
+      (function decay() {
+        requestAnimationFrame(decay);
+        if (Math.abs(parallax) > 0.04) {
+          parallax *= 0.80;
+          navbar.style.setProperty('--pill-parallax', parallax.toFixed(2) + 'px');
+        }
+      })();
+
+      function onScroll() {
+        const y   = window.scrollY;
+        const vel = y - lastY;
+        lastY = y;
+
+        const wantsPill = y > THRESHOLD;
+        if (wantsPill !== isPill) {
+          isPill = wantsPill;
+          navbar.classList.toggle('pill', isPill);
+        }
+
+        if (isPill) {
+          parallax = -Math.max(-PARALLAX_MAX, Math.min(PARALLAX_MAX, vel * PARALLAX_STRENGTH));
+        }
+      }
+
+      window.lenis.on('scroll', onScroll);
+      onScroll();
+    })();
+    </script>
+
+    <!-- 3D scene loading overlay: waits for hero + models to be fully rendered -->
+    <div id="scene-overlay">
+      <div class="scene-overlay-card">
+        <img
+          src="./loading.gif"
+          alt=""
+          class="scene-overlay-gif"
+          onerror="this.style.display='none'"
+        >
+        <p class="scene-overlay-title">Loading Magic...</p>
+        <p class="scene-overlay-msg" id="overlay-msg">Warming up the 3D scenes ✨</p>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const overlay  = document.getElementById('scene-overlay');
+        const msgEl    = document.getElementById('overlay-msg');
+        let heroReady   = false;
+        let modelsReady = false;
+        let dismissed   = false;
+
+        const messages = [
+          'Warming up the 3D scenes ✨',
+          'Loading pixels with love 💖',
+          'Summoning digital nostalgia 🌈',
+          'Calibrating liquid glass 🌊',
+        ];
+        let msgIdx = 0;
+        const msgTimer = setInterval(() => {
+          msgIdx = (msgIdx + 1) % messages.length;
+          msgEl.textContent = messages[msgIdx];
+        }, 1800);
+
+        function dismiss() {
+          if (dismissed) return;
+          dismissed = true;
+          clearInterval(msgTimer);
+          msgEl.textContent = 'Ready! 🎉';
+          // Brief "ready" flash before fading
+          setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+
+        window.addEventListener('message', function (e) {
+          if (e.data && e.data.type === 'heroReady')   heroReady   = true;
+          if (e.data && e.data.type === 'modelsReady') modelsReady = true;
+          if (heroReady && modelsReady) dismiss();
+        });
+
+        // Hard timeout: if signals never arrive, show the page anyway
+        // Shorter when coming from loading.html (models already cached)
+        const fromLoader = new URLSearchParams(location.search).get('loaded') === 'true';
+        setTimeout(dismiss, fromLoader ? 5000 : 12000);
+      })();
+    </script>
 
 </body>
 </html>

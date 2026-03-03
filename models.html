@@ -200,6 +200,19 @@
       });
     }
 
+    /* === Track when all models have settled (loaded or errored) === */
+    const TOTAL_MODEL_LOADS = stations.reduce(
+      (acc, s) => acc + (Array.isArray(s.models) ? s.models.length : 1), 0
+    );
+    let modelsSettled = 0;
+    function onModelSettled() {
+      if (++modelsSettled >= TOTAL_MODEL_LOADS) {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'modelsReady' }, '*');
+        }
+      }
+    }
+
     const stationNodes = stations.map((cfg, i)=>{
       const anchor = new THREE.Group();
       anchor.position.copy(axisAt(tStops[i]));
@@ -228,8 +241,8 @@
               // MyAuntie iPhone overlay (station index 2, left model j===0)
               if (i === 2 && j === 0) addOverlayTo(model, auntieOverlayURL, [40, 88 ], [0, 45.7, 8.5]); // Laptop overlay (note index change)
 
-
-            });
+              onModelSettled();
+            }, undefined, () => onModelSettled());
           });
         } else {
           // Single-model station (existing behavior)
@@ -241,7 +254,8 @@
 
             if (i === 1) addOverlayTo(model, overlayURL,       [4.52, 2.8], [0, 0.35,  1.06]); // Steam Deck overlay
             if (i === 4) addOverlayTo(model, laptopOverlayURL, [29,   17 ], [0,10.7, -10.5]); // Laptop overlay (note index change)
-          });
+            onModelSettled();
+          }, undefined, () => onModelSettled());
         }
 
 

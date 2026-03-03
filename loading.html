@@ -68,23 +68,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Sky Background */
-        .sky-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        .sky-canvas {
-            width: 100%;
-            height: 100%;
-        }
-
         .loading-container {
             position: relative;
             z-index: 10;
@@ -338,22 +321,10 @@
             transition: all 0.8s ease-out;
         }
     </style>
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js"
-        }
-    }
-    </script>
 </head>
 <body>
     <!-- Custom Glassmorphism Cursor -->
     <div class="custom-cursor" id="cursor"></div>
-
-    <!-- Sky Background -->
-    <div class="sky-background">
-        <canvas class="sky-canvas" id="skyCanvas"></canvas>
-    </div>
 
     <div class="loading-container" id="loadingContainer">
         <div class="vaporeon-container">
@@ -455,30 +426,26 @@
             }, 1000);
         }
 
-        // PRELOAD HERO ASSETS (images, models, etc) using fetch
+        // PRELOAD all 3D model files so they hit the browser cache before the main pages load them
         async function preloadHeroAssets() {
-            console.log('Preloading hero assets...');
+            const models = [
+                './models/skyblue.glb',    // hero.html background sky
+                './models/yummymeal.glb',  // models.html – Skrimp
+                './models/steamdeck.glb',  // models.html – Path to Menzoberranzan
+                './models/jaguar.glb',     // models.html – Jaguar Rebrand
+                './models/laptop.glb',     // models.html – Seniors Connect
+            ];
 
-            try {
-                // Preload the hero HTML
-                await fetch('./hero.html');
-                updateProgress(60);
-
-                // Preload the 3D model
-                await fetch('./models/skyblue.glb');
-                updateProgress(80);
-
-                // Preload hero image
-                await fetch('./herogirl.jpg').catch(() => console.log('Hero image not found, skipping'));
-                updateProgress(90);
-
-                console.log('Assets preloaded successfully!');
-                updateProgress(100);
-
-            } catch (error) {
-                console.log('Some assets failed to preload, continuing anyway:', error);
-                updateProgress(100);
+            for (let i = 0; i < models.length; i++) {
+                try {
+                    await fetch(models[i]);
+                } catch (e) {
+                    console.log('Could not preload:', models[i]);
+                }
+                updateProgress(35 + ((i + 1) / models.length) * 60);
             }
+
+            updateProgress(100);
         }
 
         // Loading messages
@@ -510,24 +477,18 @@
         function startLoading() {
             updateProgress(10);
 
+            // Wait for fonts, then start preloading models immediately
             if (document.fonts) {
-                document.fonts.ready.then(() => updateProgress(30));
+                document.fonts.ready.then(() => {
+                    updateProgress(30);
+                    preloadHeroAssets();
+                });
             } else {
-                setTimeout(() => updateProgress(30), 500);
+                setTimeout(() => {
+                    updateProgress(30);
+                    preloadHeroAssets();
+                }, 500);
             }
-
-            // Init 3D scene on loading page
-            setTimeout(() => {
-                updateProgress(50);
-                if (window.initSkyScene) {
-                    initSkyScene();
-                }
-            }, 1200);
-
-            // Start asset preloading
-            setTimeout(() => {
-                preloadHeroAssets();
-            }, 1500);
         }
 
         // Initialize
@@ -538,121 +499,5 @@
         });
     </script>
 
-    <script type="module">
-        import * as THREE from "three";
-        import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
-
-        // Three.js Sky Scene - declare variables globally
-        let scene, camera, renderer, skyMesh;
-        const clock = new THREE.Clock();
-
-        // Make THREE and GLTFLoader available globally
-        window.THREE = THREE;
-        window.GLTFLoader = GLTFLoader;
-
-        function initSkyScene() {
-            scene = new window.THREE.Scene();
-            camera = new window.THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0, 12);
-
-            const canvas = document.getElementById('skyCanvas');
-            renderer = new window.THREE.WebGLRenderer({
-                canvas: canvas,
-                alpha: true,
-                antialias: true
-            });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
-            const ambientLight = new window.THREE.AmbientLight(0xffffff, 3);
-            scene.add(ambientLight);
-
-            const loader = new window.GLTFLoader();
-            loader.load('./models/skyblue.glb',
-                function(gltf) {
-                    skyMesh = gltf.scene;
-                    skyMesh.scale.set(5, 5, 5);
-                    skyMesh.position.set(0, 0, 0);
-
-                    skyMesh.traverse((child) => {
-                        if (child.isMesh) {
-                            if (gltf.parser && gltf.parser.json && gltf.parser.json.textures) {
-                                const textureIndex = 0;
-                                if (gltf.parser.json.textures[textureIndex]) {
-                                    gltf.parser.loadTexture(textureIndex).then(texture => {
-                                        child.material.map = texture;
-                                        child.material.color.setHex(0xffffff);
-                                        child.material.transparent = false;
-                                        child.material.opacity = 1;
-                                        child.material.needsUpdate = true;
-                                    });
-                                }
-                            } else {
-                                child.material = new window.THREE.MeshBasicMaterial({
-                                    color: 0x87CEEB,
-                                    side: window.THREE.FrontSide,
-                                    wireframe: false
-                                });
-                            }
-                        }
-                    });
-
-                    scene.add(skyMesh);
-                    console.log('Sky model loaded successfully!');
-                    animate();
-                },
-                function(progress) {
-                    console.log('Model loading progress:', progress);
-                },
-                function(error) {
-                    console.warn('Sky model failed to load, using fallback:', error);
-
-                    const geometry = new window.THREE.SphereGeometry(1, 32, 32);
-                    const colors = [];
-                    const positionAttribute = geometry.attributes.position;
-                    for (let i = 0; i < positionAttribute.count; i++) {
-                        colors.push(0.3, 0.6, 1);
-                    }
-                    geometry.setAttribute('color', new window.THREE.Float32BufferAttribute(colors, 3));
-
-                    const material = new window.THREE.MeshBasicMaterial({
-                        vertexColors: true,
-                        wireframe: false
-                    });
-                    skyMesh = new window.THREE.Mesh(geometry, material);
-                    scene.add(skyMesh);
-                    animate();
-                }
-            );
-        }
-
-        // Make it globally available
-        window.initSkyScene = initSkyScene;
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const elapsed = clock.getElapsedTime();
-
-            if (skyMesh) {
-                skyMesh.rotation.y = elapsed * 0.02;
-                skyMesh.rotation.x = Math.sin(elapsed * 0.03) * 0.1;
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        function onWindowResize() {
-            if (camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-        }
-
-        // Make animate and clock globally available too
-        window.animate = animate;
-        window.clock = clock;
-
-        window.addEventListener('resize', onWindowResize);
-    </script>
 </body>
 </html>
