@@ -951,24 +951,19 @@
             fairchildImg.src   = './fairchild.png';
 
             let cw = 0, ch = 0;
-            let coverCanvas = null;
-            let revealCover = null;
-            let reedCanvas  = null;
+            let coverCanvas = null, revealCover = null, reedCanvas = null;
 
-            // ── Constants ──────────────────────────────────────
-            const REED_W   = 18;   // visual reed column width
-            const SHARD_W  = 42;   // shard cell width (wider → fewer, more glass-like)
-            const SHARD_H  = 82;   // shard cell height
-            const AMP      = 6;    // reed refraction amplitude (reduced)
-            const ZONE_R   = 125;  // cursor influence radius
-            const MAX_PUSH = 72;   // max displacement at cursor centre
+            const REED_W   = 18;
+            const AMP      = 6;
+            const ZONE_R   = 118;   // crack hole radius
+            const N_SHARDS = 8;     // accent shard count
 
             function sizeCanvas() {
                 cw = photoInner.offsetWidth;
                 ch = photoInner.offsetHeight;
                 revealCanvas.width  = cw;
                 revealCanvas.height = ch;
-                coverCanvas = null; revealCover = null; reedCanvas = null; shards = [];
+                coverCanvas = null; revealCover = null; reedCanvas = null;
             }
 
             function buildCoverFit(img) {
@@ -983,19 +978,16 @@
                 return c;
             }
 
-            // Pre-bake frosted reeded glass — blur substrate + displacement + frost veil
             function buildReedCanvas() {
                 if (!coverCanvas || !cw || !ch) return null;
-                const c  = document.createElement('canvas');
-                c.width  = cw; c.height = ch;
+                const c = document.createElement('canvas');
+                c.width = cw; c.height = ch;
                 const rc = c.getContext('2d');
-
-                // 1. Blurred substrate (frosted look, GPU-accelerated, no getImageData)
+                // Frosted blurred substrate
                 rc.filter = 'blur(3.5px)';
                 rc.drawImage(coverCanvas, 0, 0);
                 rc.filter = 'none';
-
-                // 2. Reed displacement strips at partial opacity over the blur
+                // Reed displacement at partial opacity
                 rc.globalAlpha = 0.52;
                 const STRIP = 2;
                 for (let x = 0; x < cw; x += STRIP) {
@@ -1006,12 +998,10 @@
                     rc.drawImage(coverCanvas, sx, 0, w, ch, x, 0, w, ch);
                 }
                 rc.globalAlpha = 1.0;
-
-                // 3. Frost veil
+                // Frost veil
                 rc.fillStyle = 'rgba(210,235,248,0.32)';
                 rc.fillRect(0, 0, cw, ch);
-
-                // 4. Subtle reed lines
+                // Subtle reed lines
                 rc.strokeStyle = 'rgba(255,255,255,0.18)'; rc.lineWidth = 0.6;
                 for (let x = 0; x < cw; x += REED_W) {
                     rc.beginPath(); rc.moveTo(x, 0); rc.lineTo(x, ch); rc.stroke();
@@ -1020,166 +1010,229 @@
                 for (let x = REED_W * 0.55; x < cw; x += REED_W) {
                     rc.beginPath(); rc.moveTo(x, 0); rc.lineTo(x, ch); rc.stroke();
                 }
-
                 return c;
             }
 
-            // Build organic 8-point polygon for each glass shard (centered at origin)
-            function buildShardPoly(w, h) {
-                const hw = w * 0.5, hh = h * 0.5;
-                const J  = Math.min(w, h) * 0.22;
-                const j  = () => (Math.random() - 0.5) * J;
-                return [
-                    [-hw + j(),       -hh + j()      ],  // top-left
-                    [      j(),       -hh + j() * 0.5],  // top-mid
-                    [ hw + j(),       -hh + j()      ],  // top-right
-                    [ hw + j() * 0.5,       j()      ],  // right-mid
-                    [ hw + j(),        hh + j()      ],  // bottom-right
-                    [      j(),        hh + j() * 0.5],  // bottom-mid
-                    [-hw + j(),        hh + j()      ],  // bottom-left
-                    [-hw + j() * 0.5,       j()      ],  // left-mid
-                ];
-            }
-
-            let shards = [];
-
-            function buildShards() {
-                shards = [];
-                for (let y = 0; y < ch; y += SHARD_H) {
-                    for (let x = 0; x < cw; x += SHARD_W) {
-                        const sw = Math.min(SHARD_W, cw - x);
-                        const sh = Math.min(SHARD_H, ch - y);
-                        shards.push({
-                            x, y, w: sw, h: sh,
-                            dx: 0, dy: 0, tdx: 0, tdy: 0,
-                            rot: 0, trot: 0,
-                            wobX: 0, wobY: 0, wobRot: 0,
-                            phase:   Math.random() * Math.PI * 2,
-                            freq:    0.65 + Math.random() * 0.55,
-                            tiltDir: (Math.random() > 0.5 ? 1 : -1) * (0.5 + Math.random() * 0.5),
-                            poly:    buildShardPoly(sw, sh),
-                        });
-                    }
+            // Jagged burst shape for the crack hole — generated once per hover
+            function buildCrackPts() {
+                const SPIKES = 9;
+                const pts = [];
+                for (let i = 0; i < SPIKES * 2; i++) {
+                    const baseAngle = (i / (SPIKES * 2)) * Math.PI * 2;
+                    const isOuter   = (i % 2 === 0);
+                    pts.push({
+                        angle:  baseAngle + (Math.random() - 0.5) * (Math.PI / SPIKES) * 0.6,
+                        rScale: isOuter
+                            ? 0.78 + Math.random() * 0.18   // subtle spike tip
+                            : 0.50 + Math.random() * 0.18   // shallow notch
+                    });
                 }
+                return pts;
             }
 
-            let mx = -999, my = -999, hovering = false, animating = false;
+            // Hairline crack lines radiating from the hole
+            function buildCrackLines() {
+                const N = 9;
+                const lines = [];
+                for (let i = 0; i < N; i++) {
+                    const angle = (i / N) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+                    lines.push({
+                        angle,
+                        startScale: 0.42 + Math.random() * 0.28,
+                        len:        ZONE_R * (0.38 + Math.random() * 0.60),
+                        kinkT:      0.25 + Math.random() * 0.50,
+                        kinkAngle:  angle + (Math.random() - 0.5) * 0.45,
+                    });
+                }
+                return lines;
+            }
 
-            function updateTargets() {
-                shards.forEach(s => {
-                    const cx = s.x + s.w * 0.5, cy = s.y + s.h * 0.5;
-                    const ddx = cx - mx, ddy = cy - my;
-                    const d   = Math.hypot(ddx, ddy);
-                    if (d < ZONE_R && d > 0.5) {
-                        const f    = (1 - d / ZONE_R) * (1 - d / ZONE_R) * MAX_PUSH;
-                        s.tdx  = (ddx / d) * f;
-                        s.tdy  = (ddy / d) * f;
-                        s.trot = s.tiltDir * (f / MAX_PUSH) * 0.25;
-                    } else {
-                        s.tdx = 0; s.tdy = 0; s.trot = 0;
-                    }
+            // Irregular triangle/quad accent shards — NOT a grid
+            function buildAccentShardPoly() {
+                const size = 16 + Math.random() * 26;
+                const nPts = Math.random() < 0.55 ? 3 : (Math.random() < 0.65 ? 4 : 5);
+                const pts  = [];
+                for (let i = 0; i < nPts; i++) {
+                    const base   = (i / nPts) * Math.PI * 2;
+                    const jitter = (Math.random() - 0.5) * (Math.PI / nPts) * 1.1;
+                    const r      = size * (0.40 + Math.random() * 0.60);
+                    pts.push([Math.cos(base + jitter) * r, Math.sin(base + jitter) * r]);
+                }
+                return { pts, size };
+            }
+
+            function buildAccentShards() {
+                const shards = [];
+                for (let i = 0; i < N_SHARDS; i++) {
+                    const { pts, size } = buildAccentShardPoly();
+                    shards.push({
+                        poly:       pts,
+                        size,
+                        orbitAngle: (i / N_SHARDS) * Math.PI * 2 + (Math.random() - 0.5) * 0.5,
+                        orbitDist:  ZONE_R * (0.72 + Math.random() * 0.52),
+                        px: -9999, py: -9999,
+                        rot:        Math.random() * Math.PI * 2,
+                        rotSpeed:   (Math.random() - 0.5) * 0.006,
+                        phase:      Math.random() * Math.PI * 2,
+                        freq:       0.32 + Math.random() * 0.28,
+                        wobAmp:     3 + Math.random() * 6,
+                    });
+                }
+                return shards;
+            }
+
+            // Append jagged hole path to existing path (no beginPath -- caller manages)
+            function appendHolePath(cx, cy, r) {
+                crackPts.forEach((pt, i) => {
+                    const x = cx + Math.cos(pt.angle) * pt.rScale * r;
+                    const y = cy + Math.sin(pt.angle) * pt.rScale * r;
+                    if (i === 0) rCtx.moveTo(x, y); else rCtx.lineTo(x, y);
                 });
+                rCtx.closePath();
             }
 
-            function tracePoly(ctx, poly) {
-                ctx.beginPath();
-                ctx.moveTo(poly[0][0], poly[0][1]);
-                for (let k = 1; k < poly.length; k++) ctx.lineTo(poly[k][0], poly[k][1]);
-                ctx.closePath();
-            }
+            let crackPts    = [];
+            let crackLines  = [];
+            let accentShards = [];
+            let holeR       = 0;
+            let holeTarget  = 0;
+            let mx = -999, my = -999, hovering = false, animating = false;
 
             function render() {
                 if (!reedCanvas) return;
                 rCtx.clearRect(0, 0, cw, ch);
 
-                // 1. Fairchild underneath — revealed by pushed shards
-                rCtx.drawImage(revealCover || coverCanvas, 0, 0);
+                const fb = revealCover || coverCanvas;
 
-                // 2. Full frosted reeded glass on top
+                // 1. Draw frosted glass first (full canvas)
                 rCtx.drawImage(reedCanvas, 0, 0);
 
-                // 3. Displaced glass shards
-                const displaced = shards.filter(
-                    s => Math.hypot(s.dx, s.dy) >= 0.8 || Math.abs(s.rot) >= 0.002
-                );
-                if (displaced.length) {
-                    // 3a. Punch holes at original positions
-                    const fb = revealCover || coverCanvas;
-                    displaced.forEach(s => {
-                        rCtx.drawImage(fb, s.x, s.y, s.w, s.h, s.x, s.y, s.w, s.h);
-                    });
+                // 2. Punch soft melty hole — destination-out erases glass pixels
+                rCtx.save();
+                rCtx.globalCompositeOperation = 'destination-out';
+                rCtx.filter = 'blur(14px)';
+                rCtx.beginPath();
+                appendHolePath(mx, my, holeR * 0.82);
+                rCtx.fillStyle = `rgba(0,0,0,${Math.min(1, holeR / ZONE_R * 1.3).toFixed(3)})`;
+                rCtx.fill();
+                rCtx.filter = 'none';
+                rCtx.restore();
 
-                    // 3b. Draw each shard clipped to organic polygon
-                    displaced.forEach(s => {
-                        const pushed = Math.hypot(s.dx, s.dy);
-                        const tx  = s.dx + s.wobX;
-                        const ty  = s.dy + s.wobY;
-                        const rot = s.rot + s.wobRot;
-                        const hw  = s.w * 0.5, hh = s.h * 0.5;
-                        const cx  = s.x + hw + tx;
-                        const cy  = s.y + hh + ty;
-                        const alpha = Math.min(0.40, pushed / MAX_PUSH * 0.46);
+                // 3. Draw fairchild BEHIND — destination-over only fills the transparent hole
+                rCtx.save();
+                rCtx.globalCompositeOperation = 'destination-over';
+                rCtx.drawImage(fb, 0, 0);
+                rCtx.restore();
 
-                        // — Clipped glass content —
-                        rCtx.save();
-                        rCtx.translate(cx, cy);
-                        rCtx.rotate(rot);
-                        tracePoly(rCtx, s.poly);
-                        rCtx.clip();
+                if (holeR < 2) return;
 
-                        rCtx.drawImage(reedCanvas, s.x, s.y, s.w, s.h, -hw, -hh, s.w, s.h);
+                const t = holeR / ZONE_R;
 
-                        // Extra frost per shard
-                        rCtx.fillStyle = `rgba(220,238,248,${(0.13 + 0.10 * pushed / MAX_PUSH).toFixed(3)})`;
-                        rCtx.fillRect(-hw, -hh, s.w, s.h);
+                // 3. Soft glow at hole edge (blurred stroke, not sharp)
+                rCtx.save();
+                rCtx.filter = 'blur(3px)';
+                rCtx.beginPath();
+                appendHolePath(mx, my, holeR * 0.85);
+                rCtx.strokeStyle = `rgba(255,255,255,${(0.35 * t).toFixed(3)})`;
+                rCtx.lineWidth = 4;
+                rCtx.stroke();
+                rCtx.filter = 'none';
+                rCtx.restore();
 
-                        // Light-to-shadow sheen
-                        const g = rCtx.createLinearGradient(-hw, -hh, hw, hh);
-                        g.addColorStop(0,    `rgba(255,255,255,${+(alpha * 1.2).toFixed(3)})`);
-                        g.addColorStop(0.25, 'rgba(255,255,255,0.02)');
-                        g.addColorStop(0.75, 'rgba(0,0,0,0.01)');
-                        g.addColorStop(1,    `rgba(0,0,0,${+(alpha * 0.5).toFixed(3)})`);
-                        rCtx.fillStyle = g;
-                        rCtx.fillRect(-hw, -hh, s.w, s.h);
+                // 4. Hairline crack lines
+                crackLines.forEach(cl => {
+                    const startR = cl.startScale * holeR;
+                    const endR   = startR + cl.len * t;
+                    const midR   = startR + (endR - startR) * cl.kinkT;
+                    rCtx.beginPath();
+                    rCtx.moveTo(mx + Math.cos(cl.angle)     * startR,
+                                my + Math.sin(cl.angle)     * startR);
+                    rCtx.lineTo(mx + Math.cos(cl.kinkAngle) * midR,
+                                my + Math.sin(cl.kinkAngle) * midR);
+                    rCtx.lineTo(mx + Math.cos(cl.angle)     * endR,
+                                my + Math.sin(cl.angle)     * endR);
+                    rCtx.strokeStyle = `rgba(255,255,255,${(0.38 * t).toFixed(3)})`;
+                    rCtx.lineWidth   = 0.65;
+                    rCtx.stroke();
+                });
 
-                        rCtx.restore();
+                // 5. Floating accent shards
+                const now = performance.now() * 0.001;
+                accentShards.forEach(s => {
+                    if (s.px < -900) return;
+                    const wobX = Math.sin(now * s.freq + s.phase)              * s.wobAmp;
+                    const wobY = Math.cos(now * s.freq * 0.72 + s.phase + 1.1) * s.wobAmp * 0.65;
+                    const px   = s.px + wobX;
+                    const py   = s.py + wobY;
+                    const sz   = s.size;
+                    const alpha = Math.min(0.90, t * 1.1);
+                    const srcX  = Math.max(0, Math.min(cw - sz, px - sz * 0.5));
+                    const srcY  = Math.max(0, Math.min(ch - sz, py - sz * 0.5));
 
-                        // — Polygon edge glint (drawn outside clip) —
-                        rCtx.save();
-                        rCtx.translate(cx, cy);
-                        rCtx.rotate(rot);
-                        tracePoly(rCtx, s.poly);
-                        rCtx.strokeStyle = `rgba(255,255,255,${Math.min(0.88, alpha * 2.2).toFixed(3)})`;
-                        rCtx.lineWidth   = 0.85;
-                        rCtx.stroke();
-                        rCtx.restore();
-                    });
-                }
+                    // Clipped glass content
+                    rCtx.save();
+                    rCtx.globalAlpha = alpha;
+                    rCtx.translate(px, py);
+                    rCtx.rotate(s.rot);
+                    rCtx.beginPath();
+                    rCtx.moveTo(s.poly[0][0], s.poly[0][1]);
+                    for (let k = 1; k < s.poly.length; k++) rCtx.lineTo(s.poly[k][0], s.poly[k][1]);
+                    rCtx.closePath();
+                    rCtx.clip();
+                    rCtx.drawImage(reedCanvas, srcX, srcY, sz, sz, -sz * 0.5, -sz * 0.5, sz, sz);
+                    // Frost
+                    rCtx.fillStyle = 'rgba(225,240,252,0.24)';
+                    rCtx.fillRect(-sz, -sz, sz * 2, sz * 2);
+                    // Sheen
+                    const g = rCtx.createLinearGradient(-sz * 0.5, -sz * 0.5, sz * 0.5, sz * 0.5);
+                    g.addColorStop(0,   'rgba(255,255,255,0.38)');
+                    g.addColorStop(0.4, 'rgba(255,255,255,0.04)');
+                    g.addColorStop(1,   'rgba(0,0,0,0.14)');
+                    rCtx.fillStyle = g;
+                    rCtx.fillRect(-sz, -sz, sz * 2, sz * 2);
+                    rCtx.restore();
+
+                    // Edge glint
+                    rCtx.save();
+                    rCtx.globalAlpha = alpha;
+                    rCtx.translate(px, py);
+                    rCtx.rotate(s.rot);
+                    rCtx.beginPath();
+                    rCtx.moveTo(s.poly[0][0], s.poly[0][1]);
+                    for (let k = 1; k < s.poly.length; k++) rCtx.lineTo(s.poly[k][0], s.poly[k][1]);
+                    rCtx.closePath();
+                    rCtx.strokeStyle = 'rgba(255,255,255,0.82)';
+                    rCtx.lineWidth   = 0.9;
+                    rCtx.stroke();
+                    rCtx.restore();
+                });
             }
 
-            function tick(ts) {
-                const now = ts * 0.001;
+            function tick() {
                 let moving = false;
 
-                shards.forEach(s => {
-                    s.dx  += (s.tdx  - s.dx)  * 0.12;
-                    s.dy  += (s.tdy  - s.dy)  * 0.12;
-                    s.rot += (s.trot - s.rot)  * 0.12;
-                    const pushed = Math.hypot(s.dx, s.dy);
-                    if (pushed > 1.2) {
-                        const amp = Math.min(pushed * 0.11, 5.0);
-                        s.wobX   = Math.sin(now * s.freq         + s.phase)       * amp;
-                        s.wobY   = Math.cos(now * s.freq * 0.73  + s.phase + 1.3) * amp * 0.7;
-                        s.wobRot = Math.sin(now * s.freq * 0.48  + s.phase + 0.9)
-                                   * 0.06 * (pushed / MAX_PUSH);
-                        moving = true;
-                    } else {
-                        s.wobX *= 0.87; s.wobY *= 0.87; s.wobRot *= 0.87;
-                        if (Math.abs(s.tdx  - s.dx)  > 0.12 ||
-                            Math.abs(s.tdy  - s.dy)  > 0.12 ||
-                            Math.abs(s.trot - s.rot) > 0.002) moving = true;
-                    }
-                });
+                // Animate hole open/close
+                const dHole = holeTarget - holeR;
+                if (Math.abs(dHole) > 0.4) {
+                    holeR += dHole * 0.10;
+                    moving = true;
+                } else {
+                    holeR = holeTarget;
+                    if (holeTarget > 0) moving = true;
+                }
+
+                // Update accent shard positions
+                if (holeR > 1 && mx > -900) {
+                    const t = Math.min(1, holeR / ZONE_R);
+                    accentShards.forEach(s => {
+                        const tx = mx + Math.cos(s.orbitAngle) * s.orbitDist * t;
+                        const ty = my + Math.sin(s.orbitAngle) * s.orbitDist * t;
+                        if (s.px < -900) { s.px = tx; s.py = ty; }
+                        s.px += (tx - s.px) * 0.07;
+                        s.py += (ty - s.py) * 0.07;
+                        s.rot += s.rotSpeed;
+                    });
+                }
 
                 render();
                 if (moving || hovering) requestAnimationFrame(tick);
@@ -1201,18 +1254,21 @@
                         revealCover = buildCoverFit(fairchildImg);
                     }, { once: true });
                 }
-                if (!shards.length) buildShards();
-                hovering = true;
+                crackPts     = buildCrackPts();
+                crackLines   = buildCrackLines();
+                accentShards = buildAccentShards();
+                hovering    = true;
+                holeTarget  = ZONE_R;
                 revealCanvas.style.opacity = '1';
                 startAnim();
             }
 
             function hide() {
-                hovering = false;
+                hovering   = false;
+                holeTarget = 0;
                 mx = -999; my = -999;
-                shards.forEach(s => { s.tdx = 0; s.tdy = 0; s.trot = 0; });
                 startAnim();
-                setTimeout(() => { if (!hovering) revealCanvas.style.opacity = '0'; }, 600);
+                setTimeout(() => { if (!hovering) revealCanvas.style.opacity = '0'; }, 700);
             }
 
             if (!isMobile()) {
@@ -1221,7 +1277,6 @@
                     const rect = photoInner.getBoundingClientRect();
                     mx = e.clientX - rect.left;
                     my = e.clientY - rect.top;
-                    updateTargets();
                     startAnim();
                 });
                 photoInner.addEventListener('mouseleave', hide);
@@ -1237,18 +1292,24 @@
                     revealed = !revealed;
                     if (revealed) {
                         mx = cw * 0.5; my = ch * 0.4;
-                        show(); updateTargets();
-                        photoCaption.textContent = '✨ tap to clear';
+                        show();
+                        photoCaption.textContent = '\u2728 tap to clear';
                     } else {
                         hide();
-                        photoCaption.textContent = '✨ chaotic mastermind behind the magic';
+                        photoCaption.textContent = '\u2728 chaotic mastermind behind the magic';
                     }
                 });
             }
 
             window.addEventListener('resize', () => {
-                sizeCanvas(); buildShards();
-                if (hovering) { reedCanvas = buildReedCanvas(); render(); }
+                sizeCanvas();
+                if (hovering) {
+                    reedCanvas   = buildReedCanvas();
+                    crackPts     = buildCrackPts();
+                    crackLines   = buildCrackLines();
+                    accentShards = buildAccentShards();
+                    render();
+                }
             });
         }
 
