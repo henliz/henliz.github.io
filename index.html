@@ -958,9 +958,18 @@
           if (footer && mount) {
             footer.id = 'contact';
             mount.replaceWith(footer);
-            // after: mount.replaceWith(footer);
-            if (window.lucide) window.lucide.createIcons(footer);  // hydrate only inside the footer
+            if (window.lucide) window.lucide.createIcons(footer);
 
+            // Override back-to-top so it mutes the snap helper before scrolling
+            const toTopBtn = footer.querySelector('.to-top-btn');
+            if (toTopBtn) {
+              toTopBtn.removeAttribute('onclick');
+              toTopBtn.addEventListener('click', () => {
+                window.muteSnap?.(2000);
+                if (window.lenis) window.lenis.scrollTo(0, { duration: 1 });
+                else window.scrollTo({ top: 0, behavior: 'smooth' });
+              });
+            }
           }
         })();
         </script>
@@ -1051,10 +1060,9 @@
         }
 
         function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.muteSnap?.(2000);
+            if (window.lenis) window.lenis.scrollTo(0, { duration: 1 });
+            else window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function toggleMobileMenu() {
@@ -1171,8 +1179,12 @@
 
   let lastSnapAt = 0;
   let animId = 0;
+  let snapMutedUntil = 0;
 
-  // track scroll direction (+1 down, -1 up)
+  // Expose globally so navbar / footer / scrollToTop can silence the snap
+  window.muteSnap = (ms = 2000) => { snapMutedUntil = Date.now() + ms; };
+
+  // track scroll direction (+1 down, -1 up) — still used for edge-escape zone
   let lastY = window.scrollY;
   let lastDir = 0;
 
@@ -1222,6 +1234,7 @@
   function shouldThrottle(){ return (Date.now() - lastSnapAt) < SNAP_COOLDOWN_MS; }
 
   function trySnapWithHysteresis(){
+    if (Date.now() < snapMutedUntil) return; // muted by nav/footer/scrollToTop
     if (shouldThrottle()) return;
 
     const y  = window.scrollY;
@@ -1230,19 +1243,19 @@
 
     // visible pixels overlapping viewport
     const overlap = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
-    if (overlap <= 0) return;                 // not visible → ignore
-    if (alignedTop(y) || alignedBottom(y)) return;   // already aligned
-    if (inEdgeEscape(y, lastDir)) return;     // let user leave at edges
+    if (overlap <= 0) return;                          // not visible → ignore
+    if (alignedTop(y) || alignedBottom(y)) return;    // already aligned
+    if (inEdgeEscape(y, lastDir)) return;              // let user leave at edges
 
-    // Direction-based hysteresis (need "a liiiiittle more" before snapping)
-    const ratio = overlap / vh;
-    const need  = (lastDir < 0 ? UP_OVERLAP_RATIO : DOWN_OVERLAP_RATIO);
-    if (overlap < MIN_OVERLAP_PX || ratio < need) return; // <— delay the snap
+    // Use r.top to know which side we're entering from (not lastDir, which can
+    // be stale during smooth-scroll animations)
+    const fromBelow = r.top < 0; // section top is above viewport → we came from below
+    const need = (fromBelow ? UP_OVERLAP_RATIO : DOWN_OVERLAP_RATIO);
+    if (overlap < MIN_OVERLAP_PX || overlap / vh < need) return;
 
-    // Passed thresholds ⇒ snap
+    // Passed thresholds ⇒ snap to the correct edge
     lastSnapAt = Date.now();
-    if (lastDir < 0) animatedScrollTo(bottomTarget());
-    else             animatedScrollTo(topTarget());
+    animatedScrollTo(fromBelow ? bottomTarget() : topTarget());
   }
 
   // Track direction robustly
@@ -1258,9 +1271,39 @@
 
   // Also react to resize (viewport height changes alter ratios)
   window.addEventListener('resize', () => {
-    // small debounce via rAF
     requestAnimationFrame(trySnapWithHysteresis);
   }, { passive: true });
+})();
+</script>
+
+<script>
+// Intercept all navbar / mobile-menu hash links so they mute the snap helper
+// and use Lenis for smooth navigation instead of the browser's default jump.
+(function () {
+  const navH = () => document.querySelector('.navbar')?.offsetHeight || 0;
+
+  function navScrollTo(targetEl) {
+    window.muteSnap?.(2200);
+    if (window.lenis) {
+      window.lenis.scrollTo(targetEl, { duration: 1.1, offset: -navH() });
+    } else {
+      window.scrollTo({ top: targetEl.offsetTop - navH(), behavior: 'smooth' });
+    }
+  }
+
+  document.querySelectorAll(
+    '.nav-links a[href^="#"], .mobile-menu a[href^="#"]'
+  ).forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      if (!id || id === '#') return; // resume / # links — let onclick handle them
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      navScrollTo(target);
+      // mobile menu closes via its existing inline onclick — no need to repeat
+    });
+  });
 })();
 </script>
 

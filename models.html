@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Helix Scroll • One-Scene Portfolio (Smooth Scroll-Scrub + Escape at Ends)</title>
+  <title>Work</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap');
 
     @font-face {
       font-family: 'DotempDemo';
@@ -17,87 +17,155 @@
     .px { font-family:'DotempDemo',monospace; font-style:normal; font-weight:400; font-size:0.88em; }
     .di { font-family:'Didot',serif; font-style:italic; font-weight:700; }
 
-    :root{
-      --bg:#0f1419; --fg:#e6f2f2; --a:#2a9d8f; --b:#457b9d;
-    }
-    /* Page defaults: allow page to scroll */
-    html,body{
-      margin:0;
-      background:var(--bg);
-      color:var(--fg);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,"Helvetica Neue",Arial,sans-serif;
+    :root{ --bg:#0f1419; --fg:#e6f2f2; --a:#2a9d8f; --b:#457b9d; }
+
+    html, body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Cormorant Garamond', serif;
     }
 
     /* Scene section: tall so you can scroll into/out of it */
-    #scene{
-      position:relative;
-      height: 220vh;           /* sticky region with headroom to scroll away */
+    #scene {
+      position: relative;
+      height: 220vh;
     }
-    .scene-pin{
+    .scene-pin {
       position: sticky;
       top: 0;
-      height: 100vh;           /* the 3D scene fills the viewport while in-section */
-      overflow: hidden;        /* keep internals tidy */
-      touch-action: pan-y;     /* allow vertical scroll by default; JS will prevent when needed */
+      height: 100vh;
+      overflow: hidden;
+      touch-action: pan-y;
     }
 
     /* Canvas fills the pinned area */
-    canvas#webgl{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      display:block;
+    canvas#webgl {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
-    /* HUD sits inside the pinned region so it scrolls away with the scene */
-    .hud{
-      position:absolute;
-      z-index:5;
-      top:6vh;
-      left:6vw;
-      max-width:min(520px,80vw);
-      background:rgba(15,20,25,.7);
-      backdrop-filter:blur(12px);
-      border:1px solid rgba(168,218,220,.18);
-      border-radius:16px;
-      padding:1rem 1.1rem;
-      box-shadow:0 8px 26px rgba(0,0,0,.35)
+    /* ── Bottom vignette gradient — lets type sit clean on any model ── */
+    .ed-gradient {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      background: linear-gradient(
+        to top,
+        rgba(15,20,25,0.90) 0%,
+        rgba(15,20,25,0.48) 24%,
+        transparent 50%
+      );
     }
-    .hud h2{
-      margin:0 0 .35rem 0;
-      font-family:'Didot',serif;
-      font-style:italic;
-      font-weight:700;
-      letter-spacing:-.01em;
-      font-size:clamp(1.4rem,2.2vw,2.1rem);
-      background:linear-gradient(45deg,#a8dadc,#457b9d,#2a9d8f);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
-    }
-    .hud p{margin:0 0 .8rem 0;opacity:.9;line-height:1.35;font-size:clamp(.95rem,1.6vw,1.05rem)}
-    .hud .cta{
-      display:inline-flex;align-items:center;gap:.5rem;
-      background:linear-gradient(45deg,var(--a),var(--b));
-      color:var(--fg);border:0;border-radius:999px;font-weight:700;
-      padding:.6rem .95rem;cursor:pointer;text-decoration:none;
-      box-shadow:0 6px 18px rgba(42,157,143,.35);
-      transition:transform .2s ease,box-shadow .2s ease
-    }
-    .hud .cta:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(42,157,143,.55)}
 
-    .locknote{
-      position:absolute;z-index:5;bottom:1rem;left:50%;transform:translateX(-50%);
-      opacity:.8;font-size:.92rem;white-space:nowrap
+    /* ── Top-right category tag ── */
+    .ed-category {
+      position: absolute;
+      top: 5.5vh;
+      right: 5.5vw;
+      z-index: 6;
+      font-family: 'DotempDemo', monospace;
+      font-size: clamp(0.52rem, 0.78vw, 0.68rem);
+      color: rgba(102, 252, 241, 0.42);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
     }
-    @media(max-width:768px){.hud{left:7vw;right:7vw}}
 
-    /* Demo filler above/below the scene - remove/replace with your real content */
-    header, footer{padding:18vh 8vw;opacity:.9}
-    header h1, footer h1{margin:0 0 1rem 0}
-    header p, footer p{max-width:52ch;line-height:1.5}
+    /* ── Editorial strip — bottom of scene ── */
+    .ed-strip {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 6;
+      padding: 0 6vw 4.5vh 6vw;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
 
-    /* cursor:none — parent page handles the cursor */
+    .ed-rule {
+      width: 100%;
+      height: 1px;
+      background: rgba(168, 218, 220, 0.17);
+      margin-bottom: 1.5rem;
+    }
+
+    .ed-bottom-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 3rem;
+    }
+
+    .ed-left { flex: 1; min-width: 0; }
+
+    .ed-number {
+      font-family: 'DotempDemo', monospace;
+      font-size: clamp(0.58rem, 0.82vw, 0.7rem);
+      color: rgba(102, 252, 241, 0.48);
+      letter-spacing: 0.24em;
+      margin-bottom: 0.5rem;
+    }
+
+    .ed-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(2.4rem, 4.8vw, 4.6rem);
+      color: #f1faee;
+      margin: 0 0 0.55rem 0;
+      letter-spacing: -0.01em;
+      line-height: 1.04;
+    }
+    .ed-title .px { font-style: normal; }
+
+    .ed-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(0.8rem, 1.08vw, 0.92rem);
+      color: rgba(168, 218, 220, 0.60);
+      margin: 0;
+      max-width: 52ch;
+      line-height: 1.5;
+    }
+
+    .ed-cta {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(0.8rem, 1.02vw, 0.88rem);
+      color: rgba(102, 252, 241, 0.68);
+      text-decoration: none;
+      letter-spacing: 0.07em;
+      pointer-events: all;
+      white-space: nowrap;
+      border-bottom: 1px solid rgba(102, 252, 241, 0.26);
+      padding-bottom: 0.14rem;
+      flex-shrink: 0;
+      align-self: flex-end;
+      margin-bottom: 0.14rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .ed-cta:hover {
+      color: rgba(102, 252, 241, 1);
+      border-color: rgba(102, 252, 241, 0.65);
+    }
+
+    /* fade class for station transitions */
+    .ed-strip.fading, .ed-category.fading { opacity: 0; }
+
+    /* cursor:none — parent page owns the cursor */
     *, *::before, *::after { cursor: none !important; }
+
+    @media (max-width: 768px) {
+      .ed-bottom-row { flex-direction: column; gap: 1rem; align-items: flex-start; }
+      .ed-cta { align-self: flex-start; }
+    }
   </style>
 
   <script type="importmap">
@@ -106,17 +174,28 @@
 </head>
 <body>
 
-  <!-- Sticky 3D scene section -->
   <section id="scene">
     <div class="scene-pin" id="scenePin">
       <canvas id="webgl"></canvas>
 
-      <div class="hud">
-        <h2 id="hud-title">Loading…</h2>
-        <p id="hud-desc"></p>
-        <a id="hud-link" class="cta" href="#" target="_blank" rel="noopener noreferrer">Explore →</a>
+      <!-- Bottom gradient vignette -->
+      <div class="ed-gradient"></div>
+
+      <!-- Top-right category tag -->
+      <div class="ed-category" id="ed-category"></div>
+
+      <!-- Editorial bottom strip -->
+      <div class="ed-strip">
+        <div class="ed-rule"></div>
+        <div class="ed-bottom-row">
+          <div class="ed-left">
+            <div class="ed-number" id="ed-number">01</div>
+            <h2 class="ed-title" id="ed-title"></h2>
+            <p class="ed-desc" id="ed-desc"></p>
+          </div>
+          <a class="ed-cta" id="ed-cta" href="#" target="_blank" rel="noopener noreferrer">Explore case study →</a>
+        </div>
       </div>
-      <div id="locknote" class="locknote">Scroll inside scene — exit at ends</div>
     </div>
   </section>
 
@@ -126,38 +205,60 @@
 
     /* ================= Config ================= */
     const stations = [
-      { name:'Skrimp AI', desc:'Founder & CEO — Your AI sous chef, making the cost of living feel livable', href:'Skrimp/index.html', model:'./models/yummymeal.glb', scale:0.25*1.5, baseEuler:[ 10, 15, 0] },
-      { name:'Path to Menzoberranzan', desc:"Technical Director — Unofficial Baldur's Gate 3 Expansion (100+ person studio)", href:'https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/', model:'./models/steamdeck.glb', scale:0.30*1.5, baseEuler:[  0,-10, 0] },
       {
-          name:'MyAuntie',
-          desc:'[ 🏆 WINNER — TECHNOVA 2025 ] The first AI companion for postpartum women: when it’s 3 a.m. you don’t want an app, you want your auntie.',
-          href:'MyAuntie/index.html', // or '#' for now
-          // two models, side-by-side
-          models: [
-            { url:'./models/iphone.glb',    scale:0.02*1.5, baseEuler:[0,15,10], pos:[-1.2, -1, 0] }, // left
-            { url:'./models/robodrone.glb', scale:0.9*1.5, baseEuler:[0, -15,0], pos:[ 1.2, 0, 0] }  // right
-          ]
-        },
-      { name:'Jaguar Rebrand', desc:'Fixing the 2024 brand drift with a true identity system', href:'Jaguar/index.html', model:'./models/jaguar.glb', scale:0.60*1.5, baseEuler:[ 10, 20, 0] },
-      { name:'Seniors Connect', desc:'High-fidelity prototype to end senior loneliness ☕', href:'SeniorsConnect/index.html', model:'./models/laptop.glb', scale:0.07*1.5, baseEuler:[  5, 35, 0] },
+        name:     'Skrimp AI',
+        category: 'Product Design / AI',
+        desc:     'Founder & CEO — AI sous chef making the cost of living feel livable',
+        href:     'Skrimp/index.html',
+        model:    './models/yummymeal.glb',
+        scale:    0.25 * 1.5,
+        baseEuler: [10, 15, 0]
+      },
+      {
+        name:     'Path to Menzoberranzan',
+        category: 'Technical Direction / Game',
+        desc:     "Technical Director — Unofficial Baldur's Gate 3 expansion, 100+ person studio",
+        href:     'https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/',
+        model:    './models/steamdeck.glb',
+        scale:    0.30 * 1.5,
+        baseEuler: [0, -10, 0]
+      },
+      {
+        name:     'MyAuntie',
+        category: 'UX Design / AI',
+        desc:     '🏆 TechNova 2025 Winner — The first AI companion for postpartum women',
+        href:     'MyAuntie/index.html',
+        models: [
+          { url:'./models/iphone.glb',    scale:0.02*1.5, baseEuler:[0, 15, 10], pos:[-1.2, -1, 0] },
+          { url:'./models/robodrone.glb', scale:0.9*1.5,  baseEuler:[0, -15, 0], pos:[ 1.2,  0, 0] }
+        ]
+      },
+      {
+        name:     'Seniors Connect',
+        category: 'UX Design / Social',
+        desc:     'High-fidelity prototype to end senior loneliness — winning hearts one screen at a time',
+        href:     'SeniorsConnect/index.html',
+        model:    './models/laptop.glb',
+        scale:    0.07 * 1.5,
+        baseEuler: [5, 35, 0]
+      },
     ];
 
-    // Helix path settings — smooth scrub
+    // Helix path settings
     const RADIUS = 6, TURNS = 3.6, PITCH = 1.7;
     const THETA_MAX = TURNS * Math.PI * 2;
-    const tStops = [0.06, 0.28, 0.50, 0.72, 0.94];
+    const tStops = [0.07, 0.36, 0.64, 0.93];
 
-    // Scroll responsiveness (t per wheel/touch delta unit)
     const SCROLL_K = 1/2600;
     const TOUCH_K  = 1/1400;
     const EPS      = 0.0015;
 
     /* ================= Scene ================= */
     const renderer = new THREE.WebGLRenderer({
-      antialias:true,
-      canvas:document.getElementById('webgl'),
-      alpha:true,
-      powerPreference:'high-performance'
+      antialias: true,
+      canvas: document.getElementById('webgl'),
+      alpha: true,
+      powerPreference: 'high-performance'
     });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
@@ -173,43 +274,46 @@
     const rim  = new THREE.DirectionalLight(0x6ecfcf, 0.6); rim.position.set(-8, 6, -10); scene.add(rim);
 
     /* =============== Helpers =============== */
-    const eul = (x,y,z)=> new THREE.Euler(
+    const eul = (x,y,z) => new THREE.Euler(
       THREE.MathUtils.degToRad(x),
       THREE.MathUtils.degToRad(y),
       THREE.MathUtils.degToRad(z)
     );
 
-    function helixAt(t){
-      const clamped = THREE.MathUtils.clamp(t,0,1);
+    function helixAt(t) {
+      const clamped = THREE.MathUtils.clamp(t, 0, 1);
       const theta = clamped * THETA_MAX;
       return new THREE.Vector3(
         RADIUS * Math.cos(theta),
         -PITCH * theta,
-        RADIUS * Math.sin(theta),
+        RADIUS * Math.sin(theta)
       );
     }
-    function axisAt(t){
-      const clamped = THREE.MathUtils.clamp(t,0,1);
+    function axisAt(t) {
+      const clamped = THREE.MathUtils.clamp(t, 0, 1);
       const theta = clamped * THETA_MAX;
       return new THREE.Vector3(0, -PITCH * theta, 0);
     }
-    function lerpAngle(a,b,t){ let d=((b-a+Math.PI)%(Math.PI*2))-Math.PI; return a + d*t; }
+    function lerpAngle(a, b, t) {
+      let d = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI;
+      return a + d * t;
+    }
 
     /* =============== Stations =============== */
-    const loader = new GLTFLoader();
-
-    // overlay planes (Steam Deck + Laptop)
+    const loader    = new GLTFLoader();
     const texLoader = new THREE.TextureLoader();
+
     const overlayURL       = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png';
     const laptopOverlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';
-    const auntieOverlayURL = './auntiephone.png'; // adjust path if needed
-    function addOverlayTo(model, url, sizeXY, posXYZ){
-      texLoader.load(url, (texture)=>{
+    const auntieOverlayURL = './auntiephone.png';
+
+    function addOverlayTo(model, url, sizeXY, posXYZ) {
+      texLoader.load(url, (texture) => {
         texture.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
         texture.minFilter  = THREE.LinearMipmapLinearFilter;
         texture.magFilter  = THREE.LinearFilter;
-        const mat = new THREE.MeshBasicMaterial({ map:texture, transparent:true });
-        const geo = new THREE.PlaneGeometry(sizeXY[0], sizeXY[1]);
+        const mat  = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+        const geo  = new THREE.PlaneGeometry(sizeXY[0], sizeXY[1]);
         const mesh = new THREE.Mesh(geo, mat);
         mesh.position.set(posXYZ[0], posXYZ[1], posXYZ[2]);
         mesh.renderOrder = 10;
@@ -217,7 +321,7 @@
       });
     }
 
-    /* === Track when all models have settled (loaded or errored) === */
+    /* Track when all models have settled */
     const TOTAL_MODEL_LOADS = stations.reduce(
       (acc, s) => acc + (Array.isArray(s.models) ? s.models.length : 1), 0
     );
@@ -230,7 +334,7 @@
       }
     }
 
-    const stationNodes = stations.map((cfg, i)=>{
+    const stationNodes = stations.map((cfg, i) => {
       const anchor = new THREE.Group();
       anchor.position.copy(axisAt(tStops[i]));
       scene.add(anchor);
@@ -238,64 +342,55 @@
       const pivot = new THREE.Group();
       anchor.add(pivot);
 
-      // REPLACE the single-model loader block with this:
-        if (Array.isArray(cfg.models)) {
-          // Multi-model station (e.g., MyAuntie)
-          cfg.models.forEach((m, j) => {
-            loader.load(m.url, (gltf) => {
-              const model = gltf.scene;
-              model.scale.setScalar(m.scale ?? cfg.scale ?? 1);
-              model.rotation.copy(eul(...(m.baseEuler ?? cfg.baseEuler ?? [0,0,0])));
-
-              const p = m.pos ?? [(j===0 ? -1.4 : 1.4), 0, 0];
-              model.position.set(p[0], p[1], p[2]);
-
-              pivot.add(model);
-
-              // Keep overlay behavior for other stations (target the first model of that station)
-              if (i === 1 && j === 0) addOverlayTo(model, overlayURL,       [4.52, 2.8], [0, 0.35,  1.06]); // Steam Deck overlay
-              if (i === 4 && j === 0) addOverlayTo(model, laptopOverlayURL, [29,   17 ], [0,10.7, -10.5]); // Laptop overlay (note index change)
-              // MyAuntie iPhone overlay (station index 2, left model j===0)
-              if (i === 2 && j === 0) addOverlayTo(model, auntieOverlayURL, [40, 88 ], [0, 45.7, 8.5]); // Laptop overlay (note index change)
-
-              onModelSettled();
-            }, undefined, () => onModelSettled());
-          });
-        } else {
-          // Single-model station (existing behavior)
-          loader.load(cfg.model, (gltf) => {
+      if (Array.isArray(cfg.models)) {
+        cfg.models.forEach((m, j) => {
+          loader.load(m.url, (gltf) => {
             const model = gltf.scene;
-            model.scale.setScalar(cfg.scale);
-            model.rotation.copy(eul(...cfg.baseEuler));
+            model.scale.setScalar(m.scale ?? cfg.scale ?? 1);
+            model.rotation.copy(eul(...(m.baseEuler ?? cfg.baseEuler ?? [0,0,0])));
+            const p = m.pos ?? [(j === 0 ? -1.4 : 1.4), 0, 0];
+            model.position.set(p[0], p[1], p[2]);
             pivot.add(model);
-
-            if (i === 1) addOverlayTo(model, overlayURL,       [4.52, 2.8], [0, 0.35,  1.06]); // Steam Deck overlay
-            if (i === 4) addOverlayTo(model, laptopOverlayURL, [29,   17 ], [0,10.7, -10.5]); // Laptop overlay (note index change)
+            // MyAuntie phone overlay (station 2, left model)
+            if (i === 2 && j === 0) addOverlayTo(model, auntieOverlayURL, [40, 88], [0, 45.7, 8.5]);
             onModelSettled();
           }, undefined, () => onModelSettled());
-        }
+        });
+      } else {
+        loader.load(cfg.model, (gltf) => {
+          const model = gltf.scene;
+          model.scale.setScalar(cfg.scale);
+          model.rotation.copy(eul(...cfg.baseEuler));
+          pivot.add(model);
+          // Steam Deck overlay (station 1)
+          if (i === 1) addOverlayTo(model, overlayURL,       [4.52, 2.8], [0,  0.35,  1.06]);
+          // Laptop overlay (station 3)
+          if (i === 3) addOverlayTo(model, laptopOverlayURL, [29,   17 ], [0, 10.7, -10.5]);
+          onModelSettled();
+        }, undefined, () => onModelSettled());
+      }
 
-
-      return { anchor, pivot, yaw:0 };
+      return { anchor, pivot, yaw: 0 };
     });
 
-    /* =============== HUD & state =============== */
-    const titleEl = document.getElementById('hud-title');
-    const descEl  = document.getElementById('hud-desc');
-    const linkEl  = document.getElementById('hud-link');
-    const lockEl  = document.getElementById('locknote');
+    /* =============== Editorial HUD =============== */
+    const categoryEl = document.getElementById('ed-category');
+    const numberEl   = document.getElementById('ed-number');
+    const titleEl    = document.getElementById('ed-title');
+    const descEl     = document.getElementById('ed-desc');
+    const ctaEl      = document.getElementById('ed-cta');
+    const stripEl    = document.querySelector('.ed-strip');
 
-    // Mix Didot italic and DotEmp pixel within the same title.
-    // Pattern: 3 Didot chars → 2 pixel chars, repeat. Spaces pass through unstyled.
+    // Mix Didot italic and DotempDemo pixel within title text
     function mixFonts(text) {
       const pattern = [3, 2]; // [didot run, pixel run]
-      let out = '', charIdx = 0, runIdx = 0, inRun = 0, isPx = false;
+      let out = '', runIdx = 0, inRun = 0, isPx = false;
       for (let i = 0; i < text.length; i++) {
         const ch = text[i];
         if (ch === ' ') { out += ' '; continue; }
         if (inRun === 0) {
-          isPx   = runIdx % 2 === 1;
-          inRun  = pattern[runIdx % 2];
+          isPx  = runIdx % 2 === 1;
+          inRun = pattern[runIdx % 2];
           runIdx++;
         }
         out += isPx
@@ -306,85 +401,75 @@
       return out;
     }
 
-    function setHud(i){
+    function applyHud(i) {
       const s = stations[i];
-      titleEl.innerHTML = mixFonts(s.name);
-      descEl.textContent  = s.desc;
-      linkEl.href         = s.href;
+      numberEl.textContent   = String(i + 1).padStart(2, '0');
+      titleEl.innerHTML      = mixFonts(s.name);
+      descEl.textContent     = s.desc;
+      ctaEl.href             = s.href;
+      categoryEl.textContent = s.category;
     }
 
-    let progress      = tStops[0];  // actual camera
-    let progressGoal  = tStops[0];  // target from scroll
-    let currentIndex  = 0;
-    setHud(0);
+    function setHud(i, animate = true) {
+      if (!animate) { applyHud(i); return; }
+      stripEl.classList.add('fading');
+      categoryEl.classList.add('fading');
+      setTimeout(() => {
+        applyHud(i);
+        stripEl.classList.remove('fading');
+        categoryEl.classList.remove('fading');
+      }, 230);
+    }
 
-    /* =============== Scroll handling (with pass-through at ends) =============== */
+    let progress     = tStops[0];
+    let progressGoal = tStops[0];
+    let currentIndex = 0;
+    setHud(0, false); // initial, no fade
+
+    /* =============== Scroll handling =============== */
     const pin = document.getElementById('scenePin');
 
     function atTop()    { return progressGoal <= EPS; }
     function atBottom() { return progressGoal >= 1 - EPS; }
 
-    function onWheel(e){
-      // If we're at the top and scrolling up (dy<0), or at the bottom and scrolling down (dy>0),
-      // DON'T preventDefault → let the page scroll.
+    function onWheel(e) {
       const dy = e.deltaY;
-      if ((atTop() && dy < 0) || (atBottom() && dy > 0)) {
-        lockEl.textContent = 'Leaving scene…';
-        return; // allow native scroll
-      }
+      if ((atTop() && dy < 0) || (atBottom() && dy > 0)) return;
       e.preventDefault();
-      lockEl.textContent = 'Scroll inside scene — exit at ends';
       progressGoal = THREE.MathUtils.clamp(progressGoal + dy * SCROLL_K, 0, 1);
     }
 
     let touchY = 0;
-    function onTouchStart(e){
-      touchY = e.changedTouches[0].screenY;
-    }
-    function onTouchMove(e){
-      const y = e.changedTouches[0].screenY;
-      const dy = touchY - y; // swipe up = positive
+    function onTouchStart(e) { touchY = e.changedTouches[0].screenY; }
+    function onTouchMove(e) {
+      const y  = e.changedTouches[0].screenY;
+      const dy = touchY - y;
       touchY = y;
-
-      // Pass-through on outward swipes at the ends
-      if ((atTop() && dy < 0) || (atBottom() && dy > 0)) {
-        lockEl.textContent = 'Leaving scene…';
-        return; // allow page to scroll
-      }
-
-      // Otherwise, scrub inside the scene
-      e.preventDefault(); // important for smoothness
-      lockEl.textContent = 'Scroll inside scene — exit at ends';
+      if ((atTop() && dy < 0) || (atBottom() && dy > 0)) return;
+      e.preventDefault();
       progressGoal = THREE.MathUtils.clamp(progressGoal + dy * TOUCH_K, 0, 1);
     }
-    function onTouchEnd(){ /* no-op */ }
+    function onTouchEnd() {}
 
-    function onKey(e){
-      // At ends, let outward keys bubble to page (no preventDefault)
-      const upKey   = (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Home');
+    function onKey(e) {
+      const upKey   = (e.key === 'ArrowUp'   || e.key === 'PageUp'   || e.key === 'Home');
       const downKey = (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'End' || e.key === ' ');
-
-      if ((upKey   && atTop())    || (downKey && atBottom())) return;
-
-      // Otherwise, steer the camera and block default
+      if ((upKey && atTop()) || (downKey && atBottom())) return;
       if (downKey) { e.preventDefault(); progressGoal = Math.min(1, progressGoal + 0.04); }
       if (upKey)   { e.preventDefault(); progressGoal = Math.max(0, progressGoal - 0.04); }
     }
 
-    // Attach listeners to the pinned scene, so the rest of the page is unaffected
-    pin.addEventListener('wheel', onWheel, { passive:false });
-    pin.addEventListener('touchstart', onTouchStart, { passive:true  });
-    pin.addEventListener('touchmove',  onTouchMove,  { passive:false });
-    pin.addEventListener('touchend',   onTouchEnd,   { passive:true  });
-    // Keys still go on window
-    addEventListener('keydown', onKey, { passive:false });
+    pin.addEventListener('wheel',      onWheel,      { passive: false });
+    pin.addEventListener('touchstart', onTouchStart, { passive: true  });
+    pin.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    pin.addEventListener('touchend',   onTouchEnd,   { passive: true  });
+    addEventListener('keydown', onKey, { passive: false });
 
     /* =============== Animate =============== */
     const clock = new THREE.Clock();
-    function animate(){
+    function animate() {
       requestAnimationFrame(animate);
 
-      // Smooth camera motion toward the scrolled goal
       progress = THREE.MathUtils.lerp(progress, progressGoal, 0.08);
 
       const camPos = helixAt(progress);
@@ -394,44 +479,45 @@
       const axis  = axisAt(progress);
       camera.lookAt(axis.lerp(ahead, 0.22));
 
-      // 3/4 facing for each pivot relative to camera
-      stationNodes.forEach((node)=>{
-        const toCamX = camera.position.x - node.anchor.position.x;
-        const toCamZ = camera.position.z - node.anchor.position.z;
+      stationNodes.forEach((node) => {
+        const toCamX   = camera.position.x - node.anchor.position.x;
+        const toCamZ   = camera.position.z - node.anchor.position.z;
         const targetYaw = Math.atan2(toCamX, toCamZ);
-        const threeQuarter = THREE.MathUtils.degToRad(-20);
-        node.yaw = lerpAngle(node.yaw, targetYaw + threeQuarter, 0.12);
+        const threeQ    = THREE.MathUtils.degToRad(-20);
+        node.yaw = lerpAngle(node.yaw, targetYaw + threeQ, 0.12);
         node.pivot.rotation.y = node.yaw;
       });
 
-      // Update HUD when closest station changes
+      // Update editorial strip when closest station changes
       let nearest = 0, best = Infinity;
-      for (let i=0;i<tStops.length;i++){ const d = Math.abs(progress - tStops[i]); if (d < best){ best = d; nearest = i; } }
-      if (nearest !== currentIndex){ currentIndex = nearest; setHud(nearest); }
+      for (let i = 0; i < tStops.length; i++) {
+        const d = Math.abs(progress - tStops[i]);
+        if (d < best) { best = d; nearest = i; }
+      }
+      if (nearest !== currentIndex) { currentIndex = nearest; setHud(nearest); }
 
-      // Gentle idle motion
+      // Gentle idle float
       const t = clock.getElapsedTime();
-      stationNodes.forEach((n,i)=>{ n.anchor.position.y = axisAt(tStops[i]).y + Math.sin(t*0.4 + i)*0.06; });
+      stationNodes.forEach((n, i) => {
+        n.anchor.position.y = axisAt(tStops[i]).y + Math.sin(t * 0.4 + i) * 0.06;
+      });
 
       renderer.render(scene, camera);
     }
     animate();
 
     /* =============== Resize =============== */
-    addEventListener('resize', ()=>{
-      camera.aspect = innerWidth/innerHeight;
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
     });
 
     /* =============== Cursor relay → parent =============== */
-    document.addEventListener('mousemove', (e) => {
-      window.parent.postMessage({ type: 'iframeMouse', x: e.clientX, y: e.clientY }, '*');
-    });
-    document.addEventListener('mousedown',  () => window.parent.postMessage({ type: 'iframeDown' }, '*'));
-    document.addEventListener('mouseup',    () => window.parent.postMessage({ type: 'iframeUp' }, '*'));
-    document.addEventListener('mouseleave', () => window.parent.postMessage({ type: 'iframeLeave' }, '*'));
+    document.addEventListener('mousemove',  (e) => window.parent.postMessage({ type: 'iframeMouse', x: e.clientX, y: e.clientY }, '*'));
+    document.addEventListener('mousedown',  ()  => window.parent.postMessage({ type: 'iframeDown' }, '*'));
+    document.addEventListener('mouseup',    ()  => window.parent.postMessage({ type: 'iframeUp' }, '*'));
+    document.addEventListener('mouseleave', ()  => window.parent.postMessage({ type: 'iframeLeave' }, '*'));
   </script>
 </body>
 </html>
-
