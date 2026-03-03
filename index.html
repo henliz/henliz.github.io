@@ -659,12 +659,7 @@
     }
 
     .testimonials-section {
-      height: auto;          /* grow with content */
-      min-height: 60svh;     /* optional: show a nice first fold */
-      margin-top: 4rem;
-      width: 100%;
-      overflow: visible;     /* no clipping */
-      position: relative;
+      display: none;
     }
 
     .testimonial-iframe {
@@ -779,6 +774,78 @@
   .bento-iframe{  height: 200vh; }
 }
 
+/* === Work Intro Overlay === */
+.work-intro-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 45%, rgba(8,12,18,0.58) 0%, transparent 66%);
+  transition: opacity 0.12s;
+}
+.work-intro-inner {
+  text-align: center;
+  padding: 0 2rem;
+}
+.work-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.5rem, 7vw, 6.5rem);
+  font-weight: 500;
+  color: #f1faee;
+  letter-spacing: 0.03em;
+  line-height: 1.05;
+  margin-bottom: 0.6rem;
+  white-space: nowrap;
+  font-style: normal;
+}
+.work-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(0.88rem, 1.2vw, 1.05rem);
+  color: rgba(168, 218, 220, 0.65);
+  letter-spacing: 0.02em;
+}
+/* CA pulses during scramble */
+@keyframes workCaScramble {
+  0%   { text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(102,252,241,0.55); }
+  18%  { text-shadow: 5px 0 rgba(255,30,60,0.8), -5px 0 rgba(102,252,241,0.8); clip-path: inset(0 0 88% 0); }
+  19%  { clip-path: inset(0 0 0 0); }
+  40%  { text-shadow: 1px 0 rgba(255,30,60,0.3), -1px 0 rgba(102,252,241,0.3); }
+  57%  { text-shadow: 6px 0 rgba(255,30,60,0.85), -6px 0 rgba(102,252,241,0.85); clip-path: inset(72% 0 0 0); }
+  58%  { clip-path: inset(0 0 0 0); }
+  80%  { text-shadow: 2px 0 rgba(255,30,60,0.4), -2px 0 rgba(102,252,241,0.4); }
+  100% { text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(102,252,241,0.55); }
+}
+/* Gentle residual CA after text settles */
+@keyframes workCaSettle {
+  0%, 100% { text-shadow: 1.5px 0 rgba(255,30,60,0.22), -1.5px 0 rgba(102,252,241,0.22); }
+  50%       { text-shadow: 2.5px 0 rgba(255,30,60,0.32), -2.5px 0 rgba(102,252,241,0.32); }
+}
+/* Glitch-out escalates then collapses */
+@keyframes workGlitchOut {
+  0%   { opacity: 1; transform: none; clip-path: inset(0 0 0 0); text-shadow: 2px 0 rgba(255,30,60,0.3), -2px 0 rgba(102,252,241,0.3); }
+  12%  { transform: translateX(-7px) skewX(-1deg); text-shadow: 9px 0 rgba(255,30,60,0.9), -9px 0 rgba(102,252,241,0.9); clip-path: inset(0 0 82% 0); }
+  13%  { transform: translateX(7px); clip-path: inset(78% 0 0 0); }
+  14%  { transform: none; clip-path: inset(0 0 0 0); }
+  25%  { opacity: 0.85; transform: scaleX(1.015); text-shadow: 14px 0 rgba(255,30,60,1), -14px 0 rgba(102,252,241,1); }
+  30%  { transform: scaleX(0.985) translateX(-4px); clip-path: inset(35% 0 45% 0); }
+  31%  { clip-path: inset(0 0 0 0); }
+  45%  { opacity: 0.55; transform: translateX(5px) skewX(0.5deg); text-shadow: 6px 0 rgba(255,30,60,0.6), -6px 0 rgba(102,252,241,0.6); }
+  55%  { opacity: 0.3; transform: none; clip-path: inset(0 0 60% 0); }
+  56%  { clip-path: inset(50% 0 0 0); }
+  57%  { clip-path: inset(0 0 0 0); }
+  75%  { opacity: 0.15; transform: translateX(-3px) scale(0.98); }
+  100% { opacity: 0; transform: scale(0.96) translateX(2px); clip-path: inset(0 0 0 0); }
+}
+.work-title.scrambling { animation: workCaScramble 0.7s ease-in-out infinite; }
+.work-title.settled    { animation: workCaSettle 2.5s ease-in-out infinite; }
+.work-intro-inner.glitch-out .work-title { animation: workGlitchOut 0.65s cubic-bezier(0.4,0,1,1) forwards; }
+.work-intro-inner.glitch-out .work-sub   { animation: workGlitchOut 0.65s cubic-bezier(0.4,0,1,1) 0.05s forwards; }
+
 
 
     </style>
@@ -850,15 +917,14 @@
             <iframe src="hero.html" class="hero-iframe"></iframe>
         </section>
 
-        <section class="section" id="projects">
-            <h2>F<span class="px">ea</span>tur<span class="px">ed</span> Pro<span class="px">jec</span>ts</h2>
-            <p style="text-align: center; opacity: 0.8; font-size: 1.1rem; color: #f1faee; margin-bottom: 2rem;">
-                A collection of interactive experiences and creative digital projects
-            </p>
-        </section>
-
         <!-- Full-width models section -->
-        <div class="models-section">
+        <div class="models-section" id="projects">
+            <div id="work-intro" class="work-intro-overlay">
+                <div class="work-intro-inner">
+                    <h2 class="work-title" id="workTitleEl"></h2>
+                    <p class="work-sub" id="workSubEl"></p>
+                </div>
+            </div>
             <iframe id="modelsFrame" src="models.html" class="models-iframe"></iframe>
         </div>
 
@@ -1238,6 +1304,85 @@
 </div>
 
 
+
+    <script>
+    /* === Work intro: scramble + glitch-in/out === */
+    (function () {
+      const CHARSET   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
+      const TITLE_PLAIN = 'My Work';
+      const TITLE_HTML  = 'My <span class="px">Wo</span>rk';
+      const SUB_PLAIN   = 'interactive experiences & creative digital projects';
+
+      const overlay = document.getElementById('work-intro');
+      const inner   = overlay.querySelector('.work-intro-inner');
+      const titleEl = document.getElementById('workTitleEl');
+      const subEl   = document.getElementById('workSubEl');
+      let triggered = false;
+
+      function randChar() { return CHARSET[Math.floor(Math.random() * CHARSET.length)]; }
+
+      function scramble(el, finalText, duration, onDone) {
+        const len      = finalText.length;
+        const revealed = new Array(len).fill(false);
+        const t0       = performance.now();
+        function frame(now) {
+          const progress  = Math.min(1, (now - t0) / duration);
+          const revealUpto = Math.floor(progress * len * 1.15);
+          for (let i = 0; i < revealUpto; i++) {
+            if (!revealed[i] && Math.random() < 0.4) revealed[i] = true;
+          }
+          let out = '';
+          for (let i = 0; i < len; i++) {
+            const ch = finalText[i];
+            if (ch === ' ') { out += '\u00a0'; continue; }
+            out += revealed[i] ? ch : randChar();
+          }
+          el.textContent = out;
+          if (progress < 1 || revealed.some(r => !r)) {
+            requestAnimationFrame(frame);
+          } else {
+            onDone();
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+
+      function triggerIntro() {
+        if (triggered) return;
+        triggered = true;
+        overlay.style.opacity = '1';
+
+        // Scramble title with CA animation
+        titleEl.classList.add('scrambling');
+        scramble(titleEl, TITLE_PLAIN, 950, () => {
+          titleEl.innerHTML = TITLE_HTML;
+          titleEl.classList.remove('scrambling');
+          titleEl.classList.add('settled');
+        });
+
+        // Scramble subline 300ms later
+        setTimeout(() => {
+          scramble(subEl, SUB_PLAIN, 1100, () => {
+            subEl.textContent = SUB_PLAIN;
+          });
+        }, 300);
+
+        // Glitch out after ~4.2s
+        setTimeout(() => {
+          titleEl.classList.remove('settled');
+          inner.classList.add('glitch-out');
+          setTimeout(() => { overlay.style.display = 'none'; }, 700);
+        }, 4200);
+      }
+
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting && e.intersectionRatio >= 0.3) triggerIntro(); });
+      }, { threshold: 0.3 });
+
+      const modelsSection = document.querySelector('.models-section');
+      if (modelsSection) obs.observe(modelsSection);
+    })();
+    </script>
 
     <script>
     /* ============================================================
