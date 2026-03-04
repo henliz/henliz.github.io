@@ -676,15 +676,174 @@
       font-style: italic;
     }
 
-    .testimonials-section {
-      display: none;
-    }
+    .testimonials-section { display: none; }
 
-    .testimonial-iframe {
-      width: 100%;
-      height: auto;          /* we’ll set height via JS */
-      border: none;
-      display: block;
+    /* === Press & Endorsements === */
+    .pe-section {
+      background: #0f1419;
+      padding: 5rem 0 6rem;
+      border-top: 1px solid rgba(168, 218, 220, 0.12);
+    }
+    .pe-page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+    }
+    .pe-masthead {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 4rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(168, 218, 220, 0.15);
+    }
+    .pe-rule { flex: 1; height: 1px; background: rgba(168, 218, 220, 0.15); }
+    .pe-tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(168, 218, 220, 0.45);
+      white-space: nowrap;
+      font-weight: 500;
+      font-family: ‘Montserrat’, sans-serif;
+    }
+    .pe-body {
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .pe-track-label {
+      font-family: ‘Bodoni Moda’, serif;
+      font-style: italic;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 400;
+      color: #f1faee;
+      margin-bottom: 2rem;
+      line-height: 1;
+    }
+    .pe-endorsements { display: flex; flex-direction: column; gap: 1.5rem; }
+    .pe-endorse-card {
+      padding: 1.6rem 1.75rem;
+      background: rgba(168, 218, 220, 0.04);
+      border: 1px solid rgba(168, 218, 220, 0.13);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .pe-card-header { display: flex; align-items: center; gap: 0.9rem; }
+    .pe-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top;
+      border: 1.5px solid rgba(168, 218, 220, 0.3);
+      flex-shrink: 0;
+    }
+    .pe-avatar-init {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(168, 218, 220, 0.1);
+      border: 1.5px solid rgba(168, 218, 220, 0.3);
+      font-family: ‘Montserrat’, sans-serif;
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: #a8dadc;
+      letter-spacing: 0.04em;
+    }
+    .pe-attrib { display: flex; flex-direction: column; gap: 0.15rem; }
+    .pe-name {
+      font-family: ‘Montserrat’, sans-serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #f1faee;
+      letter-spacing: 0.03em;
+    }
+    .pe-role {
+      font-family: ‘Montserrat’, sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      color: rgba(168, 218, 220, 0.55);
+    }
+    .pe-quote {
+      font-family: ‘Bodoni Moda’, serif;
+      font-style: italic;
+      font-size: clamp(0.875rem, 1.3vw, 1rem);
+      line-height: 1.7;
+      color: rgba(241, 250, 238, 0.9);
+      margin: 0;
+    }
+    .pe-quote::before { content: ‘\201C’; }
+    .pe-quote::after  { content: ‘\201D’; }
+    .pe-source {
+      font-family: ‘Montserrat’, sans-serif;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(168, 218, 220, 0.4);
+      text-decoration: none;
+      align-self: flex-start;
+      transition: color 0.2s;
+    }
+    .pe-source:hover { color: #a8dadc; }
+
+    /* Press list */
+    .pe-press-list { display: flex; flex-direction: column; }
+    .pe-press-item {
+      display: grid;
+      grid-template-columns: 90px 1fr 18px;
+      gap: 0 1.25rem;
+      align-items: start;
+      padding: 0.9rem 0.5rem 0.9rem 0;
+      border-bottom: 1px solid rgba(168, 218, 220, 0.07);
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background 0.15s, padding-left 0.15s;
+    }
+    .pe-press-item:first-child { border-top: 1px solid rgba(168, 218, 220, 0.07); }
+    .pe-press-item:hover { background: rgba(168, 218, 220, 0.03); padding-left: 0.5rem; }
+    .pe-press-date {
+      font-family: ‘DotempDemo’, monospace;
+      font-size: 0.65rem;
+      color: rgba(168, 218, 220, 0.35);
+      white-space: nowrap;
+      padding-top: 0.15rem;
+      letter-spacing: 0.04em;
+    }
+    .pe-press-text { display: flex; flex-direction: column; gap: 0.18rem; }
+    .pe-press-outlet {
+      font-family: ‘Montserrat’, sans-serif;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(168, 218, 220, 0.65);
+    }
+    .pe-press-headline {
+      font-family: ‘Montserrat’, sans-serif;
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: rgba(241, 250, 238, 0.8);
+      line-height: 1.45;
+    }
+    .pe-press-arrow {
+      color: rgba(168, 218, 220, 0.25);
+      font-size: 0.7rem;
+      padding-top: 0.25rem;
+      transition: color 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+    .pe-press-item:hover .pe-press-arrow { color: #a8dadc; transform: translateX(3px); }
+
+    @media (max-width: 820px) {
+      .pe-section { padding: 3.5rem 0 4rem; }
+      .pe-page { padding: 0 1.5rem; }
+      .pe-body { grid-template-columns: 1fr; gap: 3rem; }
+      .pe-press-item { grid-template-columns: 75px 1fr 16px; }
     }
 
 
@@ -1365,10 +1524,244 @@
           </main>
         </div>
 
-        <!-- Full-width references goofy resume section -->
-        <div class="testimonials-section">
-            <iframe id="testimonialsFrame" src="testimonials.html" class="testimonial-iframe"></iframe>
-        </div>
+        <!-- Press & Endorsements -->
+        <section class="pe-section">
+          <div class="pe-page">
+
+            <div class="pe-masthead">
+              <div class="pe-rule"></div>
+              <span class="pe-tag">press &amp; en<span class="px">dor</span>se<span class="px">men</span>ts</span>
+              <div class="pe-rule"></div>
+            </div>
+
+            <div class="pe-body">
+
+              <!-- Left: Endorsements -->
+              <div>
+                <p class="pe-track-label">en<span class="px">dor</span>se<span class="px">men</span>ts</p>
+                <div class="pe-endorsements">
+
+                  <div class="pe-endorse-card">
+                    <div class="pe-card-header">
+                      <img class="pe-avatar" src="https://uwaterloo.ca/engineering/sites/default/files/uploads/images/mary-wells-portrait-1.png" alt="Mary Wells" />
+                      <div class="pe-attrib">
+                        <span class="pe-name">Mary Wells</span>
+                        <span class="pe-role">Dean of Engineering, University of Waterloo</span>
+                      </div>
+                    </div>
+                    <p class="pe-quote">[Henrietta and Skrimp show that] AI does not have to be scary — it can be compassionate, practical, and profoundly human. It&rsquo;s a powerful reminder of how technology, when guided by compassion, can make a tangible difference in people&rsquo;s lives.</p>
+                    <a class="pe-source" href="https://www.linkedin.com/feed/update/urn:li:activity:7373331409849167872/" target="_blank" rel="noopener">LinkedIn &rarr;</a>
+                  </div>
+
+                  <div class="pe-endorse-card">
+                    <div class="pe-card-header">
+                      <img class="pe-avatar" src="https://media.licdn.com/dms/image/v2/D5603AQEaarNL9JpNjw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1715719346421?e=1774483200&v=beta&t=aZDzOUjfSy_Qja7dXFavuK-3XutW5paNE3GfurYpXJg" alt="Mary Wells" />
+                      <div class="pe-attrib">
+                        <span class="pe-name">Krysta Traianovski</span>
+                        <span class="pe-role">Associate Director of Founder Development @ Velocity</span>
+                      </div>
+                    </div>
+                    <p class="pe-quote">In the age of AI it's really important that we try and focus on the value that we're giving to our potential customers, and Henrietta is a shining example of this.</p>
+                    <a class="pe-source" href="https://www.linkedin.com/feed/update/urn:li:activity:7426654602227343362/" target="_blank" rel="noopener">RogersTV Feature &rarr;</a>
+                  </div>
+
+                  <div class="pe-endorse-card">
+                    <div class="pe-card-header">
+                      <div class="pe-avatar-init">LF</div>
+                      <div class="pe-attrib">
+                        <span class="pe-name">Lisa Freeman</span>
+                        <span class="pe-role">Skrimp user &mdash; via CTV News Kitchener</span>
+                      </div>
+                    </div>
+                    <p class="pe-quote">It&rsquo;s pretty easy to use, very straightforward. I appreciated that the recipes weren&rsquo;t making me go find 11 random ingredients I&rsquo;d never use again &mdash; or things I know my kids wouldn&rsquo;t even try.</p>
+                    <a class="pe-source" href="https://www.ctvnews.ca/kitchener/article/university-of-waterloo-student-uses-ai-to-save-families-money-on-grocery-bills/" target="_blank" rel="noopener">CTV News &rarr;</a>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Right: Press -->
+              <div>
+                <p class="pe-track-label">press</p>
+                <div class="pe-press-list">
+
+                  <a class="pe-press-item" href="https://frvr.com/blog/news/baldurs-gate-3-fan-expansion-path-to-menzoberranzan-expanding-team-as-alpha-launch-looms/" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Feb 3, 2026</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">FRVR &middot; PtM</span>
+                      <span class="pe-press-headline">Path to Menzoberranzan Expanding Team as Alpha Launch Looms</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.pcguide.com/news/devs-of-the-biggest-baldurs-gate-3-mod-say-they-are-off-to-a-great-2026-but-looking-for-even-more-help/" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Feb 2, 2026</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">PC Guide &middot; PtM</span>
+                      <span class="pe-press-headline">Devs of the Biggest BG3 Mod Say They Are &ldquo;Off to a Great 2026&rdquo;</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://educationnewscanada.com/article/education/level/university/1/1178545/waterloo-student-tackles-grocery-prices-with-ai-powered-app.html" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Jan 9, 2026</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">Education News Canada &middot; Skrimp</span>
+                      <span class="pe-press-headline">Waterloo student tackles grocery prices with AI-powered app</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://uwaterloo.ca/news/waterloo-student-tackles-grocery-prices-ai-app" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Jan 8, 2026</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">UWaterloo News &middot; Skrimp</span>
+                      <span class="pe-press-headline">Waterloo student tackles grocery prices with AI-powered app</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.waterlooregiondailybulletin.com" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Dec 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">Waterloo Region Record &middot; Skrimp</span>
+                      <span class="pe-press-headline">Heroes and zeroes in 2025 &mdash; Skrimp named a hero</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.thegamer.com/baldurs-gate-3-path-to-menzoberranzan-alpha-2026-release/" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Nov 6, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">TheGamer &middot; PtM</span>
+                      <span class="pe-press-headline">Gigantic Baldur&rsquo;s Gate 3 Custom Campaign Plans To Release Tutorial Next Year</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.gamereactor.eu/baldurs-gate-iii-path-to-menzoberranzan-mod-project-will-launch-an-alpha-in-the-first-half-of-2026-1629153/" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Nov 6, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">GameReactor &middot; PtM</span>
+                      <span class="pe-press-headline">BG3&rsquo;s Path to Menzoberranzan Mod Project Will Launch an Alpha in H1 2026</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://kotaku.com/baldurs-gate-3-campaign-fan-mod-path-to-menzoberranzan-2000641395" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Nov 5, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">Kotaku &middot; PtM</span>
+                      <span class="pe-press-headline">If You&rsquo;ve Finally Run Out Of Stuff To Do In Baldur&rsquo;s Gate 3, How About A New Campaign?</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://wccftech.com/baldurs-gate-3-path-to-menzoberranzan-mod-alpha-by-june-2026/" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Nov 5, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">WCCFTech &middot; PtM</span>
+                      <span class="pe-press-headline">Baldur&rsquo;s Gate 3 Path to Menzoberranzan Mod to Get First Playable Alpha By June 2026</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.therecord.com/news/waterloo-region/ai-isnt-always-scary-uw-student-helps-families-save-money-on-groceries/article_45f84cea-663f-5f2b-bb73-d66f190899f9.html" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Fall 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">Waterloo Region Record &middot; Skrimp</span>
+                      <span class="pe-press-headline">&ldquo;AI isn&rsquo;t always scary&rdquo;: UW student helps families save hundreds on groceries</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.ctvnews.ca/video/2025/09/23/skrimp-is-your-personal-a-i-sous-chef-creator-of-skrimpai-app/" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Sep 23, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">CTV News Kitchener &middot; Skrimp</span>
+                      <span class="pe-press-headline">&ldquo;Skrimp is your personal A.I. sous chef&rdquo; — Creator of Skrimp.AI</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.ctvnews.ca/kitchener/article/university-of-waterloo-student-uses-ai-to-save-families-money-on-grocery-bills/" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Sep 22, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">CTV News Kitchener &middot; Skrimp</span>
+                      <span class="pe-press-headline">University of Waterloo student uses A.I. to save families money on grocery bills</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://uwaterloo.ca/associate-provost-co-operative-and-experiential-education/news/student-creates-ai-tool-to-save-on-groceries" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Sep 22, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">UWaterloo Co-op &middot; Skrimp</span>
+                      <span class="pe-press-headline">Student creates AI tool to save on groceries</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.cambridgetoday.ca/helpers/young-cambridge-entrepreneur-develops-ai-app-to-cut-food-costs-for-families-11165684" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Sep 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">CambridgeToday &middot; Skrimp</span>
+                      <span class="pe-press-headline">Young Cambridge entrepreneur develops AI app to cut food costs for families</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.villagereport.ca/village-picks/young-entrepreneur-develops-ai-app-to-cut-food-costs-for-families-11169646" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Sep 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">Village Report &middot; Skrimp</span>
+                      <span class="pe-press-headline">Young entrepreneur develops AI app to cut food costs for families</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://uwaterloo.ca/stratford-school-of-interaction-design-and-business/news/gbda-startup-skrimpai-awarded-spring-2025-e-launch-award" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Jul 15, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">UWaterloo Stratford &middot; Skrimp</span>
+                      <span class="pe-press-headline">GBDA startup Skrimp.AI awarded Spring 2025 E-Launch Award</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://uwaterloo.ca/conrad-school-entrepreneurship-business/news/meet-spring-2025-enterprise-co-op-pitch-winners" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Jun 23, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">Conrad School &middot; Skrimp</span>
+                      <span class="pe-press-headline">Meet the Spring 2025 Enterprise Co-op Pitch Winners</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.thegamer.com/baldurs-gate-3-custom-campaign-path-to-menzoberranzan-over-100-volunteer-developers/" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Apr 14, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">TheGamer &middot; PtM</span>
+                      <span class="pe-press-headline">Fan-Made Baldur&rsquo;s Gate 3 Expansion Path To Menzoberranzan Has Over 100 Volunteer Developers</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                  <a class="pe-press-item" href="https://www.thegamer.com/baldurs-gate-3-path-to-menzoberranzan-custom-campaign-upate-underdark/" target="_blank" rel="noopener">
+                    <span class="pe-press-date">Mar 12, 2025</span>
+                    <span class="pe-press-text">
+                      <span class="pe-press-outlet">TheGamer &middot; PtM</span>
+                      <span class="pe-press-headline">&ldquo;I&rsquo;m So Psyched For This&rdquo;: Returning To The Underdark In This Custom BG3 Campaign</span>
+                    </span>
+                    <span class="pe-press-arrow">&rarr;</span>
+                  </a>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
     </div>
 
 

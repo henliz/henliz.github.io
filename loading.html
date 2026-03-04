@@ -73,6 +73,8 @@
         #matrix-canvas {
             position: fixed;
             inset: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 1;
             opacity: 0.75;
         }
@@ -492,17 +494,21 @@
         }
 
         // ── Init ──────────────────────────────────────────────
-        document.addEventListener('DOMContentLoaded', () => {
+        function init() {
             initMatrix();
             window.addEventListener('resize', initMatrix);
-            // Start immediately — canvas re-reads ctx.font every frame,
-            // so DotempDemo kicks in automatically once it loads
             setInterval(drawMatrix, 55); // ~18 fps — chunky pixel feel
-
             updateEasterEggHint();
             cycleLoadingMessages();
             startLoading();
-        });
+        }
+        // DOMContentLoaded may have already fired by the time an inline
+        // bottom-of-body script registers a listener — check readyState first.
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 </html>
