@@ -450,7 +450,13 @@
     const atBottom = () => progressGoal >= 1-EPS;
 
     function onWheel(e){
-      if((atTop()&&e.deltaY<0)||(atBottom()&&e.deltaY>0)) return;
+      if((atTop()&&e.deltaY<0)||(atBottom()&&e.deltaY>0)){
+        window.parent.dispatchEvent(new WheelEvent('wheel',{
+          deltaY:e.deltaY, deltaX:e.deltaX, deltaMode:e.deltaMode,
+          bubbles:true, cancelable:true
+        }));
+        return;
+      }
       e.preventDefault();
       progressGoal = THREE.MathUtils.clamp(progressGoal+e.deltaY*SCROLL_K,0,1);
     }
@@ -458,7 +464,10 @@
     function onTouchStart(e){touchY=e.changedTouches[0].screenY;}
     function onTouchMove(e){
       const dy=touchY-e.changedTouches[0].screenY; touchY=e.changedTouches[0].screenY;
-      if((atTop()&&dy<0)||(atBottom()&&dy>0)) return;
+      if((atTop()&&dy<0)||(atBottom()&&dy>0)){
+        window.parent.postMessage({ type:'iframeScroll', deltaY: dy }, '*');
+        return;
+      }
       e.preventDefault();
       progressGoal=THREE.MathUtils.clamp(progressGoal+dy*TOUCH_K,0,1);
     }

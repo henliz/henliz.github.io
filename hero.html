@@ -621,7 +621,8 @@
             .tagline:hover .tagline-tooltip { transform: translateX(-50%) translateY(0); }
             .role-line      { margin-bottom: 1.5rem; }
             .eyebrow        { justify-content: center; }
-            .hero-actions   { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+            .hero-actions   { align-items: center; gap: 1rem; }
+            .cta-group      { flex-wrap: wrap; justify-content: center; gap: 0.65rem; }
             .social-row     { justify-content: center; }
             .photo-frame    { width: 220px; height: 285px; }
         }
@@ -834,6 +835,14 @@
     <script type="module">
         import * as THREE from "three";
         import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
+
+        // ── Wheel relay → parent (Lenis) ─────────────────────
+        window.addEventListener('wheel', e => {
+          window.parent.dispatchEvent(new WheelEvent('wheel',{
+            deltaY:e.deltaY, deltaX:e.deltaX, deltaMode:e.deltaMode,
+            bubbles:true, cancelable:true
+          }));
+        }, {passive:true});
 
         // ── Cursor relay → parent ────────────────────────────
         document.addEventListener('mousemove', (e) => {
