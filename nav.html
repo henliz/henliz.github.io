@@ -2,111 +2,231 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Navbar Component</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 
   <style>
-    /* Reset & base */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Montserrat', sans-serif; background: transparent; color: #fff; overflow-x: hidden; }
+    /* ---- font ---- */
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('/fonts/DotempDemo.ttf') format('truetype');
+      font-weight: normal; font-style: normal;
+    }
+    .px { font-family: 'DotempDemo', monospace; font-style: normal; font-weight: 400; font-size: 0.88em; }
+    .di { font-family: 'Didot', serif; font-style: italic; font-weight: 700; }
 
-    /* NAV */
-    .navbar{
-      position: fixed; top: 0; width: 100%;
-      background: rgba(15,20,25,0.95);
-      backdrop-filter: blur(15px);
+    /* ---- reset ---- */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ---- navbar ---- */
+    .navbar {
+      position: fixed;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border: 1px solid transparent;
+      border-radius: 0;
+      box-shadow: none;
       z-index: 1000;
       padding: 1rem 2rem;
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      overflow: hidden;
+      transition:
+        top           0.55s cubic-bezier(0.34, 1.2, 0.64, 1),
+        width         0.55s cubic-bezier(0.34, 1.2, 0.64, 1),
+        border-radius 0.55s cubic-bezier(0.34, 1.2, 0.64, 1),
+        padding       0.35s ease,
+        background    0.40s ease,
+        border-color  0.40s ease,
+        box-shadow    0.40s ease;
+      will-change: top, width, border-radius;
+    }
+
+    /* specular rim — fades in with pill */
+    .navbar::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      box-shadow:
+        inset 1.5px 2px 4px rgba(255,255,255,0.48),
+        inset -1px -1.5px 3px rgba(255,255,255,0.13);
+      background: linear-gradient(
+        145deg,
+        rgba(255,255,255,0.13) 0%,
+        rgba(255,255,255,0.04) 22%,
+        transparent 48%
+      );
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.40s ease;
+    }
+    .navbar.pill::before { opacity: 1; }
+    .navbar > * { position: relative; z-index: 1; }
+
+    /* pill state — liquid glass on scroll */
+    .navbar.pill {
+      top: calc(14px + var(--pill-parallax, 0px));
+      width: min(1300px, 95%);
+      border-radius: 999px;
+      padding: 0.65rem 1.7rem;
+      background: rgba(15,20,25,0.68);
+      backdrop-filter: url(#navbar-lg) blur(2px);
+      -webkit-backdrop-filter: blur(14px) saturate(170%);
+      border-color: rgba(168,218,220,0.28);
+      box-shadow:
+        0 10px 36px rgba(0,0,0,0.52),
+        0 2px 8px rgba(0,0,0,0.28);
+    }
+
+    /* logo */
+    .navbar .logo {
+      text-decoration: none; cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex; align-items: center;
+    }
+    .navbar .logo img { height: 40px; width: auto; transition: all 0.3s ease; }
+    .navbar .logo:hover img { transform: scale(1.05); filter: brightness(1.2); }
+
+    /* nav links */
+    .navbar .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .navbar .nav-links a {
+      font-family: 'Didot', serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #f1faee;
+      text-decoration: none;
+      transition: all 0.3s;
+      position: relative;
+    }
+    .navbar .nav-links a:hover { color: #a8dadc; }
+    .navbar .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -5px; left: 0;
+      width: 0; height: 2px;
+      background: linear-gradient(45deg, #a8dadc, #2a9d8f);
+      transition: width 0.3s;
+    }
+    .navbar .nav-links a:hover::after { width: 100%; }
+
+    /* hamburger */
+    .hamburger {
+      display: none; flex-direction: column; cursor: pointer;
+      padding: 0.5rem; border-radius: 8px;
+      transition: all 0.3s ease;
+      background: rgba(168,218,220,0.1);
+    }
+    .hamburger:hover { background: rgba(168,218,220,0.2); }
+    .hamburger span {
+      width: 25px; height: 3px; background: #a8dadc;
+      margin: 3px 0; transition: all 0.3s ease; border-radius: 2px;
+    }
+    .hamburger.active span:nth-child(1) { transform: rotate(-45deg) translate(-5px,6px); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(45deg) translate(-5px,-6px); }
+
+    /* mobile menu */
+    .mobile-menu {
+      position: fixed; top: 0; right: -100%;
+      width: 80%; max-width: 300px; height: 100vh;
+      background: rgba(15,20,25,0.98);
+      backdrop-filter: blur(20px);
+      transition: right 0.3s ease;
+      padding: 5rem 2rem 2rem;
+      z-index: 999;
+      border-left: 1px solid rgba(168,218,220,0.2);
+    }
+    .mobile-menu.active { right: 0; }
+    .mobile-menu ul { list-style: none; padding: 0; }
+    .mobile-menu ul li { margin: 2rem 0; }
+    .mobile-menu ul li a {
+      font-family: 'Didot', serif;
+      font-style: italic;
+      font-weight: 700;
+      color: #f1faee;
+      text-decoration: none;
+      font-size: 1.2rem;
+      display: block;
+      padding: 1rem 0;
       border-bottom: 1px solid rgba(168,218,220,0.1);
+      transition: all 0.3s ease;
     }
-    .logo{ display:flex; align-items:center; text-decoration:none; transition:.3s; }
-    .logo img{ height:40px; width:auto; transition:.3s; }
-    .logo:hover img{ transform:scale(1.05); filter:brightness(1.2); }
+    .mobile-menu ul li a:hover {
+      color: #a8dadc; padding-left: 1rem;
+      background: rgba(168,218,220,0.05);
+    }
 
-    .nav-links{ display:flex; gap:2rem; list-style:none; }
-    .nav-links a{
-      color:#f1faee; text-decoration:none; font-weight:500; position:relative; transition:.3s;
+    /* overlay */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 998; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease;
     }
-    .nav-links a:hover{ color:#a8dadc; }
-    .nav-links a::after{
-      content:''; position:absolute; bottom:-5px; left:0; width:0; height:2px;
-      background:linear-gradient(45deg,#a8dadc,#2a9d8f); transition:width .3s;
-    }
-    .nav-links a:hover::after{ width:100%; }
+    .overlay.active { opacity: 1; visibility: visible; }
 
-    /* Mobile menu */
-    .hamburger{ display:none; flex-direction:column; cursor:pointer; padding:.5rem; border-radius:8px; transition:.3s; background:rgba(168,218,220,.1); }
-    .hamburger:hover{ background:rgba(168,218,220,.2); }
-    .hamburger span{ width:25px; height:3px; background:#a8dadc; margin:3px 0; transition:.3s; border-radius:2px; }
-    .hamburger.active span:nth-child(1){ transform:rotate(-45deg) translate(-5px,6px); }
-    .hamburger.active span:nth-child(2){ opacity:0; }
-    .hamburger.active span:nth-child(3){ transform:rotate(45deg) translate(-5px,-6px); }
+    /* resume popup */
+    #resume-popup {
+      display: none; position: fixed;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      background: #0f1419; padding: 1rem; border-radius: 12px;
+      z-index: 1100; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      width: 95vw; height: 95vh; overflow: hidden;
+      border: 1px solid rgba(168,218,220,0.2);
+    }
+    .contact-link {
+      padding: 1rem 2rem; background: rgba(168,218,220,0.1);
+      border-radius: 15px; color: #f1faee; text-decoration: none;
+      font-weight: 500; border: 1px solid rgba(168,218,220,0.2);
+      display: inline-block; margin: 0 0.5rem; transition: 0.3s;
+    }
+    .contact-link:hover {
+      background: rgba(42,157,143,0.2); transform: translateY(-3px);
+      color: #a8dadc; border-color: rgba(42,157,143,0.4);
+    }
 
-    .mobile-menu{
-      position:fixed; top:0; right:-100%;
-      width:80%; max-width:300px; height:100vh;
-      background:rgba(15,20,25,.98); backdrop-filter:blur(20px);
-      transition:right .3s; padding:5rem 2rem 2rem; z-index:999;
-      border-left:1px solid rgba(168,218,220,.2);
+    @media (max-width: 768px) {
+      .navbar { padding: 1rem; }
+      .navbar.pill { width: 94%; padding: 0.55rem 1.2rem; }
+      .navbar .nav-links { display: none; }
+      .hamburger { display: flex; }
     }
-    .mobile-menu.active{ right:0; }
-    .mobile-menu ul{ list-style:none; }
-    .mobile-menu li{ margin:2rem 0; }
-    .mobile-menu a{
-      color:#f1faee; text-decoration:none; font-size:1.2rem; font-weight:500; display:block; padding:1rem 0;
-      border-bottom:1px solid rgba(168,218,220,.1); transition:.3s;
-    }
-    .mobile-menu a:hover{ color:#a8dadc; padding-left:1rem; background:rgba(168,218,220,.05); }
-
-    .overlay{
-      position:fixed; inset:0; background:rgba(0,0,0,.5);
-      z-index:998; opacity:0; visibility:hidden; transition:.3s;
-    }
-    .overlay.active{ opacity:1; visibility:visible; }
-
-    @media (max-width:768px){
-      .navbar{ padding:1rem; }
-      .nav-links{ display:none; }
-      .hamburger{ display:flex; }
-    }
-    @media (max-width:480px){ .navbar{ padding:.8rem; } }
-
-    /* Resume Popup */
-    #resume-popup{
-      display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-      background:#0f1419; padding:1rem; border-radius:12px; z-index:1100;
-      box-shadow:0 0 20px rgba(0,0,0,.5); width:95vw; height:95vh; overflow:hidden;
-      border:1px solid rgba(168,218,220,.2);
-    }
-    .contact-link{
-      padding:1rem 2rem; background:rgba(168,218,220,.1); border-radius:15px;
-      color:#f1faee; text-decoration:none; font-weight:500; border:1px solid rgba(168,218,220,.2);
-      display:inline-block; margin:0 .5rem; transition:.3s;
-    }
-    .contact-link:hover{ background:rgba(42,157,143,.2); transform:translateY(-3px); color:#a8dadc; border-color:rgba(42,157,143,.4); }
-
-    @media (max-width:600px){
-      #resume-popup{ width:95% !important; height:85vh !important; padding:.8rem !important; border-radius:10px !important; }
-      #resume-popup embed{ height:75vh !important; }
-      #resume-popup button{ padding:.3rem .7rem !important; font-size:.9rem !important; }
-      #resume-popup p{ font-size:1rem !important; }
-      #resume-popup .contact-link{ display:block; margin:.5rem 0; }
+    @media (max-width: 480px) { .navbar { padding: 0.8rem; } }
+    @media (max-width: 600px) {
+      #resume-popup { width: 95% !important; height: 85vh !important; padding: 0.8rem !important; border-radius: 10px !important; }
+      #resume-popup embed { height: 75vh !important; }
+      #resume-popup button { padding: 0.3rem 0.7rem !important; font-size: 0.9rem !important; }
+      #resume-popup .contact-link { display: block; margin: 0.5rem 0; }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar">
-    <a href="/index.html" class="logo" aria-label="Go to top">   <!-- always root index -->
-      <img src="/HenLogo.png" alt="Henlogo">
+
+  <!-- SVG liquid-glass displacement filter (same as main portfolio) -->
+  <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="navbar-lg" x="-4%" y="-50%" width="108%" height="200%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.011 0.007" numOctaves="2" seed="12" result="noise"/>
+        <feGaussianBlur in="noise" stdDeviation="6" result="lensMap"/>
+        <feDisplacementMap in="SourceGraphic" in2="lensMap" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <nav class="navbar" id="main-navbar">
+    <a href="/index.html" class="logo" aria-label="Home">
+      <img src="/HenLogo.png" alt="Hen">
     </a>
     <ul class="nav-links">
-        <li><a href="javascript:void(0)" onclick="openResumePopup()">Resume</a></li>
-        <li><a href="/index.html#projects">Projects</a></li>   <!-- always root#index -->
-        <li><a href="/about.html">About</a></li>
-        <li><a href="#contact">Contact</a></li>                 <!-- stays on this page -->
+      <li><a href="javascript:void(0)" onclick="openResumePopup()">Re<span class="px">sum</span>e</a></li>
+      <li><a href="/index.html#projects">W<span class="px">or</span>k</a></li>
+      <li><a href="/about.html">A<span class="px">bo</span>ut</a></li>
     </ul>
     <div class="hamburger" onclick="toggleMobileMenu()" aria-label="Toggle menu">
       <span></span><span></span><span></span>
@@ -116,90 +236,69 @@
   <div class="overlay" onclick="closeMobileMenu()"></div>
   <div class="mobile-menu" role="menu">
     <ul>
-      <li><a href="javascript:void(0)" onclick="openResumePopup(); closeMobileMenu()">Resume</a></li>
-      <li><a href="/index.html#projects" onclick="closeMobileMenu()">Projects</a></li>
-        <li><a href="/about.html" onclick="closeMobileMenu()">About</a></li>
-        <li><a href="#contact" onclick="closeMobileMenu()">Contact</a></li>
+      <li><a href="javascript:void(0)" onclick="openResumePopup(); closeMobileMenu()">Re<span class="px">sum</span>e</a></li>
+      <li><a href="/index.html#projects" onclick="closeMobileMenu()">W<span class="px">or</span>k</a></li>
+      <li><a href="/about.html" onclick="closeMobileMenu()">A<span class="px">bo</span>ut</a></li>
     </ul>
   </div>
 
-  <!-- Resume Popup -->
+  <!-- Resume popup -->
   <div id="resume-popup" role="dialog" aria-modal="true" aria-label="Resume">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">
       <p style="color:#f1faee;font-size:1.2rem;margin:0;">📄 My Resume</p>
-      <button onclick="closeResumePopup()" style="background:transparent;color:white;padding:.4rem .8rem;border:none;border-radius:8px;">Close</button>
+      <button onclick="closeResumePopup()" style="background:transparent;color:white;padding:.4rem .8rem;border:none;border-radius:8px;cursor:pointer;">Close</button>
     </div>
-
     <embed src="/Henrietta_van_Niekerk_Resume_2025.pdf#zoom=100" type="application/pdf" style="width:100%;height:100%;border:none;border-radius:8px;">
-
     <div style="margin-top:1rem;text-align:center;">
-      <a href="/HHenrietta_van_Niekerk_Resume_2025.pdf" download class="contact-link">Download PDF</a>
-      <a id="email-share" href="#" class="contact-link">Send via Email</a>
+      <a href="/Henrietta_van_Niekerk_Resume_2025.pdf" download class="contact-link">Download PDF</a>
+      <a id="nav-email-share" href="#" class="contact-link">Send via Email</a>
     </div>
   </div>
 
   <script>
-    // --- Section navigation (works from /Skrimp/index.html or root /index.html) ---
-    function getRootIndex() {
-      return location.pathname.startsWith('/Skrimp/')
-        ? '/Skrimp/index.html'
-        : '/index.html';
-    }
-    function navigateToSection(sectionId) {
-      const root = getRootIndex();
-      const target = sectionId === 'home' ? `${root}?loaded=true` : `${root}?loaded=true#${sectionId}`;
-      (window.top || window).location.href = target;
-    }
-
     // --- Mobile menu ---
-    function toggleMobileMenu(){
-      const hamburger = document.querySelector('.hamburger');
-      const mobileMenu = document.querySelector('.mobile-menu');
-      const overlay = document.querySelector('.overlay');
-
-      hamburger.classList.toggle('active');
-      mobileMenu.classList.toggle('active');
-      overlay.classList.toggle('active');
-
-      document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
-
-      // If this nav is inside an iframe (rare), inform parent to lock/unlock scroll
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: mobileMenu.classList.contains('active') ? 'lockScroll' : 'unlockScroll' }, '*');
-      }
+    function toggleMobileMenu() {
+      const ham  = document.querySelector('.hamburger');
+      const menu = document.querySelector('.mobile-menu');
+      const ov   = document.querySelector('.overlay');
+      ham.classList.toggle('active');
+      menu.classList.toggle('active');
+      ov.classList.toggle('active');
+      document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : '';
     }
-    function closeMobileMenu(){
+    function closeMobileMenu() {
       document.querySelector('.hamburger').classList.remove('active');
       document.querySelector('.mobile-menu').classList.remove('active');
       document.querySelector('.overlay').classList.remove('active');
-      document.body.style.overflow = 'auto';
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'unlockScroll' }, '*');
-      }
+      document.body.style.overflow = '';
     }
-    document.addEventListener('click', (e)=>{
+    document.addEventListener('click', e => {
       const menu = document.querySelector('.mobile-menu');
       const ham  = document.querySelector('.hamburger');
-      if (menu.classList.contains('active') && !menu.contains(e.target) && !ham.contains(e.target)) {
+      if (menu && menu.classList.contains('active') && !menu.contains(e.target) && !ham.contains(e.target)) {
         closeMobileMenu();
       }
     });
-    window.addEventListener('message', (event) => {
-      if (event.data?.type === 'closeMenu') closeMobileMenu();
-    });
 
     // --- Resume popup ---
-    function openResumePopup(){ document.getElementById('resume-popup').style.display = 'block'; }
-    function closeResumePopup(){ document.getElementById('resume-popup').style.display = 'none'; }
-
-    // Fix the email share link to avoid double slashes and always use your origin
+    function openResumePopup()  { document.getElementById('resume-popup').style.display = 'block'; }
+    function closeResumePopup() { document.getElementById('resume-popup').style.display = 'none'; }
     (function(){
-      const a = document.getElementById('email-share');
-      const resumeURL = `${location.origin}/Henrietta_van_Niekerk_Resume_2025.pdf`;
-      a.href = `mailto:?subject=My Resume&body=Here is my resume: ${encodeURI(resumeURL)}`;
+      const a = document.getElementById('nav-email-share');
+      if (a) a.href = `mailto:?subject=Hen's Resume&body=Here is my resume: ${encodeURI(location.origin + '/Henrietta_van_Niekerk_Resume_2025.pdf')}`;
     })();
 
-    console.log('Navbar loaded ✅');
+    // --- Pill scroll behaviour ---
+    (function(){
+      const nav = document.getElementById('main-navbar');
+      if (!nav) return;
+      function update() {
+        const scrolled = (window.scrollY || document.documentElement.scrollTop) > 60;
+        nav.classList.toggle('pill', scrolled);
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      update(); // run once on load in case page is already scrolled
+    })();
   </script>
 </body>
 </html>

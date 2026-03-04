@@ -8,30 +8,33 @@
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
 
   <style>
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('../fonts/DotempDemo.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    /* Font-mix classes — matches main portfolio */
+    .px { font-family: 'DotempDemo', monospace; font-style: normal; font-weight: 400; font-size: 0.9em; }
+    .di { font-family: 'Didot', 'Cormorant Garamond', serif; font-style: italic; font-weight: 700; }
+
     :root{
       --text-primary:#f1faee;
       --text-secondary:#a8dadc;
       --accent-teal:#2a9d8f;
       --accent-blue:#457b9d;
-
-      /* darker, bluer glass */
       --glass-deep-1: rgba(8, 14, 26, 0.88);
       --glass-deep-2: rgba(13, 22, 43, 0.94);
       --glass-border: rgba(168,218,220,0.18);
       --glass-highlight-1: rgba(168,218,220,.08);
       --glass-highlight-2: rgba(69,123,157,.10);
-
       --glass-bg: rgba(15,20,25,0.35);
-      --circle-size: 100;
-      --circle-radius: 45;
-      --circle-track: rgba(168,218,220,0.3);
-
       --inner-card: rgba(15,20,25,.40);
-
-      --circle-circumference: 282.743;
+      --rule: rgba(168,218,220,0.22);
     }
 
     /* reset + base */
@@ -52,33 +55,99 @@
     *,*::before,*::after{cursor:none !important}
 
     @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-    h1,h2,h3,h4{color:var(--text-secondary);font-family:'Montserrat Alternates',sans-serif;text-shadow:0 2px 4px rgba(0,0,0,.3)}
 
-    /* ------------------------
-       HERO WRAPPER (keeps the container in place)
-       ------------------------ */
+    /* --- TYPE HIERARCHY --- */
+    h1,h2,h3,h4{font-family:'Montserrat Alternates',sans-serif}
+
+    /* Section eyebrow label */
+    .eyebrow{
+      display:block;
+      font-size:.72rem;
+      font-weight:700;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--accent-teal);
+      margin-bottom:.6rem;
+      opacity:.85;
+    }
+
+    /* Editorial section heading — base font is overridden per-char after scramble */
+    .section-heading{
+      font-size: clamp(1.6rem,3.5vw,2.6rem);
+      font-weight:700;
+      color:var(--text-secondary);
+      line-height:1.15;
+      margin-bottom:1.25rem;
+      font-family: 'Didot', 'Cormorant Garamond', serif;
+      font-style: italic;
+      letter-spacing: 0.06em;
+    }
+    /* During scramble: monospace pixel font + CA pulse */
+    .section-heading.h-scrambling{
+      font-family: 'DotempDemo', monospace !important;
+      font-style: normal !important;
+      animation: hCaScramble 0.7s ease-in-out infinite;
+    }
+    /* After settle: gentle residual CA */
+    .section-heading.h-settled{
+      animation: hCaSettle 3s ease-in-out infinite;
+    }
+
+    /* Hero title — font-mix + scramble, gradient preserved */
+    .intro-left h1{
+      letter-spacing: 0.06em;
+    }
+    .intro-left h1.h-scrambling{
+      font-family: 'DotempDemo', monospace !important;
+      font-style: normal !important;
+      animation: gradientShift 4s ease infinite, hCaScramble 0.7s ease-in-out infinite !important;
+    }
+    .intro-left h1.h-settled{
+      animation: gradientShift 4s ease infinite, hCaSettle 3s ease-in-out infinite !important;
+    }
+
+    @keyframes hCaScramble {
+      0%   { text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(102,252,241,0.55); }
+      18%  { text-shadow: 5px 0 rgba(255,30,60,0.8),  -5px 0 rgba(102,252,241,0.8);  clip-path: inset(0 0 88% 0); }
+      19%  { clip-path: inset(0 0 0 0); }
+      40%  { text-shadow: 1px 0 rgba(255,30,60,0.3),  -1px 0 rgba(102,252,241,0.3); }
+      57%  { text-shadow: 6px 0 rgba(255,30,60,0.85), -6px 0 rgba(102,252,241,0.85); clip-path: inset(72% 0 0 0); }
+      58%  { clip-path: inset(0 0 0 0); }
+      100% { text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(102,252,241,0.55); }
+    }
+    @keyframes hCaSettle {
+      0%, 100% { text-shadow: 1.5px 0 rgba(255,30,60,0.18), -1.5px 0 rgba(102,252,241,0.18); }
+      50%       { text-shadow: 2.5px 0 rgba(255,30,60,0.28), -2.5px 0 rgba(102,252,241,0.28); }
+    }
+
+    /* Sub-heading */
+    .sub-heading{
+      font-size: clamp(1.15rem,2vw,1.5rem);
+      font-weight:600;
+      color:var(--text-secondary);
+      margin-bottom:.75rem;
+    }
+
+    /* --- HERO WRAPPER --- */
     .hero{
-      /* was 100vh; we want the container to extend far below, so let content drive height */
       padding: clamp(56px, 8vh, 88px) 0 0;
       display:flex;
       justify-content:center;
     }
 
-    /* ------------------------
-       THE JAGUAR CONTAINER -> long runner
-       ------------------------ */
+    /* --- MAIN CONTAINER --- */
     .hero-container{
-      width: min(1080px, 90vw);              /* narrower */
-      margin: 0 auto clamp(24px, 4vh, 48px); /* same left/top placement, bottom spacing */
+      width: min(1080px, 90vw);
+      margin: 0 auto clamp(24px, 4vh, 48px);
       border-radius: 26px;
-      padding: clamp(18px, 2.4vw, 40px);     /* inner padding */
+      padding: clamp(18px, 2.4vw, 40px);
       position: relative;
       background: linear-gradient(145deg, var(--glass-deep-1), var(--glass-deep-2));
       border: 1px solid var(--glass-border);
       backdrop-filter: blur(18px) saturate(120%);
       -webkit-backdrop-filter: blur(18px) saturate(120%);
       box-shadow: 0 24px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
-      overflow: hidden; /* clip highlights */
+      overflow: hidden;
     }
     .hero-container::before,
     .hero-container::after{
@@ -90,288 +159,275 @@
       mix-blend-mode:screen; opacity:.7;
     }
 
-    /* top two-column header INSIDE the container */
+    /* --- HERO INTRO --- */
     .intro{
       display:flex; justify-content:space-between; align-items:flex-start; gap:2rem;
-      background: var(--inner-card);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
       padding: 2.25rem;
-      box-shadow: 0 8px 32px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08);
-      margin-bottom: clamp(24px, 4vh, 48px);
+      border-bottom:1px solid var(--rule);
+      margin-bottom: clamp(24px, 4vh, 40px);
     }
     .intro-left{flex:1; padding-right:2rem}
     .intro-left h1{
-      font-size: clamp(2.4rem, 6vw, 5rem); font-weight:800; line-height:1.1; margin-bottom:.75rem;
+      font-size: clamp(2.6rem, 7vw, 5.5rem); font-weight:800; line-height:1.05; margin-bottom:.6rem;
       background:linear-gradient(45deg,#a8dadc,#457b9d,#f1faee,#66fcf1,#2a9d8f);
       background-size:300% 300%;
       -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
       animation:gradientShift 4s ease infinite;
     }
-    .intro-left h2{font-size: clamp(1.25rem, 2.4vw, 2rem); font-weight:400; color:var(--text-secondary)}
-    .intro-right{max-width:40%; display:flex; flex-direction:column; gap:1rem; align-items:flex-left}
-    /* Apply left alignment to the whole block */
-    .header-info { text-align: left; }
-
-    .header-info p{
-      font-size: 1rem;
-      margin-bottom: .5rem;
-      color: var(--text-primary);
-      /* text-align removed (inherits left) */
+    .intro-left .tagline{
+      font-family: 'Cormorant Garamond', 'Didot', serif;
+      font-style: italic;
+      font-size: clamp(1.15rem, 2.2vw, 1.65rem);
+      font-weight:400;
+      color:var(--text-secondary);
+      margin-bottom:1rem;
+      line-height:1.4;
+      letter-spacing: 0.02em;
     }
+    .intro-right{max-width:38%; display:flex; flex-direction:column; gap:.75rem; align-items:flex-start}
+    .header-info p{font-size:.95rem; margin-bottom:.4rem; color:var(--text-primary)}
+    .header-info ul{color:var(--text-secondary); margin:.2rem 0 0 1.2rem; font-size:.9rem; line-height:1.8}
 
-    .header-info ul{
-      color: var(--text-secondary);
-      margin: .25rem 0 0 1.5rem;   /* left indent instead of right */
-      /* optional for bullets: */
-      /* padding-left: 1rem; */
+    /* TL;DR pills */
+    .tldr-pills{
+      display:flex; flex-wrap:wrap; gap:6px 8px; margin-top:.85rem; padding:0; list-style:none;
     }
-
-
-    .skip-link{margin-top:1rem}
-    .skip-button{
-      display:inline-block;background:linear-gradient(45deg,var(--accent-teal),var(--accent-blue));
-      color:var(--text-primary);font-size:.9rem;font-weight:700;text-transform:uppercase;
-      padding:1rem 2rem;border:none;border-radius:50px;transition:all .3s ease;box-shadow:0 4px 15px rgba(42,157,143,.4);position:relative;overflow:hidden
-    }
-    .skip-button:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(42,157,143,.6)}
-    .skip-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s}
-    .skip-button:hover::before{left:100%}
-
-   /* shared section spacing INSIDE the container */
-    section{width:100%;padding: clamp(36px, 6vh, 64px) 0;position:relative}
-
-    .section-content {
-      max-width: 100%;
-      margin: 0 auto;
-      text-align: left;
-    }
-
-    .section-content h2 {
-      font-size: 2.25rem;
-      margin-bottom: 1.25rem;
-      background: linear-gradient(45deg,#a8dadc,#457b9d,#f1faee,#66fcf1,#2a9d8f);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: gradientShift 8s ease infinite;
-      font-weight: 700;
-    }
-
-    /* Mobile-first: full width paragraphs, readable line length via ch cap */
-    .section-content p {
-      font-size: 1.08rem;
-      line-height: 1.6;
-      max-width: min(100%, 75ch);   /* ← no premature wrapping, good readability */
-      margin-bottom: 1.5rem;
-      text-shadow: 0 1px 2px rgba(0,0,0,.2);
-      overflow-wrap: anywhere;      /* long URLs/words don’t blow layout */
-    }
-
-    /* On wider screens, allow a wider line if you want */
-    @media (min-width: 1200px) {
-      .section-content p {
-        max-width: min(100%, 90ch); /* optional: give 5.1 more width on desktop */
-      }
-    }
-
-    /* cards etc. */
-    .glass-card{background:var(--inner-card);backdrop-filter:blur(25px);border-radius:20px;padding:2rem;border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08);transition:.3s;position:relative;overflow:hidden}
-    .glass-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,218,220,.06),transparent);transition:left .8s}
-    .glass-card:hover{transform:translateY(-5px);border-color:rgba(168,218,220,.38);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(42,157,143,.18),inset 0 1px 0 rgba(255,255,255,.15)}
-    .glass-card:hover::before{left:100%}
-
-    .challenge-row,.scene-row,.ideation-row,.must-haves-container,.process-dense-row,.constraints-row{display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-top:1.5rem}
-    .challenge-col,.scene-col,.ideation-col{flex:1;min-width:280px}
-    .challenge-col.left img,.challenge-skinny-image{width:100%;border-radius:16px;display:block;box-shadow:0 8px 32px rgba(0,0,0,.3);border:1px solid var(--glass-border)}
-    .highlight-box{background:rgba(15,20,25,.45);backdrop-filter:blur(20px);padding:1.25rem;border-radius:16px;font-weight:500;margin-top:.6rem;border:1px solid var(--glass-border);box-shadow:0 4px 16px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.05);color:var(--text-primary)}
-    .overview-cover{width:100%;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.3);border:1px solid var(--glass-border);margin-top:1rem}
-
-    .scene-big-image{text-align:center;margin-top:1.5rem}
-    .scene-big-image img{max-width:100%;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);border:1px solid var(--glass-border)}
-
-    .quote-grid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:1.1rem;justify-content:center;margin-bottom:2rem}
-    .quote-card{background:var(--inner-card);backdrop-filter:blur(35px);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.2);padding:1.25rem;min-height:160px;opacity:0;transform:translateY(18px);transition:.5s;border:1px solid var(--glass-border);position:relative;overflow:hidden}
-    .quote-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,218,220,.05),transparent);transition:left .6s}
-    .quote-card:hover::before{left:100%}
-    .quote-text{font-size:1rem;line-height:1.5;margin-bottom:.75rem;color:var(--text-primary)}
-    .quote-author{font-size:.92rem;opacity:.85;text-align:right;color:var(--text-secondary)}
-
-    .stats-grid{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:2rem;justify-items:center;margin:0 auto}
-    .stats-card{background:var(--glass-bg);backdrop-filter:blur(35px);border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.2);padding:2rem 1rem;text-align:center;min-height:220px;width:100%;max-width:400px;opacity:0;transform:translateY(20px);transition:all .5s ease;position:relative;border:1px solid var(--glass-border);overflow:hidden}
-    .stats-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(42,157,143,.05),transparent);transition:left .8s}
-    .stats-title{margin-top:1rem;font-size:1.2rem;margin-bottom:.5rem;color:var(--text-secondary);font-family:'Montserrat Alternates',sans-serif;font-weight:600}
-    .stats-desc{font-size:1rem;line-height:1.4;max-width:300px;margin:.5rem auto 0;color:var(--text-primary)}
-
-    .circle-container{width:var(--circle-size)px;height:var(--circle-size)px;margin:0 auto .75rem;position:relative}
-    .circle-bg{stroke:var(--circle-track);fill:none;stroke-width:10}
-    .circle-progress{stroke:var(--accent-teal);fill:none;stroke-width:10;stroke-linecap:round;stroke-dasharray:var(--circle-circumference);stroke-dashoffset:var(--circle-circumference);transition:stroke-dashoffset 1.2s ease}
-    .circle-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.1rem;font-weight:700;color:var(--text-secondary)}
-    .circle-text{z-index:1} /* keeps 81% above the ring but inside the container */
-
-    @media (max-width: 768px){
-    .stats-grid{grid-template-columns:1fr;}
-    }
-
-    /* reveals */
-    .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease-out,transform .5s ease-out}
-    .active{opacity:1 !important;transform:translateY(0) !important}
-
-
-
-    .ideation-images{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.75rem}
-    .ideation-images img{width:48%;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.2);border:1px solid var(--glass-border)}
-    .ideation-big-image{text-align:center;margin-top:1.25rem}
-    .ideation-big-image img{max-width:100%;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);border:1px solid var(--glass-border)}
-
-    .must-haves-container{display:flex;gap:1.25rem;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin:2rem auto 0;text-align:left}
-    .must-haves-card{background:var(--inner-card);backdrop-filter:blur(35px);border-radius:16px;padding:1.25rem;box-shadow:0 8px 32px rgba(0,0,0,.2);border:1px solid var(--glass-border);transition:.3s;position:relative;overflow:hidden}
-    .must-haves-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,218,220,.05),transparent);transition:left .6s}
-    .must-haves-card:hover::before{left:100%}
-
-    .design-process{padding: clamp(36px, 6vh, 64px) 0;text-align:left}
-    .process-subsection{margin-bottom:2.75rem}
-    .process-subsection h3{font-size:1.85rem;margin-bottom:.85rem;color:var(--text-secondary);background:linear-gradient(45deg,#a8dadc,#457b9d,#f1faee,#66fcf1,#2a9d8f);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 6s ease infinite}
-
-    .shorts-container{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:1.25rem}
-    .shorts-container iframe{width:480px;height:270px;border:none;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
-
-    .video-embed,.figma-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin:1.5rem auto 0;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
-    .video-embed iframe,.figma-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:16px}
-
-    .takeaways{text-align:center}
-    .takeaways h3{font-size:1rem;font-weight:400;text-transform:lowercase;opacity:.8;margin-bottom:.35rem;color:var(--text-secondary)}
-    .takeaways h2{font-size:2rem;font-weight:700;margin-bottom:1.5rem}
-    .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin:0 auto}
-    .card{background:var(--inner-card);backdrop-filter:blur(35px);padding:1.75rem;border-radius:20px;transition:.3s;text-align:left;border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,.2);position:relative;overflow:hidden}
-    .card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(168,218,220,.08),transparent);transition:left .8s}
-    .card:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
-    .card:hover::before{left:100%}
-    .card h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;opacity:.7;margin-bottom:.35rem;color:var(--accent-teal)}
-    .card h3{font-size:1.25rem;margin-bottom:.5rem;color:var(--text-secondary)}
-    .card p{font-size:1rem;line-height:1.4;color:var(--text-primary)}
-
-    #contact{scroll-margin-top:96px}
-
-    /* reveals */
-    .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease-out,transform .5s ease-out}
-    .active{opacity:1 !important;transform:translateY(0) !important}
-
-    /* responsive */
-    @media (max-width:900px){ .intro-right{max-width:100%;align-items:flex-start} }
-    @media (max-width:768px){
-      .hero-container{width:min(96vw, 720px)}
-      .intro{flex-direction:column;align-items:flex-start;padding:1.5rem}
-      .intro-left{padding-right:0}
-      .quote-grid{grid-template-columns:1fr}
-      .stats-grid{grid-template-columns:1fr}
-      .shorts-container{flex-direction:column;align-items:center}
-      .shorts-container iframe{width:100%;max-width:480px}
-      .cards{grid-template-columns:1fr}
-    }
-    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-
-    /* Mini images row */
-    .mini-images{
-      display:flex;
-      justify-content:center;   /* center the pair on the runner */
-      align-items:center;       /* vertical-center align different heights */
-      gap:clamp(14px, 2vw, 28px); /* space between them */
-      margin:clamp(8px,1.5vw,24px) auto; /* center the whole block */
-      max-width:min(500px, 95%);
-    }
-
-    /* Image styling */
-    .mini-images img{
-      display:block;            /* kill inline baseline gaps */
-      border-radius:16px;       /* rounded corners */
-      height:auto;
-      max-width:100%;
-    }
-
-    /* (Optional) gentle polish */
-    .mini-images img{ box-shadow:0 8px 24px rgba(0,0,0,.18); }
-
-    /* Put this *after* your existing .mini-images styles */
-    .mini-images { --mini-img: 70%; }                 /* base width per image */
-    .mini-images img { width: var(--mini-img); }      /* keep Sketch 3 at 48% */
-    .mini-images img:nth-child(2) {                   /* Sketch 4 → 80% of that */
-      width: calc(var(--mini-img) * 0.8);             /* 38.4% total */
-    }
-
-
-      /* Two-column layout for "Brainstorming our must-haves" */
-        .must-haves-container{
-          display: grid;
-          grid-template-columns: minmax(280px, 0.9fr) 1.4fr; /* left | right */
-          gap: 1.5rem 1.75rem;
-          align-items: start;
-          margin: 2rem auto 0;
-          text-align: left;
-        }
-
-        /* Optional: keep the left column in view on tall screens */
-        .must-haves-left{
-          position: sticky;
-          top: 24px;
-        }
-
-        /* Right column becomes a single vertical list (1 col, 4 rows) */
-        .must-haves-right{
-          display: grid;
-          grid-template-columns: 1fr;   /* ← force 1 column */
-          gap: 1rem;
-        }
-
-
-        /* Card polish (use your existing card styles; this just ensures consistency) */
-        .must-haves-card{
-          background: var(--inner-card);
-          border: 1px solid var(--glass-border);
-          border-radius: 16px;
-          padding: 1.1rem 1.25rem;
-          box-shadow: 0 8px 32px rgba(0,0,0,.2);
-        }
-
-        /* Mobile: stack into a single column */
-        @media (max-width: 900px){
-          .must-haves-container{ grid-template-columns: 1fr; }
-          .must-haves-left{ position: static; }
-          .must-haves-right{ grid-template-columns: 1fr; }
-        }
-
-      .tldr-pills{
-          display:grid; gap:6px 14px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-          list-style:none; padding:0; margin:12px 0 0;
-        }
-        .tldr-pills li{
-          padding:8px 10px; border-radius:999px; backdrop-filter: blur(6px);
-          background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08);
-        }
-        .tldr-jumps{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
-        .btn{ padding:10px 14px; border-radius:999px; font-weight:600; text-decoration:none; }
-        .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,0.18); }
-
-      /* ultra-compact TL;DR chips under the left paragraph */
-    .intro-left .tldr-pills{
-      display:flex; flex-wrap:wrap; gap:6px 8px; margin-top:1rem; padding:0; list-style:none;
-    }
-    .intro-left .tldr-pills .pill{
+    .tldr-pills .pill{
       display:inline-flex; align-items:center; gap:6px;
       font-size:.78rem; line-height:1.15;
-      padding:2px 8px; border-radius:999px;
-      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
-    }
-    .intro-left .tldr-pills .i{ line-height:1; }
-    .intro-left .tldr-pills .metric{ /* keeps number tight to label without smushing */
-      display:inline-block;
+      padding:4px 10px; border-radius:999px;
+      background:rgba(255,255,255,.05); border:1px solid rgba(168,218,220,0.15);
     }
 
+    /* --- OUTCOME STRIP --- */
+    .outcome-strip{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:0;
+      border:1px solid var(--rule);
+      border-radius:16px;
+      overflow:hidden;
+      margin-bottom: clamp(32px, 5vh, 56px);
+    }
+    .outcome-item{
+      padding:1.5rem 1.25rem;
+      border-right:1px solid var(--rule);
+      display:flex; flex-direction:column; gap:.3rem;
+    }
+    .outcome-item:last-child{border-right:0}
+    .outcome-num{
+      font-family: 'Didot', 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight:700;
+      color:var(--text-secondary);
+      line-height:1;
+      letter-spacing: 0.06em;
+    }
+    .outcome-label{
+      font-size:.8rem;
+      color:var(--text-primary);
+      opacity:.75;
+      line-height:1.4;
+    }
 
+    /* --- DIVIDER --- */
+    .section-rule{
+      border:0;
+      border-top:1px solid var(--rule);
+      margin: clamp(32px, 5vh, 56px) 0;
+    }
 
+    /* shared section spacing */
+    section{width:100%;padding: clamp(32px, 5vh, 56px) 0;position:relative}
 
+    .section-content{max-width:100%;margin:0 auto;text-align:left}
 
+    .section-content p{
+      font-size:1.05rem;
+      line-height:1.65;
+      max-width:min(100%, 72ch);
+      margin-bottom:1.4rem;
+      color:var(--text-primary);
+      opacity:.92;
+    }
+
+    /* --- EDITORIAL PULL QUOTES --- */
+    .pull-quote{
+      border-left:3px solid var(--accent-teal);
+      padding:.9rem 1.5rem;
+      margin:1.5rem 0;
+      font-size:1.15rem;
+      font-style:italic;
+      color:var(--text-secondary);
+      line-height:1.5;
+    }
+    .pull-quote cite{
+      display:block;
+      margin-top:.5rem;
+      font-size:.85rem;
+      font-style:normal;
+      opacity:.7;
+      color:var(--text-primary);
+    }
+
+    /* quote grid — editorial style */
+    .quote-grid{display:grid;grid-template-columns:repeat(3,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+    .quote-card{
+      border-left:2px solid var(--accent-teal);
+      padding:1.1rem 1.25rem;
+      background:rgba(15,20,25,.3);
+      border-radius:0 12px 12px 0;
+      opacity:0;transform:translateY(18px);transition:.5s;
+    }
+    .quote-text{font-size:.95rem;line-height:1.5;margin-bottom:.6rem;color:var(--text-primary);font-style:italic}
+    .quote-author{font-size:.82rem;opacity:.65;color:var(--text-secondary)}
+
+    /* --- EDITORIAL STATS --- */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:2rem}
+    .stats-card{
+      padding:1.5rem 1.1rem;
+      border-top:2px solid var(--accent-teal);
+      opacity:0;transform:translateY(20px);transition:all .5s ease;
+    }
+    .stat-number{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:clamp(2rem, 4vw, 3rem);
+      font-weight:800;
+      color:var(--text-secondary);
+      line-height:1;
+      margin-bottom:.5rem;
+    }
+    .stats-title{font-size:.85rem;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem;line-height:1.3}
+    .stats-desc{font-size:.85rem;line-height:1.45;color:var(--text-primary);opacity:.8}
+
+    /* --- HIGHLIGHT BOX (left border editorial style) --- */
+    .highlight-box{
+      border-left:2px solid rgba(168,218,220,0.4);
+      padding:.9rem 1.1rem .9rem 1.25rem;
+      margin-top:.75rem;
+      background:rgba(15,20,25,.3);
+      border-radius:0 10px 10px 0;
+      font-size:.95rem;
+      line-height:1.55;
+      color:var(--text-primary);
+    }
+    .highlight-box strong{color:var(--text-secondary)}
+
+    /* --- LAYOUTS --- */
+    .two-col{display:flex;gap:2.5rem;flex-wrap:wrap;align-items:flex-start;margin-top:1.5rem}
+    .two-col > *{flex:1;min-width:260px}
+
+    .challenge-col.left img,.challenge-skinny-image{
+      width:100%;border-radius:12px;display:block;
+      box-shadow:0 8px 32px rgba(0,0,0,.3);
+      border:1px solid var(--glass-border);
+    }
+    .challenge-skinny-image{margin-top:1rem}
+
+    .big-image{text-align:center;margin-top:2rem}
+    .big-image img{max-width:100%;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.3);border:1px solid var(--glass-border)}
+
+    .overview-cover{
+      width:100%;border-radius:12px;
+      box-shadow:0 8px 32px rgba(0,0,0,.3);
+      border:1px solid var(--glass-border);
+      margin-top:1.25rem;
+    }
+
+    /* --- CARDS (takeaways) --- */
+    .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin:0 auto}
+    .card{
+      border-top:2px solid var(--accent-teal);
+      padding:1.5rem;
+      background:rgba(15,20,25,.3);
+      border-radius:0 0 14px 14px;
+      transition:.25s;
+    }
+    .card:hover{background:rgba(15,20,25,.5)}
+    .card h4{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;opacity:.65;margin-bottom:.35rem;color:var(--accent-teal)}
+    .card h3{font-size:1.15rem;margin-bottom:.4rem;color:var(--text-secondary);font-family:'Montserrat Alternates',sans-serif;}
+    .card p{font-size:.95rem;line-height:1.45;color:var(--text-primary);opacity:.85}
+
+    /* --- MUST-HAVES --- */
+    .must-haves-container{
+      display:grid;
+      grid-template-columns:minmax(260px,0.85fr) 1.4fr;
+      gap:1.5rem 2rem;
+      align-items:start;
+      margin:2rem auto 0;
+    }
+    .must-haves-left{position:sticky;top:24px}
+    .must-haves-right{display:grid;grid-template-columns:1fr;gap:1rem}
+    .must-haves-card{
+      border-left:2px solid rgba(168,218,220,0.3);
+      padding:1rem 1.1rem 1rem 1.25rem;
+      background:rgba(15,20,25,.25);
+      border-radius:0 10px 10px 0;
+    }
+    .must-haves-card h4{font-size:.88rem;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem}
+    .must-haves-card p{font-size:.9rem;line-height:1.5;color:var(--text-primary);opacity:.85}
+
+    /* --- DESIGN PROCESS --- */
+    .process-subsection{margin-bottom:2.5rem}
+    .process-dense-row{display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;margin-top:1.5rem}
+    .process-dense-left,.process-dense-right{flex:1;min-width:240px}
+
+    .mini-images{display:flex;justify-content:center;align-items:center;gap:clamp(14px,2vw,24px);margin:1.25rem auto;max-width:min(500px,95%)}
+    .mini-images img{display:block;border-radius:12px;height:auto;max-width:100%;width:70%;box-shadow:0 8px 24px rgba(0,0,0,.18);border:1px solid var(--glass-border)}
+    .mini-images img:nth-child(2){width:56%}
+
+    /* video embeds */
+    .video-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin:1.5rem auto 0;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+    .video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px}
+
+    /* ideation images */
+    .ideation-images{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.75rem}
+    .ideation-images img{width:48%;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);border:1px solid var(--glass-border)}
+
+    /* reflection blocks */
+    .reflection{margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--rule)}
+    .reflection h3{font-size:1.35rem;margin-bottom:.75rem;color:var(--text-secondary);font-family:'Montserrat Alternates',sans-serif}
+    .reflection p{font-size:1rem;line-height:1.6;color:var(--text-primary);opacity:.88;margin-bottom:.75rem}
+
+    /* works cited */
+    .works-cited{margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--rule)}
+    .works-cited h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-teal);margin-bottom:1rem}
+    .works-cited p{font-size:.82rem;line-height:1.55;color:var(--text-primary);opacity:.6;margin-bottom:.6rem}
+
+    /* --- REVEALS --- */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease-out,transform .5s ease-out}
+    .active{opacity:1 !important;transform:translateY(0) !important}
+
+    /* --- RESPONSIVE --- */
+    @media(max-width:900px){
+      .intro-right{max-width:100%;align-items:flex-start}
+      .outcome-strip{grid-template-columns:repeat(2,1fr)}
+      .outcome-item:nth-child(2){border-right:0}
+      .outcome-item:nth-child(3){border-top:1px solid var(--rule)}
+      .outcome-item:nth-child(4){border-top:1px solid var(--rule)}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      .must-haves-container{grid-template-columns:1fr}
+      .must-haves-left{position:static}
+    }
+    @media(max-width:768px){
+      .hero-container{width:min(96vw,720px)}
+      .intro{flex-direction:column;align-items:flex-start;padding:1.5rem}
+      .intro-left{padding-right:0}
+      .intro-right{max-width:100%}
+      .outcome-strip{grid-template-columns:1fr 1fr}
+      .quote-grid{grid-template-columns:1fr}
+      .stats-grid{grid-template-columns:1fr 1fr}
+      .cards{grid-template-columns:1fr}
+      .two-col{flex-direction:column}
+      .must-haves-right{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){
+      .outcome-strip{grid-template-columns:1fr}
+      .outcome-item{border-right:0;border-bottom:1px solid var(--rule)}
+      .outcome-item:last-child{border-bottom:0}
+      .stats-grid{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
@@ -381,30 +437,20 @@
   <!-- nav include -->
   <div id="nav-slot" data-include="../nav.html"></div>
 <br><br><br><br><br><br><br>
-  <!-- the container stays where it was, and now holds everything -->
   <header class="hero" id="hero">
     <div class="hero-container">
-      <!-- top two-column intro -->
+
+      <!-- HERO INTRO -->
       <div class="intro reveal">
         <div class="intro-left">
-          <h1 class="reveal">My Auntie</h1>
-          <h2 class="reveal">The first AI companion for postpartum parents—because at 3 a.m. you don’t want an app; you want your Auntie.</h2>
-            <br>
-             <ul class="tldr-pills">
-              <li class="pill">
-                <span class="i">🫂</span><span class="metric"><b>3 intents</b></span><span class="label">Comfort · Resource · Escalate</span>
-              </li>
-              <li class="pill">
-                <span class="i">🔒</span><span class="metric"><b>Short-lived</b></span><span class="label">memory (helpful but private)</span>
-              </li>
-              <li class="pill">
-                <span class="i">📞</span><span class="metric"><b>0 apps</b></span><span class="label">phone/SMS <5s round trip only</span>
-              </li>
-              <li class="pill">
-                <span class="i">🏆</span><span class="metric"><b>WINNER</b></span><span class="label">Technova 2025</span>
-              </li>
-            </ul>
-
+          <span class="eyebrow">TechNova 2025 — 🏆 WINNER</span>
+          <h1>My Auntie</h1>
+          <p class="tagline">The first AI companion for postpartum parents—because at 3 a.m. you don't want an app; you want your Auntie.</p>
+          <ul class="tldr-pills">
+            <li class="pill"><span>🫂</span><span><b>3 intents</b> — Comfort · Resource · Escalate</span></li>
+            <li class="pill"><span>🔒</span><span><b>Short-lived</b> memory (helpful, not surveillance)</span></li>
+            <li class="pill"><span>📞</span><span><b>0 apps</b> — phone/SMS &lt;5s round trip only</span></li>
+          </ul>
         </div>
         <div class="intro-right reveal">
           <div class="header-info">
@@ -416,26 +462,44 @@
               <li>Safety Design</li>
               <li>Conversation Design</li>
               <li>Twilio (SMS/Voice)</li>
-                <li>Gemini (intent + safety)</li>
-                <li>OpenAI (Realtime TTS) </li>
-                <li>Node/Express</li>
-                <li>TypeScript</li>
-                <li>MongoDB Atlas</li>
+              <li>Gemini (intent + safety)</li>
+              <li>OpenAI (Realtime TTS)</li>
+              <li>Node/Express + TypeScript</li>
+              <li>MongoDB Atlas</li>
               <li>Snowflake</li>
-          </div>
-          <div class="skip-link">
-            <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+            </ul>
           </div>
         </div>
       </div>
 
-      <!-- everything else lives INSIDE the container now -->
+      <!-- OUTCOME STRIP (outcomes first) -->
+      <div class="outcome-strip reveal">
+        <div class="outcome-item">
+          <span class="outcome-num">🏆 Winner</span>
+          <span class="outcome-label">TechNova 2025 — judged on empathy, reliability, and receipts</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">36hrs</span>
+          <span class="outcome-label">concept → working telephony, live on stage</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">SMS + Voice</span>
+          <span class="outcome-label">two channels, one Auntie — judges called in and texted</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">&lt;5s</span>
+          <span class="outcome-label">SMS round trip — meets parents at 4% battery and 3 a.m.</span>
+        </div>
+      </div>
+
+      <!-- THE PRODUCT -->
       <section id="project-overview">
         <div class="section-content reveal">
-          <h2>Section 1 // Project Overview</h2>
-          <p>New parents don’t quit because they’re “unmotivated.” They quit because the system makes help feel like homework. In the fourth trimester, energy and attention are the scarcest resources—precisely when most “solutions” demand the most: download an app, create an account, complete a 20-question intake, then wait.</p>
+          <span class="eyebrow">The Product</span>
+          <h2 class="section-heading">What is My Auntie?</h2>
+          <p>New parents don't quit because they're unmotivated. They quit because the system makes help feel like homework. In the fourth trimester, energy and attention are the scarcest resources—precisely when most "solutions" demand the most: download an app, create an account, complete a 20-question intake, then wait.</p>
           <p>My Auntie reframes support around the reality of 3 a.m.: a crying baby, 4% battery, and a brain made of mashed potatoes. No apps, no dashboards—just a warm voice or a short text that meets you where you are, offers one gentle next step, and (when needed) routes you to real care without judgment.</p>
-            <p>Our goal for the 36-hour sprint: ship a live, phone-first safety-aware companion that feels like calling a trusted auntie—tiny, kind, and doable. We launched SMS + voice, intent triage (Comfort · Resource · Escalate), privacy-first memory, and deterministic resource lookup—end-to-end and demo-ready.</p>
+          <p>36-hour sprint goal: ship a live, phone-first, safety-aware companion that feels like calling a trusted auntie—tiny, kind, and doable. We launched SMS + voice, intent triage (Comfort · Resource · Escalate), privacy-first memory, and deterministic resource lookup—end-to-end and demo-ready.</p>
           <iframe
               src="https://www.myauntie.tech/"
               class="overview-cover"
@@ -443,310 +507,263 @@
               allowfullscreen
               referrerpolicy="no-referrer"
               style="border:0; aspect-ratio: 16 / 9;">
-            </iframe>
-
+          </iframe>
         </div>
       </section>
 
+      <hr class="section-rule">
+
+      <!-- THE PROBLEM -->
       <section id="challenge">
         <div class="section-content reveal">
-          <h2>Section 2 // The Challenge</h2>
-          <div class="challenge-row">
+          <span class="eyebrow">The Problem</span>
+          <h2 class="section-heading">Nobody should feel alone at 3 a.m.</h2>
+          <div class="two-col">
             <div class="challenge-col left">
-              <img src="auntiemood.png" alt="Black box image">
+              <img src="auntiemood.png" alt="Postpartum mood research">
             </div>
             <div class="challenge-col right">
-              <p>Postpartum depression and anxiety affect ~1 in 7 women; many never receive timely care. Stigma (“I should be happy”), sleep fragmentation, and logistical friction push parents away from support at the exact moment they need it.</p>
-              <p>The dominant pattern in digital mental health—apps that shift the burden back to the parent (log in, track, remember)—is backwards at 3 a.m. We needed a low-friction, high-comfort channel that lowers cognitive load, is safe by design, and can escalate appropriately.</p>
-              <p>Reframe: Don’t build another mental-health app. Build what new parents actually use at 3 a.m.: the phone. A kind voice. A short text. A connector that knows when to comfort, when to send resources, and when to escalate. </p>
-              <img src="auntiesearch.png" alt="Skinny screenshot" class="challenge-skinny-image">
-              <div class="highlight-box">You don’t want an app. You want your Auntie. Information-only this weekend; deterministic escalation; short-lived context for safety.</div>
+              <p>Postpartum depression and anxiety affect ~1 in 7 women; many never receive timely care. Stigma ("I should be happy"), sleep fragmentation, and logistical friction push parents away from support at the exact moment they need it.</p>
+              <p>The dominant pattern in digital mental health—apps that shift the burden back to the parent (log in, track, remember)—is backwards at 3 a.m. We needed a low-friction, high-comfort channel that lowers cognitive load, is safe by design, and escalates appropriately.</p>
+              <p>Reframe: don't build another mental-health app. Build what new parents actually use at 3 a.m.: the phone. A kind voice. A short text. A connector that knows when to comfort, when to send resources, and when to escalate.</p>
+              <img src="auntiesearch.png" alt="Research findings" class="challenge-skinny-image">
+              <div class="highlight-box"><strong>You don't want an app. You want your Auntie.</strong> Information-only this weekend; deterministic escalation; short-lived context for safety.</div>
             </div>
           </div>
         </div>
       </section>
 
+      <hr class="section-rule">
+
+      <!-- THE 3AM MOMENT -->
       <section id="scene">
         <div class="section-content reveal">
-          <h2>Section 3.1 // Let's set the scene</h2>
-          <div class="scene-row">
-            <div class="scene-col left">
-              <h4>At 3 a.m. a new parent asks: “Is this normal?”</h4>
-              <p>They don’t need a portal, they need a person. Real aunties aren’t always awake, and advice can be dated or risky. My Auntie keeps the warmth and removes the guesswork: zero setup, human-sounding support, and vetted resources when needed.</p>
-              <p><strong>Two design constraints guided everything:</strong>
-                  <br> 1. Cognitive load must be near zero. One-breath messages, one next step.
-                  <br><br> 2. Safety must be explicit, not implied. Intent classification and clear red-flag routes to urgent care—without alarmism</p>
+          <span class="eyebrow">The Design Framing</span>
+          <h2 class="section-heading">At 3 a.m., a new parent asks: "Is this normal?"</h2>
+          <div class="two-col">
+            <div>
+              <p>They don't need a portal, they need a person. Real aunties aren't always awake, and advice can be dated or risky. My Auntie keeps the warmth and removes the guesswork: zero setup, human-sounding support, and vetted resources when needed.</p>
+              <p><strong>Two design constraints guided everything:</strong><br><br>
+                1. Cognitive load must be near zero. One-breath messages, one next step.<br><br>
+                2. Safety must be explicit, not implied. Intent classification and clear red-flag routes to urgent care—without alarmism.</p>
             </div>
-            <div class="scene-col right">
-              <div class="highlight-box">This created an unusual design challenge: how do you make technology feel like kin, not like software? Unlike an app with buttons and charts, Auntie had to carry her identity entirely in voice and text.
-              </div>
-              <div class="highlight-box">Auntie couldn’t just be helpful, she had to be safe. The line between comfort and harm is razor-thin in postpartum care.</div>
-                <div class="highlight-box">
-                   We aimed for emotional specificity: short, kind phrases a parent could actually believe at 3 a.m.—something you remember the feeling of, not just the words.</div>
+            <div>
+              <div class="highlight-box">This created an unusual design challenge: how do you make technology feel like kin, not like software? Unlike an app with buttons and charts, Auntie had to carry her identity entirely in voice and text.</div>
+              <div class="highlight-box">Auntie couldn't just be helpful—she had to be safe. The line between comfort and harm is razor-thin in postpartum care.</div>
+              <div class="highlight-box">We aimed for emotional specificity: short, kind phrases a parent could actually believe at 3 a.m.—something you remember the feeling of, not just the words.</div>
             </div>
           </div>
-          <div class="scene-big-image">
+          <div class="big-image">
             <img src="auntieproblem.png" alt="Problem Statement">
           </div>
         </div>
       </section>
 
-    <section class="research" id="research-results">
-    <div class="section-content reveal">
-      <h2 class="reveal">Section 3.2 // Research &amp; Survey Results</h2>
-      <p class="reveal">
-      We ran Indi-Young–style listening sessions—no surveys, just deep listening—to map inner thinking, constraints, and language. Consistently we heard: “I don’t want to be onboarded; I want to be held together.”
-      </p>
-      <div class="quote-grid reveal">
-        <div class="quote-card reveal">
-          <div class="quote-text">
-            “When I’m exhausted, even opening an app feels like a test.”
-          </div>
-          <div class="quote-author">— Mom of one toddler and one infant</div>
-        </div>
-        <div class="quote-card reveal">
-          <div class="quote-text">
-            “I need someone to tell me what’s normal… and what’s not.”
-          </div>
-          <div class="quote-author">— First-time mom with infant</div>
-        </div>
-        <div class="quote-card reveal">
-          <div class="quote-text">
-            “If it’s serious, I want the handoff to be gentle, not scary.”
-          </div>
-          <div class="quote-author">— Expectant mother due soon</div>
-        </div>
-        <div class="quote-card reveal">
-          <div class="quote-text">
-            “Please remember I had a C-section so I don’t have to retell it.”
-          </div>
-          <div class="quote-author">— First-time mother of twins</div>
-        </div>
-        <div class="quote-card reveal">
-          <div class="quote-text">
-            "I still remember when my son was a baby and had a fever, I was on a help line for hours, and they did their best but weren't really for that kind of thing."
-          </div>
-          <div class="quote-author">— Mom of three, children are older</div>
-        </div>
-      </div>
-      <h3 class="reveal" style="margin-top: 3rem; margin-bottom: 2rem; color: var(--text-secondary); font-family: 'Montserrat Alternates', sans-serif;">Key Findings</h3>
-      <div class="stats-grid reveal">
-        <div class="stats-card reveal" data-percent="15">
-          <div class="circle-container">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
-              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
-            </svg>
-            <div class="circle-text">0%</div>
-          </div>
-          <h3 class="stats-title reveal">Or about 1 in 7 new mothers</h3>
-          <p class="stats-desc reveal">
-              Experience postpartum depression. Up to half go undiagnosed — stigma, lack of screening, or mis-attribution are common barriers.          </p>
-        </div>
-        <div class="stats-card reveal" data-percent="50">
-          <div class="circle-container">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
-              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
-            </svg>
-            <div class="circle-text">0%</div>
-          </div>
-          <h3 class="stats-title reveal">Of postpartum cases go undetected</h3>
-          <p class="stats-desc reveal">
-            Many mothers never tell a provider about symptoms; lack of awareness and stigma play big roles.
-          </p>
-        </div>
-        <div class="stats-card reveal" data-percent="7.2">
-          <div class="circle-container">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
-              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
-            </svg>
-            <div class="circle-text">0%</div>
-          </div>
-          <h3 class="stats-title reveal">Still show depressive symptoms 9–10 months postpartum</h3>
-          <p class="stats-desc reveal">
-              Of those, over half had no symptoms earlier (2–6 months)
-          </p>
-        </div>
-        <div class="stats-card reveal" data-percent="19">
-          <div class="circle-container">
-            <svg width="100" height="100" viewBox="0 0 100 100">
-              <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
-              <circle class="circle-progress" cx="50" cy="50" r="45"></circle>
-            </svg>
-            <div class="circle-text">0%</div>
-          </div>
-          <h3 class="stats-title reveal">Is the new PPD diagnosis rate- it DOUBLED</h3>
-          <p class="stats-desc reveal">
-              From 2010 to 2021, more mothers were diagnosed — perhaps better awareness, but still large gaps remain          </p>
-        </div>
-      </div>
-    </div>
-  </section>
+      <hr class="section-rule">
 
-  <section class="constraints" id="constraints">
-    <div class="section-content reveal">
-      <h2 class="reveal">Section 3.3 // Our Constraints</h2>
-      <p class="reveal" style="font-size: 1.1rem; line-height: 1.5; margin-bottom: 2rem;">
-        Postpartum care isn’t just code—it’s triage for the nervous system. In a weekend, we had to move quickly without cutting corners on safety or trust, so every decision was weighed against one moment: a parent, awake in the dark, needing help now.      </p>
-      <p class="reveal">
-        Constraints didn’t slow us; they drew the line between helpful and harmful. They forced a single mandate: deliver a humane, resilient line that comforts first, informs clearly, and escalates deterministically when risk appears.      </p>
-      <div class="constraints-row">
-        <div class="constraints-left">
-          <div class="highlight-box reveal">
-            <strong>⏳ 36 hour hackathon deadline</strong>
-            <p style="margin-top: 0.5rem;">
-				To ship live telephony, AI, memory, and resources—safely. WhatsApp, dashboards, and semantic embeddings were cut so we could demo sub-5 second replies focused on what moms really needed from Auntie.
-            </p>
-          </div>
-          <div class="highlight-box reveal">
-            <strong>🎯 Safety over scope</strong>
-            <p style="margin-top: 0.5rem;">
-             Information-only meant Auntie never free-styled medical advice. Every output had to fall into Comfort · Resource · Escalate, with deterministic handoffs.
-            </p>
-          </div>
-          <div class="highlight-box reveal">
-            <strong>🗣 Privacy by default</strong>
-            <p style="margin-top: 0.5rem;">
-                Short-lived context, minimal fields (delivery, feeding, weeks postpartum, region) meant we remembered only what helped — e.g., C-section recovery — and nothing more. Hashes over phone numbers, retention notes documented.
-            </p>
-          </div>
-          <div class="highlight-box reveal">
-            <strong>⚖️ Judge-proof demo</strong>
-            <p style="margin-top: 0.5rem;">
-                Visible logs showing triage JSON, Atlas collections, and Snowflake queries live, so credibility came from receipts, not vibes.
-            </p>
-          </div>
-        </div>
-        <div class="constraints-right">
-          <h3 class="reveal">The Problem &amp; Our Scope</h3>
-          <p class="reveal">
-            We scoped to what mattered most in a weekend: a reliable SMS core, optional voice call, Gemini-based triage returning structured intent (Comfort/Resource/Escalate), a Mongo Atlas memory scaffold, and Snowflake resource matching by topic+region. Everything else—WhatsApp, embeddings, dashboards—comes later.
-          </p>
-        </div>
-      </div>
-        <div class="ideation-big-image reveal">
-        <img src="auntiegraph.png" alt="Big Ideation Visual">
-      </div>
-    </div>
-  </section>
+      <!-- RESEARCH -->
+      <section class="research" id="research-results">
+        <div class="section-content reveal">
+          <span class="eyebrow">Research</span>
+          <h2 class="section-heading">We listened before we built.</h2>
+          <p>We ran Indi Young–style listening sessions—no surveys, just deep listening—to map inner thinking, constraints, and language. Consistently we heard: "I don't want to be onboarded; I want to be held together."</p>
 
+          <div class="quote-grid reveal">
+            <div class="quote-card reveal">
+              <div class="quote-text">"When I'm exhausted, even opening an app feels like a test."</div>
+              <div class="quote-author">— Mom of one toddler and one infant</div>
+            </div>
+            <div class="quote-card reveal">
+              <div class="quote-text">"I need someone to tell me what's normal… and what's not."</div>
+              <div class="quote-author">— First-time mom with infant</div>
+            </div>
+            <div class="quote-card reveal">
+              <div class="quote-text">"If it's serious, I want the handoff to be gentle, not scary."</div>
+              <div class="quote-author">— Expectant mother due soon</div>
+            </div>
+            <div class="quote-card reveal">
+              <div class="quote-text">"Please remember I had a C-section so I don't have to retell it."</div>
+              <div class="quote-author">— First-time mother of twins</div>
+            </div>
+            <div class="quote-card reveal">
+              <div class="quote-text">"I was on a help line for hours and they did their best but weren't really for that kind of thing."</div>
+              <div class="quote-author">— Mom of three, children older</div>
+            </div>
+          </div>
+
+          <h3 class="sub-heading reveal" style="margin-top:2.5rem;margin-bottom:1.5rem">By the numbers</h3>
+          <div class="stats-grid reveal">
+            <div class="stats-card reveal">
+              <div class="stat-number">15%</div>
+              <div class="stats-title">~1 in 7 new mothers</div>
+              <p class="stats-desc">Experience postpartum depression. Up to half go undiagnosed—stigma, lack of screening, or mis-attribution.</p>
+            </div>
+            <div class="stats-card reveal">
+              <div class="stat-number">50%</div>
+              <div class="stats-title">Of postpartum cases go undetected</div>
+              <p class="stats-desc">Many mothers never tell a provider about symptoms; stigma and lack of awareness play big roles.</p>
+            </div>
+            <div class="stats-card reveal">
+              <div class="stat-number">7.2%</div>
+              <div class="stats-title">Still symptomatic 9–10 months postpartum</div>
+              <p class="stats-desc">Of those, over half had no symptoms earlier—the window is long and uneven.</p>
+            </div>
+            <div class="stats-card reveal">
+              <div class="stat-number">2×</div>
+              <div class="stats-title">PPD diagnosis rate from 2010 to 2021</div>
+              <p class="stats-desc">Better awareness, but massive gaps remain. The need isn't shrinking.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- CONSTRAINTS -->
+      <section class="constraints" id="constraints">
+        <div class="section-content reveal">
+          <span class="eyebrow">Constraints</span>
+          <h2 class="section-heading">What forced good decisions.</h2>
+          <p>Postpartum care isn't just code—it's triage for the nervous system. In a weekend, we had to move quickly without cutting corners on safety or trust, so every decision was weighed against one moment: a parent, awake in the dark, needing help now.</p>
+          <div class="two-col" style="margin-top:1.25rem">
+            <div>
+              <div class="highlight-box reveal">
+                <strong>⏳ 36-hour deadline</strong>
+                <p style="margin-top:.5rem">To ship live telephony, AI, memory, and resources—safely. WhatsApp, dashboards, and semantic embeddings were cut so we could demo sub-5 second replies focused on what parents actually need.</p>
+              </div>
+              <div class="highlight-box reveal">
+                <strong>🎯 Safety over scope</strong>
+                <p style="margin-top:.5rem">Information-only meant Auntie never freestyled medical advice. Every output had to fall into Comfort · Resource · Escalate, with deterministic handoffs.</p>
+              </div>
+            </div>
+            <div>
+              <div class="highlight-box reveal">
+                <strong>🔒 Privacy by default</strong>
+                <p style="margin-top:.5rem">Short-lived context, minimal fields (delivery, feeding, weeks postpartum, region). We remembered only what helped—e.g. C-section recovery—and nothing more. Hashed phone numbers, retention documented.</p>
+              </div>
+              <div class="highlight-box reveal">
+                <strong>⚖️ Judge-proof demo</strong>
+                <p style="margin-top:.5rem">Visible logs showing triage JSON, Atlas collections, and Snowflake queries live. Credibility came from receipts, not vibes.</p>
+              </div>
+            </div>
+          </div>
+          <p class="reveal" style="margin-top:1.5rem">Constraints didn't slow us—they drew the line between helpful and harmful. They forced a single mandate: deliver a humane, resilient line that comforts first, informs clearly, and escalates deterministically when risk appears.</p>
+          <div class="big-image reveal">
+            <img src="auntiegraph.png" alt="Scope diagram">
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- DESIGN DECISIONS -->
       <section class="ideation" id="ideation">
-    <div class="section-content reveal">
-      <h2 class="reveal">Section 4 // Ideating</h2>
-      <div class="ideation-row">
-        <div class="ideation-col left reveal">
-          <p>
-         We treated “Auntie” as a persona with safety rails: warm, concise for SMS; fuller for voice; always evidence-grounded; never diagnostic.
-          </p>
-            <p>Example 1 — Comfort: <br>SMS: “Baby hasn’t latched in 3 hours—normal?” <br>Auntie: “You’re not alone. Skin-to-skin can help. If no latch in 4–6 hours, call your provider. Two lactation lines near you: [links].”</p>
-            <p>Example 2 — Escalate: <br>Parent: “My 6-week-old has a fever of 38°C / 100.4°F.” <br>Auntie Voice: “Love, with a baby this young, that can be serious. Let’s head to the nearest emergency department now. I’m sending the address to your phone. You’re not alone.”</p>
-        </div>
-        <div class="ideation-col right reveal">
-          <div class="highlight-box reveal">
-             We sketched dozens of micro-flows (latch basics, C-section pain, baby blues vs red flags, sleep triage), then cut to the flows that a tired parent could use one-handed.
-          </div>
-          <div class="ideation-images reveal">
-            <img src="auntiestickies.png" alt="Sketch 1">
-            <img src="auntiemoodboard.png" alt="Sketch 2">
-          </div>
-        </div>
-      </div>
-      <div class="ideation-big-image reveal">
-        <img src="auntiesolution.png" alt="Big Ideation Visual">
-      </div>
-      <div class="must-haves-container reveal">
-        <div class="must-haves-left reveal">
-          <h3>Brainstorming our must‑haves</h3>
-          <p>Auntie isn’t a UI; she’s a voice. Our tone system was a non-negotiable: texts are one-breath, kind, and end with a single next step (“Love, try X. Watch for Y. Call if Z.”).</p>
-            <p>Calls are warmer and slower, with human pauses and plain language—tuned to sound like a real aunt, not a bot reading a script. When risk appears, the tone stays steady: no sirens, no blame—just a gentle, actionable handoff (“Love, it’s time we call for extra help. I’m sending the number.”).</p>
-            <p>SMS compresses to one breath; voice expands with natural pauses—but word choice, reassurance cadence, and escalation language never drift. We also pin reading level, contractions, and “no-clinical-jargon” rules so you don’t get a bubbly text and a sterile call. Net effect: one Auntie, two surfaces—no uncanny costume changes.</p>
-        </div>
-        <div class="must-haves-right reveal">
-          <div class="must-haves-card reveal">
-            <h4>☎️ Phone-first distribution</h4>
-            <p>
-                Distribution is the product. We chose phone/SMS because it meets parents where they already are at 3 a.m. SMS shipped first for reliability and speed; voice layered on when stable. No dashboards, no portals—just the lowest-friction path to comfort and care.
-            </p>
-          </div>
-          <div class="must-haves-card reveal">
-            <h4>😌 One-breath, easy messaging
-            </h4>
-            <p>Sleep-deprived parents get overwhelmed, so we designed with that in mind. Every SMS/call follows the same shape: a caring line to lower panic, one clear action they can take with one hand, and a short “what to watch” so they know when to reach back out. If a message took two breaths to read, it got cut.            </p>
+        <div class="section-content reveal">
+          <span class="eyebrow">Design Decisions</span>
+          <h2 class="section-heading">Auntie isn't a UI. She's a voice.</h2>
+          <div class="two-col">
+            <div class="reveal">
+              <p>We treated "Auntie" as a persona with safety rails: warm and concise for SMS; fuller for voice; always evidence-grounded; never diagnostic.</p>
+              <div class="highlight-box">
+                <strong>Comfort:</strong><br>
+                "Baby hasn't latched in 3 hours—normal?"<br>
+                <em>Auntie: "You're not alone. Skin-to-skin can help. If no latch in 4–6 hours, call your provider. Two lactation lines near you: [links]."</em>
+              </div>
+              <div class="highlight-box" style="margin-top:.75rem">
+                <strong>Escalate:</strong><br>
+                "My 6-week-old has a fever of 38°C."<br>
+                <em>Auntie Voice: "Love, with a baby this young, that can be serious. Let's head to the nearest emergency department now. I'm sending the address. You're not alone."</em>
+              </div>
             </div>
-            <div class="must-haves-card reveal">
-            <h4>⚠️ Deterministic answers, not vibes
-            </h4>
-            <p>Safety over scope meant no freestyling medical takes. Gemini returns a structured intent—Comfort, Resource, or Escalate—plus topic and region. From there, we compose the reply and, when relevant, attach 2–3 vetted, region-aware resources. No black-box rummaging, no link dumps—just the few things that help now.           </p>
+            <div class="reveal">
+              <div class="highlight-box">We sketched dozens of micro-flows (latch basics, C-section pain, baby blues vs red flags, sleep triage), then cut to the flows a tired parent could use one-handed.</div>
+              <div class="ideation-images" style="margin-top:1rem">
+                <img src="auntiestickies.png" alt="Ideation stickies">
+                <img src="auntiemoodboard.png" alt="Moodboard">
+              </div>
+            </div>
           </div>
-          <div class="must-haves-card reveal">
-            <h4>🔁 Safety Contracts
-            </h4>
-            <p>Trust grows when Auntie remembers what matters and forgets what doesn’t. We store only short-lived context (delivery type, feeding, weeks postpartum, region) tied to a hashed number. It’s enough to avoid making parents repeat themselves, but not so much that it feels like surveillance.           </p>
+          <div class="big-image reveal">
+            <img src="auntiesolution.png" alt="Solution overview">
+          </div>
+
+          <!-- must-haves -->
+          <div class="must-haves-container reveal" style="margin-top:2.5rem">
+            <div class="must-haves-left reveal">
+              <span class="eyebrow">Must-haves</span>
+              <h3 class="sub-heading">The non-negotiables</h3>
+              <p style="font-size:.95rem;line-height:1.6;opacity:.85">Texts are one-breath, kind, and end with a single next step. Calls are warmer and slower, with human pauses and plain language—tuned to sound like a real aunt, not a bot reading a script.</p>
+              <p style="font-size:.95rem;line-height:1.6;opacity:.85;margin-top:.75rem">When risk appears, the tone stays steady: no sirens, no blame—just a gentle, actionable handoff. One Auntie. Two surfaces. No uncanny costume changes.</p>
+            </div>
+            <div class="must-haves-right reveal">
+              <div class="must-haves-card reveal">
+                <h4>☎️ Phone-first distribution</h4>
+                <p>Distribution is the product. SMS shipped first for reliability and speed; voice layered on when stable. No dashboards, no portals—just the lowest-friction path to comfort and care.</p>
+              </div>
+              <div class="must-haves-card reveal">
+                <h4>😌 One-breath messaging</h4>
+                <p>Every SMS/call: a caring line to lower panic, one clear action, one "what to watch." If a message took two breaths to read, it got cut.</p>
+              </div>
+              <div class="must-haves-card reveal">
+                <h4>⚠️ Deterministic answers, not vibes</h4>
+                <p>Gemini returns a structured intent—Comfort, Resource, or Escalate—plus topic and region. From there: compose the reply, attach 2–3 vetted resources. No black-box rummaging, no link dumps.</p>
+              </div>
+              <div class="must-haves-card reveal">
+                <h4>🔁 Safety contracts</h4>
+                <p>Short-lived context (delivery type, feeding, weeks postpartum, region) tied to a hashed number. Enough to avoid repeating yourself. Not enough to feel like surveillance.</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
+      <hr class="section-rule">
+
+      <!-- WHAT WE BUILT -->
       <section class="design-process" id="design-process">
-    <div class="section-content reveal active">
-      <h2 class="reveal">Section 5 // Design Process</h2>
+        <div class="section-content reveal">
+          <span class="eyebrow">What We Built</span>
+          <h2 class="section-heading">We didn't prototype screens. We prototyped conversations.</h2>
 
-      <!-- 5.1 Sub-section: Logo & Identity System Development -->
-      <div class="process-subsection reveal">
-        <h3 class="reveal">5.1 // Identity System Development</h3>
-        <p class="reveal"> Instead of a visual design system, our core identity is how Auntie speaks and escalates. We defined:        </p>
-        <p class="reveal">
-            → Intent taxonomy: Comfort · Resource · Escalate
-            <br>→ Evidence micro-cards: short, vetted snippets (WHO/CDC/ACOG/PSI) fed deterministically to ground answers
-            <br>→ Red-flag lexicon + scripts: gentle, non-alarmist escalation language
-        </p>
-          <p class="reveal">
-            We didn’t prototype an app. We prototyped conversations.</p>
-            <p>SMS Copy Testing: Early drafts were too wordy — a tired parent skimmed and missed the action. We cut to “one breath” rules: one line of comfort, one step, one “what to watch.”</p>
-            <p>Voice Tuning: OpenAI’s TTS gave warmth, but some voices sounded uncanny. We iterated until Auntie sounded human, not robotic.</p>
-          <p>Escalation Language: First drafts felt clinical (“seek medical attention”). We softened: “Love, let’s call your provider now — here’s the number.” The moms we worked with confirmed they felt it balanced safety and calm.</p>
-          <p>These iterations weren’t polish — they were product design. Tone, pacing, and escalation scripts shaped trust more than any UI ever could.
-        </p>
-        <div class="process-dense-row reveal">
-          <div class="process-dense-left">
-            <div class="highlight-box reveal">
-            Contracts:
-                <br>
-            Brain → Telephony returns { intent, topic, region, reply_text, red_flags }
-                <br>
-            Telephony ↔ Snowflake: topic + region → top 2–3 vetted resources
-                <br>
-            Telephony ↔ Mongo: short-lived session + minimal context for personalization on message #2            </div>
-            <div class="highlight-box reveal">
-                The result is an “auntie” who feels human yet stays within safe, constrained rails—and a stack where no teammate needs to reach into another’s internals. Crucial for the very limited timeframe of the hackathon.             </div>
-          </div>
-          <div class="process-dense-right">
-            <div class="mini-images reveal">
-              <img src="auntiestack.png" alt="Sketch 3">
-              <img src="../auntiephone.png" alt="Sketch 4">
+          <div class="process-subsection reveal">
+            <h3 class="sub-heading">The identity system</h3>
+            <p>Instead of a visual design system, our core identity is how Auntie speaks and escalates. We defined:</p>
+            <div class="highlight-box">
+              → <strong>Intent taxonomy:</strong> Comfort · Resource · Escalate<br>
+              → <strong>Evidence micro-cards:</strong> short, vetted snippets (WHO/CDC/ACOG/PSI) fed deterministically to ground answers<br>
+              → <strong>Red-flag lexicon + scripts:</strong> gentle, non-alarmist escalation language
+            </div>
+            <p style="margin-top:1.25rem"><strong>SMS Copy Testing:</strong> Early drafts were too wordy—a tired parent skimmed and missed the action. We cut to "one breath" rules: one line of comfort, one step, one "what to watch."</p>
+            <p><strong>Voice Tuning:</strong> OpenAI's TTS gave warmth, but some voices sounded uncanny. We iterated until Auntie sounded human, not robotic.</p>
+            <p><strong>Escalation Language:</strong> First drafts felt clinical ("seek medical attention"). We softened: "Love, let's call your provider now—here's the number." The moms we worked with confirmed: balanced safety and calm. These weren't polish—they were product design.</p>
+            <div class="process-dense-row reveal">
+              <div class="process-dense-left">
+                <div class="highlight-box">
+                  <strong>Contracts:</strong><br>
+                  Brain → Telephony returns <code>{ intent, topic, region, reply_text, red_flags }</code><br>
+                  Telephony ↔ Snowflake: topic + region → top 2–3 vetted resources<br>
+                  Telephony ↔ Mongo: short-lived session + minimal context for personalization
+                </div>
+                <div class="highlight-box" style="margin-top:.75rem">Clear contracts between Brain ↔ Telephony ↔ Snowflake ↔ Mongo let four people ship like one mind. Crucial for a 36-hour window.</div>
+              </div>
+              <div class="process-dense-right">
+                <div class="mini-images reveal">
+                  <img src="auntiestack.png" alt="Stack diagram">
+                  <img src="../auntiephone.png" alt="Phone demo">
+                </div>
+              </div>
+            </div>
+            <div class="big-image reveal">
+              <img src="auntieinfo.png" alt="System information flow">
             </div>
           </div>
-        </div>
-         <div class="ideation-big-image reveal">
-           <img src="auntieinfo.png" alt="Big Ideation Visual">
-         </div>
-      </div>
 
-      <!-- 5.2 Sub-section: Prototyping & Iteration -->
-      <div class="process-subsection reveal">
-        <h3 class="reveal">5.2 // Prototyping &amp; Iteration</h3>
-        <p class="reveal">
-            We didn’t prototype screens—we prototyped conversations. By Sunday, we had two shippable prototypes that felt like the same Auntie across channels: SMS for the fastest, lowest-friction support, and Voice for hands-free reassurance when you’re holding a baby at 3 a.m.        </p>
-        <p class="reveal">
-            Final SMS prototype (what it feels like) <br>The SMS flow uses our “one-breath” rule: a caring line to lower panic, one clear step, and one “what to watch.” Every reply is grounded by Gemini’s structured intent (Comfort · Resource · Escalate), and when relevant, Auntie attaches 2–3 vetted, region-aware resources so nothing turns into a link dump. After any call, Auntie follows up by text so guidance isn’t lost in the moment.        </p>
-          <p class="reveal">
-            Final Voice prototype (what it sounds like) <br>The voice line uses the same persona and language, just sized for audio: warmer pacing, natural pauses, and the same escalation copy. If risk appears, Auntie’s handoff is gentle and specific—no alarms, no blame—“Love, let’s call for extra help. I’m sending the hospital address.” Post-call, Auntie texts the key steps and links so a sleep-deprived parent doesn’t have to remember.     </p>
-          <!-- Call demo -->
-
-          <div class="video-embed reveal">
+          <div class="process-subsection reveal">
+            <h3 class="sub-heading">Prototyping &amp; iteration</h3>
+            <p>By Sunday, two shippable prototypes that felt like the same Auntie across channels: SMS for fastest, lowest-friction support; Voice for hands-free reassurance when you're holding a baby at 3 a.m.</p>
+            <p>The SMS flow uses the "one-breath" rule: caring line → clear step → "what to watch." Grounded by Gemini's structured intent, with 2–3 vetted region-aware resources attached. After any call, Auntie follows up by text so guidance isn't lost in the moment.</p>
+            <p>The voice line uses the same persona, sized for audio: warmer pacing, natural pauses, same escalation copy. If risk appears: gentle, specific handoff. Post-call, Auntie texts the key steps so a sleep-deprived parent doesn't have to remember.</p>
+            <div class="video-embed reveal">
               <iframe
                 id="yt-auntie-text"
                 src="https://www.youtube.com/embed/kARMZuwfmMA?rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
@@ -764,86 +781,77 @@
                 allowfullscreen
               ></iframe>
             </div>
+          </div>
+        </div>
+      </section>
 
+      <hr class="section-rule">
 
-      </div>
-    </div>
-  </section>
-
+      <!-- TAKEAWAYS -->
       <section class="takeaways" id="takeaways">
-  <div class="section-content reveal">
-    <h3 class="reveal">the end, but not really...</h3>
-    <h2 class="reveal">Section 6 // My Takeaways</h2>
-    <div class="cards reveal">
-      <div class="card reveal">
-        <!-- Using the number and headline together -->
-        <h4 class="reveal">01</h4>
-        <h3 class="reveal">Ship the channel, not the chore</h3>
-        <p class="reveal">
-            Phone/SMS beat any elegant app onboarding when attention is scarce.        </p>
-      </div>
-      <div class="card reveal">
-        <h4 class="reveal">02</h4>
-        <h3 class="reveal">Warmth is a feature</h3>
-        <p class="reveal">
-            A one-breath message and a kind line reduce panic better than paragraphs.        </p>
-      </div>
-      <div class="card reveal">
-        <h4 class="reveal">03</h4>
-        <h3 class="reveal">Safety needs contracts</h3>
-        <p class="reveal">
-            Structured intents, deterministic resources, and explicit escalation language prevent silent failure.         </p>
-      </div>
-      <div class="card reveal">
-        <h4 class="reveal">04</h4>
-        <h3 class="reveal">Personalize light, not forever</h3>
-        <p class="reveal">
-            Remember just enough (delivery, feeding, weeks postpartum, region) and make retention short and documented.        </p>
-      </div>
-    </div>
-    <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">👩‍🍼️ What we shipped— and why it mattered</h3>
-      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
-          In 36 hours we turned a fragile idea into a working lifeline: SMS first, voice optional, same warm Auntie across both. That mattered because our users aren’t looking for a new app at 3 a.m.—they’re looking for a human-sounding helper who answers in seconds and gives one doable next step. We proved that with live call + text flows on stage, letting a judge dial in and see Auntie’s gentle reassurance, concise guidance, and the follow-up text so nothing gets lost.      </p>
-      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
-          Behind the warmth, the system held up: structured intent triage (Comfort · Resource · Escalate), privacy-first “light memory,” and deterministic local resources—clear contracts between services instead of ad-hoc glue. That made the demo reliable, the handoffs safe, and the story credible to both judges and clinicians in the room.      </p>
-    </div>
-      <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">🍼 What we're proud of</h3>
-      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
-          → Multi-modal in a weekend. Live SMS + (optional) voice with natural TTS—same persona, tuned per channel—so parents could choose the lowest-friction path in the moment.</p>
-          <p>→ Triaging that feels kind, not clinical. Comfort/Resource/Escalate showed up in the copy, the routing, and the escalation language (“Love…”)—a safety feature disguised as empathy. <p>
-          <p>→ Privacy-first memory. Short-lived context (delivery, feeding, region) so Auntie remembers what matters without hoarding more than she needs. </p>
-          <p>→ Deterministic resources. Topic + region → 2–3 vetted links you can actually call—no model hand-waving. </p>
-          <p>→ Judge-proof artifacts. We showed the triage JSON, Atlas collections, and Snowflake lookups—receipts that the thing worked, not just vibes. </p>
-      </p>
-    </div>
-      <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">🚼 What we learned (and will keep)</h3>
-      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
-          → Scope like surgeons. Tier-1 (tags/micro-RAG) beat “let’s vectorize the world.” It made answers faster and the system easier to reason about under pressure. </p>
-          <p>→ Conversation design is product design. One-breath messages, tone guides, and red-flag scripts did more for trust than any UI flourish.  <p>
-          <p>→ Contracts prevent meltdowns. Clear inputs/outputs between Brain ↔ Telephony ↔ Snowflake ↔ Mongo let four people ship like one mind.  </p>
-          <p>→ Safety is a feature, not a disclaimer. Escalation copy that sounds like Auntie—warm, specific, actionable—turns a scary moment into a guided handoff. </p>
-      </p>
-    </div>
-      <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">🤰 Why we think we won</h3>
-      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
-          We designed for the real 3 a.m.—no apps, no accounts, no homework—and we proved it live. Judges didn’t just hear a story; they called, texted, and watched Auntie route help. That blend of empathy, reliability, and receipts made the impact legible: tech that reduces cognitive load for exhausted new parents, with safety you can trust. That’s what earned us a spot among the hackathon winners—and it’s the bar we’ll keep meeting as we expand regions, languages, and clinical review. </p>
-      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">And we did it in 36 hours. Not a slideware promise, a working service. We wired the sponsor stack wall-to-wall— Gemini (intent + safety), MongoDB Atlas (short-lived memory), Snowflake API (deterministic, region-aware resources) — in addition to Twilio (SMS/Voice) and OpenAI Realtime voice for natural-sounding calls. All orchestrated in TypeScript/Node and deployed live. While most teams built “an app”, we shipped the channel parents already use at 3 a.m. (call and text) then proved it on stage with real flows, visible triage JSON, and sub-5s SMS round-trip. That combination of empathy + reliability + receipts is what made Auntie legible to judges as more than a demo—and why we landed among the winners.</p>
-    </div>
-      <div class="reflection reveal" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-      <h3 class="reveal" style="color: var(--text-secondary); font-size: 1.75rem; margin-bottom: 1rem; font-family: 'Montserrat Alternates', sans-serif;">Works Cited</h3>
-      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
-          Carlson, K., Mughal, S., Azhar, Y., & Siddiqui, W. (2025, January 22). Perinatal depression. StatPearls - NCBI Bookshelf. https://www.ncbi.nlm.nih.gov/books/NBK519070/     </p>
-      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
-          Symptoms of depression among women. (2024, May 15). Reproductive Health. https://www.cdc.gov/reproductive-health/depression/index.html?      </p>
-      <p class="reveal" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.5;">
-          World Health Organization. (n.d.). Mental Health, Brain Health and Substance Use: Maternal Mental Health. WHO. https://www.who.int/teams/mental-health-and-substance-use/promotion-prevention/maternal-mental-health     </p>
-    </div>
-  </div>
-</section>
+        <div class="section-content reveal">
+          <span class="eyebrow">Takeaways</span>
+          <h2 class="section-heading">What we learned and what we'll keep.</h2>
+          <div class="cards reveal">
+            <div class="card reveal">
+              <h4>01</h4>
+              <h3>Ship the channel, not the chore</h3>
+              <p>Phone/SMS beat any elegant app onboarding when attention is scarce.</p>
+            </div>
+            <div class="card reveal">
+              <h4>02</h4>
+              <h3>Warmth is a feature</h3>
+              <p>A one-breath message and a kind line reduce panic better than paragraphs.</p>
+            </div>
+            <div class="card reveal">
+              <h4>03</h4>
+              <h3>Safety needs contracts</h3>
+              <p>Structured intents, deterministic resources, and explicit escalation language prevent silent failure.</p>
+            </div>
+            <div class="card reveal">
+              <h4>04</h4>
+              <h3>Personalize light, not forever</h3>
+              <p>Remember just enough (delivery, feeding, weeks postpartum, region) and make retention short and documented.</p>
+            </div>
+          </div>
+
+          <div class="reflection reveal">
+            <h3>What we shipped — and why it mattered</h3>
+            <p>In 36 hours we turned a fragile idea into a working lifeline: SMS first, voice optional, same warm Auntie across both. That mattered because our users aren't looking for a new app at 3 a.m.—they're looking for a human-sounding helper who answers in seconds and gives one doable next step. We proved that with live call + text flows on stage, letting a judge dial in and see Auntie's gentle reassurance, concise guidance, and the follow-up text so nothing gets lost.</p>
+            <p>Behind the warmth, the system held up: structured intent triage, privacy-first "light memory," and deterministic local resources—clear contracts between services instead of ad-hoc glue. That made the demo reliable, the handoffs safe, and the story credible to both judges and clinicians in the room.</p>
+          </div>
+
+          <div class="reflection reveal">
+            <h3>What we're proud of</h3>
+            <p>→ <strong>Multi-modal in a weekend.</strong> Live SMS + voice with natural TTS—same persona, tuned per channel—so parents could choose the lowest-friction path in the moment.</p>
+            <p>→ <strong>Triaging that feels kind, not clinical.</strong> Comfort/Resource/Escalate showed up in the copy, the routing, and the escalation language ("Love…")—a safety feature disguised as empathy.</p>
+            <p>→ <strong>Privacy-first memory.</strong> Short-lived context so Auntie remembers what matters without hoarding more than she needs.</p>
+            <p>→ <strong>Deterministic resources.</strong> Topic + region → 2–3 vetted links you can actually call—no model hand-waving.</p>
+            <p>→ <strong>Judge-proof artifacts.</strong> We showed the triage JSON, Atlas collections, and Snowflake lookups—receipts that the thing worked, not just vibes.</p>
+          </div>
+
+          <div class="reflection reveal">
+            <h3>What we learned (and will keep)</h3>
+            <p>→ <strong>Scope like surgeons.</strong> Tier-1 tags/micro-RAG beat "let's vectorize the world." Faster answers, easier to reason about under pressure.</p>
+            <p>→ <strong>Conversation design is product design.</strong> One-breath messages, tone guides, and red-flag scripts did more for trust than any UI flourish.</p>
+            <p>→ <strong>Contracts prevent meltdowns.</strong> Clear inputs/outputs between Brain ↔ Telephony ↔ Snowflake ↔ Mongo let four people ship like one mind.</p>
+            <p>→ <strong>Safety is a feature, not a disclaimer.</strong> Escalation copy that sounds like Auntie—warm, specific, actionable—turns a scary moment into a guided handoff.</p>
+          </div>
+
+          <div class="reflection reveal">
+            <h3>Why we think we won</h3>
+            <p>We designed for the real 3 a.m.—no apps, no accounts, no homework—and we proved it live. Judges didn't just hear a story; they called, texted, and watched Auntie route help. That blend of empathy, reliability, and receipts made the impact legible: tech that reduces cognitive load for exhausted new parents, with safety you can trust.</p>
+            <p>We wired the sponsor stack wall-to-wall: Gemini (intent + safety), MongoDB Atlas (short-lived memory), Snowflake API (deterministic, region-aware resources), Twilio (SMS/Voice), and OpenAI Realtime voice. All orchestrated in TypeScript/Node and deployed live. While most teams built an app, we shipped the channel parents already use at 3 a.m. and proved it on stage with real flows, visible triage JSON, and sub-5s SMS round-trip. That's what earned us a spot among the winners—and it's the bar we'll keep meeting.</p>
+          </div>
+
+          <div class="works-cited reveal">
+            <h3>Works Cited</h3>
+            <p>Carlson, K., Mughal, S., Azhar, Y., &amp; Siddiqui, W. (2025, January 22). Perinatal depression. StatPearls - NCBI Bookshelf. https://www.ncbi.nlm.nih.gov/books/NBK519070/</p>
+            <p>Symptoms of depression among women. (2024, May 15). Reproductive Health. https://www.cdc.gov/reproductive-health/depression/index.html</p>
+            <p>World Health Organization. (n.d.). Mental Health, Brain Health and Substance Use: Maternal Mental Health. WHO. https://www.who.int/teams/mental-health-and-substance-use/promotion-prevention/maternal-mental-health</p>
+          </div>
+        </div>
+      </section>
 
     </div>
   </header>
@@ -851,35 +859,32 @@
   <!-- footer mount -->
   <div id="contact"></div>
 
-  <!-- footer loader -->
+  <!-- YouTube API -->
   <script src="https://www.youtube.com/iframe_api"></script>
-    <script>
-      let textPlayer;
-      function onYouTubeIframeAPIReady() {
-        textPlayer = new YT.Player('yt-auntie-text', {
-          events: {
-            onReady: (e) => e.target.setPlaybackRate(1.25),
-            onStateChange: (e) => {
-              if (e.data === YT.PlayerState.PLAYING) e.target.setPlaybackRate(1.25);
-            },
+  <script>
+    let textPlayer;
+    function onYouTubeIframeAPIReady() {
+      textPlayer = new YT.Player('yt-auntie-text', {
+        events: {
+          onReady: (e) => e.target.setPlaybackRate(1.25),
+          onStateChange: (e) => {
+            if (e.data === YT.PlayerState.PLAYING) e.target.setPlaybackRate(1.25);
           },
-        });
-      }
-    </script>
+        },
+      });
+    }
+  </script>
 
-
-
+  <!-- footer loader -->
   <script>
     (async () => {
       const res = await fetch('/footer.html');
       if (!res.ok) return console.warn('Footer fetch failed:', res.status);
       const html = await res.text();
       const doc  = new DOMParser().parseFromString(html, 'text/html');
-
       doc.querySelectorAll('style, link[rel="stylesheet"]').forEach(n =>
         document.head.appendChild(n.cloneNode(true))
       );
-
       const footer = doc.querySelector('footer');
       const mount  = document.getElementById('contact');
       if (footer && mount) {
@@ -896,7 +901,7 @@
   <script type="module">
     // cursor
     const cursor=document.getElementById('cursor');let mouseX=0,mouseY=0,rafId;
-    const hoverSel='a,button,.skip-button,.glass-card,.quote-card,.stats-card,.must-haves-card,.card,img';
+    const hoverSel='a,button,.card,.quote-card,.stats-card,.must-haves-card,img';
     function update(){cursor.style.left=mouseX+'px';cursor.style.top=mouseY+'px'}
     addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;if(!rafId){rafId=requestAnimationFrame(()=>{update();rafId=null;});}});
     addEventListener('mousedown',()=>cursor.classList.add('clicking'));
@@ -906,26 +911,96 @@
     addEventListener('mouseleave',()=>{cursor.style.opacity='0'});
     addEventListener('mouseenter',()=>{cursor.style.opacity='1'});
 
-    // reveal
+    // reveal (skip .section-heading — handled by scramble observer below)
     const io=new IntersectionObserver((es,o)=>{es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('active');o.unobserve(en.target);}})},{threshold:.2});
-    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+    document.querySelectorAll('.reveal:not(.section-heading)').forEach(el=>io.observe(el));
 
-    // radial progress
-    function animateProgress(card,pct){
-      const circle=card.querySelector('.circle-progress');
-      const label=card.querySelector('.circle-text');
-      const C=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--circle-circumference'));
-      circle.style.strokeDasharray=C; circle.style.strokeDashoffset=C;
-      const target=C-(pct/100)*C; circle.style.strokeDashoffset=target;
-      let i=0; (function step(){ if(i<pct){ i++; label.textContent=i+'%'; requestAnimationFrame(step);} else {label.textContent=pct+'%';}})();
-    }
-    document.querySelectorAll('.stats-card').forEach(card=>{
-      card.addEventListener('transitionend',()=>{
-        if(card.classList.contains('active')){
-          animateProgress(card, parseInt(card.getAttribute('data-percent')||'0',10));
+    // Section heading: scramble-in + font mixing (DotempDemo ×3 / Didot ×2)
+    (function(){
+      const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
+      const RUNS    = [3, 2];
+      function rand(){ return CHARSET[Math.floor(Math.random()*CHARSET.length)]; }
+
+      function scramble(el, text, dur, onDone){
+        const len = text.length;
+        const revealed = new Array(len).fill(false);
+        const t0 = performance.now();
+        (function frame(now){
+          const p = Math.min(1,(now-t0)/dur);
+          const upto = Math.floor(p*len*1.15);
+          for(let i=0;i<upto;i++) if(!revealed[i]&&Math.random()<0.4) revealed[i]=true;
+          let out='';
+          for(let i=0;i<len;i++){
+            const c=text[i];
+            if(c===' '){ out+='\u00a0'; continue; }
+            out+=revealed[i]?c:rand();
+          }
+          el.textContent=out;
+          if(p<1||revealed.some(r=>!r)) requestAnimationFrame(frame);
+          else onDone();
+        })(performance.now());
+      }
+
+      function fontMix(el, text){
+        let html='', runIdx=0, runCount=0, usePx=true;
+        for(let i=0;i<text.length;i++){
+          const cp = text.codePointAt(i);
+          // skip emoji / non-ASCII — use String.fromCodePoint so surrogate pairs
+          // are emitted as one complete character, not just the high surrogate
+          if(cp > 127){
+            html += String.fromCodePoint(cp);
+            if(cp > 0xFFFF) i++; // advance past the low surrogate
+            continue;
+          }
+          const c = text[i];
+          if(c===' '){ html+=' '; continue; }
+          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
+          if(++runCount>=RUNS[runIdx%2]){ usePx=!usePx; runIdx++; runCount=0; }
         }
-      },{once:true});
-    });
+        el.innerHTML=html;
+      }
+
+      const hio=new IntersectionObserver((entries,obs)=>{
+        entries.forEach(en=>{
+          if(!en.isIntersecting) return;
+          obs.unobserve(en.target);
+          const el=en.target;
+          const text=el.textContent.trim();
+          // bypass CSS reveal — the scramble IS the reveal
+          el.style.opacity='1'; el.style.transform='none';
+          el.classList.add('h-scrambling');
+          scramble(el, text, 900, ()=>{
+            el.classList.remove('h-scrambling');
+            fontMix(el, text);
+            el.classList.add('h-settled');
+          });
+        });
+      },{threshold:0.25});
+
+      document.querySelectorAll('.section-heading').forEach(h=>hio.observe(h));
+
+      // Outcome numbers — font-mix on load (no scramble, they're metrics not headings)
+      setTimeout(()=>{
+        document.querySelectorAll('.outcome-num').forEach(el=>{
+          fontMix(el, el.textContent.trim());
+        });
+      }, 100);
+
+      // Hero h1 — scramble immediately on load (visible without scrolling)
+      const h1 = document.querySelector('.intro-left h1');
+      if(h1){
+        const h1Text = h1.textContent.trim();
+        h1.style.opacity = '1'; h1.style.transform = 'none';
+        setTimeout(()=>{
+          h1.classList.add('h-scrambling');
+          scramble(h1, h1Text, 900, ()=>{
+            h1.classList.remove('h-scrambling');
+            fontMix(h1, h1Text);
+            h1.classList.add('h-settled');
+          });
+        }, 350);
+      }
+    })();
   </script>
 
   <!-- background.html loader -->
