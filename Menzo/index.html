@@ -20,18 +20,18 @@
 
     :root {
       --text-primary: #f1faee;
-      --text-secondary: #a8dadc;
-      --accent-teal: #2a9d8f;
-      --accent-blue: #457b9d;
-      --accent-purple: #7b5ea7;
-      --glass-deep-1: rgba(8,14,26,0.88);
-      --glass-deep-2: rgba(13,22,43,0.94);
-      --glass-border: rgba(168,218,220,0.18);
-      --glass-highlight-1: rgba(168,218,220,.08);
-      --glass-highlight-2: rgba(69,123,157,.10);
-      --glass-bg: rgba(15,20,25,0.35);
-      --inner-card: rgba(15,20,25,.40);
-      --rule: rgba(168,218,220,0.22);
+      --text-secondary: #c8aee8;
+      --accent-teal: #9b7ec8;
+      --accent-blue: #7b5ea7;
+      --accent-purple: #c084fc;
+      --glass-deep-1: rgba(16,8,30,0.91);
+      --glass-deep-2: rgba(28,10,52,0.96);
+      --glass-border: rgba(180,140,220,0.22);
+      --glass-highlight-1: rgba(168,100,240,.10);
+      --glass-highlight-2: rgba(123,60,200,.14);
+      --glass-bg: rgba(12,5,24,0.35);
+      --inner-card: rgba(12,5,24,.42);
+      --rule: rgba(180,140,220,0.24);
     }
 
     *{margin:0;padding:0;box-sizing:border-box}
@@ -43,7 +43,7 @@
     #bg-host{position:fixed;inset:0;z-index:-1;pointer-events:none}
     #bg-host>iframe{width:100%;height:100%;border:0;display:block}
 
-    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(123,94,167,.3);border:2px solid rgba(123,94,167,.8);border-radius:50%;pointer-events:none;z-index:10000;backdrop-filter:blur(8px);transition:all .08s ease-out;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(123,94,167,.4),inset 0 0 10px rgba(123,94,167,.1)}
+    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(123,94,167,.3);border:2px solid rgba(123,94,167,.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(123,94,167,.4),inset 0 0 10px rgba(123,94,167,.1)}
     .custom-cursor.clicking{background:rgba(123,94,167,.9);border-color:rgba(123,94,167,1);transform:translate(-50%,-50%) scale(.8)}
     .custom-cursor.hovering{width:30px;height:30px;background:rgba(123,94,167,.4);border-color:rgba(123,94,167,.9);box-shadow:0 0 20px rgba(123,94,167,.6)}
     *,*::before,*::after{cursor:none !important}
@@ -136,8 +136,9 @@
 
     .hero-container {
       width: min(1080px,90vw);
-      margin: 0 auto clamp(24px,4vh,48px);
-      border-radius: 26px;
+      margin: 0 auto 0;
+      border-radius: 26px 26px 0 0;
+      border-bottom: none;
       padding: clamp(18px,2.4vw,40px);
       position: relative;
       background: linear-gradient(145deg, var(--glass-deep-1), var(--glass-deep-2));
@@ -166,7 +167,7 @@
     .intro-left h1 {
       font-size: clamp(2rem,6vw,4.8rem); font-weight:800; line-height:1.05; margin-bottom:.6rem;
       letter-spacing: .06em;
-      background: linear-gradient(45deg,#a8dadc,#7b5ea7,#f1faee,#c084fc,#457b9d);
+      background: linear-gradient(45deg,#c084fc,#7b5ea7,#f1faee,#e0b8ff,#9b7ec8);
       background-size:300% 300%;
       -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
       animation: gradientShift 5s ease infinite;
@@ -246,7 +247,7 @@
 
     /* ---- HIGHLIGHT BOX ---- */
     .highlight-box {
-      border-left:2px solid rgba(168,218,220,0.4);
+      border-left:2px solid rgba(180,140,220,0.45);
       padding:.9rem 1.1rem .9rem 1.25rem; margin-top:.75rem;
       background:rgba(15,20,25,.3); border-radius:0 10px 10px 0;
       font-size:.95rem; line-height:1.55; color:var(--text-primary);
@@ -319,6 +320,102 @@
     /* ---- REVEALS ---- */
     .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s ease-out,transform .5s ease-out; }
     .active { opacity:1 !important; transform:translateY(0) !important; }
+
+    /* ---- PURPLE PAGE TINT ---- */
+    body::after {
+      content:''; position:fixed; inset:0; z-index:2; pointer-events:none;
+      background: rgba(90,40,160,0.06);
+    }
+    /* logo purple-shift (only this page) */
+    .navbar .logo img {
+      filter: hue-rotate(72deg) saturate(2.2) brightness(1.08) !important;
+      transition: filter .4s ease, drop-shadow .4s ease;
+    }
+    .navbar:not(.pill) .logo img {
+      filter: hue-rotate(72deg) saturate(2.2) brightness(1.1) drop-shadow(0 4px 10px rgba(140,60,240,0.28)) !important;
+    }
+
+    /* ---- BODY IMAGES ---- */
+    .body-img { width:100%; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,.4); border:1px solid var(--glass-border); margin:1.5rem 0 .4rem; display:block; }
+    .body-img-caption {
+      font-family: 'Cormorant Garamond', 'Didot', serif;
+      font-style: italic;
+      font-size: .68rem;
+      letter-spacing: .03em;
+      text-align: center;
+      color: var(--text-secondary);
+      opacity: .45;
+      margin-bottom: 1.5rem;
+      max-width: 100% !important;
+      width: 100%;
+      display: block;
+    }
+
+    /* ---- PRESS SECTION ---- */
+    .press-section {
+      width: 100%;
+      padding: 0 0 clamp(48px,7vh,80px);
+    }
+    .press-wrapper {
+      width: min(1080px, 90vw);
+      margin: 0 auto;
+      border-radius: 0 0 26px 26px;
+      border-top: none;
+      padding: clamp(18px,2.4vw,40px);
+      background: linear-gradient(145deg, var(--glass-deep-1), var(--glass-deep-2));
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(18px) saturate(120%);
+      -webkit-backdrop-filter: blur(18px) saturate(120%);
+      box-shadow: 0 24px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+      overflow: hidden;
+    }
+    .press-track-outer { position: relative; margin-top: 2rem; margin: 2rem -clamp(18px,2.4vw,40px) 0; }
+    .press-track {
+      display: flex;
+      gap: 1.1rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 clamp(18px,2.4vw,40px) 0.25rem;
+    }
+    .press-track::-webkit-scrollbar { display: none; }
+    .press-card {
+      flex: 0 0 clamp(240px, 26vw, 300px);
+      scroll-snap-align: start;
+      border-radius: 14px;
+      border: 1px solid var(--rule);
+      background: var(--inner-card);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: border-color .3s, transform .25s;
+    }
+    .press-card:hover { border-color: rgba(123,94,167,.5); transform: translateY(-4px); }
+    .press-card-img { width: 100%; height: 160px; object-fit: cover; display: block; }
+    .press-card-placeholder {
+      width: 100%; height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.4rem;
+      background: linear-gradient(135deg, rgba(123,94,167,.18), rgba(42,157,143,.12));
+    }
+    .press-card-body { padding: .85rem 1rem 1.1rem; display: flex; flex-direction: column; gap: .3rem; flex: 1; }
+    .press-outlet { font-size: .62rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgba(168,140,220,.8); }
+    .press-date { font-size: .62rem; color: rgba(168,218,220,.45); letter-spacing: .05em; }
+    .press-headline { font-size: .86rem; line-height: 1.42; color: var(--text-primary); font-weight: 500; margin-top: .15rem; flex: 1; }
+    .press-read { font-size: .75rem; color: var(--accent-teal); margin-top: .55rem; display: flex; align-items: center; gap: 4px; transition: gap .2s; }
+    .press-card:hover .press-read { gap: 8px; }
+    .press-nav-row { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1.1rem; padding: 0 clamp(18px,2.4vw,40px); }
+    .press-nav-btn {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid var(--rule); background: var(--inner-card);
+      color: var(--text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; transition: all .25s;
+    }
+    .press-nav-btn:hover { border-color: rgba(123,94,167,.5); color: #c084fc; background: rgba(123,94,167,.1); }
 
     /* ---- RESPONSIVE ---- */
     @media(max-width:900px) {
@@ -466,7 +563,9 @@
             </div>
           </div>
 
-          <p style="margin-top:1.5rem">The CTO asks: <em>will this decision hurt us in six months?</em> The Technical Director asks: <em>why is this cinematic broken right now and how do I fix it before the department goes idle?</em> Neither question can wait for the other. They run in parallel, constantly, across different timescales and failure modes. Merging them into one "technical lead" role doesn't simplify the work — it just means both fail quietly until they fail loudly.</p>
+          <img src="character-concept.jpg" alt="Path to Menzoberranzan — character creation screen concept art" class="body-img" loading="lazy" style="margin-top:1.5rem">
+          <p class="body-img-caption">[Character creation screen concept art — <a href="https://www.linkedin.com/in/junjoba/" target="_blank" rel="noopener" style="color:var(--text-secondary);text-underline-offset:3px;text-decoration:underline">junjoba</a>, Environment Art Lead]</p>
+          <p style="margin-top:0">The CTO asks: <em>will this decision hurt us in six months?</em> The Technical Director asks: <em>why is this cinematic broken right now and how do I fix it before the department goes idle?</em> Neither question can wait for the other. They run in parallel, constantly, across different timescales and failure modes. Merging them into one "technical lead" role doesn't simplify the work — it just means both fail quietly until they fail loudly.</p>
         </div>
       </section>
 
@@ -516,13 +615,13 @@
 
           <h3 class="sub-heading" style="margin-top:1.5rem">Why Git LFS, and why self-hosted?</h3>
           <p>Git LFS (Large File Storage) solves the binary bloat problem by keeping large files external to the repository proper — contributors get pointer files in their clone, and the actual binaries are fetched on demand. The repo stays lightweight. The workflow stays sane.</p>
-          <p>The migration plan I wrote covered every step: audit (find all files in history larger than 10MB), provision new infrastructure (DigitalOcean droplet), install Forgejo (our self-hosted Git platform), migrate existing LFS objects to Backblaze B2 for external storage, freeze all open PRs, rewrite history, verify, communicate, and archive the old instance. Fourteen steps, a rollback plan, a troubleshooting guide, and a FAQ written specifically for Kai. It was not a quick decision. It was a surgery plan.</p>
+          <p>The migration plan I wrote covered every step: audit (find all files in history larger than 10MB), provision new infrastructure on Hetzner, install Forgejo (our self-hosted Git platform), migrate existing LFS objects to Backblaze B2 for external storage, freeze all open PRs, rewrite history, verify, communicate, and archive the old instance. Fourteen steps, a rollback plan, a troubleshooting guide, and a FAQ written specifically for fellow members of the board of directors. It was not a quick decision. It was a surgery plan.</p>
 
           <div class="two-col" style="margin-top:1.25rem">
             <div>
               <div class="highlight-box reveal">
-                <strong>Git over GitHub</strong>
-                <p style="margin-top:.5rem">GitHub's LFS bandwidth limits would have cost money we don't have at the binary scale PtM operates. Self-hosted Forgejo on DigitalOcean gives us full control over LFS policies, storage backends (Backblaze B2), and contributor access — without a bill that grows every time someone downloads an asset pack.</p>
+                <strong>Git over GitHub — self-hosted on Hetzner</strong>
+                <p style="margin-top:.5rem">GitHub's LFS bandwidth limits would have cost real money at the binary scale PtM operates. We self-host Forgejo on Hetzner instead — significantly cheaper than DigitalOcean or AWS for EU-based teams, with generous bandwidth, fast NVMe storage, and no per-seat licensing surprises. Full control over LFS policies, storage backends (Backblaze B2), and contributor access. The cost difference alone justified the migration.</p>
               </div>
             </div>
             <div>
@@ -533,7 +632,8 @@
             </div>
           </div>
 
-          <img src="ptm-cover2.png" alt="Path to Menzoberranzan — Underdark environment" class="cover-image" style="margin-top:2rem">
+          <img src="https://static0.thegamerimages.com/wordpress/wp-content/uploads/2025/01/athkatla-streets-from-baldur-s-gate-2-recreated-in-baldur-s-gate-3.jpg" alt="Athkatla streets rebuilt in BG3 engine — Path to Menzoberranzan" class="body-img" loading="lazy" style="margin-top:2rem">
+          <p class="body-img-caption">[Athkatla streets from Baldur's Gate 2, fully rebuilt in the BG3 engine. Via TheGamer, Jan 2025.]</p>
         </div>
       </section>
 
@@ -619,6 +719,115 @@
 
     </div>
   </header>
+
+  <!-- PRESS COVERAGE -->
+  <section class="press-section">
+    <div class="press-wrapper">
+      <span class="eyebrow purple">In The Press</span>
+      <h2 class="section-heading" style="margin-top:.4rem">The internet noticed.</h2>
+      <div class="press-track-outer">
+        <div class="press-track" id="press-track"></div>
+        <div class="press-nav-row">
+          <button class="press-nav-btn" id="press-prev" aria-label="Previous">←</button>
+          <button class="press-nav-btn" id="press-next" aria-label="Next">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+    (function(){
+      const PRESS = [
+        {
+          outlet:'FRVR', date:'Feb 3, 2026',
+          headline:'Path to Menzoberranzan Expanding Team as Alpha Launch Looms',
+          href:'https://frvr.com/blog/news/baldurs-gate-3-fan-expansion-path-to-menzoberranzan-expanding-team-as-alpha-launch-looms/',
+          img:'https://frvr.com/wp-content/uploads/2025/11/baldurs-gate-3-path-tp-menzoberranzan.jpg'
+        },
+        {
+          outlet:'PC Guide', date:'Feb 2, 2026',
+          headline:'Devs of the Biggest BG3 Mod Say They Are "Off to a Great 2026" But Looking for Even More Help',
+          href:'https://www.pcguide.com/news/devs-of-the-biggest-baldurs-gate-3-mod-say-they-are-off-to-a-great-2026-but-looking-for-even-more-help/',
+          img:null, icon:'📰'
+        },
+        {
+          outlet:'TheGamer', date:'Nov 6, 2025',
+          headline:'Gigantic Baldur\'s Gate 3 Custom Campaign Plans To Release Tutorial Next Year',
+          href:'https://www.thegamer.com/baldurs-gate-3-path-to-menzoberranzan-alpha-2026-release/',
+          img:'https://static0.thegamerimages.com/wordpress/wp-content/uploads/2025/11/baldur-s-gate-3-araj-oblodra.jpg'
+        },
+        {
+          outlet:'GameReactor', date:'Nov 6, 2025',
+          headline:'BG3\'s Path to Menzoberranzan Mod Project Will Launch an Alpha in the First Half of 2026',
+          href:'https://www.gamereactor.eu/baldurs-gate-iii-path-to-menzoberranzan-mod-project-will-launch-an-alpha-in-the-first-half-of-2026-1629153/',
+          img:null, icon:'🎮'
+        },
+        {
+          outlet:'Gaming Bible', date:'Nov 6, 2025',
+          headline:'Baldur\'s Gate 3 Is Getting a Brand New Mod Campaign in 2026',
+          href:'https://www.gamingbible.com/news/baldurs-gate-3-2026-new-campaign-776353-20251106',
+          img:'https://eu-images.contentstack.com/v3/assets/bltbc1876152fcd9f07/bltc5bc4434abb41adb/690c7225f719314f848e09de/baldur_s_gate_3.jpg'
+        },
+        {
+          outlet:'WCCFTech', date:'Nov 5, 2025',
+          headline:'Baldur\'s Gate 3 Path to Menzoberranzan Mod to Get First Playable Alpha By June 2026',
+          href:'https://wccftech.com/baldurs-gate-3-path-to-menzoberranzan-mod-alpha-by-june-2026/',
+          img:'https://cdn.wccftech.com/wp-content/uploads/2025/11/path-menzoberranza-mod-HD-scaled.jpeg'
+        },
+        {
+          outlet:'Kotaku', date:'Nov 5, 2025',
+          headline:'If You\'ve Finally Run Out Of Stuff To Do In Baldur\'s Gate 3, How About A New Campaign?',
+          href:'https://kotaku.com/baldurs-gate-3-campaign-fan-mod-path-to-menzoberranzan-2000641395',
+          img:'https://kotaku.com/app/uploads/2023/12/59ef4992f5f1f20538065de4525a92ae.jpg'
+        },
+        {
+          outlet:'FRVR', date:'Nov 2025',
+          headline:'Team Behind BG3\'s Path to Menzoberranzan Shares Update as Tutorial Level Starts to Take Form',
+          href:'https://frvr.com/blog/news/team-behind-baldurs-gate-3s-ambitious-path-to-menzoberranzan-custom-campaign-shares-update-as-tutorial-level-starts-to-take-form/',
+          img:null, icon:'🗺️'
+        },
+        {
+          outlet:'FRVR', date:'Oct 2025',
+          headline:'Baldur\'s Gate 3\'s Biggest Custom Campaign Preps Its First Playable Alpha for Release Next Year',
+          href:'https://frvr.com/blog/baldurs-gate-3s-biggest-custom-campaign-preps-its-first-playable-alpha-for-release-next-year/',
+          img:null, icon:'🧭'
+        },
+        {
+          outlet:'EGW News', date:'2025',
+          headline:'Path to Menzoberranzan Mod Hits First Playable Build Milestone',
+          href:'https://egw.news/gaming/news/28489/path-to-menzoberranzan-mod-hits-first-playable-bui-v7WlJkX24',
+          img:null, icon:'⚔️'
+        },
+        {
+          outlet:'TheGamer', date:'Apr 14, 2025',
+          headline:'Fan-Made Baldur\'s Gate 3 Expansion Path To Menzoberranzan Has Over 100 Volunteer Developers',
+          href:'https://www.thegamer.com/baldurs-gate-3-custom-campaign-path-to-menzoberranzan-over-100-volunteer-developers/',
+          img:'https://static0.thegamerimages.com/wordpress/wp-content/uploads/wm/2025/04/baldurs-gate-3-dark-urge-yelling-over-a-screenshot-of-the-busy-streets-of-athkatla.jpg'
+        },
+        {
+          outlet:'TheGamer', date:'Mar 12, 2025',
+          headline:'"I\'m So Psyched For This": Returning To The Underdark In This Custom Baldur\'s Gate 3 Campaign',
+          href:'https://www.thegamer.com/baldurs-gate-3-path-to-menzoberranzan-custom-campaign-upate-underdark/',
+          img:null, icon:'🌑'
+        }
+      ];
+      const track = document.getElementById('press-track');
+      PRESS.forEach(p => {
+        const a = document.createElement('a');
+        a.className = 'press-card';
+        a.href = p.href;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        const top = p.img
+          ? `<img class="press-card-img" src="${p.img}" alt="${p.outlet}" loading="lazy">`
+          : `<div class="press-card-placeholder">${p.icon}</div>`;
+        a.innerHTML = `${top}<div class="press-card-body"><span class="press-outlet">${p.outlet}</span><span class="press-date">${p.date}</span><p class="press-headline">${p.headline}</p><span class="press-read">Read article →</span></div>`;
+        track.appendChild(a);
+      });
+      const cardW = () => track.querySelector('.press-card').offsetWidth + 18;
+      document.getElementById('press-prev').addEventListener('click', () => track.scrollBy({left:-cardW()*2, behavior:'smooth'}));
+      document.getElementById('press-next').addEventListener('click', () => track.scrollBy({left: cardW()*2, behavior:'smooth'}));
+    })();
+  </script>
 
   <div id="contact"></div>
 

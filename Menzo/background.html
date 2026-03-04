@@ -11,7 +11,7 @@
 
     body{
       font-family:'Montserrat',sans-serif;
-      background:linear-gradient(135deg,#0f1419 0%,#1a2332 25%,#2d3748 50%,#1e3a5f 75%,#0f1419 100%);
+      background:linear-gradient(135deg,#09051a 0%,#110828 25%,#1c0a38 50%,#13063a 75%,#09051a 100%);
       background-size:400% 400%;
       animation:gradientShift 20s ease infinite;
       color:#f1faee;
@@ -21,28 +21,13 @@
       position:relative;
     }
 
-    /* Desktop-only custom cursor */
-    @media (hover:hover) and (pointer:fine){
-      body{cursor:none!important}
-      *,*::before,*::after{cursor:none!important}
-    }
-
-    .custom-cursor{
-      position:fixed;width:20px;height:20px;background:rgba(42,157,143,.3);
-      border:2px solid rgba(42,157,143,.8);border-radius:50%;pointer-events:none;z-index:10000;
-      backdrop-filter:blur(8px);transition:all .08s ease-out;transform:translate(-50%,-50%);
-      box-shadow:0 0 15px rgba(42,157,143,.4), inset 0 0 10px rgba(42,157,143,.1);
-      display:none
-    }
-    @media (hover:hover) and (pointer:fine){.custom-cursor{display:block}}
-    .custom-cursor.clicking{background:rgba(42,157,143,.9);border-color:rgba(42,157,143,1);transform:translate(-50%,-50%) scale(.8);box-shadow:0 0 25px rgba(42,157,143,.8), inset 0 0 15px rgba(42,157,143,.3)}
-    .custom-cursor.hovering{width:30px;height:30px;background:rgba(42,157,143,.4);border-color:rgba(42,157,143,.9);box-shadow:0 0 20px rgba(42,157,143,.6), inset 0 0 12px rgba(42,157,143,.2)}
 
     @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
     /* Sky background stays behind; cannot block input */
-    .sky-background{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;opacity:.6;pointer-events:none}
-    .sky-canvas{width:100%;height:100%}
+    .sky-background{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;opacity:.65;pointer-events:none}
+    .sky-background::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,rgba(110,30,220,0.28) 0%,rgba(80,15,180,0.18) 50%,rgba(70,10,160,0.28) 100%);mix-blend-mode:screen;pointer-events:none}
+    .sky-canvas{width:100%;height:100%;filter:hue-rotate(45deg) saturate(1.7) brightness(0.88)}
 
     /* Overlay container stays above sky */
     .iframes-overlay{
@@ -123,50 +108,11 @@
   </script>
 </head>
 <body>
-  <!-- Custom cursor (unchanged) -->
-  <div class="custom-cursor" id="cursor"></div>
-
-  <!-- Sky background (unchanged) -->
+  <!-- Sky background -->
   <div class="sky-background">
     <canvas class="sky-canvas" id="skyCanvas"></canvas>
   </div>
 
-  <!-- ===== Overlaid content (now inline-loaded, NOT iframes) ===== -->
-
-  <!-- Cursor behavior (unchanged) -->
-  <script>
-    const cursor = document.getElementById('cursor');
-    let mouseX=0, mouseY=0, animId;
-    const update = ()=>{cursor.style.left=mouseX+'px';cursor.style.top=mouseY+'px'};
-    document.addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;if(!animId){animId=requestAnimationFrame(()=>{update();animId=null})}});
-    document.addEventListener('mousedown',()=>cursor.classList.add('clicking'));
-    document.addEventListener('mouseup',()=>cursor.classList.remove('clicking'));
-    document.addEventListener('mouseleave',()=>cursor.style.opacity='0');
-    document.addEventListener('mouseenter',()=>cursor.style.opacity='1');
-
-    // (Old iframe auto-size left in place; it no-ops now since there are no iframes)
-    function autoSizeIframe(ifr){
-      try{
-        const doc = ifr.contentDocument || ifr.contentWindow?.document;
-        if(!doc) return;
-        const h = Math.max(
-          doc.body?.scrollHeight || 0,
-          doc.documentElement?.scrollHeight || 0
-        );
-        ifr.style.height = (h || 600) + 'px';
-      }catch(e){
-        ifr.style.height = '600px';
-      }
-    }
-    window.addEventListener('DOMContentLoaded', ()=>{
-      document.querySelectorAll('.iframes-overlay iframe').forEach(ifr=>{
-        ifr.addEventListener('load', ()=>autoSizeIframe(ifr));
-      });
-    });
-    window.addEventListener('resize', ()=>{
-      document.querySelectorAll('.iframes-overlay iframe').forEach(ifr=>autoSizeIframe(ifr));
-    });
-  </script>
 
   <!-- NEW: tiny loader to inline external HTML files into the slots above -->
   <script>
@@ -243,7 +189,7 @@
       renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
 
-      const ambientLight = new THREE.AmbientLight(0xffffff, 3);
+      const ambientLight = new THREE.AmbientLight(0xb870ff, 3.2);
       scene.add(ambientLight);
 
       const loader = new GLTFLoader();
@@ -283,7 +229,7 @@
         const geometry = new THREE.SphereGeometry(1, 32, 32);
         const colors = [];
         const pos = geometry.attributes.position;
-        for (let i = 0; i < pos.count; i++) colors.push(0.3, 0.6, 1);
+        for (let i = 0; i < pos.count; i++) colors.push(0.48, 0.18, 0.80);
         geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
         const material = new THREE.MeshBasicMaterial({ vertexColors: true, wireframe: false });
         skyMesh = new THREE.Mesh(geometry, material);
