@@ -363,6 +363,17 @@
             font-weight: 700;
         }
 
+        /* North star philosophy section */
+        .northstar-section {
+            width: 100%;
+            overflow: hidden;
+        }
+        .northstar-iframe {
+            width: 100%;
+            border: 0;
+            display: block;
+        }
+
        /* Unify behavior: viewport-sized, no internal scroll */
         .bento-section {
           height: 140svh;      /* keep tall on desktop */
@@ -378,6 +389,24 @@
         }
 
 
+
+        /* Touch exit zones — only active on touch devices */
+        .models-exit-zone {
+            display: none;
+        }
+        @media (hover: none) and (pointer: coarse) {
+            .models-exit-zone {
+                display: block;
+                position: absolute;
+                left: 0;
+                width: 100%;
+                height: 80px;
+                z-index: 20;
+                touch-action: pan-y;
+            }
+            .models-exit-top    { top: 0; }
+            .models-exit-bottom { bottom: 0; }
+        }
 
         .models-section {
             height: 100vh;
@@ -919,6 +948,8 @@
 
         <!-- Full-width models section -->
         <div class="models-section" id="projects">
+            <div class="models-exit-zone models-exit-top"></div>
+            <div class="models-exit-zone models-exit-bottom"></div>
             <div id="work-intro" class="work-intro-overlay">
                 <div class="work-intro-inner">
                     <h2 class="work-title" id="workTitleEl"></h2>
@@ -926,6 +957,11 @@
                 </div>
             </div>
             <iframe id="modelsFrame" src="models.html" class="models-iframe"></iframe>
+        </div>
+
+        <!-- North star philosophy section -->
+        <div class="northstar-section" id="northstar">
+            <iframe id="northstarFrame" src="northstar.html" class="northstar-iframe"></iframe>
         </div>
 
         <!-- Full-width bento resume section -->
@@ -1278,6 +1314,44 @@
 </script>
 
 <script>
+// Mobile touch exit zones — let users swipe out of the 3D section
+(function () {
+  if (window.matchMedia('(hover: none) and (pointer: coarse)').matches === false) return;
+
+  const section  = document.querySelector('.models-section');
+  const topZone  = section?.querySelector('.models-exit-top');
+  const botZone  = section?.querySelector('.models-exit-bottom');
+  if (!topZone || !botZone) return;
+
+  function addSwipeExit(zone, direction) {
+    let startY = 0;
+    zone.addEventListener('touchstart', e => {
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+    zone.addEventListener('touchend', e => {
+      const dy = e.changedTouches[0].clientY - startY;
+      // direction: -1 = swipe up (exit top), +1 = swipe down (exit bottom)
+      if (Math.abs(dy) < 12) return; // ignore taps
+      const isCorrectDirection = direction === -1 ? dy < 0 : dy > 0;
+      if (!isCorrectDirection) return;
+      window.muteSnap?.(2000);
+      const target = direction === -1
+        ? section.offsetTop - window.innerHeight * 0.5
+        : section.offsetTop + section.offsetHeight;
+      if (window.lenis) {
+        window.lenis.scrollTo(Math.round(target), { duration: 0.8 });
+      } else {
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      }
+    }, { passive: true });
+  }
+
+  addSwipeExit(topZone, -1);   // swipe up → scroll above section
+  addSwipeExit(botZone,  1);   // swipe down → scroll below section
+})();
+</script>
+
+<script>
 // Intercept all navbar / mobile-menu hash links so they mute the snap helper
 // and use Lenis for smooth navigation instead of the browser's default jump.
 (function () {
@@ -1538,6 +1612,12 @@
           if (e.data && e.data.type === 'heroReady')   heroReady   = true;
           if (e.data && e.data.type === 'modelsReady') modelsReady = true;
           if (heroReady && modelsReady) dismiss();
+
+          // Auto-size the north star iframe
+          if (e.data && e.data.type === 'northstarHeight') {
+            const frame = document.getElementById('northstarFrame');
+            if (frame) frame.style.height = e.data.height + 'px';
+          }
         });
 
         // Hard timeout: if signals never arrive, show the page anyway

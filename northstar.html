@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>philosophy — Henrietta van Niekerk</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('/fonts/DotempDemo.ttf') format('truetype');
+    }
+    .px { font-family: 'DotempDemo', monospace; font-style: normal; font-weight: 400; font-size: 0.88em; }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+
+    :root {
+      --teal:      #a8dadc;
+      --teal-dark: #2a9d8f;
+      --teal-glow: rgba(102, 252, 241, 0.55);
+      --teal-alt:  rgba(42, 157, 143, 0.55);
+      --cream:     #f1faee;
+      --bg:        #0f1419;
+      --rule:      rgba(168, 218, 220, 0.18);
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--cream);
+      overflow-x: hidden;
+    }
+
+    /* ─── Page wrapper ─── */
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 5rem 2.5rem 7rem;
+    }
+
+    /* ─── Masthead ─── */
+    .masthead {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 4.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .masthead-rule { flex: 1; height: 1px; background: var(--rule); }
+    .masthead-tag {
+      font-size: 0.67rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(168, 218, 220, 0.4);
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    /* ─── Glitch headline ─── */
+    .headline-block {
+      margin-bottom: 5rem;
+    }
+    .kicker {
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(168, 218, 220, 0.5);
+      margin-bottom: 1.1rem;
+      font-weight: 500;
+    }
+
+    @keyframes headlineScramble {
+      0%   { text-shadow: 6px 0 var(--teal-glow), -6px 0 var(--teal-alt); }
+      18%  { text-shadow: 9px 0 var(--teal-glow), -9px 0 var(--teal-alt); clip-path: inset(0 0 86% 0); }
+      19%  { clip-path: inset(0 0 0 0); }
+      54%  { text-shadow: 5px 0 var(--teal-glow), -5px 0 var(--teal-alt); clip-path: inset(70% 0 0 0); }
+      55%  { clip-path: inset(0 0 0 0); }
+      100% { text-shadow: 6px 0 var(--teal-glow), -6px 0 var(--teal-alt); }
+    }
+    @keyframes headlineSettle {
+      0%, 100% { text-shadow: 1px 0 rgba(102,252,241,0.12), -1px 0 rgba(42,157,143,0.12); }
+      50%       { text-shadow: 2px 0 rgba(102,252,241,0.22), -2px 0 rgba(42,157,143,0.22); }
+    }
+
+    .headline {
+      font-family: 'Bodoni Moda', serif;
+      font-style: italic;
+      font-size: clamp(2.6rem, 5.2vw, 4.6rem);
+      font-weight: 400;
+      line-height: 1.08;
+      color: var(--cream);
+      max-width: 880px;
+      letter-spacing: -0.025em;
+      opacity: 0;
+    }
+    .headline.scrambling { animation: headlineScramble 0.7s ease-in-out infinite; }
+    .headline.settled    { animation: headlineSettle 4s ease-in-out infinite; }
+
+    /* ─── Section label ─── */
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(168, 218, 220, 0.45);
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ─── MATRIX TABLE ─── */
+    .matrix-wrap {
+      margin-bottom: 5rem;
+      animation: fadeUp 0.7s ease both;
+      animation-delay: 0.9s;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .matrix-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .matrix-table {
+      width: 100%;
+      min-width: 680px;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    .matrix-table thead th {
+      font-family: 'Bodoni Moda', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--teal);
+      text-align: left;
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid rgba(168, 218, 220, 0.35);
+      white-space: nowrap;
+    }
+    .matrix-table thead th:first-child {
+      font-family: 'DotempDemo', monospace;
+      font-style: normal;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(168, 218, 220, 0.4);
+    }
+    .matrix-table tbody tr {
+      border-bottom: 1px solid rgba(168, 218, 220, 0.08);
+      transition: background 0.2s ease;
+    }
+    .matrix-table tbody tr:hover {
+      background: rgba(168, 218, 220, 0.04);
+    }
+    .matrix-table tbody td {
+      padding: 0.85rem 1rem;
+      vertical-align: top;
+      color: rgba(241, 250, 238, 0.78);
+      font-weight: 300;
+      line-height: 1.5;
+    }
+    .matrix-table tbody td:first-child {
+      font-family: 'Bodoni Moda', serif;
+      font-style: italic;
+      color: var(--cream);
+      font-weight: 400;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      padding-right: 1.5rem;
+    }
+    .chaos-tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+      font-family: 'Montserrat', sans-serif;
+      padding: 0.18rem 0.55rem;
+      border-radius: 3px;
+      margin: 0.1rem 0.15rem 0.1rem 0;
+    }
+    .tag-coord { background: rgba(42, 157, 143, 0.18);  color: rgba(102, 252, 241, 0.75); border: 1px solid rgba(42,157,143,0.25); }
+    .tag-const { background: rgba(69, 123, 157, 0.18);  color: rgba(168, 218, 220, 0.75); border: 1px solid rgba(69,123,157,0.25); }
+    .tag-user  { background: rgba(231, 111, 81, 0.12);  color: rgba(255, 185, 160, 0.75); border: 1px solid rgba(231,111,81,0.2); }
+    .outcome-pill {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      font-family: 'Montserrat', sans-serif;
+      padding: 0.18rem 0.6rem;
+      border-radius: 20px;
+      background: rgba(42, 157, 143, 0.12);
+      border: 1px solid rgba(42, 157, 143, 0.3);
+      color: var(--teal-dark);
+      white-space: nowrap;
+    }
+
+    /* ─── Chaos typology grid ─── */
+    .chaos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 5rem;
+      animation: fadeUp 0.7s ease both;
+      animation-delay: 1.1s;
+    }
+    .chaos-card {
+      background: rgba(168, 218, 220, 0.03);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1.75rem 1.5rem;
+      position: relative;
+    }
+    .chaos-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      border-radius: 6px 6px 0 0;
+    }
+    .chaos-card.coord::before { background: linear-gradient(90deg, rgba(102,252,241,0.5), transparent); }
+    .chaos-card.const::before { background: linear-gradient(90deg, rgba(168,218,220,0.5), transparent); }
+    .chaos-card.user::before  { background: linear-gradient(90deg, rgba(231,111,81,0.4), transparent); }
+
+    .chaos-num {
+      font-family: 'DotempDemo', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: rgba(168, 218, 220, 0.3);
+      margin-bottom: 0.75rem;
+    }
+    .chaos-name {
+      font-family: 'Bodoni Moda', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      font-weight: 400;
+      color: var(--cream);
+      margin-bottom: 0.6rem;
+    }
+    .chaos-desc {
+      font-size: 0.78rem;
+      line-height: 1.65;
+      color: rgba(241, 250, 238, 0.6);
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+    .chaos-examples {
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      color: rgba(168, 218, 220, 0.45);
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    /* ─── Two-column manifesto ─── */
+    .manifesto-grid {
+      display: grid;
+      grid-template-columns: 5fr 8fr;
+      gap: 0;
+      position: relative;
+      margin-bottom: 5rem;
+      animation: fadeUp 0.7s ease both;
+      animation-delay: 1.3s;
+    }
+    .manifesto-grid::after {
+      content: '';
+      position: absolute;
+      top: 0.25rem; bottom: 0;
+      left: calc(5 / 13 * 100%);
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--rule) 8%, var(--rule) 92%, transparent);
+    }
+
+    .col-left { padding-right: 3.5rem; }
+    .col-right { padding-left: 3.5rem; }
+
+    .manifesto { display: flex; flex-direction: column; gap: 1.75rem; }
+    .manifesto p {
+      font-size: 0.875rem;
+      line-height: 1.95;
+      color: rgba(241, 250, 238, 0.82);
+      font-weight: 300;
+      letter-spacing: 0.012em;
+    }
+    .manifesto p:first-child::first-letter {
+      font-family: 'Bodoni Moda', serif;
+      font-size: 3.6em;
+      font-style: italic;
+      float: left;
+      line-height: 0.72;
+      margin: 0.06em 0.09em 0 0;
+      color: var(--teal);
+    }
+    .pull {
+      font-family: 'Bodoni Moda', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: rgba(241, 250, 238, 0.88);
+      line-height: 1.5;
+      padding-left: 1.25rem;
+      border-left: 2px solid rgba(168, 218, 220, 0.28);
+      letter-spacing: -0.01em;
+    }
+    .prose-rule { width: 100%; height: 1px; background: rgba(168, 218, 220, 0.1); margin: 0.2rem 0; }
+
+    /* Left column: sidebar facts */
+    .sidebar-facts { display: flex; flex-direction: column; gap: 1.6rem; }
+    .sidebar-item {}
+    .sidebar-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(168, 218, 220, 0.38);
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+    }
+    .sidebar-value {
+      font-size: 0.84rem;
+      color: rgba(241, 250, 238, 0.68);
+      font-weight: 300;
+      line-height: 1.55;
+    }
+
+    /* ─── Principles row ─── */
+    .principles-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      overflow: hidden;
+      animation: fadeUp 0.7s ease both;
+      animation-delay: 1.5s;
+    }
+    .principle {
+      background: var(--bg);
+      padding: 1.75rem 1.5rem;
+      transition: background 0.3s ease;
+    }
+    .principle:hover { background: rgba(168, 218, 220, 0.03); }
+    .principle-n {
+      font-family: 'DotempDemo', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: rgba(168, 218, 220, 0.3);
+      margin-bottom: 0.6rem;
+    }
+    .principle-title {
+      font-family: 'Bodoni Moda', serif;
+      font-style: italic;
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--cream);
+      margin-bottom: 0.65rem;
+      line-height: 1.25;
+    }
+    .principle-desc {
+      font-size: 0.75rem;
+      line-height: 1.65;
+      color: rgba(241, 250, 238, 0.55);
+      font-weight: 300;
+    }
+
+    /* ─── Mobile ─── */
+    @media (max-width: 900px) {
+      .chaos-grid { grid-template-columns: 1fr; }
+      .manifesto-grid { grid-template-columns: 1fr; }
+      .manifesto-grid::after { display: none; }
+      .col-left { padding-right: 0; padding-bottom: 2.5rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--rule); }
+      .col-right { padding-left: 0; }
+      .principles-row { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 3rem 1.25rem 5rem; }
+      .headline { font-size: clamp(2rem, 7.5vw, 2.8rem); }
+      .matrix-table { font-size: 0.72rem; }
+      .matrix-table thead th, .matrix-table tbody td { padding: 0.65rem 0.6rem; }
+      .principles-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="page">
+
+    <!-- ── Masthead ── -->
+    <div class="masthead">
+      <div class="masthead-rule"></div>
+      <span class="masthead-tag">de<span class="px">si</span>gn ph<span class="px">il</span>os<span class="px">op</span>hy &ndash; <span class="px">2026</span></span>
+      <div class="masthead-rule"></div>
+    </div>
+
+    <!-- ── Glitch headline ── -->
+    <div class="headline-block">
+      <p class="kicker">nor<span class="px">th</span> s<span class="px">ta</span>r</p>
+      <h2 class="headline" id="northstarHeadline"></h2>
+    </div>
+
+    <!-- ── System matrix ── -->
+    <div class="matrix-wrap">
+      <p class="section-label">the sys<span class="px">te</span>m mat<span class="px">ri</span>x</p>
+      <div class="matrix-scroll"><table class="matrix-table">
+        <thead>
+          <tr>
+            <th>pro<span class="px">jec</span>t</th>
+            <th>the me<span class="px">ss</span></th>
+            <th>ch<span class="px">ao</span>s ty<span class="px">pe</span>s</th>
+            <th>sys<span class="px">te</span>m bu<span class="px">il</span>t</th>
+            <th>out<span class="px">co</span>me</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pa<span class="px">th</span> to Men<span class="px">zo</span>ber<span class="px">ra</span>nzan</td>
+            <td>100+ volunteers across 6 departments. No salaries. 50+ hour scope. Indefinite runway.</td>
+            <td>
+              <span class="chaos-tag tag-coord">coordination</span>
+              <span class="chaos-tag tag-const">constraints</span>
+            </td>
+            <td>Contribution pipeline, lore governance system, cross-department build coordination</td>
+            <td><span class="outcome-pill">shipping</span></td>
+          </tr>
+          <tr>
+            <td>Sk<span class="px">ri</span>mp</td>
+            <td>11pm kitchens. Budgets that shift. Dietary restrictions nobody warned you about. A fridge full of things that don't obviously go together.</td>
+            <td>
+              <span class="chaos-tag tag-const">constraints</span>
+              <span class="chaos-tag tag-user">user state</span>
+            </td>
+            <td>Constraint-first AI meal planner — starts from what you have, not what you should have</td>
+            <td><span class="outcome-pill">live</span></td>
+          </tr>
+          <tr>
+            <td>My Au<span class="px">nt</span>ie</td>
+            <td>Postpartum fog. Weeks of sleep deprivation. Questions too big to google at 3am.</td>
+            <td>
+              <span class="chaos-tag tag-user">user state</span>
+              <span class="chaos-tag tag-const">constraints</span>
+            </td>
+            <td>Resource scaffolding for overwhelmed new parents — designed for degraded cognition, not ideal cognition</td>
+            <td><span class="outcome-pill">winner ✦</span></td>
+          </tr>
+          <tr>
+            <td>E<span class="px">qu</span>in<span class="px">ox</span></td>
+            <td>14 strangers. 2 weeks. A puzzle game that had to feel cohesive despite 14 different people touching every system.</td>
+            <td>
+              <span class="chaos-tag tag-coord">coordination</span>
+              <span class="chaos-tag tag-const">constraints</span>
+            </td>
+            <td>Player controller + interaction architecture clean enough that 14 people built on top of it without breaking each other</td>
+            <td><span class="outcome-pill">winner ✦</span></td>
+          </tr>
+          <tr>
+            <td>En<span class="px">do</span>Qu<span class="px">es</span>t</td>
+            <td>Chronic pain dismissed so often, people stop reporting it. Forms nobody finishes. A screener that had to feel like something else entirely.</td>
+            <td>
+              <span class="chaos-tag tag-user">user state</span>
+              <span class="chaos-tag tag-const">constraints</span>
+            </td>
+            <td>Diagnostic RPG — combat mechanics as a medical screener, because people finish games</td>
+            <td><span class="outcome-pill">semifinalist</span></td>
+          </tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <!-- ── Chaos typology ── -->
+    <div style="margin-bottom: 2rem;">
+      <p class="section-label">ch<span class="px">ao</span>s ty<span class="px">po</span>logy</p>
+    </div>
+    <div class="chaos-grid">
+
+      <div class="chaos-card coord">
+        <p class="chaos-num">01</p>
+        <p class="chaos-name">Co<span class="px">or</span>din<span class="px">at</span>ion Ch<span class="px">ao</span>s</p>
+        <p class="chaos-desc">Too many people working in parallel. The system has to stay coherent without a single person being able to hold the whole thing in their head at once. The design question isn't "how do we communicate?" — it's "how do we make the right thing the default thing?"</p>
+        <p class="chaos-examples">PtM &nbsp;·&nbsp; Equinox</p>
+      </div>
+
+      <div class="chaos-card const">
+        <p class="chaos-num">02</p>
+        <p class="chaos-name">Con<span class="px">st</span>ra<span class="px">in</span>t Ch<span class="px">ao</span>s</p>
+        <p class="chaos-desc">The resources — time, money, people, data — are genuinely insufficient for a naive solution. The system has to work with what actually exists, not what ideally would. Constraint-first design isn't a consolation prize; it's the only kind that survives contact with the real world.</p>
+        <p class="chaos-examples">Skrimp &nbsp;·&nbsp; PtM &nbsp;·&nbsp; Equinox &nbsp;·&nbsp; MyAuntie</p>
+      </div>
+
+      <div class="chaos-card user">
+        <p class="chaos-num">03</p>
+        <p class="chaos-name">Us<span class="px">er</span> St<span class="px">at</span>e Ch<span class="px">ao</span>s</p>
+        <p class="chaos-desc">The person using your system is already overwhelmed before they open it. They're not at their best; they may never be at their best. Design for the person who is tired, in pain, grieving, or just out of bandwidth. That's most people, most of the time.</p>
+        <p class="chaos-examples">MyAuntie &nbsp;·&nbsp; EndoQuest &nbsp;·&nbsp; Skrimp</p>
+      </div>
+
+    </div>
+
+    <!-- ── Manifesto body ── -->
+    <div class="manifesto-grid">
+
+      <div class="col-left">
+        <p class="section-label" style="margin-bottom: 1.75rem;">con<span class="px">te</span>xt</p>
+        <div class="sidebar-facts">
+          <div class="sidebar-item">
+            <p class="sidebar-label">the mea<span class="px">su</span>re</p>
+            <p class="sidebar-value">Not how a system performs when everything goes right. What it does for the person who is already overwhelmed before they open it.</p>
+          </div>
+          <div class="sidebar-item">
+            <p class="sidebar-label">the in<span class="px">si</span>ght</p>
+            <p class="sidebar-value">Incentive structures are a design material. A system rewards certain behaviors by making them easy. The question is whether those are the right behaviors.</p>
+          </div>
+          <div class="sidebar-item">
+            <p class="sidebar-label">the co<span class="px">mm</span>itment</p>
+            <p class="sidebar-value">Leave scaffolding for whoever comes after — contributors, users, future maintainers dealing with a messier world than the one I designed for.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-right">
+        <div class="manifesto">
+          <p>Real problems don&rsquo;t arrive in optimal conditions. They arrive at 11pm when you&rsquo;re tired, or week three of a project when half the team has dropped off, or in the middle of a pain flare you&rsquo;ve learned not to mention. Most software is designed for a user in their best-case scenario — rested, focused, uninterrupted. I&rsquo;m interested in the other version.</p>
+
+          <p class="pull">The measure of a system isn&rsquo;t how it performs when everything goes right. It&rsquo;s what it does for the person who is already overwhelmed before they open it.</p>
+
+          <div class="prose-rule"></div>
+
+          <p>I came to this through a specific kind of attention — the kind you develop when you care too much about things finishing. A mod that has to ship without a salary. A meal plan that has to work for a household that just got a diagnosis. A postpartum resource that has to be usable when you haven&rsquo;t slept properly in three weeks. In every case, the constraint isn&rsquo;t technical. It&rsquo;s human.</p>
+
+          <p>My answer tends to involve incentive structures and friction management more than visual polish. I think about what a system <em>rewards</em> — what behaviour it makes easy, what it makes hard, what it quietly teaches users to expect. A good system is a set of affordances that stay legible under pressure. That&rsquo;s harder than it sounds, and I think it&rsquo;s the thing worth practicing.</p>
+
+          <div class="prose-rule"></div>
+
+          <p>I try to leave scaffolding for whoever comes after me — contributors, users, future maintainers who will be dealing with a messier world than the one I designed for. The work isn&rsquo;t done when it ships. It&rsquo;s done when it stays useful.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Design principles ── -->
+    <p class="section-label" style="margin-bottom: 1.5rem;">de<span class="px">si</span>gn pr<span class="px">in</span>ciples</p>
+    <div class="principles-row">
+
+      <div class="principle">
+        <p class="principle-n">01</p>
+        <p class="principle-title">De<span class="px">si</span>gn for Deg<span class="px">ra</span>ded Cog<span class="px">ni</span>t<span class="px">io</span>n</p>
+        <p class="principle-desc">Your user's best-case state is a ceiling, not a floor. The system should work for whoever actually shows up.</p>
+      </div>
+
+      <div class="principle">
+        <p class="principle-n">02</p>
+        <p class="principle-title">Con<span class="px">st</span>ra<span class="px">in</span>ts are the De<span class="px">si</span>gn</p>
+        <p class="principle-desc">What a system can&rsquo;t do tells you what it values. Start from real limits, not ideal conditions.</p>
+      </div>
+
+      <div class="principle">
+        <p class="principle-n">03</p>
+        <p class="principle-title">In<span class="px">ce</span>nt<span class="px">iv</span>e Str<span class="px">uc</span>tures are a Ma<span class="px">te</span>rial</p>
+        <p class="principle-desc">Every interface teaches users something. Design the lesson intentionally — make the right thing the easy thing.</p>
+      </div>
+
+      <div class="principle">
+        <p class="principle-n">04</p>
+        <p class="principle-title">Bu<span class="px">il</span>d for Wh<span class="px">oe</span>ver Co<span class="px">me</span>s Ne<span class="px">xt</span></p>
+        <p class="principle-desc">Leave scaffolding. The work isn&rsquo;t done when it ships — it&rsquo;s done when it stays useful in a messier world than the one you designed for.</p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // cursor + hover relay to parent
+    document.addEventListener('mousemove', e =>
+      window.parent.postMessage({ type: 'iframeMouse', x: e.clientX, y: e.clientY }, '*'));
+    document.addEventListener('mousedown', () =>
+      window.parent.postMessage({ type: 'iframeDown' }, '*'));
+    document.addEventListener('mouseup', () =>
+      window.parent.postMessage({ type: 'iframeUp' }, '*'));
+    document.addEventListener('mouseleave', () =>
+      window.parent.postMessage({ type: 'iframeLeave' }, '*'));
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => window.parent.postMessage({ type: 'iframeHover', on: true }, '*'));
+      el.addEventListener('mouseleave', () => window.parent.postMessage({ type: 'iframeHover', on: false }, '*'));
+    });
+
+    // Scroll-triggered scramble for headline — stays after settling
+    (function () {
+      const CHARSET    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
+      const PLAIN      = 'I build systems that keep working when the world is messy.';
+      const FINAL_HTML = 'I <span class="px">bu</span>ild <span class="px">sy</span>st<span class="px">em</span>s th<span class="px">at</span> ke<span class="px">ep</span><br>wor<span class="px">ki</span>ng wh<span class="px">en</span> the wor<span class="px">ld</span> is me<span class="px">ss</span>y.';
+
+      const el = document.getElementById('northstarHeadline');
+      if (!el) return;
+
+      function randChar() { return CHARSET[Math.floor(Math.random() * CHARSET.length)]; }
+
+      function scramble(duration) {
+        el.style.opacity = '1';
+        el.classList.add('scrambling');
+        const len      = PLAIN.length;
+        const revealed = new Array(len).fill(false);
+        const t0       = performance.now();
+        function frame(now) {
+          const progress   = Math.min(1, (now - t0) / duration);
+          const revealUpto = Math.floor(progress * len * 1.15);
+          for (let i = 0; i < revealUpto; i++) {
+            if (!revealed[i] && Math.random() < 0.4) revealed[i] = true;
+          }
+          let out = '';
+          for (let i = 0; i < len; i++) {
+            const ch = PLAIN[i];
+            if (ch === ' ') { out += '\u00a0'; continue; }
+            out += revealed[i] ? ch : randChar();
+          }
+          el.textContent = out;
+          if (progress < 1 || revealed.some(r => !r)) {
+            requestAnimationFrame(frame);
+          } else {
+            el.innerHTML = FINAL_HTML;
+            el.classList.remove('scrambling');
+            el.classList.add('settled');
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+
+      let triggered = false;
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting && !triggered) {
+            triggered = true;
+            scramble(1100);
+            obs.disconnect();
+          }
+        });
+      }, { threshold: 0.2 });
+      obs.observe(el);
+    })();
+
+    // auto-size iframe height in parent
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      window.parent.postMessage({ type: 'northstarHeight', height: h }, '*');
+    }
+    window.addEventListener('load', reportHeight);
+    window.addEventListener('resize', reportHeight);
+
+    // Scroll-reveal for table rows
+    const rows = document.querySelectorAll('.matrix-table tbody tr');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          e.target.style.transition = `opacity 0.4s ease ${i * 0.07}s, transform 0.4s ease ${i * 0.07}s`;
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    rows.forEach(row => {
+      row.style.opacity = '0';
+      row.style.transform = 'translateY(10px)';
+      obs.observe(row);
+    });
+  </script>
+
+</body>
+</html>
