@@ -1479,14 +1479,6 @@
                 if (d.type === 'iframeLeave') cursor.style.opacity = '0';
                 if (d.type === 'iframeHover' && d.on)  cursor.classList.add('hovering');
                 if (d.type === 'iframeHover' && !d.on) cursor.classList.remove('hovering');
-                if (d.type === 'iframeScroll') {
-                    window.muteSnap?.(800);
-                    if (window.lenis) {
-                        window.lenis.scrollTo(window.lenis.targetScroll + d.deltaY * 2.5, { immediate: false, duration: 0.6 });
-                    } else {
-                        window.scrollBy({ top: d.deltaY * 2.5, behavior: 'smooth' });
-                    }
-                }
             });
 
             // Hide cursor when leaving window
@@ -1753,6 +1745,20 @@
   addSwipeExit(topZone, -1);   // swipe up → scroll above section
   addSwipeExit(botZone,  1);   // swipe down → scroll below section
 })();
+</script>
+
+<script>
+// Receive touch-edge scroll signals from the 3D iframe
+window.addEventListener('message', e => {
+  if (e.data?.type !== 'iframeScroll') return;
+  window.muteSnap?.(2000);
+  const dy = e.data.deltaY * 3;
+  if (window.lenis) {
+    window.lenis.scrollTo(window.scrollY + dy, { duration: 0.7 });
+  } else {
+    window.scrollBy({ top: dy, behavior: 'smooth' });
+  }
+});
 </script>
 
 <script>
