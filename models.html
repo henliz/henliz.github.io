@@ -214,6 +214,7 @@
     });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(BG);
@@ -373,23 +374,6 @@
             node.parallaxLayers.push({ mesh, strength:def.strength, sign:def.sign, mouseMult:def.mouseMult });
           });
         });
-        // Dark vignette overlay — atmospheric depth, doesn't parallax shift
-        {
-          const sz = 512;
-          const vc = Object.assign(document.createElement('canvas'), {width:sz, height:sz});
-          const vctx = vc.getContext('2d');
-          const vg = vctx.createRadialGradient(sz/2, sz/2, sz*0.10, sz/2, sz/2, sz*0.72);
-          vg.addColorStop(0,   'rgba(0,4,12,0)');
-          vg.addColorStop(0.5, 'rgba(1,5,18,0.25)');
-          vg.addColorStop(1,   'rgba(0,2,10,0.90)');
-          vctx.fillStyle = vg; vctx.fillRect(0, 0, sz, sz);
-          const vig = new THREE.Mesh(
-            new THREE.PlaneGeometry(16, 9),
-            new THREE.MeshBasicMaterial({ map:new THREE.CanvasTexture(vc), transparent:true, depthWrite:false, fog:false })
-          );
-          vig.position.z = 0.35;
-          planeGroup.add(vig);
-        }
         onSettled(); // count as one station
 
       } else if (Array.isArray(cfg.models)) {

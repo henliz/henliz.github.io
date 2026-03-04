@@ -15,8 +15,8 @@
       src: url('../fonts/DotempDemo.ttf') format('truetype');
       font-weight: normal; font-style: normal;
     }
-    .px { font-family: 'DotempDemo', monospace; font-style: normal; font-weight: 400; font-size: 0.9em; }
-    .di { font-family: 'Didot', 'Cormorant Garamond', serif; font-style: italic; font-weight: 700; }
+    .px { font-family: 'DotempDemo', monospace !important; font-style: normal !important; font-weight: 400; font-size: 0.9em; }
+    .di { font-family: 'Didot', 'Cormorant Garamond', serif !important; font-style: italic !important; font-weight: 700; }
 
     :root {
       --text-primary: #f1faee;
@@ -100,6 +100,7 @@
       color: var(--text-secondary); line-height: 1.15; margin-bottom: 1.25rem;
       font-family: 'Didot','Cormorant Garamond',serif !important;
       font-style: italic !important; letter-spacing: .06em;
+      opacity: 0;
     }
     .sub-heading {
       font-size: clamp(1.1rem,2vw,1.45rem); font-weight: 600;
@@ -384,12 +385,6 @@
       animation: hCaScramble .7s ease-in-out infinite;
     }
     .section-heading.h-settled { animation: hCaSettle 3s ease-in-out infinite; }
-    .sub-heading.h-scrambling {
-      font-family: 'DotempDemo', monospace !important;
-      font-style: normal !important;
-      animation: hCaScramble .7s ease-in-out infinite;
-    }
-    .sub-heading.h-settled { animation: hCaSettle 3s ease-in-out infinite; }
 
     /* ---- REVEALS ---- */
     .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s ease-out,transform .5s ease-out; will-change:opacity,transform; }
@@ -443,7 +438,7 @@
             <li class="pill"><span>🧑‍🍳</span><span><b>Founder &amp; CEO</b></span></li>
             <li class="pill"><span>💸</span><span>Families save <b>$50–$100/week</b></span></li>
             <li class="pill"><span>📰</span><span>CTV News · UWaterloo · Waterloo Region Record</span></li>
-            <li class="pill"><span>🇨🇦</span><span>Live in KWC — Ontario expanding</span></li>
+            <li class="pill"><span>🇨🇦</span><span>Live in Ontario for all stores</span></li>
           </ul>
         </div>
         <div class="intro-right reveal">
@@ -469,8 +464,8 @@
       <!-- OUTCOME STRIP -->
       <div class="outcome-strip reveal">
         <div class="outcome-item">
-          <span class="outcome-num">$5K</span>
-          <span class="outcome-label">E-Launch Award — Conrad School pitch competition winner</span>
+          <span class="outcome-num">Funded</span>
+          <span class="outcome-label">non-dilutive — Conrad School, Velocity &amp; KWC municipal governments</span>
         </div>
         <div class="outcome-item">
           <span class="outcome-num">$5K/yr</span>
@@ -482,7 +477,7 @@
         </div>
         <div class="outcome-item">
           <span class="outcome-num">Free</span>
-          <span class="outcome-label">always — no subscription, no paywall, no catch</span>
+          <span class="outcome-label">always — families truly in need will never pay a cent</span>
         </div>
       </div>
 
@@ -497,8 +492,8 @@
         <div class="section-content reveal">
           <span class="eyebrow">The Product</span>
           <h2 class="section-heading">Skrimp collapses the grocery paradox. Deals, meals, and a shopping list — in one workflow.</h2>
-          <p>People want complete control over their spend <em>and</em> to love what they're eating — but today that's three disconnected apps and a lot of guesswork. Skrimp reads local flyers, prices ingredients, and assembles budget-aware recipes into a living grocery list that adapts as you shop.</p>
-          <p>Not another dashboard to babysit — a calm, opinionated sous-chef that saves money without the Sunday spreadsheet marathon. The outcome is simple: meals your family will actually eat, at prices that finally work.</p>
+          <p>Canadian families already do this. Every week, in their heads: scan the flyer, price the recipe mentally, cross-reference two stores, carry the number home, discover at the aisle that the deal expired Thursday. The workflow exists. It just costs forty-five minutes and a lot of goodwill.</p>
+          <p>Skrimp doesn't ask families to change their behaviour. It automates the part that was always tedious — and closes the loop all the way to the cart.</p>
           <img src="SkrimpPhone.png" alt="Skrimp app — key art" class="overview-cover">
         </div>
       </section>
@@ -516,9 +511,9 @@
               <p class="body-img-caption">[Photo: University of Waterloo News, Jan 2026]</p>
             </div>
             <div class="challenge-col right">
-              <p>→ Flyer apps show deals but no meal context.<br>→ Recipe apps look pretty but ignore cost.<br>→ Budget apps tally receipts after it's too late.</p>
-              <p>Most families stop trying to coordinate all three and wing it in the aisle. The result is predictable: wasted time, wasted food, wasted cash.</p>
-              <div class="highlight-box">Skrimp removes the coordination tax. You stay in control of the budget <em>and</em> the plate — without juggling tabs, coupons, and mental math.</div>
+              <p>Three tools. None of them talking to each other.<br>→ Flyer apps show what's on sale. They have no idea what you're cooking.<br>→ Recipe apps look beautiful. They have no idea what things cost.<br>→ Budget apps tell you what you spent. After you've already spent it.</p>
+              <p>Families don't stop trying because they aren't motivated. They stop because the coordination tax compounds: the deal that expired before you got there. The "budget recipe" that quietly needs three specialty items. The list you built carefully at home and abandoned halfway down the aisle. Not a motivation problem. A tooling problem — invisible, persistent, and costing real money every single week.</p>
+              <div class="highlight-box">Not another tab. One workflow — deals inform the plan, the plan generates the list, the list loads the cart. The whole chain, end to end, for the first time.</div>
             </div>
           </div>
         </div>
@@ -533,15 +528,15 @@
           <h2 class="section-heading">Food inflation hit <span class="px">40-year</span> highs. A family of four in Canada now spends over <span class="px">$16,000</span> a year.</h2>
           <div class="two-col">
             <div>
-              <p>Up ~<span class="px">28.6%</span> from 2020. Younger households, already carrying <span class="px">30%</span> less wealth than boomers at the same age, feel the squeeze most. This isn't only economics; it's exhaustion. Parents describe "Sunday night planning" as triage: deals that don't match recipes, recipes that blow the budget, lists that don't survive the aisle.</p>
+              <p>Up <span class="px">28.6%</span> since 2020. Younger households — already carrying <span class="px">30%</span> less generational wealth than boomers at the same age — feel this differently than the statistic suggests. It's not abstract inflation. It's the item you put back. The recipe you stopped making. The Sunday session that used to feel like cooking and now feels like damage control.</p>
               <blockquote class="pull-quote reveal">
                 "People can't really control their car insurance or their rent or their utilities. But grocery bills felt like something we could actually tackle."
                 <cite>— Henrietta van Niekerk, CTV News, Sept 2025</cite>
               </blockquote>
             </div>
             <div>
-              <div class="highlight-box green reveal">The "grocery problem" is invisible in plain sight: everyone's hacking it alone, but nobody has solved it end-to-end at scale.</div>
-              <div class="highlight-box green reveal" style="margin-top:.75rem">Don't add another app. Integrate the journey — deals → meals → list — and make savings feel like calm control.</div>
+              <div class="highlight-box green reveal">Every family is already running a manual savings algorithm in their head every week. Nobody asked them to. Nobody gave them a better option.</div>
+              <div class="highlight-box green reveal" style="margin-top:.75rem">This isn't a motivation problem. It's a tooling problem. Give people the right system and they'll do the rest.</div>
             </div>
           </div>
         </div>
@@ -554,7 +549,7 @@
         <div class="section-content reveal">
           <span class="eyebrow">Research &amp; Findings</span>
           <h2 class="section-heading">We listened — not just surveyed. Interviews, listening sessions, community conversations.</h2>
-          <p>The methodology was deliberate: <span class="px">listening sessions</span> rather than questionnaires, asking users to narrate their grocery shopping experience rather than answer fixed prompts. The <span class="px">GBDA</span> training shows — qualitative first, quantitative to confirm. We heard a desire for budget-first planning that still respects taste, routines, allergies, culture, and time.</p>
+          <p>The methodology was deliberate — <span class="px">listening sessions</span>, not questionnaires. Not "what would you want from a grocery app?" but "tell me about last Sunday." Ask someone their grocery budget and they give you a number. Ask them to narrate the shop and they describe a system — intricate, habitual, entirely their own — they didn't know they had. Flyer-first thinking. Mental price matching. Brand loyalty that predates memory. Routes through the store that save six minutes. Recipes never written down because they live in the body. The <span class="px">GBDA</span> training holds: qualitative first, quantitative to confirm. The insight wasn't that people want to save money. Everyone wants that. The insight was: people are already the system. They are already doing this work, alone, in their heads, every single week. Skrimp's job wasn't to design something new — it was to automate something ancient.</p>
 
           <div class="quote-grid reveal">
             <div class="quote-card reveal">
@@ -624,27 +619,27 @@
           <div class="constraints-row">
             <div class="constraints-left">
               <div class="highlight-box reveal">
-                <strong>⏰ Early validation deadline</strong>
-                <p style="margin-top:.5rem">Velocity Cornerstone and city grant programs demanded fast traction with real users.</p>
+                <strong>📄 Flyer data is unstructured chaos</strong>
+                <p style="margin-top:.5rem">Weekly flyers arrive with no standard format, no consistent product taxonomy, and no guarantee last week's layout matches this one. The pipeline had to be designed for variation, not consistency.</p>
               </div>
               <div class="highlight-box reveal" style="margin-top:.75rem">
-                <strong>📊 Fragmented data sources</strong>
-                <p style="margin-top:.5rem">Flyer APIs and layouts vary wildly; Skrimp had to adapt without brittle integrations.</p>
+                <strong>🔤 Ingredients have too many names</strong>
+                <p style="margin-top:.5rem">"Chicken thighs," "bone-in thighs," "poultry" — same ingredient, entirely different strings. Resolving those aliases across recipes and flyers was the quiet core of the whole system.</p>
               </div>
               <div class="highlight-box reveal" style="margin-top:.75rem">
-                <strong>👤 Solo founder bandwidth</strong>
-                <p style="margin-top:.5rem">Feature creep was the enemy — every build had to prove immediate value to keep shipping things people want, fast.</p>
+                <strong>👤 Feature creep would have killed us</strong>
+                <p style="margin-top:.5rem">Solo founder, real users, real need. Every build decision had to prove immediate value — or it didn't ship. Ruthlessness about scope was the only way to stay moving.</p>
               </div>
               <div class="highlight-box reveal" style="margin-top:.75rem">
-                <strong>💸 User sensitivity</strong>
-                <p style="margin-top:.5rem">Families under cost stress wouldn't pay upfront; Skrimp had to earn loyalty first.</p>
+                <strong>💸 Can't charge families who can't afford food</strong>
+                <p style="margin-top:.5rem">The user base is cost-stressed by definition. Free first isn't a growth hack — it's the only ethical starting point. Skrimp had to earn the relationship before it could ask for anything.</p>
               </div>
             </div>
             <div class="constraints-right">
               <h3 class="sub-heading">The Problem &amp; Our Scope</h3>
-              <p>We weren't building a meal kit or a premium subscription. Skrimp is the connective tissue — unifying sales, meals, and budgets into one workflow that feels obvious once you use it.</p>
-              <p>We set ethical guardrails from day one: collect the minimum data required for utility, provide plain-language explanations for pricing and swaps, and design for consent and off-ramps (edit, delete, opt-out).</p>
-              <p>We reviewed recipes and defaults for cultural bias, created allergen filters and pantry-aware swaps, and avoided "one perfect plan" claims. The goal is control, not coercion.</p>
+              <p>Skrimp is not a meal kit. Not a subscription box. Not another app that pretends to care about your budget. It is connective tissue — unifying deals, meals, and shopping into a single workflow that feels obvious once you're in it, and inexplicable that it didn't exist before.</p>
+              <p>Ethical guardrails weren't added later. They were constraints from the first commit: minimum data collected, plain-language explanations for every pricing call, easy edit and delete flows, no dark patterns pushing upsells at users who are already financially stretched.</p>
+              <p>Recipes reviewed for cultural bias. Allergen filters that persist across weeks without being asked again. No "one perfect plan" — the goal is agency returned to the household, not dependence on an algorithm that doesn't know what Tuesday looks like in your kitchen.</p>
             </div>
           </div>
         </div>
@@ -659,35 +654,35 @@
           <h2 class="section-heading">Every flow had to answer one question: does this reduce the user's cognitive load?</h2>
           <div class="two-col">
             <div>
-              <p>We explored flows that start with the budget, not the recipe. Early maps sequenced: postal code → store mix → dietary constraints → deal-aligned meal sets → dynamic list that adapts as prices change.</p>
-              <p>If a step felt like homework, we cut it or automated it. The insight from listening sessions was that users struggle to articulate what they want — but they know exactly what's making them struggle.</p>
+              <p>The philosophical flip came early and shaped everything that followed. Most food apps start with a recipe — beautiful, curated, aspirational — and then, quietly, price you out of it. Skrimp inverts that entirely. What's on sale at your store this week is the prompt. The meal plan is the answer. Deals aren't a filter applied after you've committed to a recipe. They're the foundation the plan is built on.</p>
+              <p>If a step felt like homework, it got cut. Journey maps were ruthless: postal code → store → constraints → plan → list. Anything that didn't earn its place in that chain got removed. The listening sessions held the standard throughout: users can rarely say what they want, but they can describe — with surprising precision — exactly what's breaking their current system. We built for that.</p>
             </div>
             <div>
-              <div class="highlight-box reveal">Budget-first engine: plans are generated to hit a target weekly spend, not retrofitted after the fact.</div>
-              <div class="highlight-box reveal" style="margin-top:.75rem">Calm UX: defaults do the heavy lifting; power users can still tweak stores, brands, and swaps.</div>
+              <div class="highlight-box reveal">Budget-first, not recipe-first. The plan hits your number before you fall in love with it. Not the other way around.</div>
+              <div class="highlight-box reveal" style="margin-top:.75rem">Defaults do the work. Power users get the controls. Everyone else gets a plan that simply works.</div>
             </div>
           </div>
           <div class="must-haves-container reveal">
             <div class="must-haves-left reveal">
               <h3 class="sub-heading">Must-haves</h3>
-              <p>Designing with sustainability and longevity in mind.</p>
+              <p>The non-negotiables. Built-in, not bolted on.</p>
             </div>
             <div class="must-haves-right reveal">
               <div class="must-haves-card reveal">
-                <h4>🧭 Price-linked recipes</h4>
-                <p>Every meal ties to real local prices, and we show the user where the verifiable savings come from.</p>
+                <h4>🧭 Explainable savings</h4>
+                <p>Every meal shows its working — not just a total, a reason. "Cheap" is a claim. A line item is evidence. Families under financial pressure have been misled enough. Skrimp doesn't ask for trust it hasn't earned.</p>
               </div>
               <div class="must-haves-card reveal">
-                <h4>🔁 Pantry-aware swaps</h4>
-                <p>Swap one ingredient, update total instantly; suggest common substitutes and use-up ideas.</p>
+                <h4>🔁 Swap and recalculate</h4>
+                <p>Change one ingredient. Every number updates instantly. Swaps surface substitutes; use-up suggestions prevent the half-bag of lentils from disappearing to the back of the cupboard. The plan is alive — not a document you print and abandon.</p>
               </div>
               <div class="must-haves-card reveal">
-                <h4>🛡️ Ethical guardrails</h4>
-                <p>Minimal data, clear consent, accessible explanations for "why we need this info" to ensure maximum savings while maintaining privacy.</p>
+                <h4>👨‍👩‍👧 Built for households, not individuals</h4>
+                <p>One person plans. Everyone else arrives at the aisle with half the context. Household sharing and real-time sync exist because meal planning was never supposed to be a solo activity — and designing it that way was always leaving something essential out.</p>
               </div>
               <div class="must-haves-card reveal">
-                <h4>♿ Accessibility</h4>
-                <p>High contrast, large targets, predictable flows, lists organised by store layout; stress goes down as savings go up.</p>
+                <h4>🛡️ Minimum viable data</h4>
+                <p>Families under financial pressure have less margin for everything — including data risk. Skrimp collects what's needed for utility, explains why, and makes deletion a single action. This was a constraint before it was a principle.</p>
               </div>
             </div>
           </div>
@@ -704,12 +699,12 @@
 
           <div class="process-subsection reveal">
             <h3 class="sub-heading">5.1 // Meal Engine &amp; Data Pipelines</h3>
-            <p>We built a price-aware <span class="di">meal engine</span> on top of flexible <span class="px">flyer ingestion</span>. It normalises prices, maps them to ingredients, and composes meal sets that respect budget, time, and taste.</p>
-            <p>The system favours explainability: each plan shows why it's cheaper (e.g., <span class="px">"pasta + chickpeas are $0.XX/serving this week"</span>) and offers one-tap swaps with updated totals.</p>
+            <p>Flyers don't cooperate. They arrive as <span class="px">PDFs</span> — inconsistent layouts, no shared taxonomy, no guarantee this week's format matches last week's. Every Monday is a negotiation with data that was never designed to be machine-readable. Building a reliable <span class="di">meal engine</span> on top of that required treating chaos as a given, not an exception. Nothing reaches a family's grocery list on the algorithm's first pass. Products earn their place.</p>
+            <p>The second problem was quieter and harder. Ingredients don't have one name. A recipe calls for chicken. The flyer has "bone-in thighs." Are those the same for pricing? They are — but only if the system is built to know that. Resolving those relationships, quietly, across retailers and hundreds of recipes, is what makes the price calculations feel trustworthy rather than approximate. That work is not glamorous. It is the load-bearing wall.</p>
             <div class="two-col">
               <div>
-                <div class="highlight-box reveal">Explainable savings — every choice surfaces a simple reason and its dollar impact.</div>
-                <div class="highlight-box reveal" style="margin-top:.75rem">Resilient ingestion — handles layout changes, missing SKUs, and store quirks without breaking the plan.</div>
+                <div class="highlight-box reveal">Every plan shows its working — which items are on sale, which store, what they cost this week. Not a black box. A receipt you can interrogate.</div>
+                <div class="highlight-box reveal" style="margin-top:.75rem">Resilient by design — handles layout changes, missing products, and store quirks without surfacing the chaos to the user.</div>
               </div>
               <div>
                 <img src="https://cloudfront-us-east-1.images.arcpublishing.com/bellmediainc/CXDTOJSBVNETVH46QRNNIWB7CM.jpg" alt="Henrietta van Niekerk with Skrimp — CTV News" class="body-img" loading="lazy" style="margin:0 0 .4rem">
@@ -720,13 +715,13 @@
 
           <div class="process-subsection reveal">
             <h3 class="sub-heading">5.2 // Prototyping &amp; Iteration</h3>
-            <p>We prototyped <span class="px">mobile-first</span> for real-world aisle use and desktop for planning at home. Usability passes tightened the loop between budget target → plan preview → <span class="px">cart/list</span>.</p>
-            <p>Testing fast with parents and students surfaced key refinements: clearer per-meal totals, a <span class="px">"swap &amp; recalc"</span> pattern, and allergen-safe presets that persist between weeks.</p>
+            <p>Prototyped <span class="px">mobile-first</span> for in-aisle use, desktop for the Sunday planning session. But the most important thing testing surfaced wasn't a UI fix. It wasn't a screen at all.</p>
+            <p>Meal planning is not a solo activity. One person is almost always "the planner." Their partner shows up at the store with the list and none of the context — why this brand, why chicken this week, why no pasta. The planning is done. But it belongs to one person, in one head, invisible to everyone else who has to live by it. Household sharing and real-time sync weren't a feature for a later sprint. They were the thing the product was missing. Adding them didn't upgrade Skrimp. It finished it. The <span class="px">swap&nbsp;&amp;&nbsp;recalc</span> pattern, per-meal totals, allergen presets that persist week to week — all of it came from watching real households hit the same wall.</p>
             <div class="two-col">
               <div>
-                <div class="highlight-box reveal">Budget clarity — per-meal and per-week totals, with auto-recalc on every change.</div>
-                <div class="highlight-box reveal" style="margin-top:.75rem">Fewer taps — defaults that feel right; explicit switches for stores, brands, and dietary needs.</div>
-                <div class="highlight-box reveal" style="margin-top:.75rem">Ethical AI in practice — minimum data stored, local first where possible, easy edit/delete/export, and no dark patterns.</div>
+                <div class="highlight-box reveal">Per-meal and per-week totals update on every change. The budget number is always live — never a surprise at checkout.</div>
+                <div class="highlight-box reveal" style="margin-top:.75rem">Allergen filters, store preferences, and dietary flags persist. You set them once; the plan remembers.</div>
+                <div class="highlight-box reveal" style="margin-top:.75rem">No dark patterns. No upsell friction aimed at users who are already financially stretched. That was a design constraint, not an afterthought.</div>
               </div>
               <div>
                 <div class="highlight-box green reveal">
@@ -734,12 +729,51 @@
                   <p style="margin-top:.4rem;opacity:.7;font-size:.88rem">— Henrietta, UWaterloo News, Jan 2026</p>
                 </div>
                 <div class="highlight-box green reveal" style="margin-top:.75rem">
-                  <strong>"That's because a lot of users struggle to articulate the exact things that they want, but they know the things that are making them struggle."</strong>
+                  <strong>"A lot of users struggle to articulate the exact things that they want, but they know the things that are making them struggle."</strong>
                   <p style="margin-top:.4rem;opacity:.7;font-size:.88rem">— Henrietta, UWaterloo News, Jan 2026</p>
                 </div>
               </div>
             </div>
             <!-- TODO: add Skrimp YouTube video IDs here -->
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- TEAM / MENTORSHIP -->
+      <section id="team">
+        <div class="section-content reveal">
+          <span class="eyebrow">Growing a Team</span>
+          <h2 class="section-heading">Six engineering interns. One or two terms of university between them. Real production code.</h2>
+          <p>Six engineers joined Skrimp over the course of building it — not all at once, in rotations, one or two at a time. All funded by UWaterloo through the <span class="px">Bridging Entrepreneurs to Students</span> program. Most were in their first year of computer science. They could write code. What they hadn't yet learned was to think about systems.</p>
+          <p>That gap is smaller than it sounds and harder to close than it appears. First-year engineers aren't dangerous because they don't know enough. They're challenging because they don't know what they don't know yet. In a classroom, that's fine — mistakes are low stakes, isolated, graded. In a live startup, the wrong refactor doesn't fail the assignment. It compounds quietly for six weeks and then breaks something real.</p>
+
+          <blockquote class="pull-quote reveal">
+            "You're not teaching them to code. They already know how to code. You're teaching them to ask 'what does this break?' before they write the first line."
+            <cite>— Henrietta van Niekerk</cite>
+          </blockquote>
+
+          <div class="two-col">
+            <div>
+              <p>Systems thinking — holding the whole in mind while working on a single part — is learnable. But it requires someone willing to slow down in the middle of a deadline to explain why the shortcut that works today creates the emergency next month. That slowing down has a cost. You do it anyway.</p>
+              <p>The moments that stayed: the intern who wanted to delete a database field "just to clean things up." The one who learned, through a real incident, why staging environments aren't optional. The one who started asking "what could break?" before writing a line of code. That last one is the moment. That's the shift — from someone who can write code to someone who can build something.</p>
+              <p>There is no playbook for mentoring first-years on a live startup at 21 while finishing your own degree. The institutional knowledge lives mostly in conversation: why we do it this way, what happened last time we didn't, what constraint makes the obvious answer wrong. Writing that down is hard. Living it is harder. Watching someone else learn it, through their own version of the same mistakes, is something else entirely.</p>
+            </div>
+            <div>
+              <div class="highlight-box reveal">
+                <strong>What I didn't expect to learn about leadership:</strong>
+                <p style="margin-top:.5rem">Your job isn't to fill the knowledge gap. It's to make it visible — to the intern, to themselves. The ones who leave as good engineers are the ones who learned to see their own blind spots.</p>
+              </div>
+              <div class="highlight-box reveal" style="margin-top:.75rem">
+                <strong>What I'd do differently:</strong>
+                <p style="margin-top:.5rem">Onboard to the <em>why</em> before the <em>how</em>. An intern who understands the product's constraints will make better decisions than one who only knows the codebase. Context is the real onboarding.</p>
+              </div>
+              <div class="highlight-box reveal" style="margin-top:.75rem">
+                <strong>What mentorship actually produces:</strong>
+                <p style="margin-top:.5rem">Not a feature list — though those mattered. The output is a person who leaves with a working model of how production systems fail, and the habit of caring about that before it happens.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -758,30 +792,39 @@
           <div class="cards reveal">
             <div class="card reveal">
               <h4>01</h4>
-              <h3>Empathy compounds</h3>
-              <p>From parents skipping meals to users tired of "11-ingredient recipes", the more we listened, the sharper Skrimp became.</p>
+              <h3>Automate what already exists</h3>
+              <p>Families were already running the algorithm. In their heads, every week, for free, at cost to their sanity. Skrimp didn't invent a behaviour — it inherited one and made it run without the labour.</p>
             </div>
             <div class="card reveal">
               <h4>02</h4>
-              <h3>Control is emotional</h3>
-              <p>Savings matter, but users raved most about reduced stress. Peace of mind is the killer feature.</p>
+              <h3>The last mile is the product</h3>
+              <p>A plan that ends at a list is a plan that depends on the user to finish it. The Chrome extension exists because "we got you to the shopping list" was not good enough. The loop had to close.</p>
             </div>
             <div class="card reveal">
               <h4>03</h4>
-              <h3>Constraints breed clarity</h3>
-              <p>Tight scope forced us to cut noise and double down on core value: meals your family will actually eat, at prices that work.</p>
+              <h3>Household beats personal</h3>
+              <p>The planning being solo was never a user preference. It was a gap in the product. When we closed it, retention followed. The unit isn't the user. It's the household.</p>
             </div>
             <div class="card reveal">
               <h4>04</h4>
-              <h3>AI is invisible when it's working</h3>
-              <p>The revolution isn't flashy AI — it's giving families back control over their biggest monthly expense.</p>
+              <h3>Trust is the product</h3>
+              <p>Families under financial stress don't want to be impressed. They want to believe the number. Every decision — explainable savings, transparent swaps, no dark patterns — was an argument that the number on screen is one they can trust.</p>
             </div>
           </div>
           <div class="reflection reveal">
-            <h3>🛒 From research to relief</h3>
-            <p>The win wasn't a clever algorithm; it was giving people back judgment — a clear plan, obvious swaps, and receipts that don't sting.</p>
-            <p>What surprised me? The smallest choices changed everything: surfacing why a swap saves $2, letting a user lock a favourite brand, making waste-reducing "use-up" recipes delightful. AI is invisible when trust, clarity, and control show up on the plate.</p>
+            <h3>🛒 What I didn't expect</h3>
+            <p>The thing that surprised me most wasn't the savings. It was the tone of voice.</p>
+            <p>Users didn't say "I saved $80 this week." They said things like: "I don't have to think about it anymore." "Sunday isn't a thing for us now." "My partner finally knows what we're having." That's not a savings story. That's a stress story. The problem was never purely financial — it was the invisible weight of managing money, alone, every week, in your head. Skrimp didn't solve a grocery problem. It solved a cognitive one. The savings are real, confirmed by families, confirmed by the press. But what people feel is the absence of something. The weekly drain that stopped.</p>
+            <p><span class="di">That is what AI should do. Not impress you. Disappear.</span></p>
             <p><a href="https://www.skrimp.ai" target="_blank" rel="noopener" style="color:var(--text-secondary);text-decoration:underline;text-underline-offset:3px">→ Try Skrimp at skrimp.ai</a></p>
+          </div>
+
+          <div class="reflection reveal">
+            <h3>What I can't say yet — and why that's okay</h3>
+            <p>There is an entire category of work inside Skrimp I am proud of and not showing here. The architecture decisions that took months to arrive at. The commercial work still in motion. The technical choices that will shape this product for years and belong to the future, not a portfolio page written in the present tense.</p>
+            <p>That's the right call. And it is a strange thing — to have built something you can't fully show. The best work I've done on Skrimp isn't on this page. The most interesting problems I've solved are still inside a codebase I'm not opening up yet.</p>
+            <p>What you've read is the public surface: the design philosophy, the research, the leadership, the decisions I can speak to without compromising what's still being made. It is not a small surface. But it is a surface.</p>
+            <p>The discipline of keeping quiet about active development — of understanding that the story gets told when it's done, not while it's happening — is its own kind of skill. You don't perform progress. You make it, quietly, and you wait. Some things are worth waiting for.</p>
           </div>
         </div>
       </section>
@@ -938,34 +981,90 @@
     addEventListener('mouseleave',()=>{cursor.style.opacity='0'});
     addEventListener('mouseenter',()=>{cursor.style.opacity='1'});
 
-    // h1 glitch-in on load
-    const h1=document.querySelector('.intro-left h1');
-    if(h1){
-      h1.classList.add('h-scrambling');
-      setTimeout(()=>{h1.classList.remove('h-scrambling');h1.classList.add('h-settled');},2200);
-    }
+    // --- heading scramble + font-mix (same system as Menzo) ---
+    (function(){
+      const CHARSET='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
+      const RUNS=[3,2];
+      function rand(){return CHARSET[Math.floor(Math.random()*CHARSET.length)];}
 
-    // reveal + scramble combined
-    function scrambleHeading(h){
-      if(!h.classList.contains('h-settled')&&!h.classList.contains('h-scrambling')){
-        h.classList.add('h-scrambling');
-        setTimeout(()=>{h.classList.remove('h-scrambling');h.classList.add('h-settled');},1800);
+      function scramble(el,text,dur,onDone){
+        const len=text.length;
+        const revealed=new Array(len).fill(false);
+        const t0=performance.now();
+        (function frame(now){
+          const p=Math.min(1,(now-t0)/dur);
+          const upto=Math.floor(p*len*1.15);
+          for(let i=0;i<upto;i++) if(!revealed[i]&&Math.random()<0.4) revealed[i]=true;
+          let out='';
+          for(let i=0;i<len;i++){
+            const c=text[i];
+            if(c===' '){out+='\u00a0';continue;}
+            out+=revealed[i]?c:rand();
+          }
+          el.textContent=out;
+          if(p<1||revealed.some(r=>!r)) requestAnimationFrame(frame);
+          else onDone();
+        })(performance.now());
       }
-    }
+
+      function fontMix(el,text){
+        let html='',runIdx=0,runCount=0,usePx=true;
+        for(let i=0;i<text.length;i++){
+          const cp=text.codePointAt(i);
+          if(cp>127){html+=String.fromCodePoint(cp);if(cp>0xFFFF)i++;continue;}
+          const c=text[i];
+          if(c===' '){html+=' ';continue;}
+          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
+          if(++runCount>=RUNS[runIdx%2]){usePx=!usePx;runIdx++;runCount=0;}
+        }
+        el.innerHTML=html;
+      }
+
+      // separate observer for all headings — they manage their own opacity
+      const hio=new IntersectionObserver((entries,obs)=>{
+        entries.forEach(en=>{
+          if(!en.isIntersecting)return;
+          obs.unobserve(en.target);
+          const el=en.target;
+          const text=el.textContent.trim();
+          el.style.opacity='1';el.style.transform='none';
+          el.classList.add('h-scrambling');
+          scramble(el,text,900,()=>{
+            el.classList.remove('h-scrambling');
+            fontMix(el,text);
+            el.classList.add('h-settled');
+          });
+        });
+      },{threshold:0.25});
+
+      document.querySelectorAll('.section-heading').forEach(h=>hio.observe(h));
+
+      // stat numbers + sub-headings — font mix on load (no animation)
+      setTimeout(()=>{
+        document.querySelectorAll('.stat-number,.sub-heading').forEach(el=>{
+          fontMix(el,el.textContent.trim());
+        });
+      },100);
+
+      // hero h1 — scramble on load
+      const h1=document.querySelector('.intro-left h1');
+      if(h1){
+        const h1Text=h1.textContent.trim();
+        setTimeout(()=>{
+          h1.classList.add('h-scrambling');
+          scramble(h1,h1Text,1100,()=>{
+            h1.classList.remove('h-scrambling');
+            fontMix(h1,h1Text);
+            h1.classList.add('h-settled');
+          });
+        },350);
+      }
+    })();
+
+    // reveals (headings handle themselves via hio above)
     const io=new IntersectionObserver((es,o)=>{
       es.forEach(en=>{
-        if(en.isIntersecting){
-          en.target.classList.add('active');
-          // if the target itself is a heading (e.g. standalone reveal)
-          if(en.target.classList.contains('section-heading')||en.target.classList.contains('sub-heading')){
-            setTimeout(()=>scrambleHeading(en.target),0);
-          }
-          // trigger headings inside this container after parent fade begins
-          setTimeout(()=>{
-            en.target.querySelectorAll('.section-heading,.sub-heading').forEach(scrambleHeading);
-          },250);
-          o.unobserve(en.target);
-        }
+        if(en.isIntersecting){en.target.classList.add('active');o.unobserve(en.target);}
       });
     },{threshold:.2});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
