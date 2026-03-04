@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="../HenLogo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Equinox – Case Study</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('../fonts/DotempDemo.ttf') format('truetype');
+      font-weight: normal; font-style: normal;
+    }
+    .px { font-family: 'DotempDemo', monospace !important; font-style: normal !important; font-weight: 400; font-size: 0.9em; }
+    .di { font-family: 'Didot', 'Cormorant Garamond', serif !important; font-style: italic !important; font-weight: 700; }
+
+    :root {
+      --text-primary: #f5eedd;
+      --text-secondary: #d4a86a;
+      --accent: #c8874a;
+      --accent-bright: #e0a060;
+      --glass-deep-1: #4b1520;
+      --glass-deep-2: #2b0b13;
+      --glass-border: rgba(200,135,74,0.22);
+      --glass-highlight-1: rgba(200,135,74,.10);
+      --glass-highlight-2: rgba(180,110,60,.14);
+      --glass-bg: rgba(14,8,2,0.35);
+      --inner-card: rgba(14,8,2,.42);
+      --rule: rgba(200,135,74,0.24);
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{background:transparent !important}
+    body{font-family:Montserrat,system-ui,-apple-system,sans-serif;color:var(--text-primary)}
+    a{text-decoration:none;color:inherit}
+    ul{list-style:disc inside}
+
+    #bg-host{position:fixed;inset:0;z-index:-1;pointer-events:none}
+    #bg-host>iframe{width:100%;height:100%;border:0;display:block}
+
+    /* custom cursor */
+    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(200,135,74,.3);border:2px solid rgba(200,135,74,.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(200,135,74,.4),inset 0 0 10px rgba(200,135,74,.1)}
+    .custom-cursor.clicking{background:rgba(200,135,74,.9);border-color:rgba(200,135,74,1);transform:translate(-50%,-50%) scale(.8)}
+    .custom-cursor.hovering{width:30px;height:30px;background:rgba(200,135,74,.4);border-color:rgba(200,135,74,.9);box-shadow:0 0 20px rgba(200,135,74,.6)}
+    *,*::before,*::after{cursor:none !important}
+
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    @keyframes hCaScramble {
+      0%   { text-shadow: 3px 0 rgba(255,100,30,.55),  -3px 0 rgba(255,220,100,.55); }
+      18%  { text-shadow: 5px 0 rgba(255,100,30,.8),   -5px 0 rgba(255,220,100,.8);  clip-path: inset(0 0 88% 0); }
+      19%  { clip-path: inset(0 0 0 0); }
+      40%  { text-shadow: 1px 0 rgba(255,100,30,.3),   -1px 0 rgba(255,220,100,.3); }
+      57%  { text-shadow: 6px 0 rgba(255,100,30,.85),  -6px 0 rgba(255,220,100,.85); clip-path: inset(72% 0 0 0); }
+      58%  { clip-path: inset(0 0 0 0); }
+      100% { text-shadow: 3px 0 rgba(255,100,30,.55),  -3px 0 rgba(255,220,100,.55); }
+    }
+    @keyframes hCaSettle {
+      0%, 100% { text-shadow: 1.5px 0 rgba(255,100,30,.18), -1.5px 0 rgba(255,220,100,.18); }
+      50%       { text-shadow: 2.5px 0 rgba(255,100,30,.28), -2.5px 0 rgba(255,220,100,.28); }
+    }
+
+    h1,h2,h3,h4{font-family:'Montserrat Alternates',sans-serif}
+
+    /* ---- EYEBROW ---- */
+    .eyebrow {
+      display: block; font-size: .72rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: .6rem; opacity: .85;
+    }
+    .eyebrow.warm { color: rgba(220,160,80,0.9); }
+
+    /* ---- HEADINGS ---- */
+    .section-heading {
+      font-size: clamp(1.6rem,3.5vw,2.6rem); font-weight: 700;
+      color: var(--text-secondary); line-height: 1.15; margin-bottom: 1.25rem;
+      font-family: 'Didot','Cormorant Garamond',serif !important;
+      font-style: italic !important; letter-spacing: .06em;
+      opacity: 0;
+    }
+    .sub-heading {
+      font-size: clamp(1.1rem,2vw,1.45rem); font-weight: 600;
+      color: var(--text-secondary); margin-bottom: .75rem;
+      font-family: 'Montserrat Alternates', sans-serif;
+    }
+    .section-heading.h-scrambling {
+      font-family: 'DotempDemo', monospace !important;
+      font-style: normal !important;
+      animation: hCaScramble .7s ease-in-out infinite;
+    }
+    .section-heading.h-settled { animation: hCaSettle 3s ease-in-out infinite; }
+
+    /* ---- HERO ---- */
+    .hero { padding: clamp(56px,8vh,88px) 0 0; display:flex; justify-content:center; }
+    /* --- Equinox: add the centered “runner” panel --- */
+    .hero-container{
+      width: min(1080px, 90vw);
+      margin: 0 auto;
+      border-radius: 26px 26px 0 0;
+      padding: clamp(18px,2.4vw,40px);
+      position: relative;
+
+      background: linear-gradient(145deg, var(--glass-deep-1), var(--glass-deep-2));
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(18px) saturate(120%);
+      -webkit-backdrop-filter: blur(18px) saturate(120%);
+      box-shadow: 0 24px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+      overflow: hidden;
+    }
+
+    .hero-container::before,
+    .hero-container::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      pointer-events:none;
+      background:
+        radial-gradient(560px 200px at 8% -8%, var(--glass-highlight-1), transparent 60%),
+        radial-gradient(520px 180px at 108% 12%, var(--glass-highlight-2), transparent 60%);
+      mix-blend-mode: screen;
+      opacity: .7;
+    }
+
+    .intro { display:grid; grid-template-columns:1.45fr 0.85fr; gap:2.5rem; margin-bottom:clamp(28px,4vh,44px); }
+    .intro-left h1 {
+      font-family:'Montserrat Alternates',sans-serif;font-weight:800;
+      font-size:clamp(2.4rem,6vw,5.2rem); line-height:1.05; letter-spacing:-.02em;
+      background:linear-gradient(45deg,#d4943a,#e8c060,#f5eedd,#e0a850,#c87030);
+      background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      animation:gradientShift 5s ease infinite;
+    }
+    .intro-left h1.h-scrambling {
+      font-family:'DotempDemo',monospace !important; font-style:normal !important;
+      animation:gradientShift 5s ease infinite, hCaScramble .7s ease-in-out infinite !important;
+    }
+    .intro-left h1.h-settled {
+      animation:gradientShift 5s ease infinite, hCaSettle 3s ease-in-out infinite !important;
+    }
+    .tagline { font-size:clamp(1rem,1.6vw,1.2rem); line-height:1.5; opacity:.88; margin:.85rem 0 1.5rem; color:var(--text-primary); }
+    .tldr-pills { list-style:none; display:flex; flex-wrap:wrap; gap:.5rem; }
+    .pill {
+      display:inline-flex; align-items:center; gap:.45rem;
+      background:rgba(200,135,74,.08); border:1px solid rgba(200,135,74,.22);
+      border-radius:20px; padding:.35rem .85rem;
+      font-size:.82rem; font-weight:500; color:var(--text-primary);
+    }
+
+    .intro-right { display:flex; flex-direction:column; gap:1.5rem; }
+    .header-info {
+      background:var(--glass-bg); border:1px solid var(--glass-border);
+      backdrop-filter:blur(30px); border-radius:20px; padding:1.5rem;
+      font-size:.92rem; line-height:1.7;
+    }
+    .header-info strong { color:var(--text-secondary); }
+    .header-info ul { list-style:disc inside; margin-top:.4rem; padding-left:.5rem; font-size:.88rem; opacity:.85; }
+    .skip-link { display:flex; justify-content:flex-end; }
+    .skip-button {
+      font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+      color:var(--text-secondary); border:1px solid var(--glass-border);
+      border-radius:20px; padding:.4rem 1rem;
+      background:rgba(200,135,74,.05);
+      transition:all .3s ease;
+    }
+    .skip-button:hover { background:rgba(200,135,74,.12); border-color:rgba(200,135,74,.4); }
+
+    /* ---- OUTCOME STRIP ---- */
+    .outcome-strip {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      border:1px solid var(--glass-border); border-radius:20px;
+      background:var(--glass-bg); backdrop-filter:blur(30px);
+      margin-bottom:clamp(32px,5vh,56px);
+    }
+    .outcome-item { padding:1.5rem 1.25rem; border-right:1px solid var(--rule); display:flex; flex-direction:column; gap:.3rem; }
+    .outcome-item:last-child { border-right:0; }
+    .outcome-num {
+      font-family:'Didot','Cormorant Garamond',serif;
+      font-style:italic; font-size:clamp(1.5rem,2.8vw,2.2rem);
+      font-weight:700; color:var(--text-secondary); line-height:1;
+      margin-bottom:.5rem; letter-spacing:.04em;
+    }
+    .outcome-label { font-size:.8rem; line-height:1.4; opacity:.75; }
+
+    /* ---- SECTIONS ---- */
+    .hero-container > header { padding:0; }
+    header.hero { padding:0; }
+    #hero .hero-container { display:block; }
+
+    .section-content { padding: clamp(28px,4vh,48px) 0; }
+    .section-rule { border:none; border-top:1px solid var(--rule); margin:0; }
+
+    /* ---- TWO-COL ---- */
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem 2.5rem; margin-top:1.25rem; }
+
+    /* ---- HIGHLIGHT BOX ---- */
+    .highlight-box {
+      background:rgba(200,135,74,.07); border-left:2px solid rgba(200,135,74,.5);
+      border-radius:0 10px 10px 0; padding:1rem 1.1rem;
+      font-size:.92rem; line-height:1.6; color:var(--text-primary);
+    }
+    .highlight-box.warm {
+      border-left-color:rgba(220,170,80,.6);
+      background:rgba(220,170,80,.06);
+    }
+    .highlight-box strong { color:var(--text-secondary); display:block; margin-bottom:.2rem; }
+
+    /* ---- PULL QUOTE ---- */
+    .pull-quote {
+      border-left:3px solid rgba(200,135,74,.5);
+      padding:1rem 1.5rem; margin:1.5rem 0;
+      font-family:'Didot','Cormorant Garamond',serif;
+      font-style:italic; font-size:clamp(1.05rem,1.8vw,1.3rem);
+      line-height:1.6; color:var(--text-secondary);
+      background:rgba(200,135,74,.05); border-radius:0 12px 12px 0;
+    }
+    .pull-quote cite { display:block; margin-top:.6rem; font-size:.82rem; font-style:normal; opacity:.7; font-family:Montserrat,sans-serif; }
+
+    /* ---- BODY TEXT ---- */
+    p { font-size:clamp(.92rem,1.2vw,1rem); line-height:1.75; color:var(--text-primary); margin-bottom:1rem; opacity:.92; }
+    p:last-child { margin-bottom:0; }
+
+    /* ---- BODY IMAGE ---- */
+    .body-img { width:100%; border-radius:12px; display:block; }
+    .body-img-caption { font-size:.75rem; opacity:.55; margin-top:.3rem; }
+
+    /* ---- OVERVIEW COVER ---- */
+    .overview-cover { width:100%; border-radius:16px; margin-top:1.5rem; display:block; border:1px solid var(--glass-border); }
+
+    /* ---- QUOTE GRID ---- */
+    .quote-grid { display:grid; grid-template-columns:repeat(3,minmax(200px,1fr)); gap:1.1rem; margin-bottom:2rem; }
+    .quote-card {
+      background:var(--inner-card); border-radius:16px;
+      box-shadow:0 8px 32px rgba(0,0,0,.2); padding:1.25rem;
+      min-height:140px; opacity:0; transform:translateY(18px);
+      transition:opacity .5s ease-out,transform .5s ease-out;
+      border:1px solid var(--glass-border); position:relative; overflow:hidden;
+    }
+    .quote-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(200,135,74,.05),transparent);transition:left .6s}
+    .quote-card:hover::before{left:100%}
+    .quote-card.active { opacity:1 !important; transform:translateY(0) !important; }
+    .quote-text { font-size:.95rem; line-height:1.5; margin-bottom:.75rem; color:var(--text-primary); opacity:.92; }
+    .quote-author { font-size:.85rem; opacity:.7; text-align:right; color:var(--text-secondary); }
+
+    /* ---- MUST-HAVES ---- */
+    .must-haves-container { display:grid; grid-template-columns:minmax(200px,0.85fr) 1.4fr; gap:1.5rem 2rem; align-items:start; margin:2rem auto 0; }
+    .must-haves-left { position:sticky; top:24px; }
+    .must-haves-right { display:grid; grid-template-columns:1fr; gap:1rem; }
+    .must-haves-card {
+      border-left:2px solid rgba(200,135,74,.3); padding:1rem 1.1rem 1rem 1.25rem;
+      background:rgba(14,8,2,.25); border-radius:0 10px 10px 0; transition:.3s;
+    }
+    .must-haves-card:hover { border-left-color:rgba(200,135,74,.7); background:rgba(14,8,2,.4); }
+    .must-haves-card h4 { font-size:.88rem; font-weight:600; color:var(--text-secondary); margin-bottom:.4rem; }
+    .must-haves-card p { font-size:.9rem; line-height:1.5; opacity:.85; margin:0; }
+
+    /* ---- PROCESS SUBSECTION ---- */
+    .process-subsection { padding:1.5rem 0; border-top:1px solid var(--rule); margin-top:1rem; }
+    .process-subsection:first-child { border-top:none; margin-top:0; }
+
+    /* ---- CHALLENGE ROW ---- */
+    .challenge-row { display:grid; grid-template-columns:0.6fr 1fr; gap:2rem; margin-top:1.25rem; }
+    .challenge-col.right { display:flex; flex-direction:column; gap:1rem; }
+
+    /* ---- CARDS (TAKEAWAYS) ---- */
+    .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:1.1rem; margin-bottom:2rem; }
+    .card {
+      background:var(--inner-card); border:1px solid var(--glass-border);
+      border-radius:16px; padding:1.5rem; opacity:0; transform:translateY(18px);
+      transition:opacity .5s ease-out,transform .5s ease-out;
+    }
+    .card.active { opacity:1 !important; transform:translateY(0) !important; }
+    .card:hover { border-color:rgba(200,135,74,.4); background:rgba(14,8,2,.55); }
+    .card h4 { font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:rgba(200,135,74,.6); margin-bottom:.5rem; font-family:Montserrat,sans-serif; }
+    .card h3 { font-size:1.1rem; color:var(--text-secondary); margin-bottom:.6rem; font-family:'Montserrat Alternates',sans-serif; }
+    .card p { font-size:.9rem; opacity:.82; margin:0; }
+
+    /* ---- REFLECTION ---- */
+    .reflection {
+      background:rgba(200,135,74,.05); border:1px solid rgba(200,135,74,.2);
+      border-radius:16px; padding:1.75rem 2rem; margin-top:1.5rem;
+    }
+    .reflection h3 { font-size:1.1rem; color:var(--text-secondary); margin-bottom:1rem; font-family:'Montserrat Alternates',sans-serif; }
+    .reflection p { font-size:.95rem; opacity:.88; }
+
+    /* ---- STATS ---- */
+    .stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; margin-bottom:2rem; }
+    .stats-card { padding:1.5rem 1.1rem; border-top:2px solid var(--accent); opacity:0; transform:translateY(20px); transition:all .5s ease; }
+    .stats-card.active { opacity:1 !important; transform:translateY(0) !important; }
+    .stat-number { font-family:'Didot','Cormorant Garamond',serif; font-style:italic; font-size:clamp(2rem,3.5vw,2.8rem); font-weight:700; color:var(--text-secondary); line-height:1; margin-bottom:.5rem; letter-spacing:.04em; }
+    .stats-title { font-size:.85rem; font-weight:600; color:var(--text-secondary); margin-bottom:.4rem; line-height:1.3; }
+    .stats-desc { font-size:.85rem; line-height:1.45; color:var(--text-primary); opacity:.8; }
+
+    /* ---- ROLE SECTION ---- */
+    .role-cols { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1.5rem; }
+    .role-card {
+      background:var(--inner-card); border:1px solid var(--glass-border);
+      border-radius:16px; padding:1.5rem; border-top:3px solid rgba(200,135,74,.5);
+    }
+    .role-card h4 { font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:rgba(200,135,74,.7); margin-bottom:.5rem; font-family:Montserrat,sans-serif; }
+    .role-card h3 { font-size:1.05rem; color:var(--text-secondary); margin-bottom:.75rem; font-family:'Montserrat Alternates',sans-serif; }
+    .role-card p { font-size:.9rem; opacity:.85; margin:0; }
+    .role-card ul { list-style:disc inside; font-size:.88rem; opacity:.82; padding-left:.5rem; }
+    .role-card li { margin-bottom:.3rem; }
+
+    /* ---- REVEALS ---- */
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s ease-out,transform .5s ease-out; will-change:opacity,transform; }
+    .active { opacity:1 !important; transform:translateY(0) !important; }
+
+    /* ---- IMAGE GRID ---- */
+    .img-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.1rem; margin:2rem 0; }
+    .img-tile { aspect-ratio:1/1; border-radius:14px; overflow:hidden; border:1px solid var(--glass-border); background:var(--inner-card); }
+    .img-tile img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s ease; }
+    .img-tile:hover img { transform:scale(1.06); }
+
+    /* ---- SOUNDCLOUD MINI WIDGET ---- */
+    #sc-bar {
+      position:fixed; bottom:1.25rem; right:1.25rem; z-index:9000;
+      width:260px; display:flex; flex-direction:column; align-items:flex-end;
+      pointer-events:none;
+    }
+    #sc-toggle {
+      pointer-events:all;
+      background:rgba(10,5,1,.95); border:1px solid rgba(200,135,74,.45);
+      border-radius:20px; padding:5px 14px;
+      font-size:.6rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+      color:var(--text-secondary); cursor:none !important;
+      display:flex; align-items:center; gap:.4rem; margin-bottom:5px;
+      user-select:none; box-shadow:0 2px 16px rgba(0,0,0,.6);
+      backdrop-filter:blur(12px);
+    }
+    #sc-toggle:hover { background:rgba(200,135,74,.14); }
+    #sc-frame-wrap {
+      width:100%; overflow:hidden; border-radius:12px;
+      border:1px solid rgba(200,135,74,.22); background:rgba(10,5,1,.96);
+      transition:height .3s ease, opacity .3s ease;
+      height:80px; opacity:1; pointer-events:all;
+      box-shadow:0 4px 24px rgba(0,0,0,.6);
+    }
+    #sc-bar.collapsed #sc-frame-wrap { height:0; opacity:0; pointer-events:none; }
+    #sc-bar iframe { width:100%; height:80px; border:0; display:block; }
+
+    @media(max-width:1024px){
+      .intro{grid-template-columns:1fr}
+      .intro-right{max-width:100%}
+      .outcome-strip{grid-template-columns:repeat(2,1fr)}
+      .outcome-item:nth-child(2){border-right:0}
+      .outcome-item:nth-child(3){border-top:1px solid var(--rule)}
+      .two-col,.challenge-row,.role-cols{grid-template-columns:1fr}
+      .must-haves-container{grid-template-columns:1fr}
+      .must-haves-left{position:static}
+    }
+    @media(max-width:768px){
+      .cards,.stats-grid,.quote-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){
+      .outcome-strip{grid-template-columns:1fr}
+      .outcome-item{border-right:0;border-bottom:1px solid var(--rule)}
+      .outcome-item:last-child{border-bottom:0}
+    }
+  </style>
+</head>
+<body>
+  <div class="custom-cursor" id="cursor"></div>
+  <div id="nav-slot" data-include="../nav.html"></div>
+  <br><br><br><br><br><br>
+
+  <header class="hero" id="hero">
+    <div class="hero-container">
+
+      <!-- INTRO -->
+      <div class="intro reveal">
+        <div class="intro-left">
+          <span class="eyebrow warm">🏆 WINNER · Itch Comfy Jam: Winter 2025</span>
+          <h1>Equinox</h1>
+          <p class="tagline">A wizard's tower locked in perpetual winter. A team of fourteen. Two weeks to bring spring back.</p>
+          <ul class="tldr-pills">
+            <li class="pill"><span>🧙</span><span><b>Player Controller + Pause Menu</b></span></li>
+            <li class="pill"><span>👥</span><span>14 contributors · Team Noot Noot</span></li>
+            <li class="pill"><span>🎮</span><span>Godot 4.5 · GDScript</span></li>
+            <li class="pill"><span>❄️</span><span>Cozy puzzle-exploration · First-person 3D</span></li>
+          </ul>
+        </div>
+        <div class="intro-right reveal">
+          <div class="header-info">
+            <p><strong>Role:</strong> Programmer (Player Controller, Pause Menu)</p>
+            <p><strong>Timeline:</strong>~2 weeks</p>
+            <p><strong>Tools &amp; Skills:</strong></p>
+            <ul>
+              <li>Godot 4.5 · GDScript</li>
+              <li>First-person controller design</li>
+              <li>Signal-based state management</li>
+              <li>UI systems (pause, save/resume)</li>
+              <li>Cross-contributor integration</li>
+              <li>Jam scope management</li>
+            </ul>
+          </div>
+          <div class="skip-link">
+            <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTCOME STRIP -->
+      <div class="outcome-strip reveal">
+        <div class="outcome-item">
+          <span class="outcome-num">14</span>
+          <span class="outcome-label">contributors across code, art, audio, and narrative</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">300</span>
+          <span class="outcome-label">commits shipped in two weeks of development</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">9</span>
+          <span class="outcome-label">puzzles across four tower floors, each with a unique mechanic</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">~40 min</span>
+          <span class="outcome-label">estimated playtime for full completion</span>
+        </div>
+      </div>
+
+      <!-- OVERVIEW -->
+      <section id="project-overview">
+        <div class="section-content reveal">
+          <span class="eyebrow">The Game</span>
+          <h2 class="section-heading">A perpetual winter. A wizard's vanished. Fourteen people decided to bring spring back.</h2>
+          <p>Equinox is a first-person cozy puzzle game built for the Itch Comfy Jam: Winter 2026. You are not the hero. You are the person the hero hired — a contractor dispatched to investigate a wizard's tower where the beacon that normally brings spring has gone dark.</p>
+          <p>Four floors. Nine puzzle items. A journal that reveals what went wrong, one diary entry at a time. The wizard was experimenting with seasonal magic and, predictably, went too far. Restoring the beacon means cleaning centuries of neglect off artefacts, reassembling fractured ones, and deciphering the final mechanism — an <span class="di">astrolabe</span> with three concentric rings, nine seasonal inscriptions, and a required rotation that the game is not going to hint at.</p>
+          <p>No fail states. No time pressure. No combat. Just a tower, a mystery, and the quiet satisfaction of making broken things whole again.</p>
+          <div class="img-grid reveal">
+            <div class="img-tile"><img src="https://img.itch.zone/aW1hZ2UvNDE3Mzk1MC8yNTE5NzU4NS5naWY=/original/ABZIfU.gif" alt="Equinox gameplay" loading="lazy"></div>
+            <div class="img-tile"><img src="https://img.itch.zone/aW1hZ2UvNDE3Mzk1MC8yNTE5NDE0NC5wbmc=/794x1000/xZ%2FZSq.png" alt="Equinox screenshot" loading="lazy"></div>
+            <div class="img-tile"><img src="https://img.itch.zone/aW1hZ2UvNDE3Mzk1MC8yNTE5NDE1OS5naWY=/original/83Xdwh.gif" alt="Equinox gameplay" loading="lazy"></div>
+            <div class="img-tile"><img src="https://img.itch.zone/aW1hZ2UvNDE3Mzk1MC8yNTE5NDE0My5wbmc=/794x1000/y6gB0G.png" alt="Equinox screenshot" loading="lazy"></div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- THE JAM -->
+      <section id="jam">
+        <div class="section-content reveal">
+          <span class="eyebrow">The Jam</span>
+          <h2 class="section-heading">Two weeks. Fourteen people. One constraint that turned out to be a gift.</h2>
+          <div class="two-col">
+            <div>
+              <p><span class="px">Team Noot Noot</span>. Fourteen contributors across code, 3D art, audio, voice performance, and narrative. Two weeks to ship something polished and submittable to the Itch Comfy Jam: Winter 2026.</p>
+              <p>The jam's optional theme: <span class="di">"Overcomplicated Screen Transitions."</span> Most teams would treat that as a visual challenge — a fancy fade, a wipe, something pretty. We treated it as a design constraint. The workbench animation when you examine an item. The cinematic transition between tower floors. The final astrolabe sequence — six seconds of rings aligning, a god-ray bloom, and credits rolling. The screen transitions aren't decoration. They are the punctuation of the game: the moments where the tone lands.</p>
+            </div>
+            <div>
+              <div class="highlight-box warm reveal">A constraint isn't a limit. It's the shape of the thing. "Overcomplicated Screen Transitions" gave us permission to make transitions that mattered — and permission to spend time making them matter.</div>
+              <div class="highlight-box reveal" style="margin-top:.75rem">300 commits across 14 contributors in two weeks. That's not volume — that's a team that kept its scope and shipped anyway.</div>
+              <blockquote class="pull-quote reveal" style="margin-top:.75rem">
+                The wizard extended winter because he could. We shipped a game in two weeks because we had to. The constraint was the same in both cases. The outcome was different.
+                <cite>— Henrietta van Niekerk</cite>
+              </blockquote>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- MY ROLE -->
+      <section id="role">
+        <div class="section-content reveal">
+          <span class="eyebrow">My Contribution</span>
+          <h2 class="section-heading">The player controller is the frame everything else is seen through.</h2>
+          <p>I built the player controller and pause menu — and, more practically, designed the interaction architecture that the entire puzzle system runs on top of. Commits are a strange way to measure contribution to a jam. When four people work in parallel, someone does the final merge. Someone else rebases on your branch and ships the combined version. The commit count at the end maps to who touched the button, not who designed the system.</p>
+          <p>My player controller was in the project before most other systems existed. That meant I was in the architecture conversations first — specifying the interaction raycast API, deciding what state the player should own versus what the world should own, being the person in the channel who said "route it through the player, not the object" before anyone had written an object worth routing through. Those decisions don't have a commit hash. What they have is a puzzle system that never broke.</p>
+          <p>Get the movement wrong — too floaty, too stiff, an FOV that lies about the space it's rendering — and nothing else works. The tower feels wrong. The puzzles feel wrong. The atmosphere evaporates. Get it right and it disappears. That's the target: a controller that the player never notices because it never fights them.</p>
+
+          <div class="role-cols reveal">
+            <div class="role-card">
+              <h4>Player Controller + Architecture</h4>
+              <h3>The invisible foundation</h3>
+              <ul>
+                <li>Designed the interaction API (<span class="px">raycast → signal → handler</span>) that every puzzle uses — before the puzzles existed</li>
+                <li>WASD + mouse-look, head bob at <span class="px">2.4 Hz</span> / <span class="px">0.04</span> amplitude — the number that took longest to find</li>
+                <li>FOV on sprint: <span class="px">75° → 76.5°</span> — two degrees of sensation</li>
+                <li>Footstep audio on pace (<span class="px">0.5s</span> walk / <span class="px">0.35s</span> sprint)</li>
+                <li>Inspection mode: movement lock, camera swap, cursor centre</li>
+                <li>Architecture review: "route it through the player, not the object"</li>
+              </ul>
+            </div>
+            <div class="role-card">
+              <h4>Pause Menu</h4>
+              <h3>The reliability contract</h3>
+              <ul>
+                <li>ESC pauses the entire game tree — except the UI layer</li>
+                <li>Save-on-exit: state persists on menu return or quit</li>
+                <li>Mouse mode toggle (captured in-game, visible when paused)</li>
+                <li>Edge case handling — "fixed a few weird edge cases" is the last commit before 1.0.0</li>
+                <li>Renders above all other UI at layer 100</li>
+                <li>Integrates cleanly with the JSON save system</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="img-grid reveal" style="grid-template-columns:repeat(2,1fr);max-width:520px;margin:2rem 0;">
+            <div class="img-tile"><img src="https://img.itch.zone/aW1hZ2UvNDE3Mzk1MC8yNTE5NDE0NS5wbmc=/794x1000/MqnVBo.png" alt="Equinox screenshot" loading="lazy"></div>
+            <div class="img-tile"><img src="https://img.itch.zone/aW1hZ2UvNDE3Mzk1MC8yNTE5NzU0NC5naWY=/original/j%2FPqYe.gif" alt="Equinox gameplay" loading="lazy"></div>
+          </div>
+
+          <div class="two-col" style="margin-top:1.5rem">
+            <div class="highlight-box reveal">The player controller isn't a feature. It's the substrate. Every other system is a passenger — and I was the one who decided what the substrate looked like before anyone else had started building.</div>
+            <div class="highlight-box reveal">In jam dev, four people working in parallel means commits get merged, rebased, combined. The commit count reflects who pushed last, not who designed first. Architecture decisions live in Discord threads and code review comments, not the graph.</div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- DESIGN -->
+      <section id="design">
+        <div class="section-content reveal">
+          <span class="eyebrow">Design</span>
+          <h2 class="section-heading">Cozy games have one rule: you cannot lose. That's harder to design than it sounds.</h2>
+          <div class="two-col">
+            <div>
+              <p>No fail states. No time pressure. No combat. These sound like constraints — they are, simultaneously, a liberation and a responsibility. Removing failure from a puzzle game doesn't remove tension. It removes anxiety. The player still wants to solve the astrolabe. They still feel the satisfying click of a cleaned artefact. They still lean in to read the diary entry that unlocks after the third puzzle on the floor. None of that requires the threat of a game over screen.</p>
+              <p>What it requires instead is more demanding: puzzles that feel fair, progress that's always visible, and friction that teaches rather than punishes. The repair mechanic resets with R. The cleaning mechanic has a progress bar. The astrolabe remembers partial completion. No work is ever lost — and in a jam game, that guarantee is not trivial. We built it anyway.</p>
+            </div>
+            <div>
+              <div class="highlight-box warm reveal">Cozy doesn't mean easy. It means the game is on your side. The friction is in the puzzle, not in the relationship between you and the interface.</div>
+              <div class="highlight-box reveal" style="margin-top:.75rem">The tower's journal doesn't gate content behind specific items — diary entries unlock in order of completion, regardless of which puzzle you finished. The story responds to progress, not sequence.</div>
+              <div class="highlight-box reveal" style="margin-top:.75rem">Environmental storytelling through scattered notes, artefact descriptions, and dialogue. The wizard's story is assembled from fragments. You become the investigator assembling the picture.</div>
+            </div>
+          </div>
+
+          <div class="must-haves-container reveal">
+            <div class="must-haves-left reveal">
+              <h3 class="sub-heading">Design pillars</h3>
+              <p>The four things the game never compromised on.</p>
+            </div>
+            <div class="must-haves-right reveal">
+              <div class="must-haves-card reveal">
+                <h4>🧹 Tactile feedback</h4>
+                <p>The cleaning mechanic is rewarding because you can see it work in real time. Progress at 95% triggers a 6.5-second celebration. The artefact glows clean. The journal opens. The reward is proportional to the effort — and the effort is satisfying in itself.</p>
+              </div>
+              <div class="must-haves-card reveal">
+                <h4>📖 Story as reward, not preamble</h4>
+                <p>Diary entries unlock as you complete puzzles — not in cutscenes before gameplay begins. The wizard's story is something you earn. Each floor's completion reveals another piece of what went wrong. Curiosity is the engine.</p>
+              </div>
+              <div class="must-haves-card reveal">
+                <h4>🔊 Atmosphere at every layer</h4>
+                <p>Four original floor soundtracks. 200+ voiced dialogue lines. Idle reminders after 30 seconds of inactivity per item — the wizard's presence persists whether you're actively working or standing still, staring at a shelf. The silence between lines is as designed as the lines themselves.</p>
+              </div>
+              <div class="must-haves-card reveal">
+                <h4>💾 Nothing is lost</h4>
+                <p>Persistent JSON save system. Complete cleaning on floor one, close the game, reopen — the artefact is still clean. Full web support via IndexedDB sync. In a jam game built in two weeks, this level of save reliability is not obvious. It was the right call.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- THE BUILD -->
+      <section id="build">
+        <div class="section-content reveal">
+          <span class="eyebrow">The Build</span>
+          <h2 class="section-heading">300 commits. Two weeks. No feature shipped without earning its place.</h2>
+
+          <div class="process-subsection reveal">
+            <h3 class="sub-heading">The Cleaning Mechanic</h3>
+            <p>The centerpiece interaction across three floors sounds simple and isn't. A custom <span class="px">GPU-accelerated shader</span> maintains a <span class="px">512px</span> mask texture over each artefact. The player's cursor is a soft-edge brush that removes "dirt" with falloff — organic, not geometric. On startup, the system rasterizes the mesh's UV triangles into a 2D coverage map, so progress is only recorded over visible geometry. No phantom cleaning in invisible seams.</p>
+            <p><span class="px">95%</span> removal triggers completion — a 6.5-second celebration, a sound effect, the workbench fade-out, the journal auto-opening to the newly unlocked diary entry. The cleaning mechanic took longer to build than all the other puzzle types combined. Every second of that time is visible in the interaction.</p>
+            <div class="two-col">
+              <div class="highlight-box reveal">The falloff brush gives organic feel vs. a hard-edged mask. The difference is about four lines of shader code and the entire sensation of the interaction.</div>
+              <div class="highlight-box reveal">Some items require both cleaning AND repair to count as complete. A clean artefact that hasn't been reassembled doesn't unlock the floor. The two-step requirement was deliberate — and prevents soft-locks.</div>
+            </div>
+          </div>
+          <div class="img-grid reveal" style="grid-template-columns:repeat(2,1fr);max-width:520px;margin:2rem 0 0;">
+            <div class="img-tile"><img src="https://img.itch.zone/aW1hZ2UvNDE3Mzk1MC8yNTIwMjM2MS5wbmc=/794x1000/9Usb12.png" alt="Equinox screenshot" loading="lazy"></div>
+            <div class="img-tile"><img src="https://img.itch.zone/aW1hZ2UvNDE3Mzk1MC8yNTIwMjQyMS5wbmc=/794x1000/dmIqiQ.png" alt="Equinox screenshot" loading="lazy"></div>
+          </div>
+
+          <div class="process-subsection reveal">
+            <h3 class="sub-heading">The Astrolabe</h3>
+            <p>The final puzzle — the astrolabe in the beacon chamber — has three concentric rings, nine seasonal inscription pieces, and a required rotation for each ring. You must both place the inscriptions and rotate the rings to precise angles. Neither alone is enough.</p>
+            <p>The outer ring starts at <span class="px">90°</span>. The mid ring at <span class="px">-150°</span>. The inner ring at <span class="px">0°</span>. The puzzle is intentionally not hinted beyond the logic of the rings themselves. In a cozy game without fail states, the final challenge earns the right to ask something of you — and the game has been teaching you, floor by floor, exactly what it's going to ask.</p>
+            <div class="two-col">
+              <div class="highlight-box warm reveal">The astrolabe is the game's thesis statement rendered as a mechanic: three systems in balance, each dependent on the others, all requiring deliberate alignment. The wizard broke that balance. You restore it.</div>
+              <div class="highlight-box reveal">E/Q to rotate rings. Drag inscriptions from buttons to slots. The puzzle accepts partial completion and remembers it. Six seconds of ring animation when it's done. Credits roll.</div>
+            </div>
+          </div>
+
+          <div class="process-subsection reveal">
+            <h3 class="sub-heading">Dialogue &amp; Audio Pipeline</h3>
+            <p><span class="px">200+</span> voiced dialogue lines. A centralized <span class="px">JSON</span> database. Context-aware triggers that distinguish first-time interactions from repeat visits. Idle reminders fire after 30 seconds of inactivity per item — the wizard's annotations have something to say about every artefact on every floor, and they don't rush.</p>
+            <p>Four audio buses: Master, Music, SFX, Dialogue — with Dialogue boosted <span class="px">+3dB</span> for clarity against the ambient floor soundtracks. Auto-captions generate from text length for any missing audio files. Four original floor soundtracks, each shifting the emotional register as the tower reveals more of what happened.</p>
+            <div class="two-col">
+              <div class="highlight-box reveal">First-time flags track whether the player has opened the journal, seen specific items, or triggered key dialogue events — preventing repetition without requiring manual tracking in every caller script.</div>
+              <div class="highlight-box reveal">Professional voice production, in a two-week jam, across four floors and a 100+ entry dialogue database. The audio team did not cut corners. You can hear it.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- TAKEAWAYS -->
+      <section class="takeaways" id="takeaways">
+        <div class="section-content reveal">
+          <span class="eyebrow">Takeaways</span>
+          <h2 class="section-heading">What shipping a team game teaches you that shipping alone doesn't.</h2>
+
+          <div class="cards reveal">
+            <div class="card reveal">
+              <h4>01</h4>
+              <h3>Architecture decisions happen before the commits do</h3>
+              <p>In jam development, someone does the final merge. Someone else rebases your branch into theirs. The commit graph shows who pushed. It doesn't show who designed the interaction API, who was in the architecture call before the systems existed, or whose code review saved everyone a day of refactoring.</p>
+            </div>
+            <div class="card reveal">
+              <h4>02</h4>
+              <h3>Scope management is the skill</h3>
+              <p>14 people, 2 weeks, a finished game. The discipline of not adding one more thing — keeping every feature's claim on the schedule honest — is what made "shipped" possible.</p>
+            </div>
+            <div class="card reveal">
+              <h4>03</h4>
+              <h3>The constraint was the prompt</h3>
+              <p>"Overcomplicated Screen Transitions" gave us permission to make transitions that mattered. Constraints aren't limits. They're the shape of the thing you're building.</p>
+            </div>
+            <div class="card reveal">
+              <h4>04</h4>
+              <h3>A cozy game is a trust exercise</h3>
+              <p>No fail states mean the player trusts you completely. The texture, the sound, the puzzle that teaches before it asks — all of it is earning that trust, or losing it.</p>
+            </div>
+          </div>
+
+          <div class="reflection reveal">
+            <h3>🔮 The moment the rings aligned</h3>
+            <p>The astrolabe's final sequence is six seconds of rings rotating into place, a god-ray bloom, and credits rolling over the awakened beacon. After 300 commits across 14 people in two weeks, six seconds felt about right.</p>
+            <p>Making games is collaborative in a way that making products isn't, quite. Everyone's contribution is load-bearing in a different direction. The artist builds the world. The composer tells you how to feel about it. The level designer gives it logic. The voice actor gives the wizard a voice. The programmer makes it run — and sometimes the programmer is also the one who designed the foundation before anyone else started building on it.</p>
+            <p>The lesson isn't about commits. It's about being in the room early, designing the thing that everyone else depends on, and making it invisible. The player controller worked. Nobody noticed the interaction architecture. Nobody thought about the raycast API. That was exactly the goal — and it was the goal before a single puzzle existed.</p>
+            <p><a href="https://emstergrace.itch.io/equinox" target="_blank" rel="noopener" style="color:var(--text-secondary);text-decoration:underline;text-underline-offset:3px">→ Play Equinox on itch.io</a></p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </header>
+
+  <script type="module">
+    // cursor
+    const cursor=document.getElementById('cursor');let mouseX=0,mouseY=0,rafId;
+    const hoverSel='a,button,.skip-button,.quote-card,.stats-card,.must-haves-card,.card,.role-card,img';
+    function update(){cursor.style.left=mouseX+'px';cursor.style.top=mouseY+'px'}
+    addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;if(!rafId){rafId=requestAnimationFrame(()=>{update();rafId=null;});}});
+    addEventListener('mousedown',()=>cursor.classList.add('clicking'));
+    addEventListener('mouseup',()=>cursor.classList.remove('clicking'));
+    addEventListener('mouseover',e=>{if(e.target.closest(hoverSel))cursor.classList.add('hovering')});
+    addEventListener('mouseout',e=>{if(e.target.closest(hoverSel))cursor.classList.remove('hovering')});
+    addEventListener('mouseleave',()=>{cursor.style.opacity='0'});
+    addEventListener('mouseenter',()=>{cursor.style.opacity='1'});
+
+    // --- heading scramble + font-mix ---
+    (function(){
+      const CHARSET='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
+      const RUNS=[3,2];
+      function rand(){return CHARSET[Math.floor(Math.random()*CHARSET.length)];}
+
+      function scramble(el,text,dur,onDone){
+        const len=text.length;
+        const revealed=new Array(len).fill(false);
+        const t0=performance.now();
+        (function frame(now){
+          const p=Math.min(1,(now-t0)/dur);
+          const upto=Math.floor(p*len*1.15);
+          for(let i=0;i<upto;i++) if(!revealed[i]&&Math.random()<0.4) revealed[i]=true;
+          let out='';
+          for(let i=0;i<len;i++){
+            const c=text[i];
+            if(c===' '){out+='\u00a0';continue;}
+            out+=revealed[i]?c:rand();
+          }
+          el.textContent=out;
+          if(p<1||revealed.some(r=>!r)) requestAnimationFrame(frame);
+          else onDone();
+        })(performance.now());
+      }
+
+      function fontMix(el,text){
+        let html='',runIdx=0,runCount=0,usePx=true;
+        for(let i=0;i<text.length;i++){
+          const cp=text.codePointAt(i);
+          if(cp>127){html+=String.fromCodePoint(cp);if(cp>0xFFFF)i++;continue;}
+          const c=text[i];
+          if(c===' '){html+=' ';continue;}
+          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
+          if(++runCount>=RUNS[runIdx%2]){usePx=!usePx;runIdx++;runCount=0;}
+        }
+        el.innerHTML=html;
+      }
+
+      const hio=new IntersectionObserver((entries,obs)=>{
+        entries.forEach(en=>{
+          if(!en.isIntersecting)return;
+          obs.unobserve(en.target);
+          const el=en.target;
+          const text=el.textContent.trim();
+          el.style.opacity='1';el.style.transform='none';
+          el.classList.add('h-scrambling');
+          scramble(el,text,900,()=>{
+            el.classList.remove('h-scrambling');
+            fontMix(el,text);
+            el.classList.add('h-settled');
+          });
+        });
+      },{threshold:0.25});
+
+      document.querySelectorAll('.section-heading').forEach(h=>hio.observe(h));
+
+      // sub-headings + stat numbers — font mix on load, no animation
+      setTimeout(()=>{
+        document.querySelectorAll('.stat-number,.sub-heading').forEach(el=>{
+          fontMix(el,el.textContent.trim());
+        });
+      },100);
+
+      // hero h1
+      const h1=document.querySelector('.intro-left h1');
+      if(h1){
+        const h1Text=h1.textContent.trim();
+        setTimeout(()=>{
+          h1.classList.add('h-scrambling');
+          scramble(h1,h1Text,1100,()=>{
+            h1.classList.remove('h-scrambling');
+            fontMix(h1,h1Text);
+            h1.classList.add('h-settled');
+          });
+        },350);
+      }
+    })();
+
+    // SoundCloud toggle
+    const scBar=document.getElementById('sc-bar');
+    const scToggle=document.getElementById('sc-toggle');
+    if(scToggle&&scBar){
+      scToggle.addEventListener('click',()=>{
+        scBar.classList.toggle('collapsed');
+        scToggle.querySelector('.sc-arrow').textContent=scBar.classList.contains('collapsed')?'▲':'▼';
+      });
+    }
+
+    // reveals
+    const io=new IntersectionObserver((es,o)=>{
+      es.forEach(en=>{
+        if(en.isIntersecting){en.target.classList.add('active');o.unobserve(en.target);}
+      });
+    },{threshold:.2});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  </script>
+
+  <!-- SoundCloud sticky player -->
+  <div id="sc-bar">
+    <div id="sc-toggle">
+      <span>♪ OST</span><span class="sc-arrow">▼</span>
+    </div>
+    <div id="sc-frame-wrap">
+      <iframe
+        allow="autoplay"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/hellio-399157292/sets/equinox-the-wizards-lighthouse&color=%23c8874a&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
+        scrolling="no">
+      </iframe>
+    </div>
+  </div>
+
+  <!-- background loader — same pattern as Skrimp/Menzo/MyAuntie -->
+  <script>
+    (function(){
+      if(document.getElementById('bg-host'))return;
+      const host=document.createElement('div'); host.id='bg-host';
+      const frame=document.createElement('iframe'); frame.src='background.html'; frame.loading='eager';
+      frame.setAttribute('aria-hidden','true'); frame.tabIndex=-1;
+      host.appendChild(frame); document.body.prepend(host);
+    })();
+  </script>
+
+  <!-- partials loader (nav) -->
+  <script>
+    (async function includePartials(){
+      const targets=document.querySelectorAll('[data-include]');
+      for (const el of targets){
+        const url=el.getAttribute('data-include');
+        if(!url) continue;
+        try {
+          const res=await fetch(url,{credentials:'same-origin'});
+          if(!res.ok) throw new Error(`HTTP ${res.status}`);
+          const html=await res.text();
+          const baseURL=new URL(url,location.href);
+          const tpl=document.createElement('template');
+          tpl.innerHTML=html;
+          tpl.content.querySelectorAll('[src],[href]').forEach(node=>{
+            ['src','href'].forEach(attr=>{
+              const v=node.getAttribute(attr);
+              if(v&&!/^(?:[a-z]+:\/|#)/i.test(v)) node.setAttribute(attr,new URL(v,baseURL).href);
+            });
+          });
+          const scripts=Array.from(tpl.content.querySelectorAll('script'));
+          const frag=document.createDocumentFragment();
+          Array.from(tpl.content.childNodes).forEach(n=>frag.appendChild(n));
+          el.replaceWith(frag);
+          for(const old of scripts){
+            const s=document.createElement('script');
+            for(const {name,value} of Array.from(old.attributes)) s.setAttribute(name,value);
+            if(!old.src) s.textContent=old.textContent||'';
+            (document.body||document.documentElement).appendChild(s);
+          }
+        } catch(err){
+          console.error('Include failed for',url,err);
+          const fallback=document.createElement('div');
+          fallback.textContent=`Failed to load ${url}`;
+          el.replaceWith(fallback);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -16,7 +16,7 @@
     .px { font-family:'DotempDemo',monospace; font-style:normal; font-weight:400; font-size:0.88em; }
     .di { font-family:'Didot',serif; font-style:italic; font-weight:700; }
 
-    :root { --bg:#070b10; }
+    :root { --bg:#070b10; --sa: 102, 252, 241; }
 
     html, body { margin:0; background:var(--bg); color:#e6f2f2; font-family:'Cormorant Garamond',serif; }
 
@@ -70,14 +70,14 @@
     .ed-category {
       font-family:'DotempDemo',monospace;
       font-size:clamp(0.5rem,0.76vw,0.64rem);
-      color:rgba(102,252,241,0.38); letter-spacing:0.22em; text-transform:uppercase;
+      color:rgba(var(--sa),0.38); letter-spacing:0.22em; text-transform:uppercase;
     }
     .ed-number {
       font-family:'DotempDemo',monospace;
       font-size:clamp(0.53rem,0.78vw,0.66rem);
-      color:rgba(102,252,241,0.44); letter-spacing:0.26em;
+      color:rgba(var(--sa),0.44); letter-spacing:0.26em;
     }
-    .ed-rule { width:100%; height:1px; background:rgba(168,218,220,0.15); margin-bottom:1.4rem; }
+    .ed-rule { width:100%; height:1px; background:rgba(var(--sa),0.14); margin-bottom:1.4rem; }
     .ed-bottom-row { display:flex; align-items:flex-end; justify-content:space-between; gap:3rem; }
     .ed-left { flex:1; min-width:0; }
     .ed-title {
@@ -98,12 +98,12 @@
     .ed-cta {
       font-family:'Cormorant Garamond',serif; font-style:italic;
       font-size:clamp(0.8rem,1.0vw,0.88rem);
-      color:rgba(102,252,241,0.65); text-decoration:none; letter-spacing:0.07em;
+      color:rgba(var(--sa),0.65); text-decoration:none; letter-spacing:0.07em;
       pointer-events:all; white-space:nowrap;
-      border-bottom:1px solid rgba(102,252,241,0.24); padding-bottom:0.14rem;
+      border-bottom:1px solid rgba(var(--sa),0.24); padding-bottom:0.14rem;
       transition:color 0.2s, border-color 0.2s;
     }
-    .ed-cta:hover { color:rgba(102,252,241,1); border-color:rgba(102,252,241,0.6); }
+    .ed-cta:hover { color:rgba(var(--sa),1); border-color:rgba(var(--sa),0.6); }
     .ed-play {
       color:rgba(168,255,160,0.72); border-color:rgba(168,255,160,0.28);
     }
@@ -183,9 +183,10 @@
       {
         name:'Equinox', category:'Game Design / Godot',
         desc:'[ 🏆 WINNER — Comfy Jam: Winter 2025 ] 3D cozy-mystery built in 2 weeks — custom UV dirt shader with pixel-accurate cleaning detection, WebGL save/load, and 9 hand-crafted restoration puzzles.',
-        href:'https://github.com/henliz/equinox',
+        href:'Equinox/index.html',
         playHref:'https://emstergrace.itch.io/equinox',
         parallax:true, noDrag:true,
+        theme:{ accent:'200, 135, 74' },
       },
       {
         name:'Seniors Connect', category:'UX Design / Social',
@@ -427,6 +428,7 @@
       const s=stations[i];
       categoryEl.textContent=s.category; numberEl.textContent=String(i+1).padStart(2,'0');
       titleEl.innerHTML=mixFonts(s.name); descEl.textContent=s.desc; ctaEl.href=s.href;
+      document.documentElement.style.setProperty('--sa', s.theme?.accent || '102, 252, 241');
       if (s.playHref) {
         playEl.href = s.playHref; playEl.style.display = '';
       } else {
