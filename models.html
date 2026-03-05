@@ -97,24 +97,46 @@
     }
     .ed-cta {
       font-family:'Cormorant Garamond',serif; font-style:italic;
-      font-size:clamp(0.8rem,1.0vw,0.88rem);
-      color:rgba(var(--sa),0.65); text-decoration:none; letter-spacing:0.07em;
+      font-size:clamp(0.82rem,1.0vw,0.9rem);
+      color:rgba(var(--sa),0.85); text-decoration:none; letter-spacing:0.07em;
       pointer-events:all; white-space:nowrap;
-      border-bottom:1px solid rgba(var(--sa),0.24); padding-bottom:0.14rem;
-      transition:color 0.2s, border-color 0.2s;
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:0.72rem 1.75rem;
+      border-radius:999px;
+      border:1px solid rgba(var(--sa),0.28);
+      background:rgba(var(--sa),0.06);
+      backdrop-filter:url(#glass-sm) blur(3px);
+      -webkit-backdrop-filter:blur(10px) saturate(150%);
+      box-shadow:inset 1px 1.5px 2px rgba(var(--sa),0.10),
+                 inset -0.5px -0.5px 1px rgba(255,255,255,0.04);
+      transition:border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
+      min-height:44px;
     }
-    .ed-cta:hover { color:rgba(var(--sa),1); border-color:rgba(var(--sa),0.6); }
+    .ed-cta:hover {
+      color:rgba(var(--sa),1); border-color:rgba(var(--sa),0.55);
+      background:rgba(var(--sa),0.12);
+      transform:translateY(-2px);
+    }
     .ed-play {
-      color:rgba(168,255,160,0.72); border-color:rgba(168,255,160,0.28);
+      color:rgba(168,255,160,0.85); border-color:rgba(168,255,160,0.28);
+      background:rgba(168,255,160,0.06);
+      box-shadow:inset 1px 1.5px 2px rgba(168,255,160,0.10),
+                 inset -0.5px -0.5px 1px rgba(255,255,255,0.04);
     }
-    .ed-play:hover { color:rgba(168,255,160,1); border-color:rgba(168,255,160,0.65); }
+    .ed-play:hover {
+      color:rgba(168,255,160,1); border-color:rgba(168,255,160,0.55);
+      background:rgba(168,255,160,0.12);
+      transform:translateY(-2px);
+    }
 
     *, *::before, *::after { cursor:none !important; }
 
     @media(max-width:768px){
       .ed-bottom-row{ flex-direction:column; gap:1rem; align-items:flex-start; }
-      .ed-cta-group{ align-self:flex-start; align-items:flex-start; }
+      .ed-cta-group{ align-self:flex-start; align-items:flex-start; flex-direction:row; flex-wrap:wrap; }
       .ed-desc{ max-width:52ch; }
+      .ed-cta { font-size:0.88rem; }
+      *, *::before, *::after { cursor:auto !important; }
     }
   </style>
 
@@ -706,5 +728,19 @@
     document.addEventListener('mouseup',    ()  => window.parent.postMessage({type:'iframeUp'},'*'));
     document.addEventListener('mouseleave', ()  => window.parent.postMessage({type:'iframeLeave'},'*'));
   </script>
+
+  <!-- Liquid glass SVG filter (mirrors hero-glass-sm from hero.html) -->
+  <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="glass-sm" x="-10%" y="-40%" width="120%" height="180%"
+              color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.013 0.009"
+                      numOctaves="2" seed="17" result="noise"/>
+        <feGaussianBlur in="noise" stdDeviation="6" result="lensMap"/>
+        <feDisplacementMap in="SourceGraphic" in2="lensMap"
+                           scale="14" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
 </body>
 </html>
