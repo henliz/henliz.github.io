@@ -392,6 +392,7 @@
                 height: 80px;
                 z-index: 20;
                 touch-action: pan-y;
+                pointer-events: none;
             }
             .models-exit-top    { top: 0; }
             .models-exit-bottom { bottom: 0; }
@@ -1241,6 +1242,7 @@
       .ns-headline { font-size: clamp(2rem, 7.5vw, 2.8rem); }
       .ns-matrix-table { font-size: 0.72rem; }
       .ns-matrix-table thead th, .ns-matrix-table tbody td { padding: 0.65rem 0.6rem; }
+      .ns-matrix-table tbody td:first-child { white-space: normal; }
       .ns-principles-row { grid-template-columns: 1fr; }
     }
 
