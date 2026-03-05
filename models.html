@@ -185,7 +185,7 @@
         name:'Skrimp AI', category:'Product Design / AI',
         desc:'Founder & CEO — AI sous chef making the cost of living feel livable',
         href:'Skrimp/index.html', model:'./models/yummymeal.glb',
-        scale:0.25*1.5, baseEuler:[10,15,0]
+        scale:0.25*1.5, baseEuler:[32,15,0]
       },
       {
         name:'Path to Menzoberranzan', category:'Technical Direction / Game',
@@ -343,9 +343,11 @@
     /* ─── stations ─── */
     const loader    = new GLTFLoader();
     const texLoader = new THREE.TextureLoader();
-    const overlayURL       = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png';
-    const laptopOverlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';
-    const auntieOverlayURL = './auntiephone.png';
+    const overlayURL          = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png';
+    const laptopOverlayURL    = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';
+    const auntieOverlayURL    = './auntiephone.png';
+    const skrmpCelebrateURL   = './SkrimpCelebrate.png';
+    const skrmpThinkingURL    = './SkrimpThinking.png';
 
     function addOverlay(model, url, sizeXY, posXYZ) {
       texLoader.load(url, tex => {
@@ -389,6 +391,7 @@
         ];
         pxDefs.forEach(def => {
           texLoader.load(def.url, tex => {
+            tex.colorSpace = THREE.SRGBColorSpace;
             tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
             const mat = new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false, fog:false });
             const mesh = new THREE.Mesh(new THREE.PlaneGeometry(def.w, def.h), mat);
@@ -418,6 +421,35 @@
           mdl.scale.setScalar(cfg.scale);
           mdl.rotation.copy(eul(...cfg.baseEuler));
           pivot.add(mdl);
+          if(i===0) {
+            texLoader.load(skrmpCelebrateURL, tex => {
+              tex.colorSpace = THREE.SRGBColorSpace;
+              tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
+              tex.minFilter = THREE.LinearMipmapLinearFilter;
+              tex.magFilter = THREE.LinearFilter;
+              const celebrate = new THREE.Mesh(
+                new THREE.PlaneGeometry(1.1, 1.32),
+                new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false })
+              );
+              celebrate.position.set(2.0, -0.3, 1.6);
+              celebrate.renderOrder = 12;
+              pivot.add(celebrate);
+            });
+            texLoader.load(skrmpThinkingURL, tex => {
+              tex.colorSpace = THREE.SRGBColorSpace;
+              tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
+              tex.minFilter = THREE.LinearMipmapLinearFilter;
+              tex.magFilter = THREE.LinearFilter;
+              const thinking = new THREE.Mesh(
+                new THREE.PlaneGeometry(1.1, 1.32),
+                new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false })
+              );
+              thinking.position.set(-1.8, -0.52, 2.2);
+              thinking.rotation.y = 0.45;
+              thinking.renderOrder = 12;
+              pivot.add(thinking);
+            });
+          }
           if(i===1) addOverlay(mdl, overlayURL,       [4.52,2.8], [0, 0.35, 1.06]);
           if(i===4) addOverlay(mdl, laptopOverlayURL, [29,17],    [0,10.7,-10.5]);
           onSettled();
