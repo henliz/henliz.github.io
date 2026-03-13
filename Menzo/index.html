@@ -1020,5 +1020,55 @@
     });
   </script>
   <script src="https://www.youtube.com/iframe_api"></script>
+
+  <!-- QUICK LINKS WIDGET -->
+  <style>
+    html{scroll-behavior:smooth}
+    #ql-widget{position:fixed;right:1.5rem;top:110px;z-index:900;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
+    #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(8,4,18,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
+    #ql-panel.open{max-height:520px;opacity:1;padding:.45rem}
+    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:.4rem .7rem;border-radius:6px;transition:background .18s,color .18s}
+    #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:.6rem;opacity:.45;margin-right:.25rem}
+    #ql-panel a:hover{background:var(--glass-highlight-1);color:var(--text-secondary)}
+    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(8,4,18,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Montserrat Alternates',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
+    #ql-toggle:hover{background:var(--glass-highlight-1);border-color:var(--rule)}
+    #ql-icon{font-size:1rem;line-height:1}
+    @media(max-width:768px){#ql-widget{right:1rem;top:auto;bottom:1.5rem;left:auto;transform:none;flex-direction:column-reverse;align-items:flex-end}#ql-panel{min-width:min(180px,80vw)}}
+  </style>
+  <div id="ql-widget">
+    <button id="ql-toggle" aria-label="Toggle section links" aria-expanded="false">
+      <span id="ql-icon">≡</span>
+      <span>Sections</span>
+    </button>
+    <div id="ql-panel"></div>
+  </div>
+  <script>
+    (function(){
+      const panel=document.getElementById('ql-panel');
+      const toggle=document.getElementById('ql-toggle');
+      const icon=document.getElementById('ql-icon');
+      let open=false;
+      function close(){open=false;panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');icon.textContent='≡';}
+      function mkLink(href,num,label,clickFn){
+        const a=document.createElement('a');
+        a.href=href;
+        a.innerHTML=`<span class="ql-num">${String(num).padStart(2,'0')}</span>${label}`;
+        a.addEventListener('click',clickFn||close);
+        return a;
+      }
+      panel.appendChild(mkLink('#',0,'Overview',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});close();}));
+      let n=1;
+      document.querySelectorAll('section[id], section.press-section').forEach(sec=>{
+        const eb=sec.querySelector('.eyebrow');
+        if(!eb)return;
+        const text=eb.textContent.trim();
+        if(text.length>60)return;
+        if(!sec.id)sec.id='press';
+        panel.appendChild(mkLink('#'+sec.id,n++,text));
+      });
+      toggle.addEventListener('click',e=>{e.stopPropagation();open=!open;panel.classList.toggle('open',open);toggle.setAttribute('aria-expanded',open);icon.textContent=open?'×':'≡';});
+      document.addEventListener('click',e=>{if(open&&!document.getElementById('ql-widget').contains(e.target))close();});
+    })();
+  </script>
 </body>
 </html>
