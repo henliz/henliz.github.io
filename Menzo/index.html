@@ -304,6 +304,12 @@
     .big-image img { max-width:100%; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.4); border:1px solid var(--glass-border); }
     .cover-image { width:100%; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,.35); border:1px solid var(--glass-border); margin-top:1.25rem; }
 
+    /* ---- PtM COVER VIDEO ---- */
+    .ptm-video-wrap { position:relative; width:100%; aspect-ratio:16/9; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,.35); border:1px solid var(--glass-border); margin-top:1.25rem; overflow:hidden; }
+    .ptm-video-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; pointer-events:none; }
+    .ptm-mute-btn { position:absolute; bottom:12px; right:12px; background:rgba(0,0,0,.55); border:1px solid rgba(180,140,220,.35); border-radius:8px; color:#f1faee; cursor:pointer; padding:6px 10px; font-size:15px; display:flex; align-items:center; gap:5px; backdrop-filter:blur(8px); transition:background .2s; z-index:10; }
+    .ptm-mute-btn:hover { background:rgba(0,0,0,.82); }
+
     /* ---- CARDS ---- */
     .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; margin:0 auto; }
     .card { border-top:2px solid var(--accent-teal); padding:1.5rem; background:rgba(15,20,25,.3); border-radius:0 0 14px 14px; transition:.25s; }
@@ -517,7 +523,10 @@
           <h2 class="section-heading">Menzoberranzan has never existed in a Baldur's Gate game. We're fixing that.</h2>
           <p>Path to Menzoberranzan is an unofficial expansion for Baldur's Gate 3 — a full custom campaign set deep in the Underdark, in the city the franchise was always too cautious to fully render. The project spans original narrative, original art, original audio, original cinematics, and original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year's worth of work if you're not paying attention.</p>
           <p>It's built entirely by volunteers who don't have to care — but do. That's the strangest and most sustaining thing about it. People are here, working late on this, because Menzoberranzan deserves to exist, it's a city the series never fully explored.</p>
-          <img src="ptm-cover.png" alt="Path to Menzoberranzan — key art" class="cover-image">
+          <div class="ptm-video-wrap">
+            <div id="ptm-yt-player"></div>
+            <button class="ptm-mute-btn" id="ptm-mute-btn" aria-label="Unmute">🔇</button>
+          </div>
         </div>
       </section>
 
@@ -991,5 +1000,25 @@
       }
     })();
   </script>
+
+  <!-- PtM cover video -->
+  <script>
+    var ptmPlayer, ptmMuted = true;
+    function onYouTubeIframeAPIReady() {
+      ptmPlayer = new YT.Player('ptm-yt-player', {
+        videoId: '1oBlmSvi1So',
+        playerVars: { autoplay:1, loop:1, controls:0, mute:1, playlist:'1oBlmSvi1So', rel:0, modestbranding:1, playsinline:1, disablekb:1 },
+        events: {
+          onReady: function(e) { e.target.mute(); e.target.playVideo(); }
+        }
+      });
+    }
+    document.getElementById('ptm-mute-btn').addEventListener('click', function() {
+      if (!ptmPlayer) return;
+      if (ptmMuted) { ptmPlayer.unMute(); ptmMuted = false; this.textContent = '🔊'; this.setAttribute('aria-label','Mute'); }
+      else          { ptmPlayer.mute();   ptmMuted = true;  this.textContent = '🔇'; this.setAttribute('aria-label','Unmute'); }
+    });
+  </script>
+  <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
