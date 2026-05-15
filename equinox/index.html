@@ -5,7 +5,7 @@
   <link rel="icon" type="image/png" href="../HenLogo.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Equinox – Case Study</title>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
   <style>
     @font-face {
@@ -225,6 +225,12 @@
     .body-img { width:100%; border-radius:12px; display:block; }
     .body-img-caption { font-size:.75rem; opacity:.55; margin-top:.3rem; }
 
+    /* ---- EQX COVER VIDEO ---- */
+    .eqx-video-wrap { position:relative; width:100%; aspect-ratio:16/9; border-radius:4px; box-shadow:0 12px 40px rgba(0,0,0,.5); border:1px solid var(--glass-border); overflow:hidden; }
+    .eqx-video-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; pointer-events:none; }
+    .eqx-mute-btn { position:absolute; bottom:12px; right:12px; background:rgba(0,0,0,.55); border:1px solid rgba(200,135,74,.45); border-radius:8px; color:var(--text-primary); cursor:none; padding:6px 10px; font-size:15px; display:flex; align-items:center; gap:5px; backdrop-filter:blur(8px); transition:background .2s; z-index:10; }
+    .eqx-mute-btn:hover { background:rgba(0,0,0,.82); }
+
     /* ---- OVERVIEW COVER ---- */
     .overview-cover { width:100%; border-radius:16px; margin-top:1.5rem; display:block; border:1px solid var(--glass-border); }
 
@@ -430,9 +436,12 @@
         </div>
       </div>
 
-      <!-- TOP COVER GIF -->
+      <!-- TOP COVER VIDEO -->
       <div class="reveal" style="margin:2rem 0 0;">
-        <img src="https://img.itch.zone/aW1hZ2UvNDE3Mzk1MC8yNTE5NDE1OS5naWY=/original/83Xdwh.gif" alt="Equinox gameplay" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;box-shadow:0 12px 40px rgba(0,0,0,.5);border:1px solid var(--glass-border);border-radius:4px" loading="lazy">
+        <div class="eqx-video-wrap">
+          <div id="eqx-yt-player"></div>
+          <button class="eqx-mute-btn" id="eqx-mute-btn" aria-label="Unmute">🔇</button>
+        </div>
       </div>
 
       <!-- OVERVIEW -->
@@ -443,6 +452,9 @@
           <p>Equinox is a first-person cozy puzzle game built for the Itch Comfy Jam: Winter 2026. You are not the hero. You are the person the hero hired — a contractor dispatched to investigate a wizard's tower where the beacon that normally brings spring has gone dark.</p>
           <p>Four floors. Nine puzzle items. A journal that reveals what went wrong, one diary entry at a time. The wizard was experimenting with seasonal magic and, predictably, went too far. Restoring the beacon means cleaning centuries of neglect off artefacts, reassembling fractured ones, and deciphering the final mechanism — the <span class="di">beacon</span>, three concentric rings, nine seasonal inscriptions, and a required rotation that the game is not going to hint at.</p>
           <p>No fail states. No time pressure. No combat. Just a tower, a mystery, and the quiet satisfaction of making broken things whole again.</p>
+          <div class="img-tile reveal" style="max-width:320px;margin:1.5rem auto 0;">
+            <img src="https://img.itch.zone/aW1hZ2UvNDE3Mzk1MC8yNTE5NDE1OS5naWY=/original/83Xdwh.gif" alt="Equinox gameplay" loading="lazy">
+          </div>
         </div>
       </section>
 
@@ -768,6 +780,26 @@
     },{threshold:.2});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   </script>
+
+  <!-- EQX cover video -->
+  <script>
+    var eqxPlayer, eqxMuted = true;
+    function onYouTubeIframeAPIReady() {
+      eqxPlayer = new YT.Player('eqx-yt-player', {
+        videoId: 'ou-piZ1dt4U',
+        playerVars: { autoplay:1, loop:1, controls:0, mute:1, playlist:'ou-piZ1dt4U', rel:0, modestbranding:1, playsinline:1, disablekb:1 },
+        events: {
+          onReady: function(e) { e.target.mute(); e.target.playVideo(); }
+        }
+      });
+    }
+    document.getElementById('eqx-mute-btn').addEventListener('click', function() {
+      if (!eqxPlayer) return;
+      if (eqxMuted) { eqxPlayer.unMute(); eqxMuted = false; this.textContent = '🔊'; this.setAttribute('aria-label','Mute'); }
+      else          { eqxPlayer.mute();   eqxMuted = true;  this.textContent = '🔇'; this.setAttribute('aria-label','Unmute'); }
+    });
+  </script>
+  <script src="https://www.youtube.com/iframe_api"></script>
 
   <!-- SoundCloud sticky player -->
   <div id="sc-bar">
