@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+    })();
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>about me — Henrietta van Niekerk</title>
@@ -9,6 +18,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap" rel="stylesheet" />
   <style>
+    /* ── type scale ────────────────────────────────────────────────
+       One fluid root so every rem on the page grows with the screen
+       instead of sitting at a fixed 16px. The floor and ceiling are
+       in rem, not px, so a reader who has raised their browser's
+       default font size keeps that increase (WCAG 1.4.4). */
+    html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
+
     @font-face {
       font-family: 'DotempDemo';
       src: url('/fonts/DotempDemo.ttf') format('truetype');
@@ -386,7 +402,7 @@
     }
     .ab-masthead-rule { flex: 1; height: 1px; background: rgba(168, 218, 220, 0.15); }
     .ab-masthead-tag {
-      font-size: 0.68rem;
+      font-size: 0.78rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: rgba(168, 218, 220, 0.45);
@@ -409,7 +425,7 @@
     }
     .ab-col-left { padding-right: 3.5rem; padding-top: 0.25rem; }
     .ab-kicker {
-      font-size: 0.72rem;
+      font-size: 0.84rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: rgba(168, 218, 220, 0.55);
@@ -431,7 +447,7 @@
     .ab-sidebar-facts { display: flex; flex-direction: column; gap: 1.4rem; }
     .ab-sidebar-item { display: flex; flex-direction: column; gap: 0.25rem; }
     .ab-sidebar-label {
-      font-size: 0.62rem;
+      font-size: 0.78rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: rgba(168, 218, 220, 0.4);
@@ -475,7 +491,7 @@
       .ab-headline { font-size: clamp(3rem, 11vw, 4.5rem); }
     }
     @media (max-width: 480px) {
-      .ab-masthead-tag { font-size: 0.6rem; }
+      .ab-masthead-tag { font-size: 0.75rem; }
     }
 
     /* ── Mobile ── */
@@ -496,6 +512,44 @@
       .bento-header h1 { font-size: 2rem; }
       .bento-box { padding: 1rem; }
     }
+  </style>
+
+  <style>
+  /* ── light mode, following the toggle on the main page ── */
+  :root[data-theme="light"] body {
+    background: linear-gradient(135deg, #eef4f6 0%, #e3edf2 25%, #dbe7ec 50%, #d5e4ee 75%, #eef4f6 100%);
+    color: #12181f;
+  }
+  :root[data-theme="light"] .navbar .nav-links a,
+  :root[data-theme="light"] .contact-link,
+  :root[data-theme="light"] .mobile-menu ul li a { color: #12181f; }
+  :root[data-theme="light"] .navbar .nav-links a:hover,
+  :root[data-theme="light"] .mobile-menu ul li a:hover,
+  :root[data-theme="light"] .job-title { color: #16756f; }
+  :root[data-theme="light"] .navbar.pill { background: rgba(255,255,255,.72); border-color: rgba(18,24,31,.12); }
+  :root[data-theme="light"] .mobile-menu { background: rgba(255,255,255,.98); }
+  :root[data-theme="light"] .hamburger { background: rgba(22,117,111,.10); }
+  :root[data-theme="light"] .hamburger span { background: #16756f; }
+  :root[data-theme="light"] .contact-link { background: rgba(22,117,111,.10); }
+  :root[data-theme="light"] .contact-link:hover { background: rgba(22,117,111,.18); color: #16756f; border-color: rgba(22,117,111,.4); }
+
+  /* the article surface carries its own dark fill */
+  :root[data-theme="light"] .ab-section { background: #f6f9fa; }
+  :root[data-theme="light"] .ab-headline,
+  :root[data-theme="light"] .ab-sidebar-value { color: #12181f; }
+  :root[data-theme="light"] .ab-kicker,
+  :root[data-theme="light"] .ab-sidebar-label,
+  :root[data-theme="light"] .ab-masthead-tag { color: #16756f; }
+  :root[data-theme="light"] .ab-prose,
+  :root[data-theme="light"] .ab-prose p { color: rgba(18,24,31,0.72); }
+  :root[data-theme="light"] .ab-masthead-rule,
+  :root[data-theme="light"] .ab-prose-break { background: rgba(18,24,31,0.12); }
+  :root[data-theme="light"] .ab-col-divider { background: rgba(22,117,111,0.45); }
+  :root[data-theme="light"] .ab-col-right { border-left-color: rgba(18,24,31,0.12); }
+  :root[data-theme="light"] .ab-prose p:first-child::first-letter { color: #16756f; }
+
+  /* footer.html is shared, so theme it here too */
+  :root[data-theme="light"] footer.hen-footer { background: #eef4f6; border-top-color: rgba(18,24,31,0.12); }
   </style>
 </head>
 <body>

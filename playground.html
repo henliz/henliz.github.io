@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playground – Henriëtta van Niekerk</title>
+    <link rel="icon" type="image/png" href="HenLogo.png">
+    <script>
+      // follows the toggle on the main page (same origin, so same storage)
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+      })();
+    </script>
+    <style>
+    /* ── type scale ────────────────────────────────────────────────
+       One fluid root so every rem on the page grows with the screen
+       instead of sitting at a fixed 16px. The floor and ceiling are
+       in rem, not px, so a reader who has raised their browser's
+       default font size keeps that increase (WCAG 1.4.4). */
+    html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
+
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('fonts/DotempDemo.ttf') format('truetype');
+      font-weight: normal; font-style: normal;
+    }
+    .px { font-family: 'DotempDemo', monospace; font-style: normal; font-size: 0.88em; }
+
+    /* ── the desk ─────────────────────────────────────────────────
+       This is Henrietta's own page, so it keeps the site's blue-teal
+       family rather than taking a project's colour the way the case
+       studies do. */
+    :root {
+      --ink:        #f1faee;
+      --ink-rgb:    241, 250, 238;
+      --muted-rgb:  168, 218, 220;
+      --accent:     #66fcf1;
+      --accent-rgb: 102, 252, 241;
+      --paper:      #070d13;
+      --paper-2:    #0b141c;
+      --grid:       rgba(168, 218, 220, 0.085);
+      --grid-major: rgba(168, 218, 220, 0.16);
+      --card:       #0f1a22;
+      --edge:       rgba(168, 218, 220, 0.16);
+      --shadow:     0 18px 42px rgba(0, 0, 0, 0.55);
+      --tape:       rgba(102, 252, 241, 0.22);
+    }
+    :root[data-theme="light"] {
+      --ink:        #12181f;
+      --ink-rgb:    18, 24, 31;
+      --muted-rgb:  18, 24, 31;
+      --accent:     #135F5A;
+      --accent-rgb: 19, 95, 90;
+      --paper:      #eef4f6;
+      --paper-2:    #e3edf1;
+      --grid:       rgba(19, 95, 90, 0.13);
+      --grid-major: rgba(19, 95, 90, 0.22);
+      --card:       #ffffff;
+      --edge:       rgba(18, 24, 31, 0.12);
+      --shadow:     0 16px 38px rgba(30, 60, 70, 0.20);
+      --tape:       rgba(19, 95, 90, 0.20);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--ink);
+      /* graph paper, two grids deep — the fine one is the draftsman's
+         squares, the heavy one every fifth line */
+      background:
+        linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 28px 28px,
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 28px 28px,
+        linear-gradient(var(--grid-major) 1px, transparent 1px) 0 0 / 140px 140px,
+        linear-gradient(90deg, var(--grid-major) 1px, transparent 1px) 0 0 / 140px 140px,
+        radial-gradient(120% 90% at 30% 0%, var(--paper-2), var(--paper) 70%);
+      background-attachment: local, local, local, local, fixed;
+      touch-action: none;
+    }
+    /* Unlike the case studies, this one keeps painting its own paper when
+       embedded: it is a desk, and a desk is a surface, not a window onto
+       the shell's sky. */
+
+    /* ── viewport + world ─────────────────────────────────────── */
+    #desk {
+      position: fixed; inset: 0;
+      cursor: grab;
+      overscroll-behavior: contain;
+    }
+    #desk.dragging { cursor: grabbing; }
+    #world {
+      position: absolute; top: 0; left: 0;
+      width: 0; height: 0;
+      will-change: transform;
+    }
+    /* keyboard users get a real focus ring on anything clickable */
+    a:focus-visible, button:focus-visible, .item:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    /* ── the things on the desk ───────────────────────────────── */
+    .item {
+      position: absolute;
+      transform-origin: 50% 50%;
+      /* the page pans; nothing here should also be draggable as an image */
+      -webkit-user-drag: none; user-select: none;
+      /* everything drifts in once, staggered, so the desk assembles
+         itself rather than appearing all at once */
+      opacity: 0;
+      animation: settle 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes settle {
+      from { opacity: 0; transform: translateY(16px) scale(0.97); }
+      to   { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .item { animation: none; opacity: 1; }
+    }
+
+    .frame {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--edge);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      line-height: 0;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .frame img, .frame video { width: 100%; height: auto; display: block; }
+    .frame.plain { background: none; border: none; box-shadow: none; border-radius: 0; }
+
+    /* a tile you can actually open */
+    a.frame { cursor: pointer; }
+    a.frame:hover, a.frame:focus-visible {
+      transform: translateY(-4px) scale(1.015);
+      border-color: rgba(var(--accent-rgb), 0.55);
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.6),
+                  0 0 0 1px rgba(var(--accent-rgb), 0.25);
+    }
+    :root[data-theme="light"] a.frame:hover,
+    :root[data-theme="light"] a.frame:focus-visible {
+      box-shadow: 0 20px 44px rgba(30, 60, 70, 0.26),
+                  0 0 0 1px rgba(var(--accent-rgb), 0.3);
+    }
+
+    /* washi tape, for the pinned-up look */
+    .taped::before {
+      content: '';
+      position: absolute;
+      top: -12px; left: 50%;
+      width: 86px; height: 24px;
+      transform: translateX(-50%) rotate(-3deg);
+      background: var(--tape);
+      border-radius: 2px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .taped.tape-left::before  { left: 18%; transform: rotate(-8deg); }
+    .taped.tape-right::before { left: auto; right: 12%; transform: rotate(7deg); }
+
+    /* ── captions ─────────────────────────────────────────────── */
+    .cap {
+      position: absolute;
+      width: max-content;
+      max-width: 300px;
+    }
+    .cap h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: 1.42rem;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+      color: var(--ink);
+      margin-bottom: 0.25rem;
+    }
+    .cap p {
+      font-size: 0.9rem;
+      font-weight: 400;
+      line-height: 1.45;
+      color: rgba(var(--muted-rgb), 0.72);
+      max-width: 30ch;
+    }
+    .cap .year {
+      display: inline-block;
+      font-family: 'DotempDemo', monospace;
+      font-size: 0.82rem;
+      color: rgba(var(--accent-rgb), 0.85);
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.06em;
+    }
+    /* a handwritten aside with a little arrow, like a margin note */
+    .scribble {
+      position: absolute;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.08rem;
+      color: rgba(var(--muted-rgb), 0.7);
+      width: max-content;
+      max-width: 240px;
+      line-height: 1.35;
+    }
+    .scribble svg { display: block; margin-top: 2px; overflow: visible; }
+    .scribble path { stroke: rgba(var(--muted-rgb), 0.5); fill: none;
+                     stroke-width: 1.4; stroke-linecap: round; }
+
+    /* ── the welcome note ─────────────────────────────────────── */
+    /* the rhythm here is in px on purpose: the ruled lines have to land
+       under the text, and a rem padding would drift with the type scale */
+    .note {
+      position: absolute;
+      width: 400px;
+      padding: 34px 34px 40px;
+      background: var(--card);
+      border: 1px solid var(--edge);
+      border-radius: 4px 4px 10px 10px;
+      box-shadow: var(--shadow);
+      background-image: repeating-linear-gradient(
+        to bottom, transparent 0 33px, rgba(var(--muted-rgb), 0.12) 33px 34px);
+      background-position: 0 34px;
+      background-repeat: repeat;
+    }
+    .note::before {
+      content: '';
+      position: absolute;
+      top: -14px; left: 34px;
+      width: 108px; height: 30px;
+      background: var(--tape);
+      transform: rotate(-4deg);
+      border-radius: 2px;
+    }
+    .note h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: 1.85rem;
+      line-height: 34px;
+      margin-bottom: 34px;
+      color: var(--ink);
+    }
+    .note p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.12rem;
+      line-height: 34px;
+      color: rgba(var(--muted-rgb), 0.82);
+    }
+    .note .sign {
+      display: block;
+      text-align: right;
+      font-style: italic;
+      margin-top: 34px;
+      color: rgba(var(--accent-rgb), 0.9);
+    }
+
+    /* ── a labelled way in ────────────────────────────────────── */
+    .pill {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.88rem; font-weight: 600;
+      color: var(--accent);
+      background: rgba(var(--accent-rgb), 0.12);
+      border: 1px solid rgba(var(--accent-rgb), 0.45);
+      border-radius: 999px;
+      padding: 0.55rem 1.15rem;
+      text-decoration: none; white-space: nowrap;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+    .pill:hover, .pill:focus-visible {
+      background: rgba(var(--accent-rgb), 0.22);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* A write-up lands as a few small cards scattered through the work
+       rather than one tall column of text — easier to read, and it lets
+       the photos sit on top of them. */
+    .brief {
+      padding: 0.95rem 1.1rem 1.05rem;
+      background: var(--card);
+      border: 1px solid var(--edge);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      font-size: 0.86rem;
+      line-height: 1.55;
+      color: rgba(var(--muted-rgb), 0.72);
+    }
+    .brief b {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: 1.08rem;
+      letter-spacing: 0.01em;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+    }
+    .cap .built {
+      margin-top: 0.7rem;
+      font-family: 'DotempDemo', monospace;
+      font-size: 0.82rem;
+      color: rgba(var(--muted-rgb), 0.5);
+    }
+
+    /* ── a slot waiting for a file ────────────────────────────── */
+    .slot {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      border: 1.5px dashed rgba(var(--muted-rgb), 0.34);
+      border-radius: 10px;
+      background: rgba(var(--muted-rgb), 0.04);
+      color: rgba(var(--muted-rgb), 0.55);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      line-height: 1.4;
+      padding: 0.9rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .slot code {
+      display: block;
+      font-family: 'DotempDemo', monospace;
+      font-size: 0.92rem;
+      letter-spacing: 0;
+      text-transform: none;
+      color: rgba(var(--accent-rgb), 0.85);
+      margin-top: 0.4rem;
+      overflow-wrap: anywhere;
+    }
+
+    /* ── the one toy you can actually play with ───────────────── */
+    .stamp-pad {
+      position: absolute;
+      width: 260px;
+      padding: 1.1rem 1.2rem 1.2rem;
+      background: var(--card);
+      border: 1px solid var(--edge);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .stamp-pad h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+    .stamp-pad p { font-size: 0.8rem; color: rgba(var(--muted-rgb), 0.65); margin-bottom: 0.8rem; }
+    .stamp-row { display: flex; gap: 0.45rem; justify-content: center; flex-wrap: wrap; }
+    .stamp-row button {
+      width: 42px; height: 42px;
+      font-size: 1.2rem; line-height: 1;
+      background: rgba(var(--muted-rgb), 0.07);
+      border: 1px solid var(--edge);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+    .stamp-row button:hover { transform: translateY(-2px); border-color: rgba(var(--accent-rgb), 0.5); background: rgba(var(--accent-rgb), 0.1); }
+    .stamp-row button[aria-pressed="true"] { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.18); }
+    .stamped {
+      position: absolute;
+      font-size: 28px; line-height: 1;
+      pointer-events: none;
+      animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes pop { from { transform: scale(0.2) rotate(-18deg); opacity: 0 } to { transform: none; opacity: 1 } }
+
+    /* ── fixed chrome: hint + recentre ────────────────────────── */
+    .chrome {
+      position: fixed;
+      left: 50%; bottom: 20px;
+      transform: translateX(-50%);
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.5rem 0.5rem 0.5rem 1rem;
+      background: rgba(var(--ink-rgb), 0.055);
+      border: 1px solid var(--edge);
+      border-radius: 999px;
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      z-index: 50;
+      font-size: 0.86rem;
+      color: rgba(var(--muted-rgb), 0.78);
+      white-space: nowrap;
+      transition: opacity 0.4s ease;
+    }
+    .chrome.faded { opacity: 0.28; }
+    .chrome.faded:hover { opacity: 1; }
+    .chrome button {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--accent);
+      background: rgba(var(--accent-rgb), 0.12);
+      border: 1px solid rgba(var(--accent-rgb), 0.4);
+      border-radius: 999px;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .chrome button:hover { background: rgba(var(--accent-rgb), 0.22); border-color: var(--accent); }
+
+    /* the compass shows where you are on a desk bigger than the window */
+    .minimap {
+      position: fixed;
+      right: 18px; bottom: 18px;
+      width: 108px; height: 72px;
+      border: 1px solid var(--edge);
+      border-radius: 8px;
+      background: rgba(var(--ink-rgb), 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 50;
+      overflow: hidden;
+    }
+    .minimap i {
+      position: absolute;
+      display: block;
+      border: 1.5px solid var(--accent);
+      background: rgba(var(--accent-rgb), 0.16);
+      border-radius: 2px;
+    }
+    .minimap b {
+      position: absolute;
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(var(--muted-rgb), 0.55);
+    }
+
+    @media (max-width: 720px) {
+      .note { width: min(320px, 82vw); }
+      .chrome { font-size: 0.8rem; padding-left: 0.85rem; left: 12px; right: 12px; bottom: 12px;
+                transform: none; justify-content: space-between; }
+      .minimap { display: none; }
+    }
+    </style>
+</head>
+<body>
+
+<div id="desk">
+  <div id="world" aria-label="A draggable desk of side projects and experiments"></div>
+</div>
+
+<div class="chrome" id="chrome">
+  <span id="hint">drag the desk to look around</span>
+  <button type="button" id="recentre">re<span class="px">ce</span>ntre</button>
+</div>
+
+<div class="minimap" id="minimap" aria-hidden="true"><i id="mmView"></i></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   THE DESK
+
+   One big world, absolutely positioned, translated under a fixed
+   viewport. Everything on it is declared in ITEMS below: give a
+   thing an x/y in world coordinates and a kind, and it lands there.
+
+   To add something of your own: drop the file in playground/media/
+   and add a line to ITEMS. Nothing else needs to change.
+   ═══════════════════════════════════════════════════════════════ */
+
+const MEDIA = 'playground/media/';
+
+/* kinds
+   note     the ruled welcome note
+   photo    an image in a frame            {src, w, rot, tape}
+   clip     a muted looping video          {src, poster, w, rot}
+   yt       an autoplaying muted YouTube   {id, w, rot}
+   slot     a dashed placeholder           {file, w, h}
+   cap      a title + blurb                {title, year, body}
+   note2    a handwritten margin aside     {text, arrow}
+   link     any of the above, clickable    add {href}
+   stamps   the little stamp toy
+*/
+const ITEMS = [
+
+  /* ══ THE FIRST SCREEN ════════════════════════════════════════
+     Nothing here belongs to a live case study — those have their own
+     pages. This is only the stuff that never got one. */
+
+  { kind:'note', x:-620, y:-320, rot:-1.5, z:5,
+    title:'Welcome to my playground',
+    body:'The side quests, the second-year work, the hackathon builds and the things that never became a case study.',
+    sign:'\u2014 Hen' },
+
+  { kind:'photo', x:-600, y:190, w:140, rot:-9, plain:true, src:'HenChibi.png', z:3 },
+  { kind:'note2', x:-604, y:340, rot:0, arrow:'up', text:'hello.' },
+
+  { kind:'note2', x:-150, y:-300, rot:0, arrow:'right', text:'a peek behind my desk.' },
+  { kind:'slot',  x:-150, y:-215, w:240, h:175, rot:3, file:'desk-01.jpg', tape:true },
+
+  /* this one has an opaque background, so it reads as a framed little
+     portrait rather than a cut-out sticker */
+  { kind:'photo', x:230, y:-330, w:190, rot:6, tape:true, src:'HenSprite.png', z:4 },
+  { kind:'note2', x:236, y:-80, rot:0, arrow:'up', text:'me, at 32 pixels.' },
+
+  { kind:'stamps', x:530, y:-320, rot:2, z:6 },
+  { kind:'slot',   x:500, y:110,  w:230, h:170, rot:-3, file:'desk-02.jpg' },
+  { kind:'slot',   x:880, y:-110, w:210, h:260, rot:4,  file:'sketch-01.png' },
+  { kind:'slot',   x:880, y:-330, w:300, h:180, rot:-3, file:'clip-01.mp4' },
+
+  /* ══ STARTUP CANADA TOUR ════════════════════════════════════
+     off to the right of the welcome — two photos, overlapping */
+  { kind:'cap', x:1300, y:-420, title:'Startup Canada Tour', year:'2026',
+    body:'A backdrop, a lanyard that said Founder on it, and the strange afternoon that made the whole thing feel real.' },
+
+  { kind:'photo', x:1300, y:-210, w:340, rot:-3, tape:true, z:4, src:'playground/media/startup-canada-team.webp' },
+  { kind:'photo', x:1590, y:-60,  w:230, rot:5,  z:6, src:'playground/media/startup-canada-solo.webp' },
+  { kind:'note2', x:1300, y:120, rot:0, arrow:'right', text:'the pose of somebody\u2019s who\u2019s never been photographed.' },
+
+  /* ══ SECOND YEAR \u2014 Jaguar ═══════════════════════════════════
+     down and to the left. tighter and stacked, rather than five big
+     tiles spread across half the desk */
+  { kind:'cap', x:-700, y:520, title:'Jaguar Redesign', year:'2nd year',
+    body:'Rescuing a heritage marque from its own 2024 rebrand.' },
+
+  { kind:'photo', x:-700, y:700, w:320, rot:-2, tape:true, z:4,
+    href:'Jaguar/index.html', src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98823042_6o6EVws4bbAYLob.png' },
+  { kind:'photo', x:-455, y:762, w:205, rot:5, z:6,
+    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98774691_oOn2ZjIy4KXb65z.png' },
+  { kind:'photo', x:-268, y:652, w:240, rot:-4, z:5,
+    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98822071_h1ucDiYTJsSM1wd.png' },
+  { kind:'photo', x:-624, y:972, w:225, rot:3, z:7,
+    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98821399_vOUK29Ba9ku8bkL.png' },
+  { kind:'yt', x:-352, y:1005, w:290, rot:2, z:8, id:'byAXR21e04s' },
+  { kind:'note2', x:-20, y:975, rot:0, arrow:'left', text:'the spot we cut for it.' },
+  { kind:'slot', x:-10, y:1070, w:260, h:170, rot:2, file:'desk-03.jpg' },
+
+  /* ══ SECOND YEAR \u2014 Seniors Connect ═════════════════════════
+     off to the right. both prototypes are live and clickable */
+  { kind:'cap', x:1050, y:620, title:'Seniors Connect', year:'2nd year',
+    body:'An app for making friends later in life. Big targets, plain words, and a flow that forgives a wrong tap.' },
+
+  { kind:'photo', x:1050, y:810, w:250, rot:3, tape:true, z:4,
+    href:'SeniorsConnect/index.html', src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98468173_RluDj3r5VQqKrFD.png' },
+  { kind:'photo', x:1248, y:766, w:205, rot:-5, z:6,
+    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98773174_6828ZbmerbM633c.png' },
+  { kind:'photo', x:1062, y:1058, w:235, rot:-4, z:5,
+    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98772952_1Y07m9cu8rUH1vd.png' },
+  { kind:'photo', x:1262, y:1028, w:175, rot:6, z:7,
+    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98772121_bMSTZYVmf0Mm5FS.png' },
+
+  { kind:'yt', x:1530, y:700, w:300, rot:-2, z:3, id:'eOFAFMzizOE' },
+  { kind:'note2', x:1530, y:900, rot:0, arrow:'up', text:'the walkthrough.' },
+
+  { kind:'figma', x:1530, y:1000, w:380, h:270, rot:-3, z:4, src:'https://embed.figma.com/proto/iZfp0bnOftXJdtzhBEEB5z/Prototypes-GBDA-210?node-id=1-5&scaling=scale-down&content-scaling=fixed&page-id=1%3A3&starting-point-node-id=1%3A5&embed-host=share' },
+  { kind:'figma', x:1862, y:965,  w:220, h:320, rot:4,  z:6, src:'https://embed.figma.com/proto/iZfp0bnOftXJdtzhBEEB5z/Prototypes-GBDA-210?node-id=1-4&p=f&scaling=scale-down&content-scaling=fixed&page-id=1%3A2&starting-point-node-id=1%3A4&embed-host=share' },
+  { kind:'note2', x:1530, y:1320, rot:0, arrow:'right', text:'desktop and mobile, both live \u2014 click through them.' },
+  { kind:'pill',  x:1530, y:1410, w:250, rot:0, text:'open them full size', href:'https://www.figma.com/proto/iZfp0bnOftXJdtzhBEEB5z/Prototypes-GBDA-210?node-id=1-4&starting-point-node-id=1%3A4' },
+
+  /* ══ HACK THE NORTH 2024 \u2014 Magic Mirror ══════════════════════
+     straight down. the mark sits with its own heading, not adrift
+     somewhere near Jaguar */
+  { kind:'photo', x:-300, y:1400, w:115, rot:-7, plain:true, z:6, src:'playground/media/htn-logo.webp' },
+
+  { kind:'cap', x:-300, y:1555, title:'Magic Mirror', year:'hack the north 2024',
+    body:'Say goodbye to cursed garments. A virtual fitting room for the gap between what a product photo promises and what turns up in the parcel.',
+    built:'react \u00b7 fastapi \u00b7 stable diffusion \u00b7 cohere \u00b7 shopify api' },
+
+  { kind:'brief', x:-300, y:1800, w:280, rot:-1, z:4, lead:'The problem.',
+    body:'You cannot try clothes on through a screen, so you buy the wrong thing, send it back, and everyone loses.' },
+  { kind:'brief', x:30, y:1745, w:265, rot:2, z:6, lead:'The goal.',
+    body:'See the garment on yourself before you pay, and read what the reviews actually say without wading through four hundred of them.' },
+  { kind:'brief', x:-300, y:2010, w:330, rot:1, z:5, lead:'Why it is neat.',
+    body:'Stable Diffusion segments you out of your own photo and paints the garment back in; Cohere boils a wall of reviews down to the few sentences that would change your mind. Getting generation from hours to minutes was most of the weekend.' },
+
+  { kind:'photo', x:360, y:1900, w:330, rot:-3, tape:true, z:7, src:'playground/media/htn-team.webp' },
+  { kind:'photo', x:430, y:2185, w:300, rot:4, z:8, src:'playground/media/htn-accepted.webp' },
+  { kind:'note2', x:360, y:2360, rot:0, arrow:'up', text:'the email that started it.' },
+
+  { kind:'yt',   x:-300, y:2270, w:380, rot:-2, z:3, id:'V5Z46uc8aEM' },
+  { kind:'pill', x:-300, y:2520, w:230, rot:0, text:'read the writeup', href:'https://devpost.com/software/magic-mirror-4g1vko' },
+  { kind:'slot', x:110,  y:2500, w:220, h:165, rot:5,  file:'mirror-01.jpg' },
+
+  /* ══ FIGBUILD 2026 \u2014 Aporia ═════════════════════════════════
+     down and to the right */
+  { kind:'photo', x:1000, y:1720, w:80, rot:7, plain:true, z:6, src:'playground/media/figma.svg' },
+
+  { kind:'cap', x:1000, y:1850, title:'Aporia', year:'figbuild 2026',
+    body:'You constantly have things stuck on the tip of your tongue. You cannot see it, cannot measure it, and cannot resolve what you cannot perceive.',
+    built:'react \u00b7 typescript \u00b7 tailwind \u00b7 framer motion \u00b7 radix \u00b7 figma' },
+
+  { kind:'brief', x:1000, y:2090, w:285, rot:1, z:4, lead:'The problem.',
+    body:'Unfinished conversations and half-answered questions keep running in the background. They cost you attention all day and never announce themselves.' },
+  { kind:'brief', x:1330, y:2040, w:265, rot:-2, z:6, lead:'The goal.',
+    body:'Make the open loops visible. The glasses notice the signals \u2014 how you phrase a thing, a micro-expression, a physiological tell \u2014 and log them quietly instead of interrupting.' },
+  { kind:'brief', x:1000, y:2310, w:330, rot:-1, z:5, lead:'Why it is neat.',
+    body:'The loops surface as a constellation you steer with your eyes: a gravity-well map where each unresolved thing is a node you pull toward clarity, process, or letting go. On-device only, and built to be put down rather than depended on.' },
+
+  { kind:'photo', x:1660, y:1760, w:300, rot:3, tape:true, z:5, src:'playground/media/aporia-collage.webp' },
+  { kind:'photo', x:1620, y:2200, w:270, rot:-4, z:7, src:'playground/media/aporia-team.webp' },
+  { kind:'note2', x:1620, y:2620, rot:0, arrow:'up', text:'the Figma Breakers, four of us, two days.' },
+
+  { kind:'yt',   x:1000, y:2580, w:390, rot:2, z:3, id:'c0SbD2D0-JM' },
+  { kind:'pill', x:1000, y:2840, w:230, rot:0, text:'read the writeup', href:'https://devpost.com/software/aporia' },
+  { kind:'slot', x:1430, y:2820, w:220, h:165, rot:-4, file:'aporia-01.jpg' },
+];
+
+
+
+/* ── build ─────────────────────────────────────────────────── */
+const world = document.getElementById('world');
+const desk  = document.getElementById('desk');
+
+/* Nothing here scrolls — the world is translated under a fixed
+   viewport — so loading="lazy" has no viewport to measure against and
+   either loads everything at once or nothing at all. So the pan does
+   it: anything within a screen of the edge gets its real src, and the
+   three YouTube players only boot when you actually pan to them. */
+const lazies = [];
+const LOAD_MARGIN = 700;
+function hydrate() {
+  for (let i = lazies.length - 1; i >= 0; i--) {
+    const wrap = lazies[i];
+    const r = wrap.getBoundingClientRect();
+    if (r.right < -LOAD_MARGIN || r.left > innerWidth + LOAD_MARGIN ||
+        r.bottom < -LOAD_MARGIN || r.top > innerHeight + LOAD_MARGIN) continue;
+    wrap.querySelectorAll('[data-src]').forEach(n => {
+      n.src = n.dataset.src;
+      delete n.dataset.src;
+      if (n.tagName === 'VIDEO') { n.preload = 'metadata'; n.play().catch(() => {}); }
+    });
+    lazies.splice(i, 1);
+  }
+}
+
+const ARROWS = {
+  right: 'M2 14 C 34 12, 62 8, 84 2 M74 0 L86 2 L79 11',
+  left:  'M86 14 C 54 12, 26 8, 4 2 M14 0 L2 2 L9 11',
+  up:    'M8 30 C 10 18, 18 8, 34 3 M24 0 L36 3 L30 13',
+};
+
+function el(tag, cls, html) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (html != null) n.innerHTML = html;
+  return n;
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// a frame is an <a> when it goes somewhere, a <div> when it is just nice to look at
+function frame(it, inner, extraCls) {
+  const external = it.href && /^https?:/i.test(it.href);
+  const n = it.href ? el('a') : el('div');
+  n.className = 'frame' + (it.plain ? ' plain' : '') + (it.tape ? ' taped' : '') + (extraCls ? ' ' + extraCls : '');
+  if (it.href) {
+    n.href = it.href;
+    // case studies open in the portfolio shell, not inside this pane
+    n.target = external ? '_blank' : '_top';
+    if (external) n.rel = 'noopener';
+  }
+  n.style.width = it.w + 'px';
+  n.innerHTML = inner;
+  return n;
+}
+
+function build(it, i) {
+  const wrap = el('div', 'item');
+  wrap.style.left = it.x + 'px';
+  wrap.style.top  = it.y + 'px';
+  if (it.rot) wrap.style.rotate = it.rot + 'deg';
+  // things on a desk sit on top of each other; z says which is on top
+  if (it.z) wrap.style.zIndex = it.z;
+  // staggered so the desk assembles rather than flashing in
+  wrap.style.animationDelay = Math.min(i * 28, 900) + 'ms';
+
+  if (it.kind === 'note') {
+    const n = el('div', 'note');
+    n.innerHTML = `<h1>${esc(it.title)}</h1><p>${esc(it.body)}</p>
+                   <p>Drag the desk around and have a poke.</p>
+                   <span class="sign">${esc(it.sign)}</span>`;
+    wrap.appendChild(n);
+  }
+
+  else if (it.kind === 'cap') {
+    const n = el('div', 'cap');
+    n.innerHTML = (it.year ? `<span class="year">${esc(it.year)}</span>` : '') +
+                  `<h2>${esc(it.title)}</h2><p>${esc(it.body)}</p>` +
+                  (it.built ? `<p class="built">${esc(it.built)}</p>` : '');
+    wrap.appendChild(n);
+  }
+
+  else if (it.kind === 'brief') {
+    const n = el('div', 'brief', `<b>${esc(it.lead)}</b>${esc(it.body)}`);
+    n.style.width = it.w + 'px';
+    wrap.appendChild(n);
+  }
+
+  else if (it.kind === 'pill') {
+    const a = el('a', 'pill', `${esc(it.text)} <span aria-hidden="true">\u2197</span>`);
+    a.href = it.href;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    wrap.appendChild(a);
+  }
+
+  else if (it.kind === 'figma') {
+    // a real prototype you can click through, not a screenshot of one
+    wrap.appendChild(frame(it,
+      `<div style="height:${it.h}px">
+         <iframe data-src="${it.src}" title="Figma prototype" allowfullscreen
+                 style="width:100%;height:100%;border:0;display:block"></iframe>
+       </div>`));
+    lazies.push(wrap);
+  }
+
+  else if (it.kind === 'note2') {
+    const n = el('div', 'scribble');
+    n.innerHTML = `${esc(it.text)}
+      <svg width="88" height="${it.arrow === 'up' ? 32 : 16}" viewBox="0 0 88 ${it.arrow === 'up' ? 32 : 16}"
+           aria-hidden="true"><path d="${ARROWS[it.arrow] || ARROWS.right}"/></svg>`;
+    wrap.appendChild(n);
+  }
+
+  else if (it.kind === 'photo') {
+    wrap.appendChild(frame(it,
+      `<img data-src="${it.src}" alt="" decoding="async" draggable="false">`));
+    lazies.push(wrap);
+  }
+
+  else if (it.kind === 'clip') {
+    // muted + playsinline is what lets these autoplay at all
+    wrap.appendChild(frame(it,
+      `<video data-src="${it.src}"${it.poster ? ` poster="${it.poster}"` : ''}
+              autoplay muted loop playsinline preload="none"
+              disablepictureinpicture></video>`));
+    lazies.push(wrap);
+  }
+
+  else if (it.kind === 'yt') {
+    const src = `https://www.youtube-nocookie.com/embed/${it.id}` +
+                `?autoplay=1&mute=1&loop=1&playlist=${it.id}` +
+                `&controls=0&modestbranding=1&rel=0&playsinline=1`;
+    wrap.appendChild(frame(it,
+      `<div style="aspect-ratio:16/9">
+         <iframe data-src="${src}" title="clip" allow="autoplay; encrypted-media"
+                 referrerpolicy="strict-origin-when-cross-origin"
+                 style="width:100%;height:100%;border:0;display:block"></iframe>
+       </div>`, 'ytframe'));
+    lazies.push(wrap);
+  }
+
+  else if (it.kind === 'slot') {
+    const n = el('div', 'slot');
+    n.style.width = it.w + 'px';
+    n.style.height = it.h + 'px';
+    if (it.tape) n.classList.add('taped');
+    n.innerHTML = `drop in<code>${esc(it.file)}</code>`;
+    wrap.appendChild(n);
+    // if the file does turn up, swap the placeholder for the real thing.
+    // nothing fires if it 404s, so the dashed outline simply stays.
+    const swap = html => {
+      const f = frame({ w: it.w, tape: it.tape }, html);
+      wrap.replaceChild(f, n);
+    };
+    if (/\.(mp4|webm|mov)$/i.test(it.file)) {
+      const probe = document.createElement('video');
+      probe.muted = true;
+      probe.preload = 'metadata';
+      probe.addEventListener('loadeddata', () => swap(
+        `<video src="${MEDIA + it.file}" autoplay muted loop playsinline
+                preload="metadata" disablepictureinpicture></video>`), { once: true });
+      probe.src = MEDIA + it.file;
+    } else {
+      const probe = new Image();
+      probe.onload = () => swap(`<img src="${MEDIA + it.file}" alt="" draggable="false">`);
+      probe.src = MEDIA + it.file;
+    }
+  }
+
+  else if (it.kind === 'stamps') {
+    wrap.appendChild(stampPad());
+  }
+
+  world.appendChild(wrap);
+}
+
+/* the one thing on the desk you can play with: pick a stamp, then
+   stamp the paper. it is pointless, which is the point. */
+function stampPad() {
+  const pad = el('div', 'stamp-pad');
+  pad.innerHTML = `<h3>Stamp the desk</h3>
+    <p>Pick one, then press anywhere on the paper.</p>
+    <div class="stamp-row">
+      ${['✦','❤','☕','✿','★','◈'].map((g, i) =>
+        `<button type="button" data-g="${g}" aria-pressed="${i === 0}">${g}</button>`).join('')}
+    </div>`;
+  const btns = [...pad.querySelectorAll('button')];
+  let active = '✦';
+  btns.forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    active = b.dataset.g;
+    btns.forEach(o => o.setAttribute('aria-pressed', o === b));
+  }));
+  // pressing the paper (not a thing on it) leaves a mark
+  desk.addEventListener('click', e => {
+    if (dragged) return;                       // a pan is not a stamp
+    if (e.target.closest('.frame, .note, .stamp-pad, .cap, .chrome, .slot')) return;
+    const p = toWorld(e.clientX, e.clientY);
+    const s = el('span', 'stamped', active);
+    s.style.left = (p.x - 14) + 'px';
+    s.style.top  = (p.y - 14) + 'px';
+    s.style.rotate = (Math.random() * 30 - 15) + 'deg';
+    world.appendChild(s);
+  });
+  return pad;
+}
+
+ITEMS.forEach(build);
+
+/* ── panning ───────────────────────────────────────────────── */
+let tx = 0, ty = 0, dragged = false;
+
+/* The desk is a curated thing, not an infinite void — keep the window
+   inside it so you can never drift off into blank graph paper and lose
+   your way back. */
+function clamp() {
+  if (!bounds) return;
+  const lo = innerWidth  - bounds.x2, hi = -bounds.x1;
+  const lo2 = innerHeight - bounds.y2, hi2 = -bounds.y1;
+  // if the desk is smaller than the window in an axis, centre it instead
+  tx = lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, tx));
+  ty = lo2 > hi2 ? (lo2 + hi2) / 2 : Math.min(hi2, Math.max(lo2, ty));
+}
+function apply() {
+  clamp();
+  world.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+  hydrate();
+  drawMap();
+}
+function toWorld(clientX, clientY) {
+  return { x: clientX - tx, y: clientY - ty };
+}
+function centre() {
+  // put the welcome note near the top left of the window, with a margin
+  const home = ITEMS.find(i => i.kind === 'note') || { x: 0, y: 0 };
+  tx = -home.x + Math.min(90, innerWidth * 0.06);
+  ty = -home.y + Math.min(70, innerHeight * 0.08);
+  apply();
+}
+
+let px = 0, py = 0, pid = null;
+desk.addEventListener('pointerdown', e => {
+  if (e.button !== 0 && e.pointerType === 'mouse') return;
+  // let a link or a button take its own click
+  if (e.target.closest('a, button, iframe')) return;
+  pid = e.pointerId; px = e.clientX; py = e.clientY; dragged = false;
+  desk.classList.add('dragging');
+  desk.setPointerCapture(pid);
+});
+desk.addEventListener('pointermove', e => {
+  if (e.pointerId !== pid) return;
+  const dx = e.clientX - px, dy = e.clientY - py;
+  if (!dragged && Math.hypot(dx, dy) < 4) return;   // tolerate a shaky click
+  dragged = true;
+  tx += dx; ty += dy;
+  px = e.clientX; py = e.clientY;
+  apply();
+  fadeChrome();
+});
+function endDrag(e) {
+  if (pid === null || (e && e.pointerId !== pid)) return;
+  desk.classList.remove('dragging');
+  try { desk.releasePointerCapture(pid); } catch (err) {}
+  pid = null;
+  // `dragged` stays true until the next pointerdown, so the click that
+  // follows this drag can see it and skip stamping
+}
+desk.addEventListener('pointerup', endDrag);
+desk.addEventListener('pointercancel', endDrag);
+
+// the wheel pans rather than scrolls — shift swaps the axis, as usual
+desk.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (e.shiftKey) { tx -= e.deltaY + e.deltaX; }
+  else { tx -= e.deltaX; ty -= e.deltaY; }
+  apply();
+  fadeChrome();
+}, { passive: false });
+
+// arrows and page keys, so this is reachable without a pointer at all
+addEventListener('keydown', e => {
+  const step = e.shiftKey ? 320 : 90;
+  const moves = { ArrowLeft:[step,0], ArrowRight:[-step,0], ArrowUp:[0,step], ArrowDown:[0,-step] };
+  if (moves[e.key] && !e.target.closest('input, textarea')) {
+    e.preventDefault();
+    tx += moves[e.key][0]; ty += moves[e.key][1];
+    apply(); fadeChrome();
+  }
+  if (e.key === 'Home') { e.preventDefault(); centre(); }
+});
+
+document.getElementById('recentre').addEventListener('click', centre);
+
+/* the hint retires once you have clearly got the idea */
+const chrome = document.getElementById('chrome');
+const hint = document.getElementById('hint');
+let moved = 0, hintDone = false;
+function fadeChrome() {
+  if (hintDone) return;
+  moved += 1;
+  if (moved > 12) {
+    hintDone = true;
+    hint.textContent = 'arrow keys work too';
+    chrome.classList.add('faded');
+  }
+}
+
+/* ── the little map ────────────────────────────────────────── */
+const mm = document.getElementById('minimap');
+const mmView = document.getElementById('mmView');
+let bounds = null;
+function measure() {
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  ITEMS.forEach(it => {
+    const w = it.w || (it.kind === 'note' ? 380 : 260);
+    const h = it.h || w * 0.75;
+    x1 = Math.min(x1, it.x); y1 = Math.min(y1, it.y);
+    x2 = Math.max(x2, it.x + w); y2 = Math.max(y2, it.y + h);
+  });
+  const pad = 190;
+  bounds = { x1: x1 - pad, y1: y1 - pad, x2: x2 + pad, y2: y2 + pad };
+  bounds.w = bounds.x2 - bounds.x1;
+  bounds.h = bounds.y2 - bounds.y1;
+
+  // one dot per thing, so the map reads as a real layout
+  mm.querySelectorAll('b').forEach(b => b.remove());
+  ITEMS.forEach(it => {
+    const b = el('b');
+    b.style.left = ((it.x - bounds.x1) / bounds.w * 100) + '%';
+    b.style.top  = ((it.y - bounds.y1) / bounds.h * 100) + '%';
+    mm.insertBefore(b, mmView);
+  });
+}
+function drawMap() {
+  if (!bounds) return;
+  // the window, expressed in world coordinates, drawn on the map
+  const vx = -tx, vy = -ty;
+  mmView.style.left   = ((vx - bounds.x1) / bounds.w * 100) + '%';
+  mmView.style.top    = ((vy - bounds.y1) / bounds.h * 100) + '%';
+  mmView.style.width  = (innerWidth  / bounds.w * 100) + '%';
+  mmView.style.height = (innerHeight / bounds.h * 100) + '%';
+}
+measure();
+centre();
+addEventListener('resize', () => { apply(); });
+// images settle at their real height a moment after they decode, which can
+// bring a neighbour into range
+addEventListener('load', hydrate);
+
+/* ── living in the portfolio's pane ────────────────────────── */
+(function () {
+  // theme: the shell posts it in; standalone we already read storage
+  addEventListener('message', e => {
+    const d = e.data;
+    if (d && d.type === 'theme') {
+      document.documentElement.setAttribute('data-theme', d.value === 'light' ? 'light' : 'dark');
+    }
+  });
+
+  if (window.parent === window) return;
+  document.documentElement.setAttribute('data-embedded', '');
+  // the shell draws the one cursor for the whole site, so feed it ours
+  function post(m) { try { window.parent.postMessage(m, '*'); } catch (e) {} }
+  let lx = -1, ly = -1;
+  addEventListener('mousemove', e => {
+    if (e.clientX === lx && e.clientY === ly) return;
+    lx = e.clientX; ly = e.clientY;
+    post({ type: 'iframeMouse', x: lx, y: ly });
+  });
+  addEventListener('mousedown',  () => post({ type: 'iframeDown' }));
+  addEventListener('mouseup',    () => post({ type: 'iframeUp' }));
+  addEventListener('mouseleave', () => post({ type: 'iframeLeave' }));
+  const HOVER = 'a, button, .frame, .note, .stamp-pad';
+  addEventListener('mouseover', e => { if (e.target.closest(HOVER)) post({ type: 'iframeHover', on: true }); });
+  addEventListener('mouseout',  e => { if (e.target.closest(HOVER)) post({ type: 'iframeHover', on: false }); });
+})();
+</script>
+</body>
+</html>

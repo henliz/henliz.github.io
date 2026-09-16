@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="../HenLogo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trove, Case Study</title>
+  <meta name="description" content="Trove went from a Valentine's demo and a mockup to a live product people played daily. I joined in April as the newest engineer and became its largest contributor: 1,331 commits in 18 weeks." />
+  <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── type scale ────────────────────────────────────────────────
+       One fluid root so every rem on the page grows with the screen
+       instead of sitting at a fixed 16px. The floor and ceiling are
+       in rem, not px, so a reader who has raised their browser's
+       default font size keeps that increase (WCAG 1.4.4). */
+    html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
+
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('../fonts/DotempDemo.ttf') format('truetype');
+      font-weight: normal; font-style: normal;
+    }
+    .px { font-family: 'DotempDemo', monospace !important; font-style: normal !important; font-weight: 400; font-size: 0.9em; }
+    .di { font-family: 'Didot', 'Cormorant Garamond', serif !important; font-style: italic !important; font-weight: 700; }
+
+    :root {
+      /* creamsicle, light. Three values moved darker than the original
+         hand-picked ones so small text clears WCAG AA on the surface it
+         actually sits on: --ink-faint on paper, --accent-deep inside the
+         apricot eyebrow pill, and --peri inside its periwinkle pill. */
+      --paper:        #FFF6E8;
+      --paper-soft:   #FFFDFA;
+      --card:         #FFFFFF;
+      --card-warm:    #FFF9EF;
+      --wash-1:       #FFF4E4;
+      --wash-2:       #FFF3E2;
+      --wash-3:       #FFE7CC;
+      --sticky:       #FFEEDA;
+      --ink:          #241608;
+      --ink-soft:     #6B5744;
+      --ink-faint:    #7E6A54;
+      --accent:       #EC7F0E;
+      --accent-deep:  #A85606;
+      --accent-ink:   #A85606;
+      --accent-lift:  #F1913A;
+      --apricot:      #FFCA85;
+      --apricot-wash: #FFEBD4;
+      --xp:           #FDD554;
+      --peri:         #4E57BC;
+      --peri-wash:    #EFF1FF;
+      --code-bg:      #2E1E0F;
+      --code-fg:      #F7E9D5;
+      --code-k:       #FFC97F;
+      --code-c:       #AC9B87;
+      --code-v:       #B9C2FF;
+      --ink-rgb:        36,22,8;
+      --accent-rgb:     236,127,14;
+      --accent-deep-rgb: 168,86,6;
+      --peri-rgb:       78,87,188;
+      --xp-rgb:         253,213,84;
+      --paper-soft-rgb: 255,253,250;
+      --sh-rgb:         150,90,22;
+      --sh-k:           1;
+      --rule:         rgba(var(--accent-rgb),.24);
+      --edge:         rgba(var(--ink-rgb),.10);
+      --sh-sm:        0 2px 10px rgba(var(--sh-rgb),calc(.08 * var(--sh-k)));
+      --sh-md:        0 10px 30px rgba(var(--sh-rgb),calc(.12 * var(--sh-k)));
+      --sh-lg:        0 26px 70px rgba(var(--sh-rgb),calc(.17 * var(--sh-k)));
+    }
+
+    /* ── DARK THEME ────────────────────────────────────────────
+       Creamsicle after dark: the paper goes to a warm near-black
+       and every ink and accent lifts to its counterpart, so the
+       page keeps its heat instead of turning into grey-on-grey. */
+    :root[data-theme="dark"] {
+      --paper:        #170C04;
+      --paper-soft:   #1E1207;
+      --card:         #22150A;
+      --card-warm:    #2A1A0C;
+      --wash-1:       #2E1C0A;
+      --wash-2:       #2A1A0C;
+      --wash-3:       #3A2410;
+      --sticky:       #2A1A0C;
+      --ink:          #FBEEDD;
+      --ink-soft:     #D5BEA3;
+      --ink-faint:    #AE977B;
+      --accent:       #F59B36;
+      --accent-deep:  #FFC06A;
+      --accent-ink:   #F59B36;
+      --accent-lift:  #FFB35C;
+      --apricot:      #FFCA85;
+      --apricot-wash: #38220C;
+      --xp:           #FDD554;
+      --peri:         #A8AFFF;
+      --peri-wash:    #1E1F3F;
+      --code-bg:      #0E0703;
+      --code-fg:      #F7E9D5;
+      --code-k:       #FFC97F;
+      --code-c:       #B3A188;
+      --code-v:       #B9C2FF;
+      --ink-rgb:        251,238,221;
+      --accent-rgb:     245,155,54;
+      --accent-deep-rgb: 255,192,106;
+      --peri-rgb:       168,175,255;
+      --xp-rgb:         253,213,84;
+      --paper-soft-rgb: 30,18,7;
+      --sh-rgb:         0,0,0;
+      --sh-k:           2.6;
+      --edge:         rgba(var(--ink-rgb),.14);
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Montserrat,system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}
+    ul{list-style:disc inside}
+
+    /* custom cursor */
+    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(var(--accent-rgb),.22);border:2px solid rgba(var(--accent-rgb),.85);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 14px rgba(var(--accent-rgb),.30)}
+    .custom-cursor.clicking{background:rgba(var(--accent-rgb),.85);transform:translate(-50%,-50%) scale(.8)}
+    .custom-cursor.hovering{width:30px;height:30px;background:rgba(var(--peri-rgb),.26);border-color:rgba(var(--peri-rgb),.9);box-shadow:0 0 18px rgba(var(--peri-rgb),.42)}
+    *,*::before,*::after{cursor:none !important}
+
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes hCaScramble {
+      0%   { text-shadow: 2px 0 rgba(var(--accent-rgb),.45),  -2px 0 rgba(var(--peri-rgb),.45); }
+      18%  { text-shadow: 4px 0 rgba(var(--accent-rgb),.62),  -4px 0 rgba(var(--peri-rgb),.62); clip-path: inset(0 0 88% 0); }
+      19%  { clip-path: inset(0 0 0 0); }
+      40%  { text-shadow: 1px 0 rgba(var(--accent-rgb),.28),  -1px 0 rgba(var(--peri-rgb),.28); }
+      57%  { text-shadow: 5px 0 rgba(var(--accent-rgb),.65),  -5px 0 rgba(var(--peri-rgb),.65); clip-path: inset(72% 0 0 0); }
+      58%  { clip-path: inset(0 0 0 0); }
+      100% { text-shadow: 2px 0 rgba(var(--accent-rgb),.45),  -2px 0 rgba(var(--peri-rgb),.45); }
+    }
+    @keyframes hCaSettle {
+      0%, 100% { text-shadow: 1px 0 rgba(var(--accent-rgb),.13), -1px 0 rgba(var(--peri-rgb),.13); }
+      50%      { text-shadow: 2px 0 rgba(var(--accent-rgb),.20), -2px 0 rgba(var(--peri-rgb),.20); }
+    }
+
+    h1,h2,h3,h4{font-family:'Montserrat Alternates',sans-serif;color:var(--ink)}
+
+    /* ---- EYEBROW ---- */
+    .eyebrow {
+      display:inline-block; font-size:0.78rem; font-weight:700;
+      letter-spacing:.16em; text-transform:uppercase;
+      color:var(--accent-deep); margin-bottom:.7rem;
+      background:var(--apricot-wash); border:1px solid rgba(var(--accent-rgb),.28);
+      border-radius:999px; padding:.32rem .85rem;
+    }
+    .eyebrow.warm { color:var(--peri); background:var(--peri-wash); border-color:rgba(var(--peri-rgb),.30); }
+
+    /* ---- HEADINGS ---- */
+    .section-heading {
+      font-size:clamp(1.6rem,3.4vw,2.5rem); font-weight:700;
+      color:var(--accent-deep); line-height:1.15; margin-bottom:1.2rem;
+      font-family:'Didot','Cormorant Garamond',serif !important;
+      font-style:italic !important; letter-spacing:.045em;
+      overflow-wrap:anywhere; opacity:0;
+    }
+    .sub-heading {
+      font-size:clamp(1.05rem,1.9vw,1.38rem); font-weight:600;
+      color:var(--accent-deep); margin-bottom:.75rem;
+      font-family:'Montserrat Alternates',sans-serif;
+    }
+    .section-heading.h-scrambling {
+      font-family:'DotempDemo',monospace !important; font-style:normal !important;
+      font-size:clamp(1.25rem,2.7vw,1.95rem);
+      animation:hCaScramble .7s ease-in-out infinite;
+    }
+    .section-heading.h-settled { animation:hCaSettle 3.4s ease-in-out infinite; }
+
+    /* ---- HERO SHELL ---- */
+    .hero { padding: clamp(48px,7vh,80px) 0 0; display:flex; justify-content:center; }
+    .hero-container{
+      width:min(1120px,92vw); margin:0 auto;
+      border-radius:28px 28px 0 0;
+      padding:clamp(20px,2.6vw,44px);
+      position:relative;
+      background:linear-gradient(178deg, rgba(var(--paper-soft-rgb),.94) 0%, rgba(var(--paper-soft-rgb),.93) 55%, rgba(var(--paper-soft-rgb),.94) 100%);
+      backdrop-filter:blur(10px) saturate(115%);
+      -webkit-backdrop-filter:blur(10px) saturate(115%);
+      border:1px solid var(--edge); border-bottom:none;
+      box-shadow:var(--sh-lg);
+      overflow:hidden;
+    }
+    .hero-container::before{
+      content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+      background:
+        radial-gradient(560px 210px at 6% -6%, rgba(var(--xp-rgb),.20), transparent 62%),
+        radial-gradient(520px 190px at 106% 10%, rgba(var(--peri-rgb),.10), transparent 62%);
+    }
+    .hero-container > * { position:relative; z-index:1; }
+
+    .intro { display:grid; grid-template-columns:1.45fr .85fr; gap:2.5rem; margin-bottom:clamp(26px,4vh,42px); }
+    .intro-left h1 {
+      font-family:'Montserrat Alternates',sans-serif; font-weight:800;
+      font-size:clamp(2.5rem,6.2vw,5.2rem); line-height:1.03; letter-spacing:-.02em;
+      background:linear-gradient(45deg,var(--accent-deep),var(--accent),var(--accent-lift),var(--xp),var(--accent));
+      background-size:200% 200%;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      animation:gradientShift 6s ease infinite;
+    }
+    .intro-left h1.h-scrambling{font-family:'DotempDemo',monospace !important;animation:gradientShift 6s ease infinite, hCaScramble .7s ease-in-out infinite !important}
+    .intro-left h1.h-settled{animation:gradientShift 6s ease infinite, hCaSettle 3.4s ease-in-out infinite !important}
+    .tagline { font-size:clamp(1rem,1.55vw,1.16rem); line-height:1.62; color:var(--ink-soft); margin:.9rem 0 1.5rem; max-width:56ch; }
+    .tldr-pills { list-style:none; display:flex; flex-wrap:wrap; gap:.5rem; }
+    .pill {
+      display:inline-flex; align-items:center; gap:.45rem;
+      background:var(--card); border:1px solid var(--edge);
+      border-radius:999px; padding:.4rem .9rem;
+      font-size:.82rem; font-weight:500; color:var(--ink);
+      box-shadow:var(--sh-sm);
+    }
+
+    .intro-right { display:flex; flex-direction:column; gap:1.2rem; }
+    .header-info {
+      background:var(--card); border:1px solid var(--edge);
+      border-radius:18px; padding:1.45rem; font-size:.9rem; line-height:1.7;
+      box-shadow:var(--sh-md); color:var(--ink-soft); position:relative;
+    }
+    .header-info::before{
+      content:''; position:absolute; top:-11px; left:50%; transform:translateX(-50%) rotate(-2.5deg);
+      width:96px; height:22px; background:rgba(var(--xp-rgb),.66);
+      border-left:1px dashed rgba(var(--accent-deep-rgb),.3); border-right:1px dashed rgba(var(--accent-deep-rgb),.3);
+    }
+    .header-info strong { color:var(--accent-deep); }
+    .header-info ul { list-style:disc inside; margin-top:.35rem; padding-left:.4rem; font-size:.86rem; }
+    /* Skrimp's skip button, in this page's own colours: a gradient pill with a
+       lift on hover and a sheen that sweeps across it. Trove had a flat outline pill that read as a caption, not a control. */
+    .skip-link { margin-top:1rem; display:flex; justify-content:flex-end; }
+    .skip-button {
+      display:inline-block;
+      background:linear-gradient(45deg,var(--accent),var(--accent-deep));
+      color:#FFF6E8; font-size:.82rem; font-weight:700; letter-spacing:.08em;
+      text-transform:uppercase; text-decoration:none;
+      padding:.85rem 1.8rem; border:none; border-radius:50px;
+      transition:transform .3s ease, box-shadow .3s ease;
+      box-shadow:0 4px 15px rgba(var(--accent-rgb),.40);
+      position:relative; overflow:hidden;
+    }
+    .skip-button:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(var(--accent-rgb),.60); }
+    .skip-button::before {
+      content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+      transition:left .5s;
+    }
+    .skip-button:hover::before { left:100%; }
+
+    /* Crimson, because this page is cream and orange and a warm notice would
+       disappear into it. The point of a notice is that it is not the palette. */
+    .confidentiality-notice {
+      --notice-rgb: 190,44,52;
+      --notice-ink: 150,26,36;
+      border: 1px solid rgba(var(--notice-rgb),0.55);
+      border-left: 5px solid rgb(var(--notice-rgb));
+      background: linear-gradient(90deg, rgba(var(--notice-rgb),0.17), rgba(var(--notice-rgb),0.09) 55%, rgba(var(--notice-rgb),0.07));
+      box-shadow: 0 6px 22px rgba(var(--notice-rgb),0.15);
+      border-radius: 0 12px 12px 0;
+      padding: 1.25rem 1.5rem;
+      margin: 0 0 clamp(28px,4vh,44px);
+    }
+    .confidentiality-notice .notice-label {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: rgb(var(--notice-ink));
+      margin-bottom: .5rem; display: block;
+    }
+    .confidentiality-notice p {
+      font-size: .92rem; line-height: 1.6;
+      color: var(--ink-soft); margin: 0;
+    }
+
+    /* ---- OUTCOME STRIP ---- */
+    .outcome-strip {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      border:1px solid var(--edge); border-radius:20px;
+      background:var(--card); box-shadow:var(--sh-md);
+      margin-bottom:clamp(28px,4.5vh,48px); overflow:hidden;
+    }
+    .outcome-strip-label {
+      font-size:0.78rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+      color:var(--accent-deep); margin:0 0 .7rem .2rem;
+    }
+    .outcome-strip-label span { font-weight:500; letter-spacing:.06em; text-transform:none; color:var(--ink-faint); }
+    .outcome-item { padding:1.4rem 1.2rem; border-right:1px solid rgba(var(--ink-rgb),.07); display:flex; flex-direction:column; gap:.3rem; }
+    .outcome-item:last-child { border-right:0; }
+    .outcome-num {
+      font-family:'Didot','Cormorant Garamond',serif; font-style:italic; font-weight:700;
+      font-size:clamp(1.7rem,3vw,2.4rem); color:var(--accent-ink); line-height:1;
+      margin-bottom:.45rem; letter-spacing:.03em;
+    }
+    .outcome-label { font-size:0.84rem; line-height:1.45; color:var(--ink-soft); }
+
+    /* ---- BEFORE / AFTER ---- */
+    .ba-wrap{ border:1px solid var(--edge); border-radius:20px; background:var(--card); box-shadow:var(--sh-md); overflow:hidden; margin:1.4rem 0 .6rem; }
+    .ba-head{
+      display:grid; grid-template-columns:1.1fr .75fr .75fr;
+      background:linear-gradient(90deg,var(--apricot-wash),var(--wash-1));
+      border-bottom:1px solid var(--rule);
+      font-size:0.78rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-deep);
+    }
+    .ba-head > div{padding:.75rem 1.1rem}
+    .ba-head > div:nth-child(2),.ba-head > div:nth-child(3){text-align:right}
+    .ba-row{ display:grid; grid-template-columns:1.1fr .75fr .75fr; border-bottom:1px solid rgba(var(--ink-rgb),.06); align-items:center; }
+    .ba-row:last-child{border-bottom:none}
+    .ba-row > div{padding:.78rem 1.1rem}
+    .ba-label{font-size:.88rem;color:var(--ink-soft)}
+    .ba-before{text-align:right;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.15rem;color:var(--ink-faint)}
+    .ba-after{text-align:right;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:700;font-size:1.35rem;color:var(--accent-deep)}
+    .note{font-size:0.84rem;color:var(--ink-faint);text-align:center;line-height:1.6}
+
+    /* ---- BANNER + META HEADER ---- */
+    .case-banner{
+      width:100%; border-radius:18px; overflow:hidden;
+      border:1px solid var(--glass-border);
+      box-shadow:0 10px 34px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      margin-bottom:clamp(30px,5vh,60px);
+      background:var(--inner-card);
+    }
+    .case-banner img{display:block;width:100%;height:auto}
+    .meta-grid{
+      display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:1.6rem 2rem; margin-bottom:clamp(34px,6vh,72px);
+    }
+    .meta-col h4{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); margin-bottom:.8rem;
+    }
+    .meta-col p{font-size:.93rem;line-height:1.6;color:var(--text-primary)}
+    .overview-label{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); display:block; margin-bottom:.9rem;
+    }
+    .overview-head{
+      font-size:clamp(1.5rem,3.1vw,2.35rem); font-weight:700; line-height:1.22;
+      color:var(--text-primary); margin-bottom:1.1rem; letter-spacing:-.01em;
+    }
+    .overview-body p{font-size:1.02rem;line-height:1.7;max-width:74ch;margin-bottom:.9rem}
+    .overview-body p:last-child{margin-bottom:0}
+    /* the banner carries the wordmark, so the heading is for screen readers */
+    .sr-only{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+    }
+    @media(max-width:900px){ .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media(max-width:560px){ .meta-grid{grid-template-columns:1fr} }
+
+    /* ---- DEVICE SHOWCASE ---- */
+    .showcase{margin:clamp(22px,3.4vh,38px) 0}
+    .showcase-stage{
+      background:rgba(var(--ink-rgb),.045);
+      border:1px solid var(--edge);border-radius:18px;
+      padding:clamp(22px,3.4vw,46px) clamp(16px,2.4vw,32px);
+      display:flex;justify-content:center;align-items:flex-start;gap:clamp(20px,3vw,44px);
+      flex-wrap:wrap;
+    }
+    /* the phone is plain CSS, no canvas and no 3D */
+    .phone{
+      position:relative;flex:0 0 auto;
+      width:min(322px,80vw);
+      background:linear-gradient(155deg,#3c3c41,#17171a 42%,#2e2e33);
+      border-radius:42px;padding:9px;
+      box-shadow:0 18px 46px rgba(var(--sh-rgb),calc(.30 * var(--sh-k))),
+                 inset 0 0 0 1px rgba(255,255,255,.10);
+    }
+    .phone-screen{
+      position:relative;width:100%;aspect-ratio:362 / 814;
+      border-radius:34px;overflow:hidden;background:#fff;display:block;
+    }
+    .phone-screen video,.phone-screen img{
+      width:100%;height:100%;object-fit:cover;display:block;
+    }
+    /* dynamic island */
+    .phone-screen::after{
+      content:'';position:absolute;top:9px;left:50%;transform:translateX(-50%);
+      width:31%;height:22px;border-radius:99px;background:#0b0b0d;z-index:2;pointer-events:none;
+    }
+    /* side buttons */
+    .phone::before,.phone::after{
+      content:'';position:absolute;width:3px;border-radius:2px;background:rgba(255,255,255,.16);
+    }
+    .phone::before{left:-3px;top:96px;height:54px;box-shadow:0 72px 0 rgba(255,255,255,.16)}
+    .phone::after{right:-3px;top:116px;height:76px}
+    /* a phone waiting on footage */
+    /* an empty phone, white in both themes, so it reads as a screen
+       waiting for footage rather than themed page furniture */
+    .phone.pending .phone-screen{
+      background:#fff;display:flex;align-items:center;justify-content:center;
+      padding:2rem 1.3rem;text-align:center;
+    }
+    .phone.pending .pending-note{
+      border:1px dashed rgba(28,26,24,.30);border-radius:14px;
+      padding:1.1rem .9rem;font-size:0.84rem;line-height:1.55;color:#4a443d;
+    }
+    .phone.pending .pending-note b{display:block;color:#1b1815;font-size:.82rem;margin-bottom:.35rem}
+    .showcase-stage.solo .phone{width:min(356px,84vw)}
+    .showcase-stage.trio .phone{width:min(288px,80vw)}
+    .showcase-stage.trio{gap:clamp(12px,1.6vw,22px)}
+    @media(max-width:720px){ .showcase-stage{gap:1.4rem} .phone,.showcase-stage.solo .phone{width:min(300px,80vw)} }
+    @media(prefers-reduced-motion:reduce){ .phone-screen video{display:none} }
+
+    .lede{
+      font-size:clamp(1.02rem,1.65vw,1.2rem); line-height:1.55; font-weight:600;
+      color:var(--ink); margin-bottom:1.1rem; max-width:62ch;
+    }
+
+
+    @media(max-width:640px){ .flow-step{flex:1 1 100%} .flow-arrow{display:none} }
+
+
+    /* ---- STEP CARDS ---- */
+    .steps{
+      display:flex; flex-wrap:wrap; gap:clamp(10px,1.4vw,18px);
+      margin:clamp(24px,3.2vh,36px) 0 clamp(14px,2vh,22px); align-items:flex-start;
+    }
+    .step-card{
+      flex:1 1 205px; min-width:190px;
+      background:var(--card); border:1px solid var(--edge); border-radius:16px;
+      padding:1rem 1rem 1.05rem; box-shadow:var(--sh-md);
+      transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+    }
+    .step-card:nth-child(1){transform:rotate(-1.7deg)}
+    .step-card:nth-child(2){transform:rotate(1.2deg) translateY(15px)}
+    .step-card:nth-child(3){transform:rotate(-.9deg) translateY(4px)}
+    .step-card:nth-child(4){transform:rotate(1.8deg) translateY(19px)}
+    .step-card:hover{transform:rotate(0deg) translateY(-5px); box-shadow:var(--sh-lg)}
+    .step-card .n{
+      font-family:'DotempDemo',monospace; font-size:0.78rem; letter-spacing:.1em;
+      color:var(--accent-ink); display:block; margin-bottom:.32rem;
+    }
+    .step-card h4{
+      font-family:'Montserrat Alternates',sans-serif; font-size:.92rem; font-weight:700;
+      color:var(--ink); margin-bottom:.35rem; line-height:1.25;
+    }
+    .step-card p{font-size:0.84rem; line-height:1.5; color:var(--ink-soft); margin:0 0 .9rem}
+    /* No frame around the art. The tinted box read as a second card inside the
+       card; the aspect ratio stays so a row of them keeps a common baseline. */
+    .step-art{
+      aspect-ratio:4 / 3; display:flex; align-items:center; justify-content:center;
+      padding:.4rem 0 0;
+    }
+    .step-art img{max-width:82%; max-height:86%; width:auto; height:auto; display:block}
+    @media(prefers-reduced-motion:reduce){ .step-card{transform:none !important} }
+    @media(max-width:720px){
+      .step-card{flex:1 1 100%; transform:none !important}
+      .step-card:hover{transform:translateY(-3px) !important}
+    }
+
+    /* ---- SECTIONS ---- */
+    header.hero { padding:0; }
+    #hero .hero-container { display:block; }
+    .section-content { padding: clamp(30px,4.2vh,52px) 0; }
+    .section-rule { border:none; border-top:1px solid var(--rule); margin:0; }
+
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.4rem 2.4rem; margin-top:1.2rem; }
+    .two-col.lean { grid-template-columns:1.15fr .85fr; }
+
+    /* ---- HIGHLIGHT BOX ---- */
+    .highlight-box {
+      background:var(--card-warm); border:1px solid var(--edge);
+      border-left:3px solid var(--accent);
+      border-radius:0 14px 14px 0; padding:1rem 1.15rem;
+      font-size:.9rem; line-height:1.65; color:var(--ink-soft);
+      box-shadow:var(--sh-sm);
+    }
+    .highlight-box.warm { border-left-color:var(--peri); background:var(--peri-wash); }
+    .highlight-box{ margin:1.15rem 0 1.5rem; }
+    .highlight-box + p, .highlight-box + .steps, .highlight-box + .showcase{ margin-top:.2rem; }
+    .highlight-box strong { color:var(--accent-deep); display:block; margin-bottom:.25rem; font-weight:700; font-family:'Montserrat Alternates',sans-serif; }
+    .highlight-box.warm strong { color:var(--peri); }
+
+    /* ---- PULL QUOTE ---- */
+    .pull-quote {
+      border-left:4px solid var(--xp);
+      padding:1.1rem 1.5rem; margin:1.5rem 0;
+      font-family:'Didot','Cormorant Garamond',serif; font-style:italic;
+      font-size:clamp(1.1rem,1.95vw,1.4rem); line-height:1.55; color:var(--accent-deep);
+      background:linear-gradient(90deg,rgba(var(--xp-rgb),.15),transparent);
+      border-radius:0 14px 14px 0;
+    }
+    .pull-quote cite { display:block; margin-top:.7rem; font-size:0.84rem; font-style:normal; color:var(--ink-faint); font-family:Montserrat,sans-serif; }
+
+    /* ---- BODY TEXT ---- */
+    p { font-size:clamp(.92rem,1.15vw,1rem); line-height:1.78; color:var(--ink-soft); margin-bottom:1rem; }
+    p:last-child { margin-bottom:0; }
+    p b, p strong { color:var(--ink); font-weight:600; }
+    .cap { font-size:0.84rem; color:var(--ink-faint); margin-top:.6rem; text-align:center; }
+
+    /* ---- CODE BLOCK ---- */
+    .codeblock {
+      background:var(--code-bg); border:1px solid rgba(var(--ink-rgb),.2);
+      border-radius:14px; padding:1.1rem 1.25rem; margin:1.25rem 0;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      font-size:0.84rem; line-height:1.85; color:var(--code-fg);
+      overflow-x:auto; white-space:pre; box-shadow:var(--sh-md);
+    }
+    .codeblock .k { color:var(--code-k); font-weight:600; }
+    .codeblock .c { color:var(--code-c); font-style:italic; }
+    .codeblock .v { color:var(--code-v); }
+
+    /* ---- SPEC LIST ---- */
+    .spec { display:grid; gap:.55rem; margin:1.1rem 0 0; }
+    .spec-row {
+      display:grid; grid-template-columns:136px 1fr; gap:1rem; align-items:baseline;
+      padding:.72rem .95rem; background:var(--card); border:1px solid var(--edge);
+      border-radius:12px; box-shadow:var(--sh-sm);
+    }
+    .spec-key { font-family:'DotempDemo',monospace; font-size:.86rem; color:var(--accent-deep); }
+    .spec-val { font-size:.87rem; line-height:1.55; color:var(--ink-soft); }
+
+    /* ---- MUST-HAVES ---- */
+    .must-haves-container { display:grid; grid-template-columns:minmax(200px,.85fr) 1.4fr; gap:1.5rem 2rem; align-items:start; margin:1.8rem auto 0; }
+    .must-haves-left { position:sticky; top:24px; }
+    .must-haves-right { display:grid; grid-template-columns:1fr; gap:.9rem; }
+    .must-haves-card {
+      border:1px solid var(--edge); border-left:3px solid var(--apricot);
+      padding:1rem 1.15rem; background:var(--card);
+      border-radius:0 14px 14px 0; transition:.25s; box-shadow:var(--sh-sm);
+    }
+    .must-haves-card:hover { border-left-color:var(--accent); transform:translateX(3px); box-shadow:var(--sh-md); }
+    .must-haves-card h4 { font-size:.95rem; font-weight:600; color:var(--ink); margin-bottom:.4rem; }
+    .must-haves-card p { font-size:.88rem; line-height:1.6; margin:0; }
+
+    /* ---- PROCESS SUBSECTION ---- */
+    .process-subsection { padding:1.6rem 0; border-top:1px dashed var(--rule); margin-top:1rem; }
+    .process-subsection:first-child { border-top:none; margin-top:0; padding-top:.4rem; }
+
+    /* ---- CARDS ---- */
+    .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-bottom:1.8rem; }
+    .card {
+      background:var(--card); border:1px solid var(--edge);
+      border-radius:18px; padding:1.4rem; opacity:0; transform:translateY(18px);
+      transition:opacity .5s ease-out,transform .5s ease-out,box-shadow .25s ease;
+      box-shadow:var(--sh-sm);
+    }
+    .card.active { opacity:1 !important; transform:translateY(0) !important; }
+    .card:hover { box-shadow:var(--sh-md); }
+    .card h4 { font-size:0.78rem; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-ink); margin-bottom:.5rem; font-family:Montserrat,sans-serif; font-weight:700; }
+    .card h3 { font-size:1.04rem; color:var(--ink); margin-bottom:.55rem; line-height:1.35; }
+    .card p { font-size:.88rem; margin:0; }
+
+    /* ---- REFLECTION ---- */
+    .reflection {
+      background:linear-gradient(150deg,var(--card-warm),var(--wash-2));
+      border:1px solid rgba(var(--accent-rgb),.24);
+      border-radius:20px; padding:1.75rem 2rem; margin-top:1.4rem;
+      box-shadow:var(--sh-md);
+    }
+    .reflection h3 { font-size:1.15rem; color:var(--accent-deep); margin-bottom:.9rem; }
+    .reflection p { font-size:.95rem; }
+
+    /* ---- ROLE ---- */
+    .role-cols { display:grid; grid-template-columns:1fr 1fr; gap:1.3rem; margin-top:1.5rem; }
+    .role-card {
+      background:var(--card); border:1px solid var(--edge);
+      border-radius:18px; padding:1.4rem; border-top:4px solid var(--accent);
+      box-shadow:var(--sh-md);
+    }
+    .role-card:nth-child(2) { border-top-color:var(--peri); }
+    .role-card h4 { font-size:0.78rem; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-ink); margin-bottom:.45rem; font-family:Montserrat,sans-serif; font-weight:700; }
+    .role-card:nth-child(2) h4 { color:var(--peri); }
+    .role-card h3 { font-size:1.04rem; color:var(--ink); margin-bottom:.7rem; }
+    .role-card ul { list-style:none; font-size:.87rem; color:var(--ink-soft); padding:0; }
+    .role-card li { margin-bottom:.45rem; padding-left:1.1rem; position:relative; line-height:1.5; }
+    .role-card li::before { content:'▸'; position:absolute; left:0; color:var(--accent-ink); }
+    .role-card:nth-child(2) li::before { color:var(--peri); }
+
+
+    /* ══ VERTICAL RHYTHM ═══════════════════════════════════════════════
+       One scale for every block in the flow. Before this each component
+       carried its own ad hoc margins and the gaps between neighbours ran
+       from -12px to +51px, including several outright collisions.
+
+       The crooked card rows are the subtle one: their cards are pushed
+       down by up to 21px with translateY, which happens AFTER layout and
+       so sits outside the container's own box. Without that added back as
+       bottom margin the next block lands on top of the lowest card. */
+    .section-content > *{ margin-top:0 }
+    .lede{ margin:0 0 1.25rem }
+
+    .steps, .quote-grid, .stats-grid, .img-grid, .img-wide, .mini-images,
+    .video-embed, .showcase, .mood-ladder, .tot-matrix-wrap, .big-image,
+    .vid-crop, .ideation-images, .process-dense-row, .role-cols, .cards,
+    .must-haves-grid, .outcome-strip, .quote-grid{
+      margin:2rem 0 1.7rem;
+    }
+    .steps, .quote-grid, .stats-grid{ margin-bottom:2.9rem }   /* + the tilt drop */
+    .steps:has(+ .cap){ margin-bottom:1.4rem }
+
+    /* a caption belongs to the thing above it, not to the paragraph below */
+    .cap, .img-grid figcaption, .img-wide figcaption{ margin-top:.55rem; margin-bottom:0 }
+    .video-embed + .cap, .mini-images + .cap, .img-wide + .cap,
+    .showcase + .cap{ margin-top:.75rem }
+    .cap + p, figcaption + p{ margin-top:1.6rem }
+
+    .highlight-box{ margin:1.9rem 0 2rem }
+    .chip-row{ margin:2rem 0 1.7rem }
+
+    /* A caption has to hug the thing it captions. Without this the media's own
+       bottom margin (27px) collapses against the caption's top margin and wins,
+       so the label floats halfway to the next paragraph. */
+    .video-embed:has(+ .cap), .mini-images:has(+ .cap),
+    .img-wide:has(+ .cap), .showcase:has(+ .cap){ margin-bottom:0 }
+    .video-embed + .cap, .mini-images + .cap,
+    .img-wide + .cap, .showcase + .cap{ margin-top:.7rem }
+    .works-cited{ margin-top:2.8rem }
+
+    /* a heading always gets clear air above it */
+    .section-heading{ margin-top:0 }
+    .section-content > p + .section-heading{ margin-top:2.4rem }
+
+    /* the skip control needs room before the story starts */
+    .skip-link{ margin:1.2rem 0 clamp(30px,4.5vh,52px) }
+
+    /* four cards in a row were nearly touching */
+    .steps, .quote-grid, .stats-grid, .img-grid{ gap:clamp(14px,1.9vw,26px) }
+
+    /* ---- REVEALS ---- */
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity .55s ease-out,transform .55s ease-out; will-change:opacity,transform; }
+    .active { opacity:1 !important; transform:translateY(0) !important; }
+
+    /* ---- IMAGE GRIDS ---- */
+    .img-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin:1.6rem 0; }
+    .img-tile {
+      aspect-ratio:1/1; border-radius:16px; overflow:hidden;
+      border:1px solid var(--edge); background:var(--card); box-shadow:var(--sh-sm);
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .img-tile:hover { transform:translateY(-4px); box-shadow:var(--sh-md); }
+    .img-tile img { width:100%; height:100%; object-fit:cover; display:block; }
+    .img-tile.contain img { object-fit:contain; padding:9%; }
+    .img-tile.pad img { object-fit:contain; padding:16%; }
+
+    .shelf { display:flex; flex-wrap:wrap; gap:.6rem; margin:.8rem 0 0; }
+    .chip {
+      width:84px; height:84px; border-radius:14px; background:var(--card);
+      border:1px solid var(--edge); box-shadow:var(--sh-sm);
+      display:flex; align-items:center; justify-content:center; padding:11px;
+      transition:transform .25s ease;
+    }
+    .chip:hover{transform:translateY(-4px) rotate(-3deg)}
+    .chip img { max-width:100%; max-height:100%; object-fit:contain; display:block; }
+    .shelf-label{font-size:0.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:1.2rem;font-family:Montserrat,sans-serif}
+
+    /* ---- COVER ---- */
+
+    /* ---- PERMUTATION MATRIX ---- */
+    .tot-matrix-wrap{
+      margin:1.5rem 0 0; border:1px solid var(--edge); border-radius:16px;
+      background:var(--card); box-shadow:var(--sh-md); overflow:hidden;
+    }
+        .tot-viewport{ position:relative; }
+    .tot-viewport::after{
+      content:''; position:absolute; inset:0 0 0 auto; width:72px;
+      pointer-events:none; opacity:1; transition:opacity .28s ease;
+      background:linear-gradient(90deg, rgba(var(--paper-soft-rgb),0), var(--card));
+    }
+    .tot-viewport.at-end::after{ opacity:0; }
+    .tot-scroll{
+      overflow-x:auto; overflow-y:hidden;
+      scrollbar-width:thin; scrollbar-color:rgba(var(--accent-rgb),.6) rgba(var(--ink-rgb),.07);
+      padding-bottom:2px;
+    }
+    .tot-scroll::-webkit-scrollbar{ height:11px; }
+    .tot-scroll::-webkit-scrollbar-track{ background:rgba(var(--ink-rgb),.07); border-radius:99px; margin:0 .6rem; }
+    .tot-scroll::-webkit-scrollbar-thumb{ background:rgba(var(--accent-rgb),.6); border-radius:99px; border:2px solid var(--card); }
+    .tot-scroll::-webkit-scrollbar-thumb:hover{ background:rgba(var(--accent-rgb),.85); }
+    .tot-matrix{ display:grid; grid-auto-flow:row; width:max-content; min-width:100%; }
+    .tot-hrow, .tot-row{ display:grid; grid-template-columns:200px repeat(14, 176px); align-items:center; }
+    .tot-hrow{ background:linear-gradient(90deg,var(--apricot-wash),var(--wash-1)); border-bottom:1px solid var(--rule); }
+    .tot-hrow div{
+      font-size:0.78rem; letter-spacing:.1em; text-transform:uppercase; font-weight:700;
+      color:var(--accent-deep); padding:.55rem .2rem; text-align:center; font-family:Montserrat,sans-serif;
+    }
+    .tot-hrow div:first-child{ text-align:left; padding-left:.9rem; }
+    .tot-row{ border-bottom:1px solid rgba(var(--ink-rgb),.07); }
+    .tot-row:last-child{ border-bottom:none; }
+    .tot-rowlabel{
+      padding:.75rem 1rem; font-size:0.84rem; line-height:1.45; color:var(--ink-soft);
+      position:sticky; left:0; background:var(--card); z-index:2;
+      border-right:1px solid rgba(var(--ink-rgb),.08); align-self:stretch; display:flex; align-items:center;
+    }
+    .tot-rowlabel b{ display:block; color:var(--ink); font-weight:600; font-size:.82rem; margin-bottom:.15rem; }
+    .tot-hrow div:first-child{ position:sticky; left:0; background:var(--sticky); z-index:3; }
+    .tot-cell{ position:relative; aspect-ratio:1/1; }
+    .tot-body{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); user-select:none; max-width:88%; max-height:88%; }
+    .tot-acc{ position:absolute; user-select:none; }
+    .tot-hint{ font-size:0.84rem; color:var(--ink-faint); padding:.55rem .9rem; border-top:1px solid rgba(var(--ink-rgb),.07); background:var(--card-warm); }
+
+    /* ---- THE EXPRESSION LADDER ----
+       One body per row, every face that body is allowed to wear beside it. The
+       faces are composited live by the real placeFace() over the real art, the
+       same way the accessory matrix above is: no screenshot, no mockup. What
+       the rows are actually for is the RAGGED RIGHT EDGE — four faces at the
+       top, two at the bottom. */
+    .mood-ladder{
+      border:1px solid var(--edge); border-radius:18px; overflow:hidden;
+      background:var(--card); margin:clamp(18px,2.6vh,26px) 0 .9rem;
+    }
+    .ml-row{
+      display:grid; grid-template-columns:minmax(150px,182px) 1fr;
+      align-items:center; gap:clamp(10px,1.6vw,22px);
+      padding:clamp(12px,1.6vh,18px) clamp(12px,1.8vw,20px);
+      border-bottom:1px solid rgba(var(--ink-rgb),.07);
+    }
+    .ml-row:last-child{ border-bottom:none }
+    .ml-row:nth-child(odd){ background:var(--card-warm) }
+    .ml-mood{ font-size:0.84rem; line-height:1.5; color:var(--ink-faint) }
+    .ml-mood b{ display:block; color:var(--ink); font-weight:600; font-size:.88rem; margin-bottom:.12rem }
+    /* the body sits in a fixed-height slot; taller framings grow upward so HE
+       stays one size down the whole column, which is what `scale` is for */
+    .ml-set{ display:flex; flex-wrap:wrap; align-items:flex-end; gap:clamp(8px,1.4vw,20px) }
+    .ml-tot{ margin:0; text-align:center; flex:0 0 auto }
+    /* the body is in flow and IS the sprite box; the face is placed against it
+       in px derived from placeFace's percentages */
+    .ml-art{ position:relative; display:block }
+    /* two classes on purpose: PANE MODE's `.hero-container img{height:auto}`
+       outranks a single class, and an auto-height image that hasn't decoded
+       yet measures zero, which collapses the whole row */
+    .ml-art .ml-body{ display:block; height:var(--ml-h); width:auto }
+    .ml-art .ml-face{ position:absolute; left:0; top:0; height:auto }
+    .ml-name{
+      margin-top:.4rem; font-size:0.78rem; letter-spacing:.05em;
+      color:var(--ink-faint); text-transform:lowercase;
+    }
+    @media(max-width:620px){
+      .ml-row{ grid-template-columns:1fr; gap:.5rem }
+      .ml-set{ gap:10px }
+    }
+
+    /* metrics */
+    .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:.9rem; margin:1.3rem 0; }
+    .metrics.four { grid-template-columns:repeat(4,1fr); }
+    .metric {
+      background:var(--card); border:1px solid var(--edge); border-radius:16px;
+      padding:1.1rem 1.15rem; box-shadow:var(--sh-sm);
+    }
+    .metric b { display:block; font-family:'Didot','Cormorant Garamond',serif; font-style:italic; font-weight:700; font-size:1.7rem; color:var(--accent-ink); line-height:1; margin-bottom:.45rem; }
+    .metric span { font-size:0.84rem; color:var(--ink-soft); line-height:1.45; display:block; }
+
+    /* timeline */
+    .tl { display:grid; gap:0; margin:1.4rem 0 0; }
+
+    @media(max-width:1024px){
+      .intro{grid-template-columns:1fr}
+      .outcome-strip{grid-template-columns:repeat(2,1fr)}
+      .two-col,.two-col.lean,.role-cols{grid-template-columns:1fr}
+      .must-haves-container{grid-template-columns:1fr}
+      .must-haves-left{position:static}
+      .metrics,.metrics.four{grid-template-columns:1fr}
+    }
+    @media(max-width:768px){
+      .cards{grid-template-columns:1fr}
+      .ba-head,.ba-row{grid-template-columns:1fr .6fr .6fr}
+    }
+
+    /* ---- navbar overrides (creamsicle light) ---- */
+    .navbar.pill {
+      background: rgba(var(--paper-soft-rgb),.82) !important;
+      backdrop-filter: blur(14px) saturate(150%) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(150%) !important;
+      border: 1px solid rgba(var(--accent-rgb),.20) !important;
+      box-shadow: 0 8px 26px rgba(var(--sh-rgb), calc(.12 * var(--sh-k))) !important;
+    }
+    .navbar.pill::before { opacity: 0 !important; }
+    .navbar .logo img { filter: sepia(.85) saturate(2.6) hue-rotate(-18deg) brightness(1.02) !important; }
+    .navbar .logo:hover img { filter: sepia(.85) saturate(3) hue-rotate(-18deg) brightness(1.12) !important; }
+    .navbar .nav-links a { color: var(--ink) !important; }
+    .navbar .nav-links a:hover { color: var(--accent-deep) !important; }
+    .navbar .nav-links a::after { background: linear-gradient(45deg, var(--accent), var(--xp)) !important; }
+    .hamburger { background: rgba(var(--accent-rgb),.10) !important; }
+    .hamburger:hover { background: rgba(var(--accent-rgb),.20) !important; }
+    .hamburger span { background: var(--accent-deep) !important; }
+    .mobile-menu { background: rgba(var(--paper-soft-rgb),.98) !important; }
+    .mobile-menu ul li a { color: var(--ink) !important; }
+    .mobile-menu ul li a:hover { color: var(--accent-deep) !important; background: rgba(var(--accent-rgb),0.08) !important; }
+    .mobile-menu ul li { border-bottom-color: rgba(var(--accent-rgb),0.16) !important; }
+      /* ── PANE MODE ─────────────────────────────────────────────
+       This page is read inside the portfolio's right-hand pane,
+       which now supplies both the paper and the tinted sky. So it
+       stops painting a floating card on a sky of its own, the
+       container is just a reading column, and it paints the paper
+       itself so it still stands up when opened standalone. */
+    html,body{background:var(--paper)}
+    /* in the pane the shell paints the paper, translucent, so the one sky
+       reads through the reading surface the way it does on the home page.
+       Standalone there is no sky behind us, so we keep painting it ourselves. */
+    html[data-embedded],html[data-embedded] body{background:transparent}
+    .hero{padding:0}
+    .hero-container{
+      /* the PANE paints the paper edge to edge; this is only the reading
+         column, centred in it, so the margins each side are paper, never
+         a second sky like the old floating card had */
+      width:100%; max-width:1180px; margin-inline:auto;
+      border:none; border-radius:0;
+      background:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+      box-shadow:none;
+      padding:clamp(30px,4.5vh,60px) clamp(22px,4vw,60px) clamp(60px,9vh,110px);
+    }
+    .hero-container::before,.hero-container::after{display:none}
+    /* nothing breaks the gutter: media is bounded by the column, not the pane */
+    .hero-container img,
+    .hero-container video,
+    .hero-container iframe,
+    .hero-container canvas{max-width:100%}
+    .hero-container img{height:auto}
+    /* a flex row of percentage-width images can still sum past its own box
+       (two at 70% each), so let the row wrap and the items shrink */
+    .hero-container [class$="-images"],
+    .hero-container .mini-images{flex-wrap:wrap}
+    .hero-container [class$="-images"] > img,
+    .hero-container .mini-images > img{min-width:0;flex-shrink:1}
+    /* flex and grid children only stay inside the column if allowed to shrink */
+    .intro-left,.intro-right,.section-content,.two-col > *{min-width:0}
+    /* the press panel was the bottom half of the hero card, that card is
+       gone, so it stops floating and takes the same measure as everything else */
+    .press-wrapper{
+      width:100%; max-width:1180px; margin-inline:auto;
+      padding:clamp(18px,2.4vw,40px) clamp(22px,4vw,60px);
+      background:none; border:none; border-radius:0; box-shadow:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+    }
+    .press-wrapper::before,.press-wrapper::after{display:none}
+  </style>
+</head>
+<body>
+  <div class="custom-cursor" id="cursor"></div>
+  <header class="hero" id="hero">
+    <div class="hero-container">
+
+      <!-- BANNER -->
+      <h1 class="sr-only">Trove</h1>
+      <figure class="case-banner reveal">
+        <img src="trove-banner.webp"
+             alt="Trove, phone screens showing the personality read with trait sliders, a tangle conversation, the trending-this-week row and a player profile card, beside the yarn mascot in a box, the Trove wordmark, and MBTI, Enneagram, HEXACO, DISC and Big 5 result cards."
+             width="2400" height="737" fetchpriority="high">
+      </figure>
+
+      <!-- META -->
+      <div class="meta-grid reveal">
+        <div class="meta-col">
+          <h4>Project Type</h4>
+          <p>Contract, full time. A consumer social product on web and iOS, shipped to daily users.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Role</h4>
+          <p>Founding product design engineer, full stack.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Timeline</h4>
+          <p>April to August 2026, inclusive.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Skills &amp; Tools</h4>
+          <p>Convex schema, indexes and migrations, React, TanStack, TypeScript, LLM authoring and eval pipelines, illustration, layout and motion.</p>
+        </div>
+      </div>
+
+      <!-- REACH STRIP, what the build actually pulled in -->
+      <p class="outcome-strip-label reveal">Sourced summer 2026 from analytics</p>
+      <div class="outcome-strip reveal">
+        <div class="outcome-item">
+          <span class="outcome-num">0 &rarr; 10,250</span>
+          <span class="outcome-label">new users acquired since launch, from a standing start</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">61.9K</span>
+          <span class="outcome-label">page views across 9.34K sessions and 4.31K visitors</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">3&times;</span>
+          <span class="outcome-label">weekly growth, ~240 users/week in March to ~710 in July</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">826</span>
+          <span class="outcome-label">users in the strongest single week, w/o July 19</span>
+        </div>
+      </div>
+
+      <!-- CONFIDENTIALITY NOTICE -->
+      <div class="confidentiality-notice reveal">
+        <span class="notice-label">&#9888; Confidentiality Notice</span>
+        <p>Trove is a live product and I worked on it under contract. Nothing here covers the authoring system&rsquo;s prompts, the scoring weights, unreleased roadmap, commercial terms or any non-public user data. What follows is the design reasoning, the research, the craft decisions and the outcome numbers achieved while I was there, which is everything I can show without handing somebody a copy of the thing.</p>
+      </div>
+
+      <!-- SKIP -->
+      <div class="skip-link reveal">
+        <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+      </div>
+
+      <!-- THE GAP -->
+      <section id="ask">
+        <div class="section-content reveal">
+          <h2 class="section-heading">You are not what you fill out on a questionnaire. So the product is not allowed to ask you anything.</h2>
+          <p class="lede">Refuse to ask a single question and the only evidence left is what somebody does.</p>
+          <p>You are not your LinkedIn bio and you are not your Hinge profile, and nearly every system built to understand you opens by asking you to be one of those things. Trove drops you into a short story with no clean answer and reads what you actually do.</p>
+          <p>Lovely on a homepage. Unreasonable in a codebase. I joined as hire number one on this iteration with the idea proven exactly once, as a Valentine&rsquo;s drop in February, and eighteen weeks to build the machine underneath it. Eight routes. Sixteen components. A profile that existed as a mockup. No writers&rsquo; room and no animators.</p>
+          <div class="showcase reveal">
+            <div class="showcase-stage trio">
+              <div class="phone">
+                <div class="phone-screen">
+                  <video src="vid/ob-start.mp4" poster="vid/ob-start-poster.jpg" muted loop playsinline preload="metadata" aria-label="Opening Trove for the first time: the landing page, the pitch, and the optional self-description step before the game starts"></video>
+                </div>
+              </div>
+              <div class="phone">
+                <div class="phone-screen">
+                  <video src="vid/ob-play.mp4" poster="vid/ob-play-poster.jpg" muted loop playsinline preload="metadata" aria-label="The whole first story at four times speed: prose, choices, and answering a character in your own words"></video>
+                </div>
+              </div>
+              <div class="phone">
+                <div class="phone-screen">
+                  <video src="vid/ob-read.mp4" poster="vid/ob-read-poster.jpg" muted loop playsinline preload="metadata" aria-label="The story ending, then the first read written from those choices, then the sign-in prompt"></video>
+                </div>
+              </div>
+            </div>
+            <p class="cap">A whole first session: everything before the game, the game itself at four times speed, and the personality read that follows. It opens by telling you it starts with what you do, offers a self-description step where every field has an &ldquo;I don&rsquo;t know yet&rdquo;, and asks you to make an account only after it has already told you something about yourself.</p>
+          </div>
+          <p>Which means a real dilemma, every day, forever. Trove writes its stories, which it calls tangles, with language models and has another one judge them. The judge I inherited scored ten qualities, then threw nearly all of that away to answer one question: good enough to publish, yes or no. A story that merely clears <em>not broken</em> contains no dilemma, and a fake dilemma reveals nothing about the person playing it. Nothing could go <b>up</b>, only through, which means the promise quietly stops being true and you are running a quiz with nicer typography.</p>
+          <p>So I built a score out of what we were already throwing away, weighted toward a story&rsquo;s weakest moment and whether two people playing it actually ended up somewhere different.</p>
+          <div class="highlight-box warm"><strong>It says what it is not</strong>The weights are a judgement call, not a derivation. Our rating study showed player ratings cannot validate craft at any sample size we will realistically have, so nothing is fitted to data and the card says so.</div>
+          <p>The pipeline that produces one is the most complicated thing I worked on. A premise and a category go in. What comes out has already been played start to finish by a cast of invented players inside the real product, every playthrough read back, and fixed automatically a limited number of times before a person sees a word of it. Most come out playable on the first pass.</p>
+          <div class="steps reveal">
+            <div class="step-card">
+              <span class="n">01</span>
+              <h4>A premise goes in</h4>
+              <p>One line of intent and a category. That is the entire human input at this end.</p>
+              <div class="step-art"><img src="img/tot/yarn-ball.webp" alt="Trove tot beside a ball of yarn, unspun" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">02</span>
+              <h4>It gets played, for real</h4>
+              <p>A cast of invented players plays it start to finish inside the real product, not a rehearsal of it.</p>
+              <div class="step-art"><img src="img/tot/tangled.webp" alt="Trove tot wound up in yarn" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">03</span>
+              <h4>Every playthrough is read back</h4>
+              <p>Every playthrough gets read back. The weakest moment decides the story&rsquo;s fate, because it is the part a writer can actually fix.</p>
+              <div class="step-art"><img src="img/tot/magnifying-glass.webp" alt="Trove tot inspecting something through a magnifying glass" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">04</span>
+              <h4>A person still says yes</h4>
+              <p>Passing means it works. It does not mean it is good, so nothing reaches a player unsigned.</p>
+              <div class="step-art"><img src="img/tot/button.webp" alt="Trove tot holding up a button" loading="lazy"></div>
+            </div>
+          </div>
+          <p class="cap">Two and three loop on a cap: a revised draft is played again before it can move forward. Then somebody makes choices nobody asked them to explain, those choices become a read, the read moves their trait scores, and the profile sharpens every seventh day you play.</p>
+          <div class="highlight-box"><strong>Clearing the bar is not approval</strong>A story that passes is structurally sound and has survived being played. That is not the same as being good, so a human still signs it off, and the report exists to make that call fast rather than to make the pipeline look clever.</div>
+          <p>The same instinct killed a feature. &ldquo;Stories that do not repeat themselves&rdquo; was on the roadmap and all of us believed it, so I measured first: <b>139 tangles</b>, <b>950 pairs</b> of real player prose, <b>one genuine duplicate</b>. The best thing I shipped that quarter is a thing I removed.</p>
+        </div>
+      </section>
+      <section id="living">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Personality is a living system. An unfolding story, one that shifts depending on who is in the room.</h2>
+          <p class="lede">One play tells you about a Tuesday. You need somebody who keeps choosing to come back.</p>
+          <p>That is the line that turns a quiz into a product, and it cost the most. Seven cards, one a day, sealed in a pack you have to rip. The explore page, where the daily games live, bends toward you as you play: what it puts in front of you is shaped by your patterns, and it holds on to the story you walked away from.</p>
+          <div class="showcase reveal">
+          <div class="showcase-stage">
+          <div class="phone">
+          <div class="phone-screen">
+          <video src="vid/pack.mp4" poster="vid/pack-poster.jpg" muted loop playsinline preload="metadata" aria-label="A sealed pack being ripped open, the week&rsquo;s seven cards fanning out, and the days after today still locked"></video>
+          </div>
+          </div>
+          <div class="phone">
+          <div class="phone-screen">
+          <video src="vid/explore.mp4" poster="vid/explore-poster.jpg" muted loop playsinline preload="metadata" aria-label="Explore: search, filter chips, today&rsquo;s pick, Trove Mysteries, and the continue rail"></video>
+          </div>
+          </div>
+          </div>
+          <p class="cap">The pack rip and the home screen. Both exist so that opening Trove on day nine feels different from opening it on day one.</p>
+          </div>
+          <p>Then something to accumulate. Every tangle needs a play card, and in April that meant hand-assembling one per card, which does not survive a daily cadence for a week. So the card builds itself: it reads what the story is about and picks the art, which sky suits a tense late-night scene, which of the mascots fits a story about being the outsider.</p>
+          <p>Ask a language model for pixel coordinates and it returns numbers that land on the card&rsquo;s existing furniture about half the time, confidently, silently. Nobody gets an alert. You just get an ugly card, forever.</p>
+          <div class="highlight-box"><strong>Give the model taste, never coordinates</strong>It returns semantic choices and deterministic code places them, so the preview in the dashboard is exactly the thing that ships.</div>
+          <p>An unplayed card shows blurred slots, one sticker for each topic its results will touch on. Play it and they fill in with the ones you earned.</p>
+          <div class="showcase reveal">
+          <div class="showcase-stage solo">
+          <div class="phone">
+          <div class="phone-screen">
+          <video src="vid/history.mp4" poster="vid/history-poster.jpg" muted loop playsinline preload="metadata" aria-label="A played tangle in history: the card, the stickers earned, the read, and the share row"></video>
+          </div>
+          </div>
+          </div>
+          <p class="cap">The same card after a play, stickers filled in and the read sitting underneath it. A collection is only evidence of an unfolding story if the things in it were earned.</p>
+          </div>
+        </div>
+      </section>
+      <section id="companion">
+        <div class="section-content reveal">
+          <h2 class="section-heading">What you unlock is a record of what you did, worn instead of written.</h2>
+          <p class="lede">Most companions are built to be pleased to see you. His face reports.</p>
+          <p>Trove tot greets you, reacts to a read, sleeps when you have been away and wears what you unlock. Fourteen poses times twenty-eight accessories is <b>392 drawings</b> nobody was going to make, so he is composited at runtime from one pose sprite with accessory art on top.</p>
+          <p>There is exactly one right answer per slot per pose, and I tried to derive it. I measured his yarn ball, which cannot be measured consistently across poses. Two attempts later I had written a foot detector that confidently found his mouth. Every one failed silently, because a hat two percent off a head does not throw. It just looks faintly cursed, on one pose, forever.</p>
+          <div class="highlight-box warm"><strong>So I stopped deriving and built the tool that authors it</strong>A single static page with the real sprite underneath and the real accessory on top. Drag, scroll, nudge in tenths of a percent. I placed the anchors by hand in an afternoon and deleted the three procedural systems they replaced.</div>
+          <div class="tot-matrix-wrap reveal">
+          <div class="tot-viewport">
+          <div class="tot-scroll">
+          <div class="tot-matrix" id="totMatrix"></div>
+          </div>
+          </div>
+          <p class="tot-hint">Every cell is composited live by the real <span class="px">placeFit()</span> from the codebase, running on the real anchors over the real art. &rarr;&nbsp; Scroll sideways for the other nine poses.</p>
+          </div>
+          <p class="cap">Four outfits across all fourteen poses. Fifty six combinations, none of them drawn.</p>
+          <p>Every product with a mascot has worked out that a creature who misses you is worth a few points of retention. That is part of it. It is not the end of it. What you unlock, you unlocked by playing something, and what you played is the only thing Trove knows about you, so you can look at him and learn something about your own month without a sentence being asserted at you.</p>
+          <p>He runs on one rule. <b>Pose is the clock, face is the care.</b> He changes body through the day so there is a reason to look again, and changes face only when your care changes, so he can never look like he is having a lovely afternoon while he has been ignored for a week.</p>
+          <div class="mood-ladder reveal" id="moodLadder"></div>
+          <p class="cap">Read across, not down. Look after him and he has four different kinds of happy available to him. Ignore him for a fortnight and he has two faces left, both of them bad. The point is not that neglect makes him sad, it is that it takes his range away, and nobody has to be told that for it to land.</p>
+        </div>
+      </section>
+      <section id="patterns">
+        <div class="section-content reveal">
+          <h2 class="section-heading">The patterns worth knowing about yourself are the ones you cannot see from the inside.</h2>
+          <p class="lede">Anything specific enough to be revealing is specific enough to be wrong.</p>
+          <p>It does not stop at the read. The same evidence moves the traits underneath it, which is how one play becomes a profile instead of a receipt. Which is also why the profile could not be a dashboard. A dashboard says <em>here is your data</em>, and data is only ever what you already put in. This had to say <em>here is you</em>, a much ruder sentence that has to earn itself. So it became a spatial diorama: your player pass, the journal your read lives in, the postcards you have sent and the floor they all sit on, sharing one plane, with exactly one in focus while the rest sit parked around it.</p>
+          <div class="showcase reveal">
+          <div class="showcase-stage solo">
+          <div class="phone">
+          <div class="phone-screen">
+          <video src="vid/results-read.mp4" poster="vid/results-read-poster.jpg" muted loop playsinline preload="metadata" aria-label="The results flow handing back the read"></video>
+          </div>
+          </div>
+          </div>
+          <p class="cap">The read itself. Every sentence in it is derived from something you did, not something you declared.</p>
+          </div>
+          <div class="highlight-box"><strong>A living system has an honest speed</strong>The profile re-reads you every seventh day you play, with a meter filling toward the next one. Read every session and you are describing a mood. Never re-read and you are a horoscope.</div>
+          <div class="showcase reveal">
+          <div class="showcase-stage solo">
+          <div class="phone pending">
+          <div class="phone-screen">
+          <p class="pending-note"><b>Clip wanted: the profile diorama</b>A slow scroll through the profile so elements fly to centre and park again. This is the thing I spent the most time on and it is the one part of the page that cannot be shown as a still.</p>
+          </div>
+          </div>
+          </div>
+          <p class="cap">Where the reads accumulate, and the one thing on this page that genuinely cannot be shown as a still.</p>
+          </div>
+          <p>Then the move I am proudest of. Having just told you who you are, it asks whether it got you right. You pick a face, you write a sentence, and it holds your note against the choices you actually made.</p>
+          <div class="showcase reveal">
+          <div class="showcase-stage solo">
+          <div class="phone">
+          <div class="phone-screen">
+          <video src="vid/results-reflect.mp4" poster="vid/results-reflect-poster.jpg" muted loop playsinline preload="metadata" aria-label="The reflection step: picking a face, writing a note, and the closing thought"></video>
+          </div>
+          </div>
+          </div>
+          <p class="cap">Everything before this is a product talking. This is a product listening, and it is the only reason the sentence before it is allowed to be so confident.</p>
+          </div>
+        </div>
+      </section>
+      <section id="bill">
+        <div class="section-content reveal">
+          <h2 class="section-heading">And then it had to survive contact with people.</h2>
+          <p class="lede">Nothing crashed. That was the problem.</p>
+          <p>Three faults cost us real players that quarter and not one raised an error, because each was a system reporting success while quietly failing.</p>
+          <div class="outcome-strip reveal" style="margin:1.4rem 0">
+          <div class="outcome-item"><span class="outcome-num">10.2%</span><span class="outcome-label">of finished one-page games ended with no result card at all</span></div>
+          <div class="outcome-item"><span class="outcome-num">3</span><span class="outcome-label">surfaces taken down by one unindexed query on 11 June</span></div>
+          <div class="outcome-item"><span class="outcome-num">20.3 MB</span><span class="outcome-label">the ninth share-card capture in a session, up from 2.4 on the first</span></div>
+          </div>
+          <p>A result came back correct in every detail except its shape, which meant the safety net never caught it, and everything after that recorded a success. Three surfaces went dark and it looked exactly like a slow network. The share card got heavier every press, quietly, while working.</p>
+          <div class="highlight-box"><strong>This is the one unforgivable failure here</strong>A machine lying to me about whether it had done its job, inside a product whose entire pitch is not lying to you about yourself.</div>
+        </div>
+      </section>
+      <section id="became">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Ten thousand people let a piece of software tell them something about themselves.</h2>
+          <p class="lede">A questionnaire cannot be argued with. It only hands back what you put in.</p>
+          <p>Then they sent it to their friends, which is the part I did not see coming and should have. The patterns you cannot see from the inside are exactly the ones everyone around you has always been able to see. Trove makes them sayable, and puts two of you side by side in the same scene.</p>
+          <div class="showcase reveal">
+          <div class="showcase-stage solo">
+          <div class="phone">
+          <div class="phone-screen">
+          <video src="vid/compare.mp4" poster="vid/compare-poster.jpg" muted loop playsinline preload="metadata" aria-label="A comparison generating: four people who played the same tangle, read side by side, with what each of them did differently"></video>
+          </div>
+          </div>
+          </div>
+          <p class="cap">A comparison: same tangle, two people, and an argument worth having over dinner.</p>
+          </div>
+          <div class="outcome-strip reveal" style="margin:1.4rem 0">
+          <div class="outcome-item"><span class="outcome-num">0 &rarr; 10,250</span><span class="outcome-label">new players from a standing start, March to August</span></div>
+          <div class="outcome-item"><span class="outcome-num">4,479</span><span class="outcome-label">completed playthroughs counted by one production query on 28 August, and the true figure is higher</span></div>
+          <div class="outcome-item"><span class="outcome-num">183</span><span class="outcome-label">tangles live on the platform</span></div>
+          <div class="outcome-item"><span class="outcome-num">1,331</span><span class="outcome-label">of my commits in 18 weeks, more than any other contributor on the repo</span></div>
+          </div>
+          <p>Seven surfaces by August. The iOS app is a thin shell around the web app, built by a teammate in a fortnight, which is the compliment: by July the thing underneath was coherent enough that going native was a wrapper instead of a rewrite.</p>
+          <p>At an event we hosted, someone recognised themselves in most of their read and argued with the part that did not fit, for about five minutes, to my face.</p>
+        </div>
+      </section>
+<section id="takeaways">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Four things I would carry into the next one.</h2>
+          <div class="role-cols reveal" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+            <div class="role-card"><h4>You cannot ask someone who they are</h4><ul><li>The question changes the answer. Every system in Trove exists so that nobody has to answer one.</li></ul></div>
+            <div class="role-card"><h4>Automate the labour, never the attention</h4><ul><li>The writers&rsquo; room and the animator both became systems. Whether a hat sits right, or a story is good rather than merely unbroken, stayed expensive on purpose.</li></ul></div>
+            <div class="role-card"><h4>A person is not a result</h4><ul><li>A read that never moves is a horoscope and a read that always moves is noise. Seven days of play was the honest speed for a living system.</li></ul></div>
+            <div class="role-card"><h4>It has to be willing to be wrong out loud</h4><ul><li>The disclaimer on the score, the reflection step, the wait before re-reading. Every one of them makes the product claim less, and claiming less is what got it believed.</li></ul></div>
+          </div>
+          <p>I spent eighteen weeks building a machine to find the human edge in other people, and it turns out the way you do that is to make something honest enough to be argued with. Nobody argues with a horoscope. They argued with this.</p>
+          <p style="margin-top:1.4rem"><a href="https://play.trove.is" target="_blank" rel="noopener" class="skip-button">&rarr; Play Trove at play.trove.is</a></p>
+        </div>
+      </section>
+
+    </div>
+  </header>
+
+  <script type="module">
+    // cursor
+    const cursor=document.getElementById('cursor');let mouseX=0,mouseY=0,rafId;
+    const hoverSel='a,button,.skip-button,.must-haves-card,.card,.role-card,.chip,.img-tile,.spec-row,.metric,img';
+    function update(){cursor.style.left=mouseX+'px';cursor.style.top=mouseY+'px'}
+    addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;if(!rafId){rafId=requestAnimationFrame(()=>{update();rafId=null;});}});
+    addEventListener('mousedown',()=>cursor.classList.add('clicking'));
+    addEventListener('mouseup',()=>cursor.classList.remove('clicking'));
+    addEventListener('mouseover',e=>{if(e.target.closest(hoverSel))cursor.classList.add('hovering')});
+    addEventListener('mouseout',e=>{if(e.target.closest(hoverSel))cursor.classList.remove('hovering')});
+    addEventListener('mouseleave',()=>{cursor.style.opacity='0'});
+    addEventListener('mouseenter',()=>{cursor.style.opacity='1'});
+
+    // --- heading scramble + font-mix (house signature) ---
+    (function(){
+      const CHARSET='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
+      const RUNS=[3,2];
+      function rand(){return CHARSET[Math.floor(Math.random()*CHARSET.length)];}
+
+      function scramble(el,text,dur,onDone){
+        const len=text.length;
+        const revealed=new Array(len).fill(false);
+        const t0=performance.now();
+        (function frame(now){
+          const p=Math.min(1,(now-t0)/dur);
+          const upto=Math.floor(p*len*1.15);
+          for(let i=0;i<upto;i++) if(!revealed[i]&&Math.random()<0.4) revealed[i]=true;
+          let out='';
+          for(let i=0;i<len;i++){
+            const c=text[i];
+            if(c===' '){out+=' ';continue;}
+            out+=revealed[i]?c:rand();
+          }
+          el.textContent=out;
+          if(p<1||revealed.some(r=>!r)) requestAnimationFrame(frame);
+          else onDone();
+        })(performance.now());
+      }
+
+      function fontMix(el,text){
+        let html='',runIdx=0,runCount=0,usePx=true;
+        for(let i=0;i<text.length;i++){
+          const cp=text.codePointAt(i);
+          if(cp>127){html+=String.fromCodePoint(cp);if(cp>0xFFFF)i++;continue;}
+          const c=text[i];
+          if(c===' '){html+=' ';continue;}
+          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
+          if(++runCount>=RUNS[runIdx%2]){usePx=!usePx;runIdx++;runCount=0;}
+        }
+        el.innerHTML=html;
+      }
+
+      const hio=new IntersectionObserver((entries,obs)=>{
+        entries.forEach(en=>{
+          if(!en.isIntersecting)return;
+          obs.unobserve(en.target);
+          const el=en.target;
+          const text=el.textContent.trim();
+          el.style.opacity='1';el.style.transform='none';
+          el.classList.add('h-scrambling');
+          scramble(el,text,860,()=>{
+            el.classList.remove('h-scrambling');
+            fontMix(el,text);
+            el.classList.add('h-settled');
+          });
+        });
+      },{threshold:0.2});
+      document.querySelectorAll('.section-heading').forEach(h=>hio.observe(h));
+
+      // sub-headings + stat numbers, font mix on load, no animation
+      setTimeout(()=>{
+        document.querySelectorAll('.sub-heading').forEach(el=>{
+          fontMix(el,el.textContent.trim());
+        });
+      },100);
+
+      // hero h1
+      const h1=document.querySelector('.intro-left h1');
+      if(h1){
+        const t=h1.textContent.trim();
+        setTimeout(()=>{
+          h1.classList.add('h-scrambling');
+          scramble(h1,t,1050,()=>{h1.classList.remove('h-scrambling');fontMix(h1,t);h1.classList.add('h-settled');});
+        },340);
+      }
+    })();
+
+    // ---- TOT PERMUTATION MATRIX ----
+    // placeFit() ported verbatim from apps/trove/src/lib/tot-fit.ts
+    (async function(){
+      const host=document.getElementById('totMatrix'); if(!host) return;
+      let D; try{ D=await fetch('tot-data.json').then(r=>r.json()); }catch(e){ return; }
+      const SLOTS=['head','face','worn','held','footL','footR'];
+      const POSES=Object.keys(D.anchors);
+
+      // four outfits, worn slot is the scarf throughout
+      const OUTFITS=[
+        {name:'The five references', sub:'crown · round glasses · scarf · camera · rain boots',
+         fit:{head:'crown',face:'round-eye-glasses',worn:'scarf',held:'camera',footL:'rain-boots',footR:'rain-boots'}},
+        {name:'Off to get coffee', sub:'bucket hat · heart shades · scarf · coffee · sneakers',
+         fit:{head:'bucket-hat',face:'sunglasses-heart',worn:'scarf',held:'coffee',footL:'sneakers',footR:'sneakers'}},
+        {name:'Library day', sub:'beanie · mustache · scarf · book · roller skates',
+         fit:{head:'beanie',face:'mustache',worn:'scarf',held:'book',footL:'roller-skates',footR:'roller-skates'}},
+        {name:'Running errands', sub:'flower crown · round glasses · scarf · tote bag · rain boots',
+         fit:{head:'flower-crown',face:'round-eye-glasses',worn:'scarf',held:'tote-bag',footL:'rain-boots',footR:'rain-boots'}},
+      ];
+
+      function placeFit(pose,slot,itemId){
+        const a=(D.anchors[pose]||{})[slot], it=D.items[itemId], box=D.boxes[pose];
+        if(!a||!it||!box) return null;
+        const width=a.w*it.rw;
+        const height=width*(box.w/box.h)*it.aspect;
+        // dy is in reference WIDTHS while y is a percentage of HEIGHT, so it
+        // converts through the sprite's own aspect.
+        return {left:a.x+it.dx*a.w-width/2,
+                top:a.y+it.dy*a.w*(box.w/box.h)-height/2,
+                width, rotate:a.rot||0, flip:!!a.flip};
+      }
+      const accSrc=(slot,id)=> slot==='footL' ? 'img/acc/'+id+'-l.webp'
+                            : slot==='footR' ? 'img/acc/'+id+'-r.webp'
+                            : 'img/acc/'+id+'.webp';
+
+      // build the grid
+      const hrow=document.createElement('div'); hrow.className='tot-hrow';
+      hrow.innerHTML='<div>Outfit</div>'+POSES.map(p=>'<div>'+p.replace(/-/g,' ')+'</div>').join('');
+      host.appendChild(hrow);
+
+      const cells=[];
+      for(const o of OUTFITS){
+        const row=document.createElement('div'); row.className='tot-row';
+        const lab=document.createElement('div'); lab.className='tot-rowlabel';
+        lab.innerHTML='<span><b>'+o.name+'</b>'+o.sub+'</span>';
+        row.appendChild(lab);
+        for(const pose of POSES){
+          const cell=document.createElement('div'); cell.className='tot-cell';
+          const b=document.createElement('img'); b.className='tot-body'; b.alt=pose+' wearing '+o.name;
+          b.loading='lazy'; b.src='img/tot/'+pose+'.webp';
+          cell.appendChild(b); row.appendChild(cell);
+          cells.push({cell,body:b,pose,fit:o.fit});
+        }
+        host.appendChild(row);
+      }
+
+      function paint(){
+        for(const c of cells){
+          const box=D.boxes[c.pose]; if(!box) continue;
+          const cb=c.cell.getBoundingClientRect(); if(!cb.height) continue;
+          c.cell.querySelectorAll('.tot-acc').forEach(n=>n.remove());
+          // contain-fit inside the cell. Sizing on height alone let a pose
+          // wider than it is tall spill out of its square.
+          const k=Math.min(cb.height*0.88/box.h, cb.width*0.88/box.w);
+          const bh=box.h*k, bw=box.w*k;
+          c.body.style.width=bw+'px'; c.body.style.height=bh+'px';
+          const bl=(cb.width-bw)/2, bt=(cb.height-bh)/2;
+          for(const slot of SLOTS){
+            const id=c.fit[slot]; if(!id) continue;
+            const pl=placeFit(c.pose,slot,id); if(!pl) continue;   // no anchor = pose does not wear it
+            const img=document.createElement('img');
+            img.className='tot-acc'; img.src=accSrc(slot,id); img.alt=''; img.loading='lazy';
+            img.style.left=(bl+pl.left/100*bw)+'px';
+            img.style.top=(bt+pl.top/100*bh)+'px';
+            img.style.width=(pl.width/100*bw)+'px';
+            img.style.transform='rotate('+pl.rotate+'deg)'+(pl.flip?' scaleX(-1)':'');
+            c.cell.appendChild(img);
+          }
+        }
+      }
+      paint();
+      (function(){
+        const sc=document.querySelector('.tot-scroll'), vp=sc&&sc.closest('.tot-viewport');
+        if(!sc||!vp) return;
+        const sync=()=>vp.classList.toggle('at-end', sc.scrollLeft+sc.clientWidth >= sc.scrollWidth-4);
+        sc.addEventListener('scroll',sync); addEventListener('resize',sync); sync();
+      })();
+      window.addEventListener('load',paint);
+      addEventListener('resize',paint);
+      // the reveal transition changes layout, so place again once it settles
+      new IntersectionObserver((es,o)=>{es.forEach(e=>{if(e.isIntersecting){setTimeout(paint,700);o.disconnect();}})},{threshold:.05}).observe(host);
+    })();
+
+    /* ── the expression ladder ──────────────────────────────────────────
+       POSES, FACES, PLATE_OVERSCAN and placeFace() are lifted verbatim from
+       apps/trove/src/lib/tot-poses.ts, so what you see below is the product's
+       own compositor running on the product's own measurements. Bodies and
+       faces are separate files: five bodies and twelve faces is sixty moments
+       out of seventeen drawings, and a new feeling costs one row of numbers. */
+    (function(){
+      const host=document.getElementById('moodLadder'); if(!host) return;
+
+      const PLATE_OVERSCAN=1.05;
+      const POSES={
+        standing:{w:493,h:802,cx:50.1,cy:50.81,unit:59.03,scale:1.0,plateAspect:0.6873,rot:0},
+        hill:{w:376,h:440,cx:58.38,cy:44.43,unit:42.55,scale:1.038,plateAspect:0.8,rot:-6.31},
+        kite:{w:440,h:423,cx:42.73,cy:48.11,unit:26.14,scale:1.2133,plateAspect:0.7652,rot:-6.21},
+        coffee:{w:280,h:440,cx:40.89,cy:44.66,unit:52.14,scale:0.974,plateAspect:0.8082,rot:0},
+        tangled:{w:440,h:429,cx:53.0,cy:39.0,unit:34.0,scale:0.8373,plateAspect:0.745,rot:0}
+      };
+      const FACES={
+        content:{factor:1.05785,ox:49.9,oy:49.84,aspect:0.6191,plateAspect:0.5971,rot:0},
+        delighted:{factor:1.24574,ox:49.02,oy:51.07,aspect:0.5488,plateAspect:0.6083,rot:0},
+        sly:{factor:1.06004,ox:50.0,oy:50.0,aspect:0.6484,plateAspect:0.6273,rot:0},
+        starstruck:{factor:1.05567,ox:50.0,oy:50.0,aspect:0.748,plateAspect:0.734,rot:0},
+        sobbing:{factor:1.16895,ox:46.19,oy:45.27,aspect:0.6406,plateAspect:0.6256,rot:0},
+        adoring:{factor:1.05785,ox:49.9,oy:49.84,aspect:0.6211,plateAspect:0.5992,rot:0},
+        silly:{factor:1.06004,ox:50.0,oy:50.0,aspect:0.6484,plateAspect:0.6273,rot:0},
+        mischief:{factor:1.05785,ox:49.9,oy:49.84,aspect:0.6191,plateAspect:0.5971,rot:0},
+        sideeye:{factor:1.06004,ox:50.0,oy:50.0,aspect:0.6699,plateAspect:0.6501,rot:0},
+        worried:{factor:1.06004,ox:50.0,oy:50.0,aspect:0.6543,plateAspect:0.6335,rot:0},
+        yawning:{factor:1.05567,ox:50.0,oy:50.0,aspect:0.6836,plateAspect:0.666,rot:0}
+      };
+      function placeFace(pose,face){
+        const p=POSES[pose]; if(!p) return null;
+        const f=FACES[face]; if(!f) return null;
+        const width=p.unit*f.factor*PLATE_OVERSCAN;
+        const height=width*(p.w/p.h)*f.aspect;
+        return { left:p.cx-(f.ox/100)*width, top:p.cy-(f.oy/100)*height, width,
+                 originX:f.ox, originY:f.oy, rotate:p.rot+f.rot,
+                 squash:p.plateAspect/f.plateAspect };
+      }
+
+      // one body per level of care, and every face that level can reach
+      const ROWS=[
+        {mood:'Thriving',  sub:'four kinds of happy',    pose:'kite',
+         faces:['delighted','starstruck','silly','adoring']},
+        {mood:'Content',   sub:'settled, a bit cheeky',  pose:'hill',
+         faces:['content','sly','sideeye','mischief']},
+        {mood:'Sleepy',    sub:'starting to narrow',     pose:'coffee',
+         faces:['yawning','content','sideeye']},
+        {mood:'Sad',       sub:'quiet, and not hiding it', pose:'standing',
+         faces:['worried','sideeye','yawning']},
+        {mood:'Withdrawn', sub:'two faces left',         pose:'tangled',
+         faces:['sobbing','worried']}
+      ];
+      const BASE=118;   // px of HIM; each pose's own framing scales off this
+
+      const cells=[];
+      for(const r of ROWS){
+        const row=document.createElement('div'); row.className='ml-row';
+        const lab=document.createElement('div'); lab.className='ml-mood';
+        lab.innerHTML='<b>'+r.mood+'</b>'+r.sub;
+        const set=document.createElement('div'); set.className='ml-set';
+        for(const face of r.faces){
+          const fig=document.createElement('figure'); fig.className='ml-tot';
+          const art=document.createElement('div'); art.className='ml-art';
+          art.style.setProperty('--ml-h', Math.round(BASE*POSES[r.pose].scale)+'px');
+          const b=document.createElement('img'); b.className='ml-body';
+          b.src='img/tot/'+r.pose+'.webp'; b.loading='lazy';
+          b.alt='Trove tot, '+r.pose.replace('-',' ')+', looking '+face;
+          const fc=document.createElement('img'); fc.className='ml-face';
+          fc.src='img/face/'+face+'.webp'; fc.alt=''; fc.loading='lazy';
+          art.append(b,fc);
+          const cap=document.createElement('figcaption'); cap.className='ml-name'; cap.textContent=face;
+          fig.append(art,cap); set.appendChild(fig);
+          cells.push({art,body:b,face:fc,pose:r.pose,name:face});
+        }
+        row.append(lab,set); host.appendChild(row);
+      }
+
+      /* The placement is in percent of the SPRITE BOX, so it needs the body's
+         rendered width — which is only known once the webp has decoded. */
+      function paint(){
+        for(const c of cells){
+          const bw=c.body.offsetWidth, bh=c.body.offsetHeight;
+          if(!bw||!bh) continue;
+          const pl=placeFace(c.pose,c.name); if(!pl) continue;
+          const w=pl.width/100*bw;
+          c.face.style.width=w+'px';
+          c.face.style.left=(pl.left/100*bw)+'px';
+          c.face.style.top=(pl.top/100*bh)+'px';
+          c.face.style.transformOrigin=pl.originX+'% '+pl.originY+'%';
+          c.face.style.transform='rotate('+pl.rotate+'deg) scaleY('+pl.squash+')';
+        }
+      }
+      paint();
+      cells.forEach(c=>{ if(!c.body.complete) c.body.addEventListener('load',paint,{once:true}); });
+      window.addEventListener('load',paint);
+      addEventListener('resize',paint);
+      new IntersectionObserver((es,o)=>{es.forEach(e=>{if(e.isIntersecting){setTimeout(paint,700);o.disconnect();}})},{threshold:.05}).observe(host);
+    })();
+
+    // reveals
+    /* A block taller than (viewport / threshold) can never reach that ratio,
+       so a long section used to sit at opacity 0 for ever. Menzo's migration
+       jam was 3778px against a 775px window: a ceiling of 0.205 against a
+       0.2 bar. The extra thresholds keep the callback firing while you
+       scroll, and a block too tall to qualify on its own ratio qualifies on
+       how much of the screen it fills instead. */
+    const io=new IntersectionObserver((es,o)=>{
+      es.forEach(en=>{
+        if(!en.isIntersecting) return;
+        if(en.intersectionRatio>=.15 || en.intersectionRect.height>=innerHeight*.25){en.target.classList.add('active');o.unobserve(en.target);}
+      });
+    },{threshold:[0,.05,.1,.15,.2]});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    /* Safety net. The reveal is decoration, so nothing on the page is allowed
+       to stay invisible because an observer did not fire: no scroll events
+       reach this document while it is embedded in the portfolio pane, so this
+       polls instead, and retires itself the moment everything is shown. */
+    (function(){
+      const SEL = '.reveal';
+      let ticks = 0;
+      const sweep = () => {
+        const left = document.querySelectorAll(SEL + ':not(.active)');
+        left.forEach(el => {
+          const r = el.getBoundingClientRect();
+          if (r.top < innerHeight * 0.92 && r.bottom > 0) el.classList.add('active');
+        });
+        if (!left.length || ++ticks > 300) clearInterval(timer);
+      };
+      const timer = setInterval(sweep, 200);
+      sweep();
+    })();
+
+  </script>
+
+  <!-- QUICK LINKS -->
+  <style>
+    html{scroll-behavior:smooth}
+    /* top:110px used to sit under the nav pill; with the nav gone it landed
+       on the copy, so the jump list moves out of the reading column */
+    #ql-widget{position:fixed;right:1.4rem;bottom:1.4rem;top:auto;z-index:900;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:.4rem}
+    /* the portfolio rail carries the contents when embedded, so the
+       floating widget would just be a second copy of the same list */
+    html[data-embedded] #ql-widget{display:none!important}
+    #ql-panel{display:flex;flex-direction:column;gap:.1rem;background:rgba(var(--paper-soft-rgb),.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--edge);border-radius:14px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:200px;box-shadow:var(--sh-md)}
+    #ql-panel.open{max-height:600px;opacity:1;padding:.45rem}
+    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;padding:.42rem .7rem;border-radius:8px;transition:background .18s,color .18s}
+    #ql-panel a .ql-num{display:inline-block;min-width:1.7em;font-family:'DotempDemo',monospace;font-size:0.78rem;color:var(--accent-ink);margin-right:.25rem}
+    #ql-panel a:hover{background:var(--apricot-wash);color:var(--accent-deep)}
+    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(var(--paper-soft-rgb),.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--edge);border-radius:999px;padding:.48rem 1.05rem;color:var(--ink);font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s;box-shadow:var(--sh-sm)}
+    #ql-toggle:hover{background:var(--apricot-wash);border-color:var(--accent)}
+    #ql-icon{font-size:1rem;line-height:1;color:var(--accent-ink)}
+    @media(max-width:768px){#ql-widget{right:1rem;top:auto;bottom:1.5rem;flex-direction:column-reverse}#ql-panel{min-width:min(200px,80vw)}}
+  </style>
+  <div id="ql-widget">
+    <button id="ql-toggle" aria-label="Toggle section links" aria-expanded="false">
+      <span id="ql-icon">≡</span><span>Sections</span>
+    </button>
+    <div id="ql-panel"></div>
+  </div>
+  <script>
+    (function(){
+      const panel=document.getElementById('ql-panel');
+      const toggle=document.getElementById('ql-toggle');
+      const icon=document.getElementById('ql-icon');
+      let open=false;
+      function close(){open=false;panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');icon.textContent='≡';}
+      function mkLink(href,num,label,fn){
+        const a=document.createElement('a');
+        a.href=href;
+        a.innerHTML=`<span class="ql-num">${String(num).padStart(2,'0')}</span>${label}`;
+        a.addEventListener('click',fn||close);
+        return a;
+      }
+      panel.appendChild(mkLink('#',0,'Overview',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});close();}));
+      const ITEMS=[{id:'',label:'Overview',num:0}];
+      const LABELS={
+        'ask':'It cannot ask you anything','living':'A living system','companion':'The companion',
+        'patterns':'What you cannot see','bill':'The bill','became':'What it became','takeaways':'Takeaways'
+      };
+      let n=1;
+      document.querySelectorAll('section[id]').forEach(sec=>{
+        const label=LABELS[sec.id];
+        if(!label)return;
+        const num=n++;
+        ITEMS.push({id:sec.id,label:label,num:num});
+        panel.appendChild(mkLink('#'+sec.id,num,label));
+      });
+      toggle.addEventListener('click',e=>{e.stopPropagation();open=!open;panel.classList.toggle('open',open);toggle.setAttribute('aria-expanded',open);icon.textContent=open?'×':'≡';});
+      document.addEventListener('click',e=>{if(open&&!document.getElementById('ql-widget').contains(e.target))close();});
+
+      /* embedded, the portfolio rail carries these instead of the widget:
+         hand them up, answer a request, take scroll orders, and keep the
+         rail's highlight on whatever the reader is actually looking at */
+      if(window.parent!==window){
+        const post=m=>{try{window.parent.postMessage(m,'*');}catch(e){}};
+        const sendToc=()=>post({type:'caseToc',items:ITEMS});
+        /* the browser drops programmatic smooth scrolls inside this pane,
+           so the glide is ours. scroll-behavior goes to auto for the
+           duration or every frame tries to animate on top of us. */
+        const scroller=()=>document.scrollingElement||document.documentElement;
+        const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+        let anim=0;
+        const stopGlide=()=>{
+          cancelAnimationFrame(anim);
+          scroller().style.scrollBehavior='';
+        };
+        const glide=to=>{
+          const se=scroller();
+          const from=se.scrollTop;
+          const dist=Math.max(0,Math.min(to,se.scrollHeight-innerHeight))-from;
+          if(!dist)return;
+          stopGlide();
+          se.style.scrollBehavior='auto';
+          const t0=performance.now();
+          const dur=Math.min(900,Math.max(320,Math.abs(dist)*0.45));
+          const step=now=>{
+            const t=Math.min(1,(now-t0)/dur);
+            se.scrollTop=from+dist*ease(t);
+            if(t<1)anim=requestAnimationFrame(step);
+            else se.style.scrollBehavior='';
+          };
+          anim=requestAnimationFrame(step);
+        };
+        addEventListener('wheel',stopGlide,{passive:true});
+        addEventListener('touchstart',stopGlide,{passive:true});
+        sendToc();
+        addEventListener('message',ev=>{
+          const d=ev.data;
+          if(!d||typeof d!=='object')return;
+          if(d.type==='caseTocRequest')sendToc();
+          else if(d.type==='caseScrollTo'){
+            const el=d.id?document.getElementById(d.id):null;
+            glide(el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
+          }
+        });
+        /* tell the rail which section the reader is in */
+        let last=null,ticking=false;
+        const spy=()=>{
+          ticking=false;
+          const line=innerHeight*0.32;
+          let id='';
+          for(const it of ITEMS){
+            if(!it.id)continue;
+            const el=document.getElementById(it.id);
+            if(el&&el.getBoundingClientRect().top<=line)id=it.id;
+          }
+          if(id!==last){last=id;post({type:'caseSection',id:id});}
+        };
+        addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(spy);}},{passive:true});
+        spy();
+      }
+    })();
+  </script>
+
+  <!-- theme: the portfolio shell posts its theme in, and standalone we read
+       it ourselves, so this page is never stuck in the wrong one -->
+  <script>
+    (function(){
+      function set(t){ document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+      var t; try { t = localStorage.getItem('theme'); } catch(e) {}
+      if(!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      set(t);
+      addEventListener('message', function(e){
+        if(e && e.data && e.data.type === 'theme') set(e.data.value);
+      });
+    })();
+  </script>
+
+  <!-- cursor: the shell draws the one cursor and already listens for these,
+       so embedded we hide ours and feed it. Standalone, ours stays. -->
+  <script>
+    (function(){
+      if (window.parent === window) return;
+      document.documentElement.setAttribute('data-embedded', '');
+      var ring = document.getElementById('cursor');
+      if (ring) ring.style.display = 'none';
+      var HOVER = 'a,button,input,select,textarea,summary,[role="button"],[onclick],' +
+                  '.skip-button,.card,.role-card,.quote-card,.stats-card,.must-haves-card,' +
+                  '.glass-card,.chip,.img-tile,.spec-row,.metric,img';
+      function post(m){ try { window.parent.postMessage(m, '*'); } catch (e) {} }
+      // posted straight from the event: rAF inside a pane the browser is
+      // throttling can stall, and that shows up as a cursor that lags or sticks
+      var lx = -1, ly = -1;
+      addEventListener('mousemove', function(e){
+        if (e.clientX === lx && e.clientY === ly) return;
+        lx = e.clientX; ly = e.clientY;
+        post({type:'iframeMouse', x:lx, y:ly});
+      });
+      addEventListener('mousedown',  function(){ post({type:'iframeDown'}); });
+      addEventListener('mouseup',    function(){ post({type:'iframeUp'}); });
+      addEventListener('mouseleave', function(){ post({type:'iframeLeave'}); });
+      addEventListener('mouseover', function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:true}); });
+      addEventListener('mouseout',  function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:false}); });
+    })();
+  </script>
+
+  <!-- device clips: play only while on screen, and never under reduced motion -->
+  <script>
+    (function(){
+      var vids = [].slice.call(document.querySelectorAll('.phone-screen video'));
+      if (!vids.length) return;
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        vids.forEach(function(v){ v.removeAttribute('autoplay'); v.pause(); });
+        return;
+      }
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (e.isIntersecting) { e.target.play().catch(function(){}); }
+          else { e.target.pause(); }
+        });
+      }, { threshold: 0.25 });
+      vids.forEach(function(v){ io.observe(v); });
+    })();
+  </script>
+</body>
+</html>

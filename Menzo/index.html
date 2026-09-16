@@ -10,6 +10,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
 
   <style>
+    /* ── type scale ────────────────────────────────────────────────
+       One fluid root so every rem on the page grows with the screen
+       instead of sitting at a fixed 16px. The floor and ceiling are
+       in rem, not px, so a reader who has raised their browser's
+       default font size keeps that increase (WCAG 1.4.4). */
+    html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
+
     @font-face {
       font-family: 'DotempDemo';
       src: url('../fonts/DotempDemo.ttf') format('truetype');
@@ -19,33 +26,74 @@
     .di { font-family: 'Didot', 'Cormorant Garamond', serif; font-style: italic; font-weight: 700; }
 
     :root {
+      --accent-rgb: 123,94,167;
+      --accent-soft-rgb: 180,140,220;
+      --accent-deep-rgb: 90,40,160;
+      --deep-rgb: 15,20,25;
+      --chrome-rgb: 8,4,18;
+      --lift-rgb: 255,255,255;
+      --ink-rgb: 241,250,238;
+      --sh-rgb: 0,0,0;
+      --sh-k: 1;
+      --paper: #0B0616;
       --text-primary: #f1faee;
       --text-secondary: #c8aee8;
       --accent-teal: #9b7ec8;
       --accent-blue: #7b5ea7;
       --accent-purple: #c084fc;
-      --glass-deep-1: rgba(16,8,30,0.91);
-      --glass-deep-2: rgba(28,10,52,0.96);
-      --glass-border: rgba(180,140,220,0.22);
+      --glass-deep-1: rgba(var(--deep-rgb),0.91);
+      --glass-deep-2: rgba(var(--deep-rgb),0.96);
+      --glass-border: rgba(var(--accent-soft-rgb),0.22);
       --glass-highlight-1: rgba(168,100,240,.10);
       --glass-highlight-2: rgba(123,60,200,.14);
-      --glass-bg: rgba(12,5,24,0.35);
-      --inner-card: rgba(12,5,24,.42);
-      --rule: rgba(180,140,220,0.24);
+      --glass-bg: rgba(var(--deep-rgb),0.35);
+      --inner-card: rgba(var(--deep-rgb),.42);
+      --rule: rgba(var(--accent-soft-rgb),0.24);
+    }
+
+    /* ── LIGHT THEME ───────────────────────────────────────────
+       Authored dark, so light restates the same colour families
+       rather than inverting them: glass goes to paper, the deep
+       washes go pale, and every accent drops to a value that
+       clears WCAG AA on the light surface it lands on. */
+    :root[data-theme="light"] {
+      --text-primary: #16101F;
+      --text-secondary: #56328F;
+      --accent-teal: #5E3C9E;
+      --accent-blue: #4C2F86;
+      --accent-purple: #6D28C7;
+      --glass-deep-1: rgba(255,255,255,0.94);
+      --glass-deep-2: rgba(250,247,255,0.97);
+      --glass-border: rgba(94,60,158,0.26);
+      --glass-highlight-1: rgba(109,40,199,.07);
+      --glass-highlight-2: rgba(76,47,134,.08);
+      --glass-bg: rgba(255,255,255,0.74);
+      --inner-card: rgba(255,255,255,0.80);
+      --rule: rgba(94,60,158,0.24);
+      --accent-rgb: 94,60,158;
+      --accent-soft-rgb: 86,50,143;
+      --accent-deep-rgb: 76,47,134;
+      --deep-rgb: 238,232,250;
+      --chrome-rgb: 255,255,255;
+      --lift-rgb: 94,60,158;
+      --ink-rgb: 22,16,31;
+      --sh-rgb: 46,32,72;
+      --sh-k: .34;
+      --paper: #F7F3FF;
+    }
+    :root[data-theme="light"] .intro-left h1 {
+      background-image:linear-gradient(45deg,#6D28C7,#4C2F86,#7A46C9,#56328F,#5E3C9E);
+      background-size:200% 200%;
     }
 
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{background:transparent !important}
-    body{font-family:Montserrat,system-ui,-apple-system,sans-serif;color:var(--text-primary)}
+        body{font-family:Montserrat,system-ui,-apple-system,sans-serif;color:var(--text-primary)}
     a{text-decoration:none;color:inherit}
     ul{list-style:disc inside}
 
-    #bg-host{position:fixed;inset:0;z-index:-1;pointer-events:none}
-    #bg-host>iframe{width:100%;height:100%;border:0;display:block}
-
-    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(123,94,167,.3);border:2px solid rgba(123,94,167,.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(123,94,167,.4),inset 0 0 10px rgba(123,94,167,.1)}
-    .custom-cursor.clicking{background:rgba(123,94,167,.9);border-color:rgba(123,94,167,1);transform:translate(-50%,-50%) scale(.8)}
-    .custom-cursor.hovering{width:30px;height:30px;background:rgba(123,94,167,.4);border-color:rgba(123,94,167,.9);box-shadow:0 0 20px rgba(123,94,167,.6)}
+    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(var(--accent-rgb),.3);border:2px solid rgba(var(--accent-rgb),.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(var(--accent-rgb),.4),inset 0 0 10px rgba(var(--accent-rgb),.1)}
+    .custom-cursor.clicking{background:rgba(var(--accent-rgb),.9);border-color:rgba(var(--accent-rgb),1);transform:translate(-50%,-50%) scale(.8)}
+    .custom-cursor.hovering{width:30px;height:30px;background:rgba(var(--accent-rgb),.4);border-color:rgba(var(--accent-rgb),.9);box-shadow:0 0 20px rgba(var(--accent-rgb),.6)}
     *,*::before,*::after{cursor:none !important}
 
     @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
@@ -54,19 +102,22 @@
 
     /* ---- CONFIDENTIALITY NOTICE ---- */
     .confidentiality-notice {
-      border: 1px solid rgba(123,94,167,0.4);
-      border-left: 3px solid rgba(123,94,167,0.8);
-      background: rgba(123,94,167,0.07);
+      --notice-rgb: 168,108,240;
+      border: 1px solid rgba(var(--notice-rgb),0.52);
+      border-left: 5px solid rgb(var(--notice-rgb));
+      background: linear-gradient(90deg, rgba(var(--notice-rgb),0.20), rgba(var(--notice-rgb),0.11) 55%, rgba(var(--notice-rgb),0.07));
+      box-shadow: 0 6px 22px rgba(var(--notice-rgb),0.18);
       border-radius: 0 12px 12px 0;
       padding: 1.25rem 1.5rem;
       margin-bottom: clamp(28px,4vh,44px);
     }
+    :root[data-theme="light"] .confidentiality-notice{ --notice-rgb: 109,40,199 }
     .confidentiality-notice .notice-label {
-      font-size: .7rem;
+      font-size: 0.78rem;
       font-weight: 700;
       letter-spacing: .18em;
       text-transform: uppercase;
-      color: rgba(168,140,220,0.85);
+      color: rgb(var(--notice-rgb));
       margin-bottom: .5rem;
       display: block;
     }
@@ -81,7 +132,7 @@
     /* ---- EYEBROW ---- */
     .eyebrow {
       display: block;
-      font-size: .72rem;
+      font-size: 0.84rem;
       font-weight: 700;
       letter-spacing: .14em;
       text-transform: uppercase;
@@ -89,7 +140,7 @@
       margin-bottom: .6rem;
       opacity: .85;
     }
-    .eyebrow.purple { color: rgba(168,140,220,0.9); }
+    .eyebrow.purple { color: rgba(var(--accent-soft-rgb),0.9); }
 
     /* ---- HEADINGS ---- */
     .section-heading {
@@ -145,7 +196,7 @@
       border: 1px solid var(--glass-border);
       backdrop-filter: blur(18px) saturate(120%);
       -webkit-backdrop-filter: blur(18px) saturate(120%);
-      box-shadow: 0 24px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow: 0 24px 80px rgba(var(--sh-rgb), calc(.55 * var(--sh-k))), inset 0 1px 0 rgba(var(--lift-rgb),.04);
       overflow: hidden;
     }
     .hero-container::before, .hero-container::after {
@@ -197,9 +248,9 @@
     .tldr-pills { display:flex; flex-wrap:wrap; gap:6px 8px; margin-top:.85rem; padding:0; list-style:none; }
     .tldr-pills .pill {
       display:inline-flex; align-items:center; gap:6px;
-      font-size:.78rem; line-height:1.15;
+      font-size:0.84rem; line-height:1.15;
       padding:4px 10px; border-radius:999px;
-      background:rgba(255,255,255,.05); border:1px solid rgba(168,140,220,0.18);
+      background:rgba(var(--lift-rgb),.05); border:1px solid rgba(var(--accent-soft-rgb),0.18);
     }
 
     /* ---- OUTCOME STRIP ---- */
@@ -225,6 +276,44 @@
     /* ---- RULE ---- */
     .section-rule { border:0; border-top:1px solid var(--rule); margin: clamp(32px,5vh,56px) 0; }
 
+    /* ---- BANNER + META HEADER ---- */
+    .case-banner{
+      width:100%; border-radius:18px; overflow:hidden;
+      border:1px solid var(--glass-border);
+      box-shadow:0 10px 34px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      margin-bottom:clamp(30px,5vh,60px);
+      background:var(--inner-card);
+    }
+    .case-banner img{display:block;width:100%;height:auto}
+    .meta-grid{
+      display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:1.6rem 2rem; margin-bottom:clamp(34px,6vh,72px);
+    }
+    .meta-col h4{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); margin-bottom:.8rem;
+    }
+    .meta-col p{font-size:.93rem;line-height:1.6;color:var(--text-primary)}
+    .overview-label{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); display:block; margin-bottom:.9rem;
+    }
+    .overview-head{
+      font-size:clamp(1.5rem,3.1vw,2.35rem); font-weight:700; line-height:1.22;
+      color:var(--text-primary); margin-bottom:1.1rem; letter-spacing:-.01em;
+    }
+    .overview-body p{font-size:1.02rem;line-height:1.7;max-width:74ch;margin-bottom:.9rem}
+    .overview-body p:last-child{margin-bottom:0}
+    /* the banner carries the wordmark, so the heading is for screen readers */
+    .sr-only{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+    }
+    @media(max-width:900px){ .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media(max-width:560px){ .meta-grid{grid-template-columns:1fr} }
+
     /* ---- SECTIONS ---- */
     section { width:100%; padding: clamp(32px,5vh,56px) 0; position:relative; }
     .section-content { max-width:100%; margin:0 auto; text-align:left; }
@@ -235,7 +324,7 @@
 
     /* ---- PULL QUOTE ---- */
     .pull-quote {
-      border-left: 3px solid rgba(123,94,167,0.7);
+      border-left: 3px solid rgba(var(--accent-rgb),0.7);
       padding: .9rem 1.5rem; margin: 1.5rem 0;
       font-size:1.15rem; font-style:italic;
       color:var(--text-secondary); line-height:1.5;
@@ -247,14 +336,14 @@
 
     /* ---- HIGHLIGHT BOX ---- */
     .highlight-box {
-      border-left:2px solid rgba(180,140,220,0.45);
+      border-left:2px solid rgba(var(--accent-soft-rgb),0.45);
       padding:.9rem 1.1rem .9rem 1.25rem; margin-top:.75rem;
-      background:rgba(15,20,25,.3); border-radius:0 10px 10px 0;
+      background:rgba(var(--deep-rgb),.3); border-radius:0 10px 10px 0;
       font-size:.95rem; line-height:1.55; color:var(--text-primary);
     }
     .highlight-box.purple {
-      border-left-color: rgba(123,94,167,0.5);
-      background: rgba(123,94,167,.06);
+      border-left-color: rgba(var(--accent-rgb),0.5);
+      background: rgba(var(--accent-rgb),.06);
     }
     .highlight-box strong { color:var(--text-secondary); }
 
@@ -266,22 +355,22 @@
     .role-card {
       border-top: 2px solid var(--accent-teal);
       padding: 1.5rem;
-      background: rgba(15,20,25,.3);
+      background: rgba(var(--deep-rgb),.3);
       border-radius: 0 0 14px 14px;
     }
-    .role-card.td { border-top-color: rgba(123,94,167,0.7); }
+    .role-card.td { border-top-color: rgba(var(--accent-rgb),0.7); }
     .role-card h3 {
       font-size:1rem; text-transform:uppercase; letter-spacing:.1em;
       font-weight:700; margin-bottom:.5rem;
       font-family:'Montserrat Alternates',sans-serif;
     }
     .role-card.cto h3 { color: var(--accent-teal); }
-    .role-card.td  h3 { color: rgba(168,140,220,0.9); }
+    .role-card.td  h3 { color: rgba(var(--accent-soft-rgb),0.9); }
     .role-card .role-tagline { font-size:1.1rem; font-style:italic; font-family:'Cormorant Garamond',serif; color:var(--text-secondary); margin-bottom:.75rem; line-height:1.3; }
     .role-card ul { list-style:none; margin:0; padding:0; }
     .role-card ul li { font-size:.9rem; line-height:1.7; color:var(--text-primary); opacity:.85; }
     .role-card ul li::before { content:'→ '; color:var(--accent-teal); }
-    .role-card.td ul li::before { color:rgba(168,140,220,0.8); }
+    .role-card.td ul li::before { color:rgba(var(--accent-soft-rgb),0.8); }
 
     /* ---- TWO COL ---- */
     .two-col { display:flex; gap:2.5rem; flex-wrap:wrap; align-items:flex-start; margin-top:1.5rem; }
@@ -290,7 +379,7 @@
     /* ---- STATS ---- */
     .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:2rem; }
     .stats-card { padding:1.5rem 1.1rem; border-top:2px solid var(--accent-teal); opacity:0; transform:translateY(20px); transition:all .5s ease; }
-    .stats-card.purple-top { border-top-color: rgba(123,94,167,0.7); }
+    .stats-card.purple-top { border-top-color: rgba(var(--accent-rgb),0.7); }
     .stat-number {
       font-family:'Montserrat Alternates',sans-serif;
       font-size: clamp(2rem,4vw,3rem); font-weight:800;
@@ -301,20 +390,16 @@
 
     /* ---- BIG IMAGE ---- */
     .big-image { text-align:center; margin-top:2rem; }
-    .big-image img { max-width:100%; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.4); border:1px solid var(--glass-border); }
-    .cover-image { width:100%; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,.35); border:1px solid var(--glass-border); margin-top:1.25rem; }
+    .big-image img { max-width:100%; border-radius:12px; box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.4 * var(--sh-k))); border:1px solid var(--glass-border); }
+    .cover-image { width:100%; border-radius:12px; box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.35 * var(--sh-k))); border:1px solid var(--glass-border); margin-top:1.25rem; }
 
     /* ---- PtM COVER VIDEO ---- */
-    .ptm-video-wrap { position:relative; width:100%; aspect-ratio:16/9; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,.35); border:1px solid var(--glass-border); margin-top:1.25rem; overflow:hidden; }
-    .ptm-video-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; pointer-events:none; }
-    .ptm-mute-btn { position:absolute; bottom:12px; right:12px; background:rgba(0,0,0,.55); border:1px solid rgba(180,140,220,.35); border-radius:8px; color:#f1faee; cursor:pointer; padding:6px 10px; font-size:15px; display:flex; align-items:center; gap:5px; backdrop-filter:blur(8px); transition:background .2s; z-index:10; }
-    .ptm-mute-btn:hover { background:rgba(0,0,0,.82); }
-
+                
     /* ---- CARDS ---- */
     .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; margin:0 auto; }
-    .card { border-top:2px solid var(--accent-teal); padding:1.5rem; background:rgba(15,20,25,.3); border-radius:0 0 14px 14px; transition:.25s; }
-    .card:hover { background:rgba(15,20,25,.5); }
-    .card h4 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; font-weight:700; opacity:.65; margin-bottom:.35rem; color:var(--accent-teal); }
+    .card { border-top:2px solid var(--accent-teal); padding:1.5rem; background:rgba(var(--deep-rgb),.3); border-radius:0 0 14px 14px; transition:.25s; }
+    .card:hover { background:rgba(var(--deep-rgb),.5); }
+    .card h4 { font-size:0.78rem; text-transform:uppercase; letter-spacing:.12em; font-weight:700; opacity:.65; margin-bottom:.35rem; color:var(--accent-teal); }
     .card h3 { font-size:1.15rem; margin-bottom:.4rem; color:var(--text-secondary); font-family:'Montserrat Alternates',sans-serif; }
     .card p { font-size:.95rem; line-height:1.45; color:var(--text-primary); opacity:.85; }
 
@@ -323,14 +408,180 @@
     .reflection h3 { font-size:1.35rem; margin-bottom:.75rem; color:var(--text-secondary); font-family:'Montserrat Alternates',sans-serif; }
     .reflection p { font-size:1rem; line-height:1.6; color:var(--text-primary); opacity:.88; margin-bottom:.75rem; }
 
+    /* ── ported components ─────────────────────────────────────────────
+       Menzo was authored a generation before the other three studies, so
+       it never had the shared kit: the crooked card rows, the lede, the
+       captioned media, the one vertical scale. All of it comes across
+       here on Menzo's own purple tokens rather than Trove's warm ones. */
+
+    .lede{
+      font-size:clamp(1.02rem,1.65vw,1.2rem); line-height:1.55;
+      font-weight:600; color:var(--text-primary); max-width:62ch;
+    }
+
+    /* the page's unit for "here are the parts of a hard problem" */
+    .steps:has(> :nth-child(4)){ justify-content:flex-start; }
+    .steps{
+      display:flex; justify-content:center; flex-wrap:wrap; gap:16px;
+      align-items:flex-start;
+    }
+    .step-card{ flex:1 1 220px; min-width:200px; max-width:251px;
+      background:var(--inner-card);
+      border:1px solid var(--glass-border);
+      border-radius:16px; padding:1rem 1rem 1.05rem;
+      box-shadow:0 6px 22px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));
+      transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+    }
+    .step-card .n{
+      display:block; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+      font-size:.74rem; letter-spacing:.14em; color:var(--accent-teal);
+      margin-bottom:.45rem;
+    }
+    .step-card h4{
+      font-size:.98rem; font-weight:600; line-height:1.3;
+      color:var(--text-primary); margin:0 0 .4rem;
+    }
+    .step-card p{
+      font-size:.84rem; line-height:1.6; color:var(--text-secondary); margin:0;
+    }
+    /* laid down rather than ruled; hover straightens whichever one you are on */
+    .step-card:nth-child(1){transform:rotate(-2.6deg) translateY(2px)}
+    .step-card:nth-child(2){transform:rotate(2.1deg) translateY(17px)}
+    .step-card:nth-child(3){transform:rotate(-1.8deg) translateY(6px)}
+    .step-card:nth-child(4){transform:rotate(2.7deg) translateY(21px)}
+    .step-card:hover{
+      transform:rotate(0deg) translateY(-5px);
+      box-shadow:0 12px 32px rgba(var(--sh-rgb), calc(.38 * var(--sh-k)));
+    }
+
+    /* ---- CAPTIONED MEDIA ---- */
+    .cap{ font-size:.84rem; line-height:1.5; color:var(--text-secondary);
+          opacity:.85; text-align:center; }
+    .img-wide{ margin-inline:0 }
+    .img-wide img{
+      display:block; width:100%; height:auto; border-radius:12px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.4 * var(--sh-k)));
+    }
+    .video-embed{
+      position:relative; width:100%; aspect-ratio:16/9; overflow:hidden;
+      border-radius:12px; border:1px solid var(--glass-border);
+      box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.35 * var(--sh-k)));
+    }
+    .video-embed iframe{ position:absolute; inset:0; width:100%; height:100%; border:0 }
+
+    /* ---- MEDIA SLOT ----
+       An honest hole. Says what belongs here and where it goes, so the
+       page reads as unfinished on purpose rather than thin by accident. */
+    .slot{
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:.4rem; text-align:center; padding:clamp(22px,5vh,48px) 1.5rem;
+      border:1px dashed rgba(var(--accent-soft-rgb),.45); border-radius:12px;
+      background:rgba(var(--accent-rgb),.05); min-height:180px;
+    }
+    .slot.tall{ min-height:300px }
+    .slot b{
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+      font-size:.8rem; letter-spacing:.04em; color:var(--accent-teal);
+    }
+    .slot span{ font-size:.86rem; line-height:1.5; color:var(--text-secondary); max-width:44ch }
+
+    /* ---- TERMINAL ----
+       The pointer file and the recovery are the two artifacts this study
+       actually owns, so they get rendered as the thing they are. */
+    .termcard{
+      border:1px solid var(--glass-border); border-radius:12px; overflow:hidden;
+      background:rgba(var(--chrome-rgb),.55);
+      box-shadow:0 10px 30px rgba(var(--sh-rgb), calc(.34 * var(--sh-k)));
+    }
+    :root[data-theme="light"] .termcard{ background:rgba(28,18,48,.95) }
+    .termcard .bar{
+      display:flex; align-items:center; gap:.45rem;
+      padding:.5rem .8rem; border-bottom:1px solid rgba(var(--accent-soft-rgb),.18);
+      background:rgba(var(--accent-rgb),.12);
+    }
+    .termcard .bar i{ width:9px; height:9px; border-radius:50%;
+      background:rgba(var(--accent-soft-rgb),.45); display:block }
+    .termcard .bar em{
+      font-style:normal; margin-left:.4rem; font-size:.72rem; letter-spacing:.12em;
+      text-transform:uppercase; color:#c8aee8; opacity:.8;
+    }
+    .termcard pre{
+      margin:0; padding:1rem 1.1rem; overflow-x:auto;
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+      font-size:.8rem; line-height:1.75; color:#e6dcf7;
+      white-space:pre;
+      /* SF Mono ligates a double hyphen into a dash, which turns every flag
+         into something that is not the flag. */
+      font-variant-ligatures:none;
+    }
+    .termcard pre .c{ color:#9b7ec8; opacity:.85 }   /* comment */
+    .termcard pre .p{ color:#7ee0c8 }                 /* prompt */
+    .termcard pre .w{ color:#f5a97f }                 /* the bad news */
+
+    /* highlight-box titles sit on their own line here, as they do everywhere else */
+    .highlight-box strong{ display:block; margin-bottom:.35rem }
+
+    /* ══ VERTICAL RHYTHM ═══════════════════════════════════════════════
+       Same scale as the other three studies. The crooked rows are pushed
+       down by up to 21px with translateY, which happens after layout and
+       sits outside the container's box, so it gets added back as margin
+       or the next block lands on the lowest card. */
+    .section-content > *{ margin-top:0 }
+    .lede{ margin:0 0 1.25rem }
+    .steps, .stats-grid, .img-wide, .video-embed, .big-image, .termcard,
+    .slot, .role-split, .two-col, .cards, .outcome-strip{
+      margin:2rem 0 1.7rem;
+    }
+    .steps, .stats-grid{ margin-bottom:2.9rem }
+    .highlight-box{ margin:1.9rem 0 2rem }
+    .pull-quote{ margin:1.9rem 0 2rem }
+    .sub-heading{ margin:2.4rem 0 .75rem }
+    .section-heading{ margin-top:0 }
+    .section-content > p + .section-heading{ margin-top:2.4rem }
+    /* a caption belongs to the thing above it, not the paragraph below */
+    .cap{ margin-top:.6rem; margin-bottom:0 }
+    .video-embed:has(+ .cap), .img-wide:has(+ .cap), .termcard:has(+ .cap),
+    .slot:has(+ .cap), .big-image:has(+ .cap){ margin-bottom:0 }
+    .cap + p, .cap + .sub-heading, .cap + div{ margin-top:1.6rem }
+    /* the page had a .skip-link wrapper and no button styling at all, so the
+       control rendered as a bare underlined anchor. Skrimp's gradient pill,
+       in Menzo's purple. */
+    .skip-link{ margin:1.2rem 0 clamp(30px,4.5vh,52px); display:flex; justify-content:flex-end }
+    .skip-button{
+      display:inline-block;
+      background:linear-gradient(45deg,var(--accent-teal),var(--accent-blue));
+      color:#fff; font-size:.9rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.04em; padding:1rem 2rem; border:none; border-radius:50px;
+      transition:all .3s ease; position:relative; overflow:hidden;
+      box-shadow:0 4px 15px rgba(var(--accent-rgb),.45);
+    }
+    .skip-button:hover{ transform:translateY(-3px); box-shadow:0 8px 25px rgba(var(--accent-rgb),.6) }
+    .skip-button::before{
+      content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+      transition:left .5s;
+    }
+    .skip-button:hover::before{ left:100% }
+    .steps, .stats-grid{ gap:clamp(14px,1.9vw,26px) }
+
     /* ---- REVEALS ---- */
     .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s ease-out,transform .5s ease-out; }
-    .active { opacity:1 !important; transform:translateY(0) !important; }
+    /* the reveal used to force transform:none on everything, which flattened
+       every tilted card the moment it scrolled in. Opacity still resets for
+       all; the transform reset now skips the cards so the angles survive. */
+    .active { opacity:1 !important; }
+    .active:not(.step-card):not(.stats-card){ transform:translateY(0) !important; }
+    .step-card.active:nth-child(1){transform:rotate(-2.6deg) translateY(2px) !important}
+    .step-card.active:nth-child(2){transform:rotate(2.1deg) translateY(17px) !important}
+    .step-card.active:nth-child(3){transform:rotate(-1.8deg) translateY(6px) !important}
+    .step-card.active:nth-child(4){transform:rotate(2.7deg) translateY(21px) !important}
+    .step-card.active:hover{transform:rotate(0deg) translateY(-5px) !important}
 
     /* ---- PURPLE PAGE TINT ---- */
     body::after {
       content:''; position:fixed; inset:0; z-index:2; pointer-events:none;
-      background: rgba(90,40,160,0.06);
+      background: rgba(var(--accent-deep-rgb),0.06);
     }
     /* logo purple-shift (only this page) */
     .navbar .logo img {
@@ -342,11 +593,11 @@
     }
 
     /* ---- BODY IMAGES ---- */
-    .body-img { width:100%; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,.4); border:1px solid var(--glass-border); margin:1.5rem 0 .4rem; display:block; }
+    .body-img { width:100%; border-radius:12px; box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.4 * var(--sh-k))); border:1px solid var(--glass-border); margin:1.5rem 0 .4rem; display:block; }
     .body-img-caption {
       font-family: 'Cormorant Garamond', 'Didot', serif;
       font-style: italic;
-      font-size: .68rem;
+      font-size: 0.78rem;
       letter-spacing: .03em;
       text-align: center;
       color: var(--text-secondary);
@@ -372,7 +623,7 @@
       border: 1px solid var(--glass-border);
       backdrop-filter: blur(18px) saturate(120%);
       -webkit-backdrop-filter: blur(18px) saturate(120%);
-      box-shadow: 0 24px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow: 0 24px 80px rgba(var(--sh-rgb), calc(.55 * var(--sh-k))), inset 0 1px 0 rgba(var(--lift-rgb),.04);
       overflow: hidden;
     }
     .press-track-outer { position: relative; margin-top: 2rem; margin: 2rem -clamp(18px,2.4vw,40px) 0; }
@@ -399,19 +650,19 @@
       flex-direction: column;
       transition: border-color .3s, transform .25s;
     }
-    .press-card:hover { border-color: rgba(123,94,167,.5); transform: translateY(-4px); }
+    .press-card:hover { border-color: rgba(var(--accent-rgb),.5); transform: translateY(-4px); }
     .press-card-img { width: 100%; height: 160px; object-fit: cover; display: block; }
     .press-card-placeholder {
       width: 100%; height: 160px;
       display: flex; align-items: center; justify-content: center;
       font-size: 2.4rem;
-      background: linear-gradient(135deg, rgba(123,94,167,.18), rgba(42,157,143,.12));
+      background: linear-gradient(135deg, rgba(var(--accent-rgb),.18), rgba(42,157,143,.12));
     }
     .press-card-body { padding: .85rem 1rem 1.1rem; display: flex; flex-direction: column; gap: .3rem; flex: 1; }
-    .press-outlet { font-size: .62rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgba(168,140,220,.8); }
-    .press-date { font-size: .62rem; color: rgba(168,218,220,.45); letter-spacing: .05em; }
+    .press-outlet { font-size: 0.78rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgba(var(--accent-soft-rgb),.8); }
+    .press-date { font-size: 0.78rem; color: rgba(var(--ink-rgb),.74); letter-spacing: .05em; }
     .press-headline { font-size: .86rem; line-height: 1.42; color: var(--text-primary); font-weight: 500; margin-top: .15rem; flex: 1; }
-    .press-read { font-size: .75rem; color: var(--accent-teal); margin-top: .55rem; display: flex; align-items: center; gap: 4px; transition: gap .2s; }
+    .press-read { font-size: 0.84rem; color: var(--accent-teal); margin-top: .55rem; display: flex; align-items: center; gap: 4px; transition: gap .2s; }
     .press-card:hover .press-read { gap: 8px; }
     .press-nav-row { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1.1rem; padding: 0 clamp(18px,2.4vw,40px); }
     .press-nav-btn {
@@ -421,7 +672,7 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 1rem; transition: all .25s;
     }
-    .press-nav-btn:hover { border-color: rgba(123,94,167,.5); color: #c084fc; background: rgba(123,94,167,.1); }
+    .press-nav-btn:hover { border-color: rgba(var(--accent-rgb),.5); color: #c084fc; background: rgba(var(--accent-rgb),.1); }
 
     /* ---- RESPONSIVE ---- */
     @media(max-width:900px) {
@@ -434,7 +685,6 @@
       .stats-grid { grid-template-columns:repeat(2,1fr); }
     }
     @media(max-width:768px) {
-      .hero-container { width:min(96vw,720px); }
       .intro { flex-direction:column; align-items:flex-start; padding:1.5rem; }
       .intro-left { padding-right:0; }
       .intro-right { max-width:100%; }
@@ -448,45 +698,83 @@
       .outcome-item:last-child { border-bottom:0; }
       .stats-grid { grid-template-columns:1fr; }
     }
+      /* ── PANE MODE ─────────────────────────────────────────────
+       This page is read inside the portfolio's right-hand pane,
+       which now supplies both the paper and the tinted sky. So it
+       stops painting a floating card on a sky of its own — the
+       container is just a reading column — and it paints the paper
+       itself so it still stands up when opened standalone. */
+    html,body{background:var(--paper)}
+    /* in the pane the shell paints the paper — translucent, so the one sky
+       reads through the reading surface the way it does on the home page.
+       Standalone there is no sky behind us, so we keep painting it ourselves. */
+    html[data-embedded],html[data-embedded] body{background:transparent}
+    .hero{padding:0}
+    .hero-container{
+      /* the PANE paints the paper edge to edge; this is only the reading
+         column, centred in it — so the margins each side are paper, never
+         a second sky like the old floating card had */
+      width:100%; max-width:1180px; margin-inline:auto;
+      border:none; border-radius:0;
+      background:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+      box-shadow:none;
+      padding:clamp(30px,4.5vh,60px) clamp(22px,4vw,60px) clamp(60px,9vh,110px);
+    }
+    .hero-container::before,.hero-container::after{display:none}
+    /* nothing breaks the gutter: media is bounded by the column, not the pane */
+    .hero-container img,
+    .hero-container video,
+    .hero-container iframe,
+    .hero-container canvas{max-width:100%}
+    .hero-container img{height:auto}
+    /* a flex row of percentage-width images can still sum past its own box
+       (two at 70% each), so let the row wrap and the items shrink */
+    .hero-container [class$="-images"],
+    .hero-container .mini-images{flex-wrap:wrap}
+    .hero-container [class$="-images"] > img,
+    .hero-container .mini-images > img{min-width:0;flex-shrink:1}
+    /* flex and grid children only stay inside the column if allowed to shrink */
+    .intro-left,.intro-right,.section-content,.two-col > *{min-width:0}
+    /* the press panel was the bottom half of the hero card — that card is
+       gone, so it stops floating and takes the same measure as everything else */
+    .press-wrapper{
+      width:100%; max-width:1180px; margin-inline:auto;
+      padding:clamp(18px,2.4vw,40px) clamp(22px,4vw,60px);
+      background:none; border:none; border-radius:0; box-shadow:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+    }
+    .press-wrapper::before,.press-wrapper::after{display:none}
   </style>
 </head>
 <body>
   <div class="custom-cursor" id="cursor"></div>
-  <div id="nav-slot" data-include="../nav.html"></div>
-<br><br><br><br><br><br><br>
-
   <header class="hero" id="hero">
     <div class="hero-container">
 
-      <!-- HERO INTRO -->
-      <div class="intro reveal">
-        <div class="intro-left">
-          <span class="eyebrow purple">Under Active Development — Unofficial BG3 Expansion</span>
-          <h1>Path to Menzoberranzan</h1>
-          <p class="tagline">A volunteer-built expansion for Baldur's Gate 3 — studio scale, zero budget, one city that deserves to exist.</p>
-          <ul class="tldr-pills">
-            <li class="pill"><span>🏗️</span><span><b>Two roles</b> — CTO &amp; Technical Director</span></li>
-            <li class="pill"><span>👥</span><span><b>140+</b> contributors</span></li>
-            <li class="pill"><span>🔒</span><span>Specs under NDA — active production</span></li>
-            <li class="pill"><span>🎮</span><span>Unofficial BG3 expansion</span></li>
-          </ul>
+      <!-- BANNER -->
+      <h1 class="sr-only">Path to Menzoberranzan</h1>
+      <figure class="case-banner reveal">
+        <img src="menzo-banner.webp" alt="Path to Menzoberranzan banner: a character standing in a bioluminescent Underdark forest, beside the wordmark and a row of in-game props." width="2400" height="737" fetchpriority="high">
+      </figure>
+
+      <!-- META -->
+      <div class="meta-grid reveal">
+        <div class="meta-col">
+          <h4>Project Type</h4>
+          <p>Unofficial Baldur&rsquo;s Gate 3 expansion. A volunteer studio in active development, specs under NDA.</p>
         </div>
-        <div class="intro-right reveal">
-          <div class="header-info">
-            <p><strong>Roles:</strong> CTO &amp; Technical Director</p>
-            <p><strong>Studio:</strong> Volunteer (140+ contributors)</p>
-            <p><strong>Status:</strong> Active Development</p>
-            <p><strong>Domains:</strong></p>
-            <ul>
-              <li>Repository Architecture</li>
-              <li>Pipeline Engineering</li>
-              <li>Version Control (Git LFS)</li>
-              <li>Engine Implementation (BG3)</li>
-              <li>Technical Documentation</li>
-              <li>Licensing &amp; Governance</li>
-              <li>Cross-department Unblocking</li>
-            </ul>
-          </div>
+        <div class="meta-col">
+          <h4>Role</h4>
+          <p>CTO and Technical Director. Two roles, one person.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Timeline</h4>
+          <p>Ongoing, across 140+ contributors: writers, artists, engineers, composers and QA.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Skills &amp; Tools</h4>
+          <p>Repository architecture, pipeline engineering, version control on Git LFS, engine implementation in BG3, technical documentation, licensing and governance, and cross-department unblocking.</p>
         </div>
       </div>
 
@@ -494,60 +782,236 @@
       <div class="outcome-strip reveal">
         <div class="outcome-item">
           <span class="outcome-num">140+</span>
-          <span class="outcome-label">contributors — writers, artists, engineers, composers, QA</span>
+          <span class="outcome-label">contributors across writing, art, engineering, audio and QA</span>
         </div>
         <div class="outcome-item">
           <span class="outcome-num">2 roles</span>
-          <span class="outcome-label">CTO and Technical Director — different problems, one person</span>
+          <span class="outcome-label">CTO and Technical Director, different problems, one person</span>
         </div>
         <div class="outcome-item">
           <span class="outcome-num">1,700</span>
-          <span class="outcome-label">Patreon members — fan-funded, community-driven</span>
+          <span class="outcome-label">Patreon members, fan funded and community driven</span>
         </div>
         <div class="outcome-item">
           <span class="outcome-num">0 docs</span>
-          <span class="outcome-label">from Larian — reverse-engineering an undocumented engine</span>
+          <span class="outcome-label">from Larian, so the engine is reverse engineered</span>
         </div>
+      </div>
+
+      <!-- SKIP -->
+      <div class="skip-link reveal">
+        <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
       </div>
 
       <!-- CONFIDENTIALITY NOTICE -->
       <div class="confidentiality-notice reveal">
         <span class="notice-label">⚠ Confidentiality Notice</span>
-        <p>Path to Menzoberranzan is an active production. Technical architecture, custom toolchain specifications, in-engine system implementations, and unreleased content are not discussed here — they live under NDA for good reason. What follows covers publicly announced project scope, publicly available press and screenshots, and the leadership decisions I can speak to without compromising the work of 140+ contributors who trust this project to stay quiet. There is a great deal more I am proud of and cannot yet say.</p>
+        <p>Path to Menzoberranzan is an active production. Technical architecture, custom toolchain specifications, in-engine system implementations and unreleased content are not discussed here. They live under NDA for good reason. What follows covers publicly announced project scope, publicly available press and screenshots, and the leadership decisions I can speak to without compromising the work of 140+ contributors who trust this project to stay quiet. There is a great deal more I am proud of and cannot yet say.</p>
       </div>
 
-      <!-- WHAT IS IT -->
-      <section id="overview">
+      <!-- OVERVIEW BLOCK -->
+      <div class="overview-block reveal">
+        <span class="overview-label">Overview</span>
+        <h2 class="overview-head">Studio scale, zero budget, one city that deserves to exist.</h2>
+        <div class="overview-body">
+          <p>A volunteer-built expansion for Baldur's Gate 3, run at studio scale with none of the studio.</p>
+          <p>Two roles at once, CTO and Technical Director, across 140+ contributors who had never shipped together.</p>
+        </div>
+      </div>
+
+      <!-- THE CITY -->
+      <section id="city">
         <div class="section-content reveal">
           <span class="eyebrow">The Project</span>
-          <h2 class="section-heading">Menzoberranzan has never existed in a Baldur's Gate game. We're fixing that.</h2>
-          <p>Path to Menzoberranzan is an unofficial expansion for Baldur's Gate 3 — a full custom campaign set deep in the Underdark, in the city the franchise was always too cautious to fully render. The project spans original narrative, original art, original audio, original cinematics, and original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year's worth of work if you're not paying attention.</p>
-          <p>It's built entirely by volunteers who don't have to care — but do. That's the strangest and most sustaining thing about it. People are here, working late on this, because Menzoberranzan deserves to exist, it's a city the series never fully explored.</p>
-          <div class="ptm-video-wrap">
-            <div id="ptm-yt-player"></div>
-            <button class="ptm-mute-btn" id="ptm-mute-btn" aria-label="Unmute">🔇</button>
+          <h2 class="section-heading">Menzoberranzan has never existed in a Baldur&rsquo;s Gate game. So a hundred and forty people are building it for free.</h2>
+          <p class="lede">An unofficial expansion for Baldur&rsquo;s Gate 3, run at studio scale with none of the studio.</p>
+
+          <div class="video-embed reveal">
+            <iframe src="https://www.youtube.com/embed/1oBlmSvi1So?rel=0&amp;modestbranding=1&amp;playsinline=1"
+                    title="Path to Menzoberranzan progress reel"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen loading="lazy"></iframe>
           </div>
+          <p class="cap">The progress reel. The tutorial level, taking form.</p>
+
+          <p>Path to Menzoberranzan is a full custom campaign set deep in the Underdark, in the city the franchise was always too cautious to fully render. Original narrative, original art, original audio, original cinematics, original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year of work.</p>
+
+          <p>Everyone on it is a volunteer who does not have to care and does anyway. That is the strangest and most sustaining thing about it, and it is also the fact that decides every technical call I make. I came in as <b>CTO and Technical Director</b>, which sounds like one job with two names and is not.</p>
+
+          <div class="slot reveal tall">
+            <b>DROP IN &rarr; Menzo/img/underdark-wide.webp</b>
+            <span>A wide environment shot from the press kit. The Underdark or Menzoberranzan proper, whichever reads best large.</span>
+          </div>
+          <p class="cap">The city, as it currently stands in engine.</p>
         </div>
       </section>
 
       <hr class="section-rule">
 
-      <!-- TWO ROLES -->
+      <!-- THE STAKES -->
+      <section id="stakes">
+        <div class="section-content reveal">
+          <span class="eyebrow">The Problem Space</span>
+          <h2 class="section-heading">140 people. Zero salary. An undocumented engine. A 21 year old holding the infrastructure.</h2>
+          <p class="lede">In a funded studio, bad infrastructure costs money. In a volunteer studio, it costs people.</p>
+
+          <p>The constraints here do not exist in a paid studio, and they compound. There is no documentation from the engine developer, no on-call support, no ops team, and no way to compel anybody to do anything. The Baldur&rsquo;s Gate 3 Toolkit exposes a fraction of what the engine actually does. The rest is detective work: pattern recognition, edge cases, anomalies that behave one way on Tuesday and differently on Friday for reasons that take hours to isolate.</p>
+
+          <div class="steps reveal">
+            <div class="step-card reveal">
+              <span class="n">01</span>
+              <h4>Nobody wrote it down</h4>
+              <p>Larian publishes a toolkit. They do not publish how it works. Lighting inheritance, atmosphere resets, story node behaviour, actor transforms. All of it is learned by breaking things until you understand what you broke.</p>
+            </div>
+            <div class="step-card reveal">
+              <span class="n">02</span>
+              <h4>No ops, no on-call</h4>
+              <p>Contributors sit across a dozen time zones on whatever hours they have left. When something breaks at 2am in one country it is a working afternoon in another, and nobody is paid to pick up.</p>
+            </div>
+            <div class="step-card reveal">
+              <span class="n">03</span>
+              <h4>Everything is binary</h4>
+              <p>Models, textures, audio, cinematic timelines. None of it is text, none of it diffs cleanly, and all of it grows without mercy.</p>
+            </div>
+            <div class="step-card reveal">
+              <span class="n">04</span>
+              <h4>No margin for error</h4>
+              <p>A contributor whose work keeps breaking for reasons they do not control does not file a ticket. They quietly stop showing up, and you find out weeks later.</p>
+            </div>
+          </div>
+
+          <div class="highlight-box purple reveal">
+            <strong>The asymmetry of volunteer production</strong>
+            In a paid studio you can ask somebody to absorb a broken pipeline. In a volunteer studio, if the process is bad enough, they simply leave. Good infrastructure is not a nicety in an environment like this. It is the thing that holds the community together.
+          </div>
+
+          <figure class="img-wide reveal">
+            <img src="img/athkatla.jpg" alt="Athkatla streets from Baldur's Gate 2, rebuilt in the Baldur's Gate 3 engine" loading="lazy">
+          </figure>
+          <p class="cap">Athkatla from Baldur&rsquo;s Gate 2, rebuilt in the BG3 engine. Via TheGamer, January 2025.</p>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- THE MIGRATION JAM -->
+      <section id="jam">
+        <div class="section-content reveal">
+          <span class="eyebrow">The Migration Jam</span>
+          <h2 class="section-heading">The repo was 2.5 GB and heading for 80. We had one weekend and a rewrite that could not be undone.</h2>
+          <p class="lede">People senior to me said you cannot retrofit Git LFS onto a repo that was not built for it. They were wrong, and then they were very nearly right.</p>
+
+          <p>Baldur&rsquo;s Gate 3 modding is a binary-heavy discipline, and a repository that clones in three minutes becomes one that clones in three hours and then does not clone at all. That is not a developer experience problem. That is a contributor retention problem, and we were about eighteen months from it.</p>
+
+          <p>Git LFS keeps large files outside the repository proper. Contributors get a small pointer file in their clone and the real binary arrives on demand. The repo stays light, the workflow stays sane. The catch is that if you did not start that way, adopting it means rewriting every commit that ever touched a binary, and a history rewrite invalidates every open branch and every existing clone on every machine on the project.</p>
+
+          <p>Which is why it had to be a jam. Freeze the world on a Friday, rewrite, verify, thaw by Sunday. Before anybody touched anything I wrote fourteen steps, a rollback plan, a troubleshooting guide and an FAQ for the rest of the board: audit everything in history over 10 MB, provision on Hetzner, stand up Forgejo, move the objects to Backblaze B2, freeze the open pull requests, rewrite, verify, communicate, and archive the old instance. It was not a quick decision. It was a surgery plan.</p>
+
+          <div class="highlight-box reveal">
+            <strong>The step that saved it was step fourteen</strong>
+            Archive the old instance. Not delete it. I wrote that down a fortnight before I had the faintest idea why it would matter.
+          </div>
+
+          <div class="steps reveal">
+            <div class="step-card reveal">
+              <span class="n">A</span>
+              <h4>Git, not GitHub</h4>
+              <p>GitHub&rsquo;s LFS bandwidth pricing does not survive this asset scale. Self-hosting Forgejo on Hetzner is far cheaper for a team mostly in Europe, with fast storage and no per-seat surprises, and it hands us the LFS policy instead of renting it.</p>
+            </div>
+            <div class="step-card reveal">
+              <span class="n">B</span>
+              <h4>Objects in B2</h4>
+              <p>The bytes live in object storage, not on the git box. Storage grows without anybody touching the server, and the bill stays survivable for a project with no revenue and no intention of having any.</p>
+            </div>
+            <div class="step-card reveal">
+              <span class="n">C</span>
+              <h4>Not Perforce</h4>
+              <p>Perforce is what AAA studios use and it is better at binaries than anything else. It also assumes server engineers, an IT department and a licensing budget. Here, ops is one person between lectures. It would have been a beautiful system nobody could maintain.</p>
+            </div>
+          </div>
+
+          <h3 class="sub-heading">Then every binary in the project died at once.</h3>
+
+          <p>The rewrite itself went fine. The migration walked the whole history and replaced every matching blob with a pointer. Then we brought the repo across to the new server the obvious way, a mirror clone, and it reported complete success. Every ref, every commit, every tag, no errors.</p>
+
+          <p>This is what a 48 MB character model looked like on every machine that pulled afterwards.</p>
+
+          <div class="termcard reveal">
+            <div class="bar"><i></i><i></i><i></i><em>drow_noble.gr2</em></div>
+<pre><span class="p">$</span> cat Assets/Characters/drow_noble.gr2
+version https://git-lfs.github.com/spec/v1
+oid sha256:9f2c41a7e0b3d85c<span class="c">&hellip;</span>
+size 48221184
+
+<span class="p">$</span> git lfs pull
+<span class="w">Error downloading object: Assets/Characters/drow_noble.gr2
+  [404] Object does not exist on the server</span></pre>
+          </div>
+          <p class="cap">A valid, well formed, three line text file where a character used to be.</p>
+
+          <p>A mirror clone copies every ref and every git object, and it does not copy a single LFS object. LFS objects do not live in the git object store. They move over a separate transfer API to a separate backend, and nothing in a mirror push goes near them. The new server had perfect history in which every binary was a valid pointer to something it had never been given.</p>
+
+          <p>Nothing errored during the migration. Git reported success at every step, because from git&rsquo;s point of view it had succeeded. A pointer file is legal content. It only surfaced when the Toolkit tried to load a model and got ASCII.</p>
+
+          <div class="highlight-box purple reveal">
+            <strong>This is the failure mode that frightens me most</strong>
+            A system reporting success while quietly not doing its job. Every light on that weekend was green. The only evidence anything was wrong was that the game would not open.
+          </div>
+
+          <p>The read in the room was that the history rewrite had eaten the binaries, and that this was the proof that retroactive LFS does not work on a repo that was not set up for it from the start. It was not. Nothing had been lost. Every object was still sitting in the local LFS cache on the machine that ran the migration, and still on the old instance that step fourteen had told us to archive rather than delete.</p>
+
+          <div class="termcard reveal">
+            <div class="bar"><i></i><i></i><i></i><em>the rehydrate</em></div>
+<pre><span class="c"># the old instance is archived, not deleted. bring it back as a remote</span>
+<span class="p">$</span> git remote add archive &lt;old-instance&gt;/ptm.git
+
+<span class="c"># pull every LFS object for every ref out of it</span>
+<span class="p">$</span> git lfs fetch --all archive
+
+<span class="c"># push them into the new Forgejo and B2 backend</span>
+<span class="p">$</span> git lfs push --all origin
+
+<span class="c"># prove every pointer in history resolves to a real object</span>
+<span class="p">$</span> git lfs fsck</pre>
+          </div>
+          <p class="cap">Then everyone ran <b>git lfs pull</b>, the working trees hydrated, and the assets came back at full size.</p>
+
+          <p>The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would. Step fourteen cost nothing on the Friday. On the Sunday it was the entire project.</p>
+
+          <div class="slot reveal">
+            <b>DROP IN &rarr; Menzo/vid/clone-before-after.mp4</b>
+            <span>Screen recording, roughly fifteen seconds. The old repo cloning against the LFS repo cloning. The whole infrastructure argument, without a word of it.</span>
+          </div>
+          <p class="cap">Clone time, before and after.</p>
+
+          <div class="slot reveal">
+            <b>DROP IN &rarr; Menzo/img/repo-size.webp</b>
+            <span>Repo size over time: 2.5 GB actual against the 80 GB projection. A chart or a redacted screenshot of the storage dashboard, either works.</span>
+          </div>
+          <p class="cap">Where it was going, and where it went instead.</p>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- TWO JOBS -->
       <section id="roles">
         <div class="section-content reveal">
           <span class="eyebrow">The Leadership Structure</span>
           <h2 class="section-heading">CTO and Technical Director. Same person. Completely different jobs.</h2>
-          <p>This distinction matters and is usually collapsed into one vague "technical lead" title until something catastrophic happens. PtM formalised it early because we hit the scale where leaving it implicit was actively dangerous. At 140+ contributors, a single ambiguous decision can propagate silently through the pipeline for weeks before it surfaces as months of wasted work.</p>
+          <p class="lede">One of them prevents a collapse in six months. The other one prevents a department going idle this afternoon.</p>
+
+          <p>This distinction usually gets collapsed into one vague &ldquo;technical lead&rdquo; title until something catastrophic happens. We formalised it early because we hit the scale where leaving it implicit was actively dangerous. At 140 contributors, a single ambiguous decision can propagate silently through the pipeline for weeks before it surfaces as months of wasted work.</p>
 
           <blockquote class="pull-quote reveal">
-            "CTO failures are long-range and invisible. Technical Director failures are immediate and production-killing. They are not the same job wearing different hats — they are categorically different engineering problems."
-            <cite>— Hen's Brain: Technical Leadership Manual</cite>
+            &ldquo;CTO failures are long-range and invisible. Technical Director failures are immediate and production-killing. They are not the same job wearing different hats. They are categorically different engineering problems.&rdquo;
+            <cite>Hen&rsquo;s Brain: Technical Leadership Manual</cite>
           </blockquote>
 
           <div class="role-split reveal">
-            <div class="role-card cto">
-              <h3>CTO — Chief Technical Officer</h3>
-              <p class="role-tagline">"Prevents future collapse."</p>
+            <div class="role-card cto reveal">
+              <h3>CTO</h3>
+              <p class="role-tagline">&ldquo;Prevents future collapse.&rdquo;</p>
               <ul>
                 <li>Long-term system stability and architecture</li>
                 <li>Repository structure, LFS rules, versioning conventions</li>
@@ -555,130 +1019,77 @@
                 <li>Licensing strategy (PolyForm Shield 1.0.0)</li>
                 <li>Cross-department dependency mapping</li>
                 <li>Risk prevention before hazards form</li>
-                <li>Academic constraints (CHI submission considerations)</li>
               </ul>
             </div>
-            <div class="role-card td">
+            <div class="role-card td reveal">
               <h3>Technical Director</h3>
-              <p class="role-tagline">"Prevents present paralysis."</p>
+              <p class="role-tagline">&ldquo;Prevents present paralysis.&rdquo;</p>
               <ul>
-                <li>In-engine implementation — BG3 Toolkit daily</li>
+                <li>In-engine implementation, BG3 Toolkit daily</li>
                 <li>Debugging undocumented engine anomalies in real time</li>
-                <li>Unblocking cinematics, quests, audio, and environments</li>
-                <li>TL/CL inheritance, Osiris story logic, atmosphere systems</li>
-                <li>Translating architecture into practical in-engine workflows</li>
+                <li>Unblocking cinematics, quests, audio and environments</li>
+                <li>Inheritance chains, story logic, atmosphere systems</li>
+                <li>Translating architecture into workflows people can follow</li>
                 <li>Rapid diagnosis under production pressure</li>
               </ul>
             </div>
           </div>
 
-          <img src="character-concept.jpg" alt="Path to Menzoberranzan — character creation screen concept art" class="body-img" loading="lazy" style="margin-top:1.5rem">
-          <p class="body-img-caption">[Character creation screen concept art — <a href="https://www.linkedin.com/in/junjoba/" target="_blank" rel="noopener" style="color:var(--text-secondary);text-underline-offset:3px;text-decoration:underline">junjoba</a>, Environment Art Lead]</p>
-          <p style="margin-top:0">The CTO asks: <em>will this decision hurt us in six months?</em> The Technical Director asks: <em>why is this cinematic broken right now and how do I fix it before the department goes idle?</em> Neither question can wait for the other. They run in parallel, constantly, across different timescales and failure modes. Merging them into one "technical lead" role doesn't simplify the work — it just means both fail quietly until they fail loudly.</p>
+          <p>The CTO asks whether this decision hurts us in six months. The Technical Director asks why this cinematic is broken right now and how to fix it before the department goes idle. Neither question can wait for the other. They run in parallel, constantly, across different timescales and different failure modes. Merging them into one technical lead does not simplify the work. It just means both fail quietly until they fail loudly.</p>
+
+          <figure class="img-wide reveal">
+            <img src="character-concept.jpg" alt="Path to Menzoberranzan character creation screen concept art" loading="lazy">
+          </figure>
+          <p class="cap">Character creation screen concept art, by junjoba, Environment Art Lead.</p>
         </div>
       </section>
 
       <hr class="section-rule">
 
-      <!-- THE SCALE PROBLEM -->
-      <section id="scale">
+      <!-- THE BRAIN DOC -->
+      <section id="brain">
         <div class="section-content reveal">
-          <span class="eyebrow">The Problem Space</span>
-          <h2 class="section-heading">140 people. Zero salary. An undocumented engine. A 21-year-old in charge of the infrastructure.</h2>
-          <p>PtM's technical complexity arises from a stack of compounding constraints that don't exist in funded studios: no documentation from the engine developer, no on-call support, contributors in a dozen time zones with variable availability, and pipelines built entirely from scratch by reverse-engineering a closed system. The Baldur's Gate 3 Toolkit exposes a fraction of what the engine actually does. The rest is detective work — pattern recognition, edge cases, anomalies that behave one way on Tuesday and differently on Friday for reasons that take hours to isolate.</p>
-          <p>There is no margin for architectural error here. In a paid studio, bad infrastructure costs money and time. In a volunteer studio, it costs people — contributors who burn out, quit, or lose faith in the project because their work keeps breaking for reasons they don't control. Technical stability isn't a feature in an environment like this. It's the thing that keeps the community together.</p>
+          <span class="eyebrow">The Brain Doc</span>
+          <h2 class="section-heading">The technical spine of a 140 person project lived in one person&rsquo;s working memory.</h2>
+          <p class="lede">So I wrote it down, and that document is the most load-bearing thing I have made here.</p>
 
-          <div class="two-col">
-            <div>
-              <div class="highlight-box purple reveal">
-                <strong>The asymmetry of volunteer production</strong>
-                <p style="margin-top:.5rem">In a paid studio, you can compel a contributor to fix a broken pipeline. In a volunteer studio, if the process is bad enough, they simply leave. Good infrastructure isn't optional — it's what makes people want to stay.</p>
-              </div>
-              <div class="highlight-box purple reveal" style="margin-top:.75rem">
-                <strong>The documentation problem</strong>
-                <p style="margin-top:.5rem">Larian publishes a toolkit. They do not publish how it works. Lighting inheritance, atmosphere resets, Osiris story node behaviour, TL actor transforms — all of it is learned by breaking things until you understand what you broke.</p>
-              </div>
-            </div>
-            <div>
-              <div class="highlight-box reveal">
-                <strong>The single-point-of-failure problem</strong>
-                <p style="margin-top:.5rem">At PtM's scale, institutional knowledge living in one person's head is not an inconvenience — it's an existential risk. The brain doc exists specifically to externalise the spine of the project so that it survives illness, burnout, academics, and time zones.</p>
-              </div>
-              <div class="highlight-box reveal" style="margin-top:.75rem">
-                <strong>The cost of invisible failures</strong>
-                <p style="margin-top:.5rem">CTO-level mistakes don't announce themselves. They accumulate silently for weeks — incorrect LFS tracking, unsound pipeline assumptions, misaligned versioning — until they surface as corrupted assets or irreversible repository issues. By then, recovery is brutal.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+          <p>The visible part of technical leadership is debugging. The dramatic moment where the cinematic is broken and you find the one misaligned atmosphere preset that caused it. That part is real and it takes real skill. The invisible part is the architecture: the documents, the conventions, the tracking rules, the licensing decisions, the pipeline constraints that stop one department&rsquo;s work silently invalidating another&rsquo;s over a month.</p>
 
-      <hr class="section-rule">
-
-      <!-- INFRASTRUCTURE -->
-      <section id="infrastructure">
-        <div class="section-content reveal">
-          <span class="eyebrow">Infrastructure Decisions</span>
-          <h2 class="section-heading">The repo was 2.5 GB. Without intervention, it was heading for 80.</h2>
-          <p>Baldur's Gate 3 modding is a binary-heavy discipline. 3D models, textures, audio files, cinematic timelines — none of it is text, none of it diffs cleanly, and all of it grows without mercy. A repository that clones in three minutes becomes one that clones in three hours, and then doesn't clone at all. That's not a developer experience problem. That's a contributor retention problem.</p>
-
-          <h3 class="sub-heading" style="margin-top:1.5rem">Why Git LFS, and why self-hosted?</h3>
-          <p>Git LFS (Large File Storage) solves the binary bloat problem by keeping large files external to the repository proper — contributors get pointer files in their clone, and the actual binaries are fetched on demand. The repo stays lightweight. The workflow stays sane.</p>
-          <p>The migration plan I wrote covered every step: audit (find all files in history larger than 10MB), provision new infrastructure on Hetzner, install Forgejo (our self-hosted Git platform), migrate existing LFS objects to Backblaze B2 for external storage, freeze all open PRs, rewrite history, verify, communicate, and archive the old instance. Fourteen steps, a rollback plan, a troubleshooting guide, and a FAQ written specifically for fellow members of the board of directors. It was not a quick decision. It was a surgery plan.</p>
-
-          <div class="two-col" style="margin-top:1.25rem">
-            <div>
-              <div class="highlight-box reveal">
-                <strong>Git over GitHub — self-hosted on Hetzner</strong>
-                <p style="margin-top:.5rem">GitHub's LFS bandwidth limits would have cost real money at the binary scale PtM operates. We self-host Forgejo on Hetzner instead — significantly cheaper than DigitalOcean or AWS for EU-based teams, with generous bandwidth, fast NVMe storage, and no per-seat licensing surprises. Full control over LFS policies, storage backends (Backblaze B2), and contributor access. The cost difference alone justified the migration.</p>
-              </div>
-            </div>
-            <div>
-              <div class="highlight-box purple reveal">
-                <strong>Why not Perforce?</strong>
-                <p style="margin-top:.5rem">Perforce is what AAA studios use for binary-heavy version control. It's also designed for teams with server engineers, IT departments, and licensing budgets. For a volunteer studio where "ops" is one person between lectures, Perforce would have been a beautiful, expensive system that nobody could maintain. Git + LFS + Forgejo gives us 80% of Perforce's binary handling at a fraction of the operational complexity.</p>
-              </div>
-            </div>
-          </div>
-
-          <img src="https://static0.thegamerimages.com/wordpress/wp-content/uploads/2025/01/athkatla-streets-from-baldur-s-gate-2-recreated-in-baldur-s-gate-3.jpg" alt="Athkatla streets rebuilt in BG3 engine — Path to Menzoberranzan" class="body-img" loading="lazy" style="margin-top:2rem">
-          <p class="body-img-caption">[Athkatla streets from Baldur's Gate 2, fully rebuilt in the BG3 engine. Via TheGamer, Jan 2025.]</p>
-        </div>
-      </section>
-
-      <hr class="section-rule">
-
-      <!-- WHAT TECHNICAL LEADERSHIP ACTUALLY IS -->
-      <section id="leadership">
-        <div class="section-content reveal">
-          <span class="eyebrow">What the Work Actually Looks Like</span>
-          <h2 class="section-heading">It's mostly writing. And thinking. And preventing disasters nobody sees.</h2>
-          <p>The visible part of technical leadership is debugging — the dramatic moment where the cinematic is broken and you find the one misaligned atmosphere preset that caused it. That part is real and takes real skill. But the invisible part is the architecture: the documents, the conventions, the LFS tracking rules, the licensing decisions, the pipeline constraints that mean the department's work doesn't silently invalidate each other over a month.</p>
-          <p>The brain doc — Hen's Brain: Technical Leadership Manual — exists because the technical spine of this project lived in one person's working memory, and that is a single point of failure the project cannot afford. It defines the two domains, their failure modes, their escalation paths, and the decisions that fall unambiguously into each. It is not theory. It is operational infrastructure, written down.</p>
+          <p><i>Hen&rsquo;s Brain: Technical Leadership Manual</i> exists because institutional knowledge living in one head is not an inconvenience at this scale, it is an existential risk. It defines the two domains, their failure modes, their escalation paths, and which decisions fall unambiguously into each. It is not theory. It is operational infrastructure, and it is written so the project survives illness, burnout, exams and time zones.</p>
 
           <blockquote class="pull-quote reveal">
-            "Technical debt is not a minor inconvenience in a project at this scale — it is fatal. Uncoordinated use of Script Extender, incorrect patching, inconsistent LFS tracking, or unsound pipeline assumptions can invalidate months of work across entire departments."
-            <cite>— Hen's Brain: Technical Leadership Manual</cite>
+            &ldquo;Technical debt is not a minor inconvenience in a project at this scale. It is fatal. Uncoordinated tooling, incorrect patching, inconsistent LFS tracking or unsound pipeline assumptions can invalidate months of work across entire departments.&rdquo;
+            <cite>Hen&rsquo;s Brain: Technical Leadership Manual</cite>
           </blockquote>
 
-          <div class="two-col" style="margin-top:1rem">
-            <div>
-              <p>What I can show you is the thinking — the documentation, the governance structure, the infrastructure decisions, and the approach to running a production at this scale without losing contributors to avoidable friction. The actual technical implementations stay inside the NDA. What you're reading is the public surface of a much deeper thing.</p>
-              <div class="highlight-box reveal" style="margin-top:.75rem">
-                <strong>Licensing:</strong> PtM's custom toolchains are protected under PolyForm Shield 1.0.0 — preventing commercial appropriation of work built by volunteers, for free, for a community. This is a legal architecture decision, not just a creative one.
-              </div>
-            </div>
-            <div>
-              <div class="highlight-box purple reveal">
-                <strong>Being 21 doing this</strong>
-                <p style="margin-top:.5rem">There is no playbook for running a 140+ person volunteer studio at 21 while completing a degree. The brain doc is partly a technical manual and partly the documentation of hard-won lessons about what happens when ambiguity meets scale. Mostly: things break slowly, and then all at once.</p>
-              </div>
-              <div class="highlight-box purple reveal" style="margin-top:.75rem">
-                <strong>The asymmetric stakes</strong>
-                <p style="margin-top:.5rem">Nobody is getting paid. Every contributor is here by choice. That means the cost of a bad infrastructure decision isn't just technical debt — it's someone's evening, their weekend, their goodwill. The people working on this trusted us to make it worth their time. That weight is real.</p>
-              </div>
-            </div>
+          <div class="slot reveal tall">
+            <b>DROP IN &rarr; Menzo/img/brain-doc.webp</b>
+            <span>A page or two of the manual with the NDA parts blurred. Quoted twice on this page and never once seen, which is the biggest hole in the study.</span>
           </div>
+          <p class="cap">The manual, redacted.</p>
+
+          <div class="slot reveal">
+            <b>DROP IN &rarr; Menzo/img/departments.webp</b>
+            <span>The department chart. 140 people across writing, art, engineering, audio and QA. Names off, shape on.</span>
+          </div>
+          <p class="cap">What 140 volunteers looks like when you draw it.</p>
+
+          <p>Licensing sits in the same category. The custom toolchains are protected under PolyForm Shield 1.0.0, which prevents commercial appropriation of work built by volunteers, for free, for a community. That is a legal architecture decision rather than a creative one, and it is the sort of thing that is cheap to do early and impossible to do late.</p>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- WHAT I CANNOT SAY -->
+      <section id="quiet">
+        <div class="section-content reveal">
+          <span class="eyebrow">The Quiet Part</span>
+          <h2 class="section-heading">There is a whole category of this I am proud of and not allowed to show you.</h2>
+          <p class="lede">You get the infrastructure decisions. You do not get the blueprints.</p>
+
+          <p>The actual technical architecture, the custom systems, the in-engine implementations that took months to work out: none of that is here. The public face of this project is screenshots and progress updates. The private face is engineering decisions I cannot share, because the project is not finished and the work belongs to a hundred and forty people rather than to me.</p>
+
+          <p>That is the right call, and it is a strange thing, to have done work you cannot show. But the discipline of keeping quiet about active development, of understanding that the story gets told when it is done and not while it is happening, is its own kind of skill. You do not perform progress. You make it, quietly, and you wait.</p>
         </div>
       </section>
 
@@ -688,40 +1099,34 @@
       <section class="takeaways" id="takeaways">
         <div class="section-content reveal">
           <span class="eyebrow">Takeaways</span>
-          <h2 class="section-heading">What this project taught me that a classroom couldn't.</h2>
+          <h2 class="section-heading">What this project taught me that a classroom couldn&rsquo;t.</h2>
           <div class="cards reveal">
             <div class="card reveal">
               <h4>01</h4>
               <h3>Name the domains or watch them collapse</h3>
-              <p>CTO and Technical Director are not titles. They're categorical separations that prevent one person from failing at two completely different jobs simultaneously.</p>
+              <p>CTO and Technical Director are not titles. They are categorical separations that stop one person failing at two completely different jobs at once, in two completely different timescales.</p>
             </div>
             <div class="card reveal">
               <h4>02</h4>
-              <h3>Infrastructure is community</h3>
-              <p>In a volunteer studio, bad tooling doesn't just slow people down — it drives them away. The repository is the environment everyone lives in. Design it accordingly.</p>
+              <h3>Write the undo before the do</h3>
+              <p>Archive, not delete. The step that rescued the migration cost nothing on the Friday and was the whole project by Sunday. Design the recovery while you are calm and assuming you will be wrong about something.</p>
             </div>
             <div class="card reveal">
               <h4>03</h4>
-              <h3>Document the spine before it breaks</h3>
-              <p>Institutional knowledge in one person's head is a single point of failure. Externalise it before something goes wrong, not after.</p>
+              <h3>Infrastructure is community</h3>
+              <p>In a volunteer studio, bad tooling does not just slow people down. It drives them away. The repository is the environment everybody lives in, so design it like somewhere people have to want to stay.</p>
             </div>
             <div class="card reveal">
               <h4>04</h4>
               <h3>Right tool, not best tool</h3>
-              <p>Perforce is excellent. It is also overkill for a team with no ops staff and no budget. Git + LFS + Forgejo solves the actual problem we have, not the theoretical one.</p>
+              <p>Perforce is excellent and it is overkill for a team with no ops staff and no budget. Git, LFS and Forgejo solve the problem we actually have instead of the one in the textbook.</p>
             </div>
           </div>
 
           <div class="reflection reveal">
-            <h3>What I can't say yet — and why that's okay</h3>
-            <p>There is an entire category of work on this project that I'm proud of and not allowed to discuss — the actual technical architecture, the custom systems, the in-engine implementations that took months to figure out. The public face of PtM is screenshots and progress updates. The private face is engineering decisions that I can't share because the project isn't finished and the work belongs to the whole team, not just me.</p>
-            <p>That's the right call. And it's a strange thing, to have done work you can't show. But the discipline of keeping quiet about active development — of understanding that the story gets told when it's done, not while it's happening — is itself a leadership skill. You get to see the infrastructure decisions. You don't get to see the blueprints. Some things are worth waiting for.</p>
-          </div>
-
-          <div class="reflection reveal">
             <h3>Follow the project</h3>
-            <p>Path to Menzoberranzan posts progress publicly on Reddit — r/BaldursGate3. Updates are sporadic because the work is hard and nobody is getting paid to do it on a schedule. When it ships, it will be worth the wait. Until then, the city waits in the dark.</p>
-            <p><a href="https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/" target="_blank" rel="noopener" style="color:var(--text-secondary);text-decoration:underline;text-underline-offset:3px">→ Progress thread on r/BaldursGate3</a></p>
+            <p>Path to Menzoberranzan posts progress publicly on r/BaldursGate3. Updates are sporadic because the work is hard and nobody is being paid to do it on a schedule. When it ships it will be worth the wait. Until then, the city waits in the dark.</p>
+            <p><a href="https://www.reddit.com/r/BaldursGate3/comments/1imh0b8/custom_campaign_path_to_menzoberranzan_progress/" target="_blank" rel="noopener" style="color:var(--text-secondary);text-decoration:underline;text-underline-offset:3px">&rarr; Progress thread on r/BaldursGate3</a></p>
           </div>
         </div>
       </section>
@@ -878,8 +1283,39 @@
     addEventListener('mouseenter',()=>{ cursor.style.opacity='1'; });
 
     // reveals (skip .section-heading — handled by scramble)
-    const io = new IntersectionObserver((es,o)=>{ es.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('active'); o.unobserve(en.target); } }); }, {threshold:.2});
+    /* A block taller than (viewport / threshold) can never reach that ratio,
+       so a long section used to sit at opacity 0 for ever. Menzo's migration
+       jam was 3778px against a 775px window: a ceiling of 0.205 against a
+       0.2 bar. The extra thresholds keep the callback firing while you
+       scroll, and a block too tall to qualify on its own ratio qualifies on
+       how much of the screen it fills instead. */
+    const io=new IntersectionObserver((es,o)=>{
+      es.forEach(en=>{
+        if(!en.isIntersecting) return;
+        if(en.intersectionRatio>=.2 || en.intersectionRect.height>=innerHeight*.25){en.target.classList.add('active');o.unobserve(en.target);}
+      });
+    },{threshold:[0,.05,.1,.15,.2]});
     document.querySelectorAll('.reveal:not(.section-heading)').forEach(el=>io.observe(el));
+
+    /* Safety net. The reveal is decoration, so nothing on the page is allowed
+       to stay invisible because an observer did not fire: no scroll events
+       reach this document while it is embedded in the portfolio pane, so this
+       polls instead, and retires itself the moment everything is shown. */
+    (function(){
+      const SEL = '.reveal:not(.section-heading)';
+      let ticks = 0;
+      const sweep = () => {
+        const left = document.querySelectorAll(SEL + ':not(.active)');
+        left.forEach(el => {
+          const r = el.getBoundingClientRect();
+          if (r.top < innerHeight * 0.92 && r.bottom > 0) el.classList.add('active');
+        });
+        if (!left.length || ++ticks > 300) clearInterval(timer);
+      };
+      const timer = setInterval(sweep, 200);
+      sweep();
+    })();
+
 
     // stats cards
     document.querySelectorAll('.stats-card').forEach(card=>{
@@ -967,70 +1403,22 @@
     })();
   </script>
 
-  <!-- background loader -->
-  <script>
-    (function(){
-      if(document.getElementById('bg-host')) return;
-      const host=document.createElement('div'); host.id='bg-host';
-      const frame=document.createElement('iframe'); frame.src='background.html'; frame.loading='eager';
-      frame.setAttribute('aria-hidden','true'); frame.tabIndex=-1;
-      host.appendChild(frame); document.body.prepend(host);
-    })();
-  </script>
-
-  <!-- partials loader (nav) -->
-  <script>
-    (async function includePartials(){
-      const targets = document.querySelectorAll('[data-include]');
-      for(const el of targets){
-        const url = el.getAttribute('data-include');
-        try{
-          const res = await fetch(url, {credentials:'same-origin'});
-          if(!res.ok) throw new Error(`${res.status}`);
-          const html = await res.text();
-          el.innerHTML = html;
-          const scripts = el.querySelectorAll('script');
-          for(const old of scripts){
-            const s = document.createElement('script');
-            for(const {name,value} of [...old.attributes]) s.setAttribute(name,value);
-            if(old.src) s.src=old.src; else s.textContent=old.textContent||'';
-            old.replaceWith(s);
-          }
-        }catch(err){ console.warn(`Failed to include ${url}:`, err); }
-      }
-    })();
-  </script>
-
-  <!-- PtM cover video -->
-  <script>
-    var ptmPlayer, ptmMuted = true;
-    function onYouTubeIframeAPIReady() {
-      ptmPlayer = new YT.Player('ptm-yt-player', {
-        videoId: '1oBlmSvi1So',
-        playerVars: { autoplay:1, loop:1, controls:0, mute:1, playlist:'1oBlmSvi1So', rel:0, modestbranding:1, playsinline:1, disablekb:1 },
-        events: {
-          onReady: function(e) { e.target.mute(); e.target.playVideo(); }
-        }
-      });
-    }
-    document.getElementById('ptm-mute-btn').addEventListener('click', function() {
-      if (!ptmPlayer) return;
-      if (ptmMuted) { ptmPlayer.unMute(); ptmMuted = false; this.textContent = '🔊'; this.setAttribute('aria-label','Mute'); }
-      else          { ptmPlayer.mute();   ptmMuted = true;  this.textContent = '🔇'; this.setAttribute('aria-label','Unmute'); }
-    });
-  </script>
-  <script src="https://www.youtube.com/iframe_api"></script>
 
   <!-- QUICK LINKS WIDGET -->
   <style>
     html{scroll-behavior:smooth}
-    #ql-widget{position:fixed;right:1.5rem;top:110px;z-index:900;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
-    #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(8,4,18,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
+    /* top:110px used to sit under the nav pill; with the nav gone it landed
+       on the copy, so the jump list moves out of the reading column */
+    #ql-widget{position:fixed;right:1.4rem;bottom:1.4rem;top:auto;z-index:900;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:.4rem}
+    /* the portfolio rail carries the contents when embedded, so the
+       floating widget would just be a second copy of the same list */
+    html[data-embedded] #ql-widget{display:none!important}
+    #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(var(--chrome-rgb),.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
     #ql-panel.open{max-height:520px;opacity:1;padding:.45rem}
-    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:.4rem .7rem;border-radius:6px;transition:background .18s,color .18s}
-    #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:.6rem;opacity:.45;margin-right:.25rem}
+    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:.4rem .7rem;border-radius:6px;transition:background .18s,color .18s}
+    #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:0.75rem;opacity:.45;margin-right:.25rem}
     #ql-panel a:hover{background:var(--glass-highlight-1);color:var(--text-secondary)}
-    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(8,4,18,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Montserrat Alternates',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
+    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(var(--chrome-rgb),.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
     #ql-toggle:hover{background:var(--glass-highlight-1);border-color:var(--rule)}
     #ql-icon{font-size:1rem;line-height:1}
     @media(max-width:768px){#ql-widget{right:1rem;top:auto;bottom:1.5rem;left:auto;transform:none;flex-direction:column-reverse;align-items:flex-end}#ql-panel{min-width:min(180px,80vw)}}
@@ -1057,6 +1445,7 @@
         return a;
       }
       panel.appendChild(mkLink('#',0,'Overview',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});close();}));
+      const ITEMS=[{id:'',label:'Overview',num:0}];
       let n=1;
       document.querySelectorAll('section[id], section.press-section').forEach(sec=>{
         const eb=sec.querySelector('.eyebrow');
@@ -1064,10 +1453,116 @@
         const text=eb.textContent.trim();
         if(text.length>60)return;
         if(!sec.id)sec.id='press';
-        panel.appendChild(mkLink('#'+sec.id,n++,text));
+        const num=n++;
+        ITEMS.push({id:sec.id,label:text,num:num});
+        panel.appendChild(mkLink('#'+sec.id,num,text));
       });
       toggle.addEventListener('click',e=>{e.stopPropagation();open=!open;panel.classList.toggle('open',open);toggle.setAttribute('aria-expanded',open);icon.textContent=open?'×':'≡';});
       document.addEventListener('click',e=>{if(open&&!document.getElementById('ql-widget').contains(e.target))close();});
+
+      /* embedded, the portfolio rail carries these instead of the widget:
+         hand them up, answer a request, take scroll orders, and keep the
+         rail's highlight on whatever the reader is actually looking at */
+      if(window.parent!==window){
+        const post=m=>{try{window.parent.postMessage(m,'*');}catch(e){}};
+        const sendToc=()=>post({type:'caseToc',items:ITEMS});
+        /* the browser drops programmatic smooth scrolls inside this pane,
+           so the glide is ours. scroll-behavior goes to auto for the
+           duration or every frame tries to animate on top of us. */
+        const scroller=()=>document.scrollingElement||document.documentElement;
+        const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+        let anim=0;
+        const stopGlide=()=>{
+          cancelAnimationFrame(anim);
+          scroller().style.scrollBehavior='';
+        };
+        const glide=to=>{
+          const se=scroller();
+          const from=se.scrollTop;
+          const dist=Math.max(0,Math.min(to,se.scrollHeight-innerHeight))-from;
+          if(!dist)return;
+          stopGlide();
+          se.style.scrollBehavior='auto';
+          const t0=performance.now();
+          const dur=Math.min(900,Math.max(320,Math.abs(dist)*0.45));
+          const step=now=>{
+            const t=Math.min(1,(now-t0)/dur);
+            se.scrollTop=from+dist*ease(t);
+            if(t<1)anim=requestAnimationFrame(step);
+            else se.style.scrollBehavior='';
+          };
+          anim=requestAnimationFrame(step);
+        };
+        addEventListener('wheel',stopGlide,{passive:true});
+        addEventListener('touchstart',stopGlide,{passive:true});
+        sendToc();
+        addEventListener('message',ev=>{
+          const d=ev.data;
+          if(!d||typeof d!=='object')return;
+          if(d.type==='caseTocRequest')sendToc();
+          else if(d.type==='caseScrollTo'){
+            const el=d.id?document.getElementById(d.id):null;
+            glide(el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
+          }
+        });
+        /* tell the rail which section the reader is in */
+        let last=null,ticking=false;
+        const spy=()=>{
+          ticking=false;
+          const line=innerHeight*0.32;
+          let id='';
+          for(const it of ITEMS){
+            if(!it.id)continue;
+            const el=document.getElementById(it.id);
+            if(el&&el.getBoundingClientRect().top<=line)id=it.id;
+          }
+          if(id!==last){last=id;post({type:'caseSection',id:id});}
+        };
+        addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(spy);}},{passive:true});
+        spy();
+      }
+    })();
+  </script>
+
+  <!-- theme: the portfolio shell posts its theme in, and standalone we read
+       it ourselves, so this page is never stuck in the wrong one -->
+  <script>
+    (function(){
+      function set(t){ document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+      var t; try { t = localStorage.getItem('theme'); } catch(e) {}
+      if(!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      set(t);
+      addEventListener('message', function(e){
+        if(e && e.data && e.data.type === 'theme') set(e.data.value);
+      });
+    })();
+  </script>
+
+  <!-- cursor: the shell draws the one cursor and already listens for these,
+       so embedded we hide ours and feed it. Standalone, ours stays. -->
+  <script>
+    (function(){
+      if (window.parent === window) return;
+      document.documentElement.setAttribute('data-embedded', '');
+      var ring = document.getElementById('cursor');
+      if (ring) ring.style.display = 'none';
+      var HOVER = 'a,button,input,select,textarea,summary,[role="button"],[onclick],' +
+                  '.skip-button,.card,.role-card,.quote-card,.stats-card,.must-haves-card,' +
+                  '.glass-card,.chip,.img-tile,.spec-row,.metric,img';
+      function post(m){ try { window.parent.postMessage(m, '*'); } catch (e) {} }
+      // posted straight from the event: rAF inside a pane the browser is
+      // throttling can stall, and that shows up as a cursor that lags or sticks
+      var lx = -1, ly = -1;
+      addEventListener('mousemove', function(e){
+        if (e.clientX === lx && e.clientY === ly) return;
+        lx = e.clientX; ly = e.clientY;
+        post({type:'iframeMouse', x:lx, y:ly});
+      });
+      addEventListener('mousedown',  function(){ post({type:'iframeDown'}); });
+      addEventListener('mouseup',    function(){ post({type:'iframeUp'}); });
+      addEventListener('mouseleave', function(){ post({type:'iframeLeave'}); });
+      addEventListener('mouseover', function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:true}); });
+      addEventListener('mouseout',  function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:false}); });
     })();
   </script>
 </body>

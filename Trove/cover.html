@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Trove – Cover</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@600;700;800&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;background:transparent}
+  body{font-family:Montserrat,system-ui,sans-serif}
+  #stage{position:fixed;inset:0}
+  canvas{display:block;width:100%;height:100%}
+
+  /* ---- the mascots: the real trove.is sprite rig, not an approximation.
+     still PNG at rest; on a hop, the FALL sheet plays reverse-then-forward
+     (a fall is a launch reversed, so reversing it back is a jump) while the
+     wrapper runs the jump arc. Numbers below are lifted from
+     apps/trove-landing/src/styles.css. ---- */
+  #guys{position:fixed;inset:0;pointer-events:none;z-index:2}
+
+  .mascot-stage{
+    --mascot-h:120px;
+    position:absolute; width:calc(var(--mascot-h)*.62); height:var(--mascot-h);
+    will-change:transform;
+    transition:transform .64s cubic-bezier(.33,.02,.4,1);   /* sideways travel */
+  }
+  /* contact shadow lives on the stage, so it stays put when he leaves the ground */
+  .mascot-stage::after{
+    content:''; position:absolute; bottom:-4px; left:50%; width:74%; height:14px;
+    transform:translateX(-50%); border-radius:50%;
+    background:radial-gradient(closest-side,rgba(120,70,20,.24),transparent);
+  }
+  .mascot-grabbable{position:absolute;inset:0;transform-origin:bottom center}
+  .mascot-still{
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    height:var(--mascot-h); width:auto;
+    filter:drop-shadow(0 10px 16px rgba(80,50,10,.16));
+  }
+  .mascot-grabbable.is-jump .mascot-still{visibility:hidden}
+
+  /* jump arc, 0.64s = JUMP_MS */
+  .mascot-grabbable.is-jump{animation:mascot-jump-arc .64s ease-in-out}
+  @keyframes mascot-jump-arc{
+    0%,100%{transform:translateY(0)}
+    46%{transform:translateY(calc(-1 * var(--jump-h,46px)))}
+  }
+
+  /* the fall/jump sheet, bottom-anchored so the last frame's feet land where he stands */
+  .mascot-fall{
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    transform-origin:bottom center; background-repeat:no-repeat; background-position:0 0;
+    pointer-events:none; filter:drop-shadow(0 14px 22px rgba(120,70,20,.18));
+    animation:mascot-fall .52s steps(var(--ff)) 1 forwards;
+  }
+  @keyframes mascot-fall{
+    to{background-position-x:calc(var(--fall-fw) * var(--ff) * -1)}
+  }
+  /* reverse-then-forward = up then down. two halves of JUMP_MS. */
+  .mascot-fall--jump{
+    animation-duration:.32s; animation-iteration-count:2;
+    animation-direction:alternate-reverse; animation-fill-mode:both;
+  }
+
+  /* per-variant frame grids, straight from the landing page */
+  .mascot-fall--yarn{
+    --ff:6; --fall-h-scale:1.15;
+    height:calc(var(--mascot-h) * var(--fall-h-scale));
+    --fall-fw:calc(var(--mascot-h) * var(--fall-h-scale) * 282 / 460);
+    background-size:calc(var(--fall-fw) * var(--ff)) calc(var(--mascot-h) * var(--fall-h-scale));
+    background-image:url('img/mascot/yarn-guy-fall.webp');
+  }
+  .mascot-fall--orange{
+    --ff:14; --fall-h-scale:1;
+    height:var(--mascot-h);
+    --fall-fw:calc(var(--mascot-h) * 319 / 500);
+    background-size:calc(var(--fall-fw) * var(--ff)) var(--mascot-h);
+    background-image:url('img/mascot/orange-guy-fall.webp');
+  }
+  .mascot-fall--star{
+    --ff:11; --fall-h-scale:1.12;
+    height:calc(var(--mascot-h) * var(--fall-h-scale));
+    --fall-fw:calc(var(--mascot-h) * var(--fall-h-scale) * 359 / 480);
+    background-size:calc(var(--fall-fw) * var(--ff)) calc(var(--mascot-h) * var(--fall-h-scale));
+    background-image:url('img/mascot/star-guy-fall.webp');
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .mascot-grabbable.is-jump{animation:none}
+    .mascot-stage{transition:none}
+  }
+</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js"}}
+</script>
+</head>
+<body>
+  <div id="stage"><canvas id="c"></canvas></div>
+  <div id="guys"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
+
+/* ────────────────────────────────────────────────────────────────
+   SCREENS — swap these for real captures and everything else works.
+   Put files in Trove/img/screens/ and list them here. Each one is
+   drawn onto the phone in order, crossfading. Anything 9:19.5-ish.
+   With the list empty it falls back to the drawn placeholder below.
+   ──────────────────────────────────────────────────────────────── */
+const SCREENS = [];        // e.g. ['img/screens/home.webp','img/screens/read.webp']
+const SCREEN_SECONDS = 3.4;
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
+camera.position.set(0, 0, 7.4);
+
+scene.add(new THREE.AmbientLight(0xfff2e0, 2.6));
+const key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(3,6,8); scene.add(key);
+const warm = new THREE.DirectionalLight(0xFFC97F, .8); warm.position.set(-5,-2,4); scene.add(warm);
+
+const pivot = new THREE.Group(); scene.add(pivot);
+const phone = new THREE.Group(); pivot.add(phone);
+
+/* ---- the phone: the same iphone.glb the MyAuntie station uses ---- */
+const PHONE_SCALE = 0.03;              // 0.02 * 1.5, as on the homepage
+const SCREEN_SIZE = [40, 88];          // local units, measured for this glb
+const SCREEN_POS  = [0, 45.7, 8.5];
+
+new GLTFLoader().load('../models/iphone.glb', gltf => {
+  const m = gltf.scene;
+  m.scale.setScalar(PHONE_SCALE);
+  m.position.y = -1.35;
+  m.rotation.set(0, -0.32, 0.04);
+  phone.add(m);
+  addScreen(m);
+}, undefined, () => {
+  // no glb: draw a plain slab so the cover still reads
+  const slab = new THREE.Mesh(
+    new THREE.BoxGeometry(4.2, 8.6, .35),
+    new THREE.MeshStandardMaterial({color:0x2E1E0F, roughness:.5})
+  );
+  phone.add(slab); addScreen(null);
+});
+
+/* ---- the screen ---- */
+function placeholderTexture(){
+  const w = 620, h = 1340;
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const g = cv.getContext('2d');
+  const grad = g.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'#FFFDFA'); grad.addColorStop(.55,'#FFF3E2'); grad.addColorStop(1,'#FFE3C2');
+  g.fillStyle = grad; g.fillRect(0,0,w,h);
+  // soft apricot bloom
+  const b = g.createRadialGradient(w*.5,h*.34,10,w*.5,h*.34,w*.85);
+  b.addColorStop(0,'rgba(253,213,84,.42)'); b.addColorStop(1,'rgba(253,213,84,0)');
+  g.fillStyle = b; g.fillRect(0,0,w,h);
+  g.textAlign = 'center';
+  g.fillStyle = '#B85C06';
+  g.font = '700 46px "Montserrat Alternates", Montserrat, sans-serif';
+  g.fillText('TROVE', w/2, h*.46);
+  g.fillStyle = 'rgba(184,92,6,.55)';
+  g.font = '500 26px Montserrat, sans-serif';
+  g.fillText('screens land here', w/2, h*.52);
+  g.font = '500 21px Montserrat, sans-serif';
+  g.fillStyle = 'rgba(184,92,6,.38)';
+  g.fillText('Trove/img/screens/', w/2, h*.56);
+  const t = new THREE.CanvasTexture(cv);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+let screenMat = null, screenTextures = [], screenIdx = 0, lastSwap = 0;
+function addScreen(model){
+  const loader = new THREE.TextureLoader();
+  screenTextures = SCREENS.map(url => {
+    const t = loader.load(url);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  });
+  if (!screenTextures.length) screenTextures = [placeholderTexture()];
+
+  screenMat = new THREE.MeshBasicMaterial({map:screenTextures[0], transparent:true, toneMapped:false});
+  if (model){
+    // same overlay trick the homepage uses: a plane parented to the model
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(...SCREEN_SIZE), screenMat);
+    plane.position.set(...SCREEN_POS);
+    plane.renderOrder = 10;
+    model.add(plane);
+  } else {
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(3.8, 8.1), screenMat);
+    plane.position.z = .19; phone.add(plane);
+  }
+}
+
+/* ---- the mascots ----
+   Same rig as trove.is: rest on the still, and on an autonomous hop swap to the
+   fall sheet played reverse-then-forward while the wrapper runs the jump arc.
+   He wanders sideways and is biased back toward his home slot, so the framing
+   holds but nobody stands still. */
+const MASCOTS = [
+  {variant:'yarn',   x:'13%', y:'14%', h:.34},
+  {variant:'orange', x:'75%', y:'11%', h:.32},
+  {variant:'star',   x:'06%', y:'54%', h:.28},
+  {variant:'yarn',   x:'84%', y:'50%', h:.30},
+  {variant:'orange', x:'27%', y:'64%', h:.26},
+  {variant:'star',   x:'66%', y:'66%', h:.27},
+];
+const JUMP_MS = 640;
+const guysHost = document.getElementById('guys');
+
+const mascots = MASCOTS.map(cfg => {
+  const stage = document.createElement('div');
+  stage.className = 'mascot-stage';
+  stage.style.left = cfg.x; stage.style.top = cfg.y;
+
+  const grab = document.createElement('div');
+  grab.className = 'mascot-grabbable';
+
+  const still = document.createElement('img');
+  still.className = 'mascot-still';
+  still.src = `img/mascot/${cfg.variant}-standing.webp`;
+  still.alt = ''; still.decoding = 'async';
+  grab.appendChild(still);
+
+  stage.appendChild(grab);
+  guysHost.appendChild(stage);
+  return {stage, grab, cfg, wander:0, busy:false};
+});
+
+function sizeMascots(){
+  const h = innerHeight;
+  mascots.forEach(m => m.stage.style.setProperty('--mascot-h', Math.round(h * m.cfg.h) + 'px'));
+}
+
+const reduceMotion = matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+function hop(m){
+  if (m.busy) return;
+  m.busy = true;
+
+  // mostly little hops, occasionally a real leap
+  const power = Math.random() < 0.72 ? Math.random() * 0.45 : 0.55 + Math.random() * 0.45;
+  const mh = parseFloat(getComputedStyle(m.stage).getPropertyValue('--mascot-h')) || 120;
+  m.grab.style.setProperty('--jump-h', Math.round(mh * (0.26 + power * 0.42)) + 'px');
+
+  // bias back toward the home slot so the framing holds
+  const strayBias = Math.max(-0.45, Math.min(0.45, m.wander / 180));
+  const dir = Math.random() < 0.5 - strayBias ? 1 : -1;
+  const dist = (14 + power * 80) * dir;
+  m.wander = Math.max(-150, Math.min(150, m.wander + dist));
+  m.stage.style.transform = `translateX(${m.wander}px)`;
+
+  // the fall sheet IS the jump sprite
+  const sheet = document.createElement('div');
+  sheet.className = `mascot-fall mascot-fall--${m.cfg.variant} mascot-fall--jump`;
+  m.grab.appendChild(sheet);
+  m.grab.classList.add('is-jump');
+
+  setTimeout(() => {
+    m.grab.classList.remove('is-jump');
+    sheet.remove();
+    m.busy = false;
+  }, JUMP_MS);
+}
+
+function scheduleHop(m, first){
+  const wait = (first ? 900 + Math.random()*2400 : 0) + 2400 + Math.random()*5200;
+  setTimeout(() => { hop(m); scheduleHop(m, false); }, wait);
+}
+if (!reduceMotion) mascots.forEach(m => scheduleHop(m, true));
+
+/* ---- loop ---- */
+const clock = new THREE.Clock();
+let mx = 0, my = 0, tmx = 0, tmy = 0;
+addEventListener('pointermove', e => {
+  tmx = (e.clientX / innerWidth  - .5) * 2;
+  tmy = (e.clientY / innerHeight - .5) * 2;
+});
+
+function resize(){
+  const w = innerWidth, h = innerHeight;
+  sizeMascots();
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  // pull back a little on narrow viewports so the phone always fits
+  // frame on HEIGHT, since the cover slab is short and wide
+  const fit = Math.max(6.2, Math.min(11.0, 2550 / Math.max(h, 1)));
+  camera.position.z = fit;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+function tick(){
+  requestAnimationFrame(tick);
+  const t = clock.getElapsedTime();
+  mx += (tmx - mx) * .05; my += (tmy - my) * .05;
+
+  // idle float + a lazy tilt that follows the cursor
+  pivot.rotation.y = Math.sin(t * .28) * .10 + mx * .26;
+  pivot.rotation.x = Math.sin(t * .22) * .05 - my * .14;
+  pivot.position.y = Math.sin(t * .55) * .13;
+
+  // crossfade to the next screen
+  if (screenMat && screenTextures.length > 1 && t - lastSwap > SCREEN_SECONDS){
+    lastSwap = t;
+    screenIdx = (screenIdx + 1) % screenTextures.length;
+    screenMat.map = screenTextures[screenIdx];
+    screenMat.needsUpdate = true;
+  }
+  renderer.render(scene, camera);
+}
+tick();
+</script>
+</body>
+</html>

@@ -4,13 +4,20 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="../HenLogo.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Auntie – Case Study</title>
+  <title>My Auntie &ndash; Case Study</title>
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
 
   <style>
+    /* ── type scale ────────────────────────────────────────────────
+       One fluid root so every rem on the page grows with the screen
+       instead of sitting at a fixed 16px. The floor and ceiling are
+       in rem, not px, so a reader who has raised their browser's
+       default font size keeps that increase (WCAG 1.4.4). */
+    html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
+
     @font-face {
       font-family: 'DotempDemo';
       src: url('../fonts/DotempDemo.ttf') format('truetype');
@@ -23,35 +30,70 @@
     .di { font-family: 'Didot', 'Cormorant Garamond', serif; font-style: italic; font-weight: 700; }
 
     :root{
+      --accent-rgb: 196,96,122;
+      --accent-soft-rgb: 220,140,170;
+      --accent-deep-rgb: 69,123,157;
+      --deep-rgb: 15,20,25;
+      --chrome-rgb: 14,4,10;
+      --lift-rgb: 255,255,255;
+      --ink-rgb: 241,250,238;
+      --sh-rgb: 0,0,0;
+      --sh-k: 1;
+      --paper: #1A0711;
       --text-primary:#f1faee;
       --text-secondary:#e8a8c4;
-      --accent-teal:#c4607a;
+      --accent-teal:#D0768D;   /* lifted: the pane is translucent now, so the sky raises the backdrop under it */
       --accent-blue:#a04060;
-      --glass-deep-1: rgba(28,8,18,0.90);
-      --glass-deep-2: rgba(46,10,26,0.96);
-      --glass-border: rgba(220,140,170,0.22);
-      --glass-highlight-1: rgba(240,100,150,.10);
-      --glass-highlight-2: rgba(69,123,157,.10);
-      --glass-bg: rgba(18,5,12,0.35);
-      --inner-card: rgba(18,5,12,.42);
-      --rule: rgba(220,140,170,0.24);
+      --glass-deep-1: rgba(var(--deep-rgb),0.90);
+      --glass-deep-2: rgba(var(--deep-rgb),0.96);
+      --glass-border: rgba(var(--accent-soft-rgb),0.22);
+      --glass-highlight-1: rgba(var(--accent-soft-rgb),.10);
+      --glass-highlight-2: rgba(var(--accent-deep-rgb),.10);
+      --glass-bg: rgba(var(--deep-rgb),0.35);
+      --inner-card: rgba(var(--deep-rgb),.42);
+      --rule: rgba(var(--accent-soft-rgb),0.24);
+    }
+
+    /* ── LIGHT THEME ───────────────────────────────────────────
+       Authored dark, so light restates the same colour families
+       rather than inverting them: glass goes to paper, the deep
+       washes go pale, and every accent drops to a value that
+       clears WCAG AA on the light surface it lands on. */
+    :root[data-theme="light"] {
+      --text-primary: #200F17;
+      --text-secondary: #9A2C50;
+      --accent-teal: #A83557;
+      --accent-blue: #8C2545;
+      --glass-deep-1: rgba(255,255,255,0.94);
+      --glass-deep-2: rgba(255,248,251,0.97);
+      --glass-border: rgba(168,53,87,0.26);
+      --glass-highlight-1: rgba(168,53,87,.07);
+      --glass-highlight-2: rgba(45,90,125,.07);
+      --glass-bg: rgba(255,255,255,0.74);
+      --inner-card: rgba(255,255,255,0.80);
+      --rule: rgba(168,53,87,0.24);
+      --accent-rgb: 168,53,87;
+      --accent-soft-rgb: 154,44,80;
+      --accent-deep-rgb: 45,90,125;
+      --deep-rgb: 252,230,238;
+      --chrome-rgb: 255,255,255;
+      --lift-rgb: 168,53,87;
+      --ink-rgb: 32,15,23;
+      --sh-rgb: 74,32,48;
+      --sh-k: .34;
+      --paper: #FFF4F8;
     }
 
     /* reset + base */
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{background:transparent !important}
-    body{font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;color:var(--text-primary)}
+        body{font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;color:var(--text-primary)}
     a{text-decoration:none;color:inherit}
     ul{list-style:disc inside}
 
-    /* keep background.html behind everything */
-    #bg-host{position:fixed;inset:0;z-index:-1;pointer-events:none}
-    #bg-host>iframe{width:100%;height:100%;border:0;display:block}
-
     /* custom cursor */
-    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(196,96,122,.3);border:2px solid rgba(196,96,122,.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(196,96,122,.4),inset 0 0 10px rgba(196,96,122,.1)}
-    .custom-cursor.clicking{background:rgba(196,96,122,.9);border-color:rgba(196,96,122,1);transform:translate(-50%,-50%) scale(.8);box-shadow:0 0 25px rgba(196,96,122,.8),inset 0 0 15px rgba(196,96,122,.3)}
-    .custom-cursor.hovering{width:30px;height:30px;background:rgba(196,96,122,.4);border-color:rgba(196,96,122,.9);box-shadow:0 0 20px rgba(196,96,122,.6),inset 0 0 12px rgba(196,96,122,.2)}
+    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(var(--accent-rgb),.3);border:2px solid rgba(var(--accent-rgb),.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(var(--accent-rgb),.4),inset 0 0 10px rgba(var(--accent-rgb),.1)}
+    .custom-cursor.clicking{background:rgba(var(--accent-rgb),.9);border-color:rgba(var(--accent-rgb),1);transform:translate(-50%,-50%) scale(.8);box-shadow:0 0 25px rgba(var(--accent-rgb),.8),inset 0 0 15px rgba(var(--accent-rgb),.3)}
+    .custom-cursor.hovering{width:30px;height:30px;background:rgba(var(--accent-rgb),.4);border-color:rgba(var(--accent-rgb),.9);box-shadow:0 0 20px rgba(var(--accent-rgb),.6),inset 0 0 12px rgba(var(--accent-rgb),.2)}
     *,*::before,*::after{cursor:none !important}
 
     /* pink page tint */
@@ -68,7 +110,7 @@
     /* Section eyebrow label */
     .eyebrow{
       display:block;
-      font-size:.72rem;
+      font-size:0.84rem;
       font-weight:700;
       letter-spacing:.14em;
       text-transform:uppercase;
@@ -152,7 +194,7 @@
       border: 1px solid var(--glass-border);
       backdrop-filter: blur(18px) saturate(120%);
       -webkit-backdrop-filter: blur(18px) saturate(120%);
-      box-shadow: 0 24px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow: 0 24px 80px rgba(var(--sh-rgb), calc(.55 * var(--sh-k))), inset 0 1px 0 rgba(var(--lift-rgb),.04);
       overflow: hidden;
     }
     .hero-container::before,
@@ -200,12 +242,33 @@
     }
     .tldr-pills .pill{
       display:inline-flex; align-items:center; gap:6px;
-      font-size:.78rem; line-height:1.15;
+      font-size:0.84rem; line-height:1.15;
       padding:4px 10px; border-radius:999px;
-      background:rgba(255,255,255,.05); border:1px solid rgba(168,218,220,0.15);
+      background:rgba(var(--lift-rgb),.05); border:1px solid rgba(var(--accent-soft-rgb),0.15);
     }
 
     /* --- OUTCOME STRIP --- */
+    /* Skrimp's skip button, in this page's own colours: a gradient pill with a
+       lift on hover and a sheen that sweeps across it. MyAuntie had no .skip-button rule at all, so it was rendering as a plain anchor. */
+    .skip-link { margin-top:1rem; display:flex; justify-content:flex-end; }
+    .skip-button {
+      display:inline-block;
+      background:linear-gradient(45deg,var(--accent-teal),var(--accent-blue));
+      color:#FFF4F8; font-size:.82rem; font-weight:700; letter-spacing:.08em;
+      text-transform:uppercase; text-decoration:none;
+      padding:.85rem 1.8rem; border:none; border-radius:50px;
+      transition:transform .3s ease, box-shadow .3s ease;
+      box-shadow:0 4px 15px rgba(var(--accent-rgb),.40);
+      position:relative; overflow:hidden;
+    }
+    .skip-button:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(var(--accent-rgb),.60); }
+    .skip-button::before {
+      content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+      transition:left .5s;
+    }
+    .skip-button:hover::before { left:100%; }
+
     .outcome-strip{
       display:grid;
       grid-template-columns:repeat(4,1fr);
@@ -249,13 +312,23 @@
 
     .section-content{max-width:100%;margin:0 auto;text-align:left}
 
+    /* No measure cap. Trove's prose runs the full column and this one now
+       matches; the 72ch limit is what made the page read as a narrow gutter
+       with acres of dead space either side. */
     .section-content p{
-      font-size:1.05rem;
-      line-height:1.65;
-      max-width:min(100%, 72ch);
-      margin-bottom:1.4rem;
+      font-size:clamp(.95rem,1.18vw,1.04rem);
+      line-height:1.78;
+      margin-bottom:1rem;
       color:var(--text-primary);
       opacity:.92;
+    }
+    .lede{
+      font-size:clamp(1.04rem,1.7vw,1.22rem); line-height:1.55; font-weight:600;
+      color:var(--text-primary); opacity:1; margin-bottom:1.1rem;
+    }
+    .cap{
+      font-size:0.84rem; color:var(--text-secondary); opacity:.8;
+      margin-top:.6rem; text-align:center;
     }
 
     /* --- EDITORIAL PULL QUOTES --- */
@@ -282,7 +355,7 @@
     .quote-card{
       border-left:2px solid var(--accent-teal);
       padding:1.1rem 1.25rem;
-      background:rgba(15,20,25,.3);
+      background:rgba(var(--deep-rgb),.3);
       border-radius:0 12px 12px 0;
       opacity:0;transform:translateY(18px);transition:.5s;
     }
@@ -309,16 +382,21 @@
 
     /* --- HIGHLIGHT BOX (left border editorial style) --- */
     .highlight-box{
-      border-left:2px solid rgba(220,140,170,0.45);
-      padding:.9rem 1.1rem .9rem 1.25rem;
-      margin-top:.75rem;
-      background:rgba(15,20,25,.3);
+      border-left:2px solid rgba(var(--accent-soft-rgb),0.45);
+      padding:1rem 1.2rem 1rem 1.35rem;
+      /* it had margin-top only and no bottom, so whatever followed sat flush
+         against it. The block is a pause in the prose; it needs air after it. */
+      margin:1.5rem 0 1.9rem;
+      background:rgba(var(--deep-rgb),.3);
       border-radius:0 10px 10px 0;
       font-size:.95rem;
       line-height:1.55;
       color:var(--text-primary);
     }
-    .highlight-box strong{color:var(--text-secondary)}
+    .highlight-box strong{
+      color:var(--text-secondary); display:block;
+      margin-bottom:.28rem; font-weight:700;
+    }
 
     /* --- LAYOUTS --- */
     .two-col{display:flex;gap:2.5rem;flex-wrap:wrap;align-items:flex-start;margin-top:1.5rem}
@@ -326,17 +404,17 @@
 
     .challenge-col.left img,.challenge-skinny-image{
       width:100%;border-radius:12px;display:block;
-      box-shadow:0 8px 32px rgba(0,0,0,.3);
+      box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));
       border:1px solid var(--glass-border);
     }
     .challenge-skinny-image{margin-top:1rem}
 
     .big-image{text-align:center;margin-top:2rem}
-    .big-image img{max-width:100%;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.3);border:1px solid var(--glass-border)}
+    .big-image img{max-width:100%;border-radius:12px;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));border:1px solid var(--glass-border)}
 
     .overview-cover{
       width:100%;border-radius:12px;
-      box-shadow:0 8px 32px rgba(0,0,0,.3);
+      box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));
       border:1px solid var(--glass-border);
       margin-top:1.25rem;
     }
@@ -346,12 +424,12 @@
     .card{
       border-top:2px solid var(--accent-teal);
       padding:1.5rem;
-      background:rgba(15,20,25,.3);
+      background:rgba(var(--deep-rgb),.3);
       border-radius:0 0 14px 14px;
       transition:.25s;
     }
-    .card:hover{background:rgba(15,20,25,.5)}
-    .card h4{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;opacity:.65;margin-bottom:.35rem;color:var(--accent-teal)}
+    .card:hover{background:rgba(var(--deep-rgb),.5)}
+    .card h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;opacity:.65;margin-bottom:.35rem;color:var(--accent-teal)}
     .card h3{font-size:1.15rem;margin-bottom:.4rem;color:var(--text-secondary);font-family:'Montserrat Alternates',sans-serif;}
     .card p{font-size:.95rem;line-height:1.45;color:var(--text-primary);opacity:.85}
 
@@ -366,9 +444,9 @@
     .must-haves-left{position:sticky;top:24px}
     .must-haves-right{display:grid;grid-template-columns:1fr;gap:1rem}
     .must-haves-card{
-      border-left:2px solid rgba(168,218,220,0.3);
+      border-left:2px solid rgba(var(--accent-soft-rgb),0.3);
       padding:1rem 1.1rem 1rem 1.25rem;
-      background:rgba(15,20,25,.25);
+      background:rgba(var(--deep-rgb),.25);
       border-radius:0 10px 10px 0;
     }
     .must-haves-card h4{font-size:.88rem;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem}
@@ -380,16 +458,16 @@
     .process-dense-left,.process-dense-right{flex:1;min-width:240px}
 
     .mini-images{display:flex;justify-content:center;align-items:center;gap:clamp(14px,2vw,24px);margin:1.25rem auto;max-width:min(500px,95%)}
-    .mini-images img{display:block;border-radius:12px;height:auto;max-width:100%;width:70%;box-shadow:0 8px 24px rgba(0,0,0,.18);border:1px solid var(--glass-border)}
+    .mini-images img{display:block;border-radius:12px;height:auto;max-width:100%;width:70%;box-shadow:0 8px 24px rgba(var(--sh-rgb), calc(.18 * var(--sh-k)));border:1px solid var(--glass-border)}
     .mini-images img:nth-child(2){width:56%}
 
     /* video embeds */
-    .video-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin:1.5rem auto 0;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+    .video-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin:1.5rem auto 0;border-radius:12px;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)))}
     .video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px}
 
     /* ideation images */
     .ideation-images{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.75rem}
-    .ideation-images img{width:48%;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2);border:1px solid var(--glass-border)}
+    .ideation-images img{width:48%;border-radius:12px;box-shadow:0 8px 24px rgba(var(--sh-rgb), calc(.2 * var(--sh-k)));border:1px solid var(--glass-border)}
 
     /* reflection blocks */
     .reflection{margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--rule)}
@@ -397,13 +475,209 @@
     .reflection p{font-size:1rem;line-height:1.6;color:var(--text-primary);opacity:.88;margin-bottom:.75rem}
 
     /* works cited */
+    /* ── crooked cards ────────────────────────────────────────────────
+       Ported from the Trove case study: a wrapping flex row of cards, each
+       sitting at a slightly different angle and offset, untilting on hover.
+       Built on MyAuntie's own tokens rather than Trove's, so they follow this
+       page's rose palette and its light-mode block for free. */
+    .steps{
+      display:flex; flex-wrap:wrap; gap:clamp(10px,1.4vw,18px);
+      margin:clamp(24px,3.2vh,36px) 0 clamp(14px,2vh,22px); align-items:flex-start;
+    }
+    .step-card{
+      flex:1 1 205px; min-width:190px;
+      background:var(--inner-card); border:1px solid var(--glass-border);
+      border-radius:16px; padding:1rem 1rem 1.05rem;
+      box-shadow:0 10px 30px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+    }
+    .step-card:nth-child(1){transform:rotate(-2.6deg) translateY(2px)}
+    .step-card:nth-child(2){transform:rotate(2.1deg) translateY(17px)}
+    .step-card:nth-child(3){transform:rotate(-1.8deg) translateY(6px)}
+    .step-card:nth-child(4){transform:rotate(2.7deg) translateY(21px)}
+    .step-card:nth-child(5){transform:rotate(-1.4deg) translateY(10px)}
+    .step-card:hover{
+      transform:rotate(0deg) translateY(-5px);
+      box-shadow:0 18px 44px rgba(var(--sh-rgb), calc(.32 * var(--sh-k)));
+    }
+    .step-card .n{
+      font-family:'DotempDemo',monospace; font-size:0.78rem; letter-spacing:.1em;
+      color:var(--accent-teal); display:block; margin-bottom:.32rem;
+    }
+    .step-card h4{
+      font-size:.94rem; font-weight:700; color:var(--text-primary);
+      margin-bottom:.35rem; line-height:1.25;
+    }
+    .step-card p{
+      font-size:.82rem; line-height:1.55; color:var(--text-primary);
+      opacity:.82; margin:0;
+    }
+    /* No frame around the art. The tinted box read as a second card inside the
+       card; the aspect ratio stays so a row of them keeps a common baseline. */
+    .step-card .step-art{
+      margin-top:.6rem;
+      aspect-ratio:4 / 3; display:flex; align-items:center; justify-content:center;
+      padding:.4rem 0 0;
+    }
+    .step-card .step-art img{max-width:88%; max-height:88%; width:auto; height:auto; display:block}
+
+    /* the quote and stat rows reuse the same crooked row */
+    .quote-grid, .stats-grid{
+      display:flex; flex-wrap:wrap; --g:clamp(10px,1.4vw,18px); gap:var(--g);
+      margin:clamp(22px,3vh,34px) 0 clamp(14px,2vh,22px); align-items:flex-start;
+    }
+    /* five quotes, deliberately two on the first row and three on the second.
+       Left to wrap on their own they came out four and one, with the stray
+       fifth stretching the full width. */
+    .quote-grid .quote-card{flex:0 1 auto}
+    .quote-grid .quote-card:nth-child(-n+2){flex-basis:calc(50% - var(--g) / 2)}
+    .quote-grid .quote-card:nth-child(n+3){flex-basis:calc(33.333% - var(--g) * 2 / 3)}
+    .quote-card, .stats-card{
+      flex:1 1 235px; min-width:210px;
+      background:var(--inner-card); border:1px solid var(--glass-border);
+      border-radius:16px; padding:1.05rem 1.1rem;
+      box-shadow:0 10px 30px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+    }
+    /* Skrimp's angles, which are stronger than Trove's and read better on a
+       dark page. Five distinct ones so a row of four or five looks
+       hand-placed rather than like a repeating zigzag. */
+    .quote-card:nth-child(5n+1), .stats-card:nth-child(5n+1){transform:rotate(-2.6deg) translateY(2px)}
+    .quote-card:nth-child(5n+2), .stats-card:nth-child(5n+2){transform:rotate(2.1deg) translateY(17px)}
+    .quote-card:nth-child(5n+3), .stats-card:nth-child(5n+3){transform:rotate(-1.8deg) translateY(6px)}
+    .quote-card:nth-child(5n+4), .stats-card:nth-child(5n+4){transform:rotate(2.7deg) translateY(21px)}
+    .quote-card:nth-child(5n+5), .stats-card:nth-child(5n+5){transform:rotate(-1.4deg) translateY(10px)}
+    .quote-card:hover, .stats-card:hover{
+      transform:rotate(0deg) translateY(-5px);
+      box-shadow:0 18px 44px rgba(var(--sh-rgb), calc(.32 * var(--sh-k)));
+    }
+    .quote-text{font-size:.92rem; line-height:1.6; color:var(--text-primary); margin:0 0 .6rem}
+    .quote-author{font-size:0.84rem; color:var(--text-secondary); opacity:.85}
+    .stats-title{font-size:.88rem; font-weight:700; color:var(--text-primary); margin:.2rem 0 .3rem}
+    .stats-card .stat-number{
+      font-family:'DotempDemo',monospace; font-size:1.5rem; color:var(--accent-teal);
+      display:block; line-height:1;
+    }
+    .stats-desc{font-size:.8rem; line-height:1.55; color:var(--text-primary); opacity:.8; margin:0}
+
+    /* a plain wrapping image row, for the pages that have plenty of artwork */
+    .img-grid{
+      display:flex; flex-wrap:wrap; gap:clamp(12px,1.6vw,20px);
+      margin:clamp(20px,2.8vh,32px) 0 .4rem; align-items:flex-start;
+    }
+    .img-tile{flex:1 1 260px; min-width:220px; margin:0}
+    /* a full-length phone screenshot is three times taller than a slide, so it
+       takes a narrower column rather than dragging the whole row out of shape */
+    .img-tile--tall{flex:0 1 320px; min-width:220px}
+    .img-tile img{
+      width:100%; height:auto; display:block; border-radius:14px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 12px 34px rgba(var(--sh-rgb), calc(.26 * var(--sh-k)));
+    }
+    .img-tile figcaption{
+      font-size:0.84rem; color:var(--text-secondary); opacity:.8;
+      margin-top:.45rem; text-align:center;
+    }
+    .img-wide{margin:clamp(20px,2.8vh,32px) 0 .4rem}
+    .img-wide img{
+      width:100%; height:auto; display:block; border-radius:16px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 14px 40px rgba(var(--sh-rgb), calc(.28 * var(--sh-k)));
+    }
+    .img-wide figcaption{
+      font-size:0.84rem; color:var(--text-secondary); opacity:.8;
+      margin-top:.5rem; text-align:center;
+    }
+    /* The flow diagram is line art, not a screenshot, so it gets no frame.
+       This has to sit AFTER .img-wide img: the two selectors have equal
+       specificity, so source order is the only thing deciding it. */
+    .img-flow img{ border:none; box-shadow:none; background:none }
+
+    /* the three intents, as pills */
+    .chip-row{display:flex; flex-wrap:wrap; gap:.5rem; margin:1rem 0 1.3rem}
+    .chip{
+      font-size:0.84rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+      padding:.42rem .8rem; border-radius:999px;
+      color:var(--accent-teal); background:var(--glass-highlight-1);
+      border:1px solid var(--glass-border);
+    }
+    @media(prefers-reduced-motion:reduce){
+      .step-card,.quote-card,.stats-card{transform:none !important}
+    }
+    @media(max-width:560px){
+      .step-card,.quote-card,.stats-card{flex:1 1 100%; transform:none !important}
+      .step-card:hover,.quote-card:hover,.stats-card:hover{transform:translateY(-3px) !important}
+    }
+
     .works-cited{margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--rule)}
     .works-cited h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-teal);margin-bottom:1rem}
     .works-cited p{font-size:.82rem;line-height:1.55;color:var(--text-primary);opacity:.6;margin-bottom:.6rem}
 
+
+    /* ══ VERTICAL RHYTHM ═══════════════════════════════════════════════
+       One scale for every block in the flow. Before this each component
+       carried its own ad hoc margins and the gaps between neighbours ran
+       from -12px to +51px, including several outright collisions.
+
+       The crooked card rows are the subtle one: their cards are pushed
+       down by up to 21px with translateY, which happens AFTER layout and
+       so sits outside the container's own box. Without that added back as
+       bottom margin the next block lands on top of the lowest card. */
+    .section-content > *{ margin-top:0 }
+    .lede{ margin:0 0 1.25rem }
+
+    .steps, .quote-grid, .stats-grid, .img-grid, .img-wide, .mini-images,
+    .video-embed, .showcase, .mood-ladder, .tot-matrix-wrap, .big-image,
+    .vid-crop, .ideation-images, .process-dense-row, .role-cols, .cards,
+    .must-haves-grid, .outcome-strip, .quote-grid{
+      margin:2rem 0 1.7rem;
+    }
+    .steps, .quote-grid, .stats-grid{ margin-bottom:2.9rem }   /* + the tilt drop */
+    .steps:has(+ .cap){ margin-bottom:1.4rem }
+
+    /* a caption belongs to the thing above it, not to the paragraph below */
+    .cap, .img-grid figcaption, .img-wide figcaption{ margin-top:.55rem; margin-bottom:0 }
+    .video-embed + .cap, .mini-images + .cap, .img-wide + .cap,
+    .showcase + .cap{ margin-top:.75rem }
+    .cap + p, figcaption + p{ margin-top:1.6rem }
+
+    .highlight-box{ margin:1.9rem 0 2rem }
+    .chip-row{ margin:2rem 0 1.7rem }
+
+    /* A caption has to hug the thing it captions. Without this the media's own
+       bottom margin (27px) collapses against the caption's top margin and wins,
+       so the label floats halfway to the next paragraph. */
+    .video-embed:has(+ .cap), .mini-images:has(+ .cap),
+    .img-wide:has(+ .cap), .showcase:has(+ .cap){ margin-bottom:0 }
+    .video-embed + .cap, .mini-images + .cap,
+    .img-wide + .cap, .showcase + .cap{ margin-top:.7rem }
+    .works-cited{ margin-top:2.8rem }
+
+    /* a heading always gets clear air above it */
+    .section-heading{ margin-top:0 }
+    .section-content > p + .section-heading{ margin-top:2.4rem }
+
+    /* the skip control needs room before the story starts */
+    .skip-link{ margin:1.2rem 0 clamp(30px,4.5vh,52px) }
+
+    /* four cards in a row were nearly touching */
+    .steps, .quote-grid, .stats-grid, .img-grid{ gap:clamp(14px,1.9vw,26px) }
+
     /* --- REVEALS --- */
     .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease-out,transform .5s ease-out}
     .active{opacity:1 !important;transform:translateY(0) !important}
+    /* .active above sets transform:translateY(0) !important, which flattens
+       any tilted card that also carries `reveal` — the crooked cards were
+       straightening themselves the instant they scrolled in. Skrimp hits the
+       same wall and answers it the same way: restate the tilt at equal weight. */
+    .step-card.active:nth-child(1),.quote-card.active:nth-child(5n+1),.stats-card.active:nth-child(5n+1){transform:rotate(-2.6deg) translateY(2px) !important}
+    .step-card.active:nth-child(2),.quote-card.active:nth-child(5n+2),.stats-card.active:nth-child(5n+2){transform:rotate(2.1deg) translateY(17px) !important}
+    .step-card.active:nth-child(3),.quote-card.active:nth-child(5n+3),.stats-card.active:nth-child(5n+3){transform:rotate(-1.8deg) translateY(6px) !important}
+    .step-card.active:nth-child(4),.quote-card.active:nth-child(5n+4),.stats-card.active:nth-child(5n+4){transform:rotate(2.7deg) translateY(21px) !important}
+    .step-card.active:nth-child(5),.quote-card.active:nth-child(5n+5),.stats-card.active:nth-child(5n+5){transform:rotate(-1.4deg) translateY(10px) !important}
+    .step-card.active:hover,.quote-card.active:hover,.stats-card.active:hover{
+      transform:rotate(0deg) translateY(-5px) !important;
+    }
 
     /* --- RESPONSIVE --- */
     @media(max-width:900px){
@@ -417,7 +691,6 @@
       .must-haves-left{position:static}
     }
     @media(max-width:768px){
-      .hero-container{width:min(96vw,720px)}
       .intro{flex-direction:column;align-items:flex-start;padding:1.5rem}
       .intro-left{padding-right:0}
       .intro-right{max-width:100%}
@@ -434,6 +707,91 @@
       .outcome-item:last-child{border-bottom:0}
       .stats-grid{grid-template-columns:1fr}
     }
+      /* ── PANE MODE ─────────────────────────────────────────────
+       This page is read inside the portfolio's right-hand pane,
+       which now supplies both the paper and the tinted sky. So it
+       stops painting a floating card on a sky of its own — the
+       container is just a reading column — and it paints the paper
+       itself so it still stands up when opened standalone. */
+    html,body{background:var(--paper)}
+    /* in the pane the shell paints the paper — translucent, so the one sky
+       reads through the reading surface the way it does on the home page.
+       Standalone there is no sky behind us, so we keep painting it ourselves. */
+    html[data-embedded],html[data-embedded] body{background:transparent}
+    .hero{padding:0}
+    .hero-container{
+      /* the PANE paints the paper edge to edge; this is only the reading
+         column, centred in it — so the margins each side are paper, never
+         a second sky like the old floating card had */
+      width:100%; max-width:1180px; margin-inline:auto;
+      border:none; border-radius:0;
+      background:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+      box-shadow:none;
+      padding:clamp(30px,4.5vh,60px) clamp(22px,4vw,60px) clamp(60px,9vh,110px);
+    }
+    .hero-container::before,.hero-container::after{display:none}
+    /* nothing breaks the gutter: media is bounded by the column, not the pane */
+    .hero-container img,
+    .hero-container video,
+    .hero-container iframe,
+    .hero-container canvas{max-width:100%}
+    .hero-container img{height:auto}
+    /* a flex row of percentage-width images can still sum past its own box
+       (two at 70% each), so let the row wrap and the items shrink */
+    .hero-container [class$="-images"],
+    .hero-container .mini-images{flex-wrap:wrap}
+    .hero-container [class$="-images"] > img,
+    .hero-container .mini-images > img{min-width:0;flex-shrink:1}
+    /* flex and grid children only stay inside the column if allowed to shrink */
+    .intro-left,.intro-right,.section-content,.two-col > *{min-width:0}
+    /* the press panel was the bottom half of the hero card — that card is
+       gone, so it stops floating and takes the same measure as everything else */
+    .press-wrapper{
+      width:100%; max-width:1180px; margin-inline:auto;
+      padding:clamp(18px,2.4vw,40px) clamp(22px,4vw,60px);
+      background:none; border:none; border-radius:0; box-shadow:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+    }
+    .press-wrapper::before,.press-wrapper::after{display:none}
+
+    /* ---- BANNER + META HEADER ---- */
+    .case-banner{
+      width:100%; border-radius:18px; overflow:hidden;
+      border:1px solid var(--glass-border);
+      box-shadow:0 10px 34px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      margin-bottom:clamp(30px,5vh,60px);
+      background:var(--inner-card);
+    }
+    .case-banner img{display:block;width:100%;height:auto}
+    .meta-grid{
+      display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:1.6rem 2rem; margin-bottom:clamp(34px,6vh,72px);
+    }
+    .meta-col h4{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); margin-bottom:.8rem;
+    }
+    .meta-col p{font-size:.93rem;line-height:1.6;color:var(--text-primary)}
+    .overview-label{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); display:block; margin-bottom:.9rem;
+    }
+    .overview-head{
+      font-size:clamp(1.5rem,3.1vw,2.35rem); font-weight:700; line-height:1.22;
+      color:var(--text-primary); margin-bottom:1.1rem; letter-spacing:-.01em;
+    }
+    .overview-body p{font-size:1.02rem;line-height:1.7;max-width:74ch;margin-bottom:.9rem}
+    .overview-body p:last-child{margin-bottom:0}
+    /* the banner carries the wordmark, so the heading is for screen readers */
+    .sr-only{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+    }
+    @media(max-width:900px){ .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media(max-width:560px){ .meta-grid{grid-template-columns:1fr} }
   </style>
 </head>
 <body>
@@ -441,40 +799,32 @@
   <div class="custom-cursor" id="cursor"></div>
 
   <!-- nav include -->
-  <div id="nav-slot" data-include="../nav.html"></div>
-<br><br><br><br><br><br><br>
   <header class="hero" id="hero">
     <div class="hero-container">
 
-      <!-- HERO INTRO -->
-      <div class="intro reveal">
-        <div class="intro-left">
-          <span class="eyebrow">TechNova 2025 — 🏆 WINNER</span>
-          <h1>My Auntie</h1>
-          <p class="tagline">The first AI companion for postpartum parents—because at 3 a.m. you don't want an app; you want your Auntie.</p>
-          <ul class="tldr-pills">
-            <li class="pill"><span>🫂</span><span><b>3 intents</b> — Comfort · Resource · Escalate</span></li>
-            <li class="pill"><span>🔒</span><span><b>Short-lived</b> memory (helpful, not surveillance)</span></li>
-            <li class="pill"><span>📞</span><span><b>0 apps</b> — phone/SMS &lt;5s round trip only</span></li>
-          </ul>
+      <!-- BANNER -->
+      <h1 class="sr-only">My Auntie</h1>
+      <figure class="case-banner reveal">
+        <img src="auntie-banner.webp" alt="My Auntie case study banner" width="2400" height="737" fetchpriority="high">
+      </figure>
+
+      <!-- META -->
+      <div class="meta-grid reveal">
+        <div class="meta-col">
+          <h4>Project Type</h4>
+          <p>Hackathon build. An AI companion for postpartum parents, and the TechNova 2025 winner.</p>
         </div>
-        <div class="intro-right reveal">
-          <div class="header-info">
-            <p><strong>Role:</strong> Product Lead (AI + UX + Telephony)</p>
-            <p><strong>Timeline:</strong> 36 Hours</p>
-            <p><strong>Tools &amp; Skills:</strong></p>
-            <ul>
-              <li>Deep listening interviews</li>
-              <li>Safety Design</li>
-              <li>Conversation Design</li>
-              <li>Twilio (SMS/Voice)</li>
-              <li>Gemini (intent + safety)</li>
-              <li>OpenAI (Realtime TTS)</li>
-              <li>Node/Express + TypeScript</li>
-              <li>MongoDB Atlas</li>
-              <li>Snowflake</li>
-            </ul>
-          </div>
+        <div class="meta-col">
+          <h4>Role</h4>
+          <p>Product Lead across AI, UX and telephony, in a team of four.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Timeline</h4>
+          <p>36 hours, concept to working telephony live on stage.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Skills &amp; Tools</h4>
+          <p>Deep listening interviews, safety design, conversation design, Twilio for SMS and voice, Gemini for intent and safety, OpenAI Realtime TTS, Node and Express on TypeScript, MongoDB Atlas, and Snowflake.</p>
         </div>
       </div>
 
@@ -482,379 +832,217 @@
       <div class="outcome-strip reveal">
         <div class="outcome-item">
           <span class="outcome-num">🏆 Winner</span>
-          <span class="outcome-label">TechNova 2025 — judged on empathy, reliability, and receipts</span>
+          <span class="outcome-label">TechNova 2025, judged on empathy, reliability and receipts</span>
         </div>
         <div class="outcome-item">
           <span class="outcome-num">36hrs</span>
-          <span class="outcome-label">concept → working telephony, live on stage</span>
+          <span class="outcome-label">concept to working telephony, live on stage</span>
         </div>
         <div class="outcome-item">
           <span class="outcome-num">SMS + Voice</span>
-          <span class="outcome-label">two channels, one Auntie — judges called in and texted</span>
+          <span class="outcome-label">two channels, one Auntie, and judges used both on stage</span>
         </div>
         <div class="outcome-item">
           <span class="outcome-num">&lt;5s</span>
-          <span class="outcome-label">SMS round trip — meets parents at 4% battery and 3 a.m.</span>
+          <span class="outcome-label">SMS round trip, which is what 4% battery at 3 a.m. needs</span>
         </div>
       </div>
 
-      <!-- THE PRODUCT -->
-      <section id="project-overview">
+      <!-- SKIP -->
+      <div class="skip-link reveal">
+        <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+      </div>
+
+      <section id="three-am">
         <div class="section-content reveal">
-          <span class="eyebrow">The Product</span>
-          <h2 class="section-heading">What is My Auntie?</h2>
-          <p>New parents don't quit because they're unmotivated. They quit because the system makes help feel like homework. In the fourth trimester, energy and attention are the scarcest resources—precisely when most "solutions" demand the most: download an app, create an account, complete a 20-question intake, then wait.</p>
-          <p>My Auntie reframes support around the reality of 3 a.m.: a crying baby, 4% battery, and a brain made of mashed potatoes. No apps, no dashboards—just a warm voice or a short text that meets you where you are, offers one gentle next step, and (when needed) routes you to real care without judgment.</p>
-          <p>36-hour sprint goal: ship a live, phone-first, safety-aware companion that feels like calling a trusted auntie—tiny, kind, and doable. We launched SMS + voice, intent triage (Comfort · Resource · Escalate), privacy-first memory, and deterministic resource lookup—end-to-end and demo-ready.</p>
-          <iframe
-              src="https://www.myauntie.tech/"
-              class="overview-cover"
-              loading="lazy"
-              allowfullscreen
-              referrerpolicy="no-referrer"
-              style="border:0; aspect-ratio: 16 / 9;">
-          </iframe>
+          <h2 class="section-heading">It is three in the morning and the phone is at four percent.</h2>
+          <p class="lede">Every product built for new parents assumes a spare hand and a spare mind. At 3 a.m. there is neither.</p>
+          <figure class="img-wide reveal">
+            <img src="auntiegraph.png" alt="Problem slide: 15% of mothers experience postpartum depression and 85% never get treatment, with a chart of prevalence against treatment access from 2020 to 2024" loading="lazy">
+            <figcaption>Prevalence goes up, treatment access goes down. The two lines have been heading in opposite directions for five years.</figcaption>
+          </figure>
+          <figure class="img-wide reveal">
+            <img src="auntieproblem.png" alt="Problem slide: how might we capture the comfort of calling your auntie, kind, awake and practical, while eliminating the risk of dated or unsafe advice" loading="lazy">
+            <figcaption>The question we started from, and the only framing that survived the interviews.</figcaption>
+          </figure>
+          <p>Postpartum depression and anxiety reach roughly one in seven mothers. About half of those cases are never detected, because the people living inside them are too tired, too ashamed, or too busy being told they should feel lucky. The window is also longer than anyone plans for. Around 7.2% are still symptomatic nine to ten months out, and more than half of those had no symptoms at all earlier on.</p>
+          <p>So the need was never the question. The delivery was. Every serious attempt at this problem is an app, and an app asks a parent to download something, invent a password, answer twenty questions about her mood, and then come back daily to log how she is doing. That is homework. Handing homework to somebody running on four broken hours of sleep is not support. It is one more thing to fail at.</p>
+          <div class="highlight-box"><strong>The reframe</strong>Do not build another mental health app. Build the thing a frightened parent already has open at 3 a.m., which is a phone.</div>
+          <p>That idea took about nine minutes. The other thirty five hours and fifty one minutes went on finding out what it costs.</p>
         </div>
       </section>
 
-      <hr class="section-rule">
-
-      <!-- THE PROBLEM -->
-      <section id="challenge">
+      <section id="listening">
         <div class="section-content reveal">
-          <span class="eyebrow">The Problem</span>
-          <h2 class="section-heading">Nobody should feel alone at 3 a.m.</h2>
-          <div class="two-col">
-            <div class="challenge-col left">
-              <img src="auntiemood.png" alt="Postpartum mood research">
-            </div>
-            <div class="challenge-col right">
-              <p>Postpartum depression and anxiety affect ~1 in 7 women; many never receive timely care. Stigma ("I should be happy"), sleep fragmentation, and logistical friction push parents away from support at the exact moment they need it.</p>
-              <p>The dominant pattern in digital mental health—apps that shift the burden back to the parent (log in, track, remember)—is backwards at 3 a.m. We needed a low-friction, high-comfort channel that lowers cognitive load, is safe by design, and escalates appropriately.</p>
-              <p>Reframe: don't build another mental-health app. Build what new parents actually use at 3 a.m.: the phone. A kind voice. A short text. A connector that knows when to comfort, when to send resources, and when to escalate.</p>
-              <img src="auntiesearch.png" alt="Research findings" class="challenge-skinny-image">
-              <div class="highlight-box"><strong>You don't want an app. You want your Auntie.</strong> Information-only this weekend; deterministic escalation; short-lived context for safety.</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <hr class="section-rule">
-
-      <!-- THE 3AM MOMENT -->
-      <section id="scene">
-        <div class="section-content reveal">
-          <span class="eyebrow">The Design Framing</span>
-          <h2 class="section-heading">At 3 a.m., a new parent asks: "Is this normal?"</h2>
-          <div class="two-col">
-            <div>
-              <p>They don't need a portal, they need a person. Real aunties aren't always awake, and advice can be dated or risky. My Auntie keeps the warmth and removes the guesswork: zero setup, human-sounding support, and vetted resources when needed.</p>
-              <p><strong>Two design constraints guided everything:</strong><br><br>
-                1. Cognitive load must be near zero. One-breath messages, one next step.<br><br>
-                2. Safety must be explicit, not implied. Intent classification and clear red-flag routes to urgent care—without alarmism.</p>
-            </div>
-            <div>
-              <div class="highlight-box">This created an unusual design challenge: how do you make technology feel like kin, not like software? Unlike an app with buttons and charts, Auntie had to carry her identity entirely in voice and text.</div>
-              <div class="highlight-box">Auntie couldn't just be helpful—she had to be safe. The line between comfort and harm is razor-thin in postpartum care.</div>
-              <div class="highlight-box">We aimed for emotional specificity: short, kind phrases a parent could actually believe at 3 a.m.—something you remember the feeling of, not just the words.</div>
-            </div>
-          </div>
-          <div class="big-image">
-            <img src="auntieproblem.png" alt="Problem Statement">
-          </div>
-        </div>
-      </section>
-
-      <hr class="section-rule">
-
-      <!-- RESEARCH -->
-      <section class="research" id="research-results">
-        <div class="section-content reveal">
-          <span class="eyebrow">Research</span>
-          <h2 class="section-heading">We listened before we built.</h2>
-          <p>We ran Indi Young–style listening sessions—no surveys, just deep listening—to map inner thinking, constraints, and language. Consistently we heard: "I don't want to be onboarded; I want to be held together."</p>
-
+          <h2 class="section-heading">We asked five mothers and then shut up.</h2>
+          <p class="lede">No surveys. A survey tells you what somebody is willing to put in a form.</p>
+          <p>We ran Indi Young style listening sessions, which is a polite way of saying we asked one question and then got out of the way for an hour. Five mothers: a first timer with an infant, a mother of twins, one juggling a toddler and a newborn, one still expecting, and one whose children are grown and who had the clearest memory of the whole thing.</p>
+          <p>The sentence that built the product arrived in the second session. She said she did not want to be onboarded. She wanted to be held together.</p>
           <div class="quote-grid reveal">
-            <div class="quote-card reveal">
-              <div class="quote-text">"When I'm exhausted, even opening an app feels like a test."</div>
-              <div class="quote-author">— Mom of one toddler and one infant</div>
-            </div>
-            <div class="quote-card reveal">
-              <div class="quote-text">"I need someone to tell me what's normal… and what's not."</div>
-              <div class="quote-author">— First-time mom with infant</div>
-            </div>
-            <div class="quote-card reveal">
-              <div class="quote-text">"If it's serious, I want the handoff to be gentle, not scary."</div>
-              <div class="quote-author">— Expectant mother due soon</div>
-            </div>
-            <div class="quote-card reveal">
-              <div class="quote-text">"Please remember I had a C-section so I don't have to retell it."</div>
-              <div class="quote-author">— First-time mother of twins</div>
-            </div>
-            <div class="quote-card reveal">
-              <div class="quote-text">"I was on a help line for hours and they did their best but weren't really for that kind of thing."</div>
-              <div class="quote-author">— Mom of three, children older</div>
-            </div>
+            <div class="quote-card reveal"><p class="quote-text">&ldquo;When I&rsquo;m exhausted, even opening an app feels like a test.&rdquo;</p><div class="quote-author">Mother of one toddler and one infant</div></div>
+            <div class="quote-card reveal"><p class="quote-text">&ldquo;I need someone to tell me what&rsquo;s normal, and what&rsquo;s not.&rdquo;</p><div class="quote-author">First time mother with an infant</div></div>
+            <div class="quote-card reveal"><p class="quote-text">&ldquo;If it&rsquo;s serious, I want the handoff to be gentle, not scary.&rdquo;</p><div class="quote-author">Expectant mother, due soon</div></div>
+            <div class="quote-card reveal"><p class="quote-text">&ldquo;Please remember I had a C-section so I don&rsquo;t have to retell it.&rdquo;</p><div class="quote-author">First time mother of twins</div></div>
+            <div class="quote-card reveal"><p class="quote-text">&ldquo;I was on a help line for hours and they did their best but weren&rsquo;t really for that kind of thing.&rdquo;</p><div class="quote-author">Mother of three, children older</div></div>
           </div>
-
-          <h3 class="sub-heading reveal" style="margin-top:2.5rem;margin-bottom:1.5rem">By the numbers</h3>
+          <div class="highlight-box"><strong>What the interviews actually changed</strong>We had planned a symptom tracker. Every single mother described tracking as a chore she would abandon by week two. It was cut before we wrote a line of it.</div>
+          <p>Then the numbers, so nobody in the room could accuse us of designing off vibes.</p>
           <div class="stats-grid reveal">
-            <div class="stats-card reveal">
-              <div class="stat-number">15%</div>
-              <div class="stats-title">~1 in 7 new mothers</div>
-              <p class="stats-desc">Experience postpartum depression. Up to half go undiagnosed—stigma, lack of screening, or mis-attribution.</p>
-            </div>
-            <div class="stats-card reveal">
-              <div class="stat-number">50%</div>
-              <div class="stats-title">Of postpartum cases go undetected</div>
-              <p class="stats-desc">Many mothers never tell a provider about symptoms; stigma and lack of awareness play big roles.</p>
-            </div>
-            <div class="stats-card reveal">
-              <div class="stat-number">7.2%</div>
-              <div class="stats-title">Still symptomatic 9–10 months postpartum</div>
-              <p class="stats-desc">Of those, over half had no symptoms earlier—the window is long and uneven.</p>
-            </div>
-            <div class="stats-card reveal">
-              <div class="stat-number">2×</div>
-              <div class="stats-title">PPD diagnosis rate from 2010 to 2021</div>
-              <p class="stats-desc">Better awareness, but massive gaps remain. The need isn't shrinking.</p>
-            </div>
+            <div class="stats-card reveal"><span class="stat-number">1 in 7</span><div class="stats-title">New mothers experience postpartum depression</div><p class="stats-desc">Up to half go undiagnosed. Stigma, no screening, or symptoms put down to something else.</p></div>
+            <div class="stats-card reveal"><span class="stat-number">~50%</span><div class="stats-title">Of postpartum cases go undetected</div><p class="stats-desc">Many mothers never tell a provider at all. Stigma and lack of awareness do most of that work.</p></div>
+            <div class="stats-card reveal"><span class="stat-number">7.2%</span><div class="stats-title">Still symptomatic at nine to ten months</div><p class="stats-desc">Over half of those had no symptoms earlier. The window is long, and it is uneven.</p></div>
+            <div class="stats-card reveal"><span class="stat-number">2010 to 2021</span><div class="stats-title">Diagnosis rates rose across the decade</div><p class="stats-desc">Better awareness, same gaps. The need is not shrinking, it is just better counted.</p></div>
           </div>
+          <figure class="img-wide reveal">
+            <img src="auntiesearch.png" alt="Competitive scan of postpartum support tools, grouped by how much each one asks of the parent before it helps" loading="lazy">
+            <figcaption>Everything in the category asks first and helps second. That gap was the opening.</figcaption>
+          </figure>
         </div>
       </section>
 
-      <hr class="section-rule">
-
-      <!-- CONSTRAINTS -->
-      <section class="constraints" id="constraints">
+      <section id="demo">
         <div class="section-content reveal">
-          <span class="eyebrow">Constraints</span>
-          <h2 class="section-heading">What forced good decisions.</h2>
-          <p>Postpartum care isn't just code—it's triage for the nervous system. In a weekend, we had to move quickly without cutting corners on safety or trust, so every decision was weighed against one moment: a parent, awake in the dark, needing help now.</p>
-          <div class="two-col" style="margin-top:1.25rem">
-            <div>
-              <div class="highlight-box reveal">
-                <strong>⏳ 36-hour deadline</strong>
-                <p style="margin-top:.5rem">To ship live telephony, AI, memory, and resources—safely. WhatsApp, dashboards, and semantic embeddings were cut so we could demo sub-5 second replies focused on what parents actually need.</p>
-              </div>
-              <div class="highlight-box reveal">
-                <strong>🎯 Safety over scope</strong>
-                <p style="margin-top:.5rem">Information-only meant Auntie never freestyled medical advice. Every output had to fall into Comfort · Resource · Escalate, with deterministic handoffs.</p>
-              </div>
-            </div>
-            <div>
-              <div class="highlight-box reveal">
-                <strong>🔒 Privacy by default</strong>
-                <p style="margin-top:.5rem">Short-lived context, minimal fields (delivery, feeding, weeks postpartum, region). We remembered only what helped—e.g. C-section recovery—and nothing more. Hashed phone numbers, retention documented.</p>
-              </div>
-              <div class="highlight-box reveal">
-                <strong>⚖️ Judge-proof demo</strong>
-                <p style="margin-top:.5rem">Visible logs showing triage JSON, Atlas collections, and Snowflake queries live. Credibility came from receipts, not vibes.</p>
-              </div>
-            </div>
+          <h2 class="section-heading">A judge picked up the phone and she answered.</h2>
+          <p class="lede">Skip to the end of the weekend for a second, because everything after this makes more sense once you have heard her.</p>
+          <p>The demo was not a video. It was a phone number on a slide, and we asked the room to dial it.</p>
+          <p>She answered in under five seconds. Comforted first, then two local lactation lines, then a follow up text so the guidance outlived the panic. Behind her on the screen we left the receipts running: the classifier's output, the row landing in the database, the query pulling it back out. Here is the thing itself, before any of the explaining.</p>
+          <div class="video-embed reveal">
+            <iframe
+              id="yt-auntie-text"
+              src="https://www.youtube.com/embed/kARMZuwfmMA?rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+              title="Auntie SMS demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
           </div>
-          <p class="reveal" style="margin-top:1.5rem">Constraints didn't slow us—they drew the line between helpful and harmful. They forced a single mandate: deliver a humane, resilient line that comforts first, informs clearly, and escalates deterministically when risk appears.</p>
-          <div class="big-image reveal">
-            <img src="auntiegraph.png" alt="Scope diagram">
-          </div>
+          <p class="cap">The text line. One caring line, one action, one thing to watch, with region aware resources attached.</p>
+          <p>Thirty six hours earlier none of it existed. The rest of this is how a weekend got from there to here, and what we refused to build along the way.</p>
         </div>
       </section>
 
-      <hr class="section-rule">
-
-      <!-- DESIGN DECISIONS -->
-      <section class="ideation" id="ideation">
+      <section id="channel">
         <div class="section-content reveal">
-          <span class="eyebrow">Design Decisions</span>
-          <h2 class="section-heading">Auntie isn't a UI. She's a voice.</h2>
-          <div class="two-col">
-            <div class="reveal">
-              <p>We treated "Auntie" as a persona with safety rails: warm and concise for SMS; fuller for voice; always evidence-grounded; never diagnostic.</p>
-              <div class="highlight-box">
-                <strong>Comfort:</strong><br>
-                "Baby hasn't latched in 3 hours—normal?"<br>
-                <em>Auntie: "You're not alone. Skin-to-skin can help. If no latch in 4–6 hours, call your provider. Two lactation lines near you: [links]."</em>
-              </div>
-              <div class="highlight-box" style="margin-top:.75rem">
-                <strong>Escalate:</strong><br>
-                "My 6-week-old has a fever of 38°C."<br>
-                <em>Auntie Voice: "Love, with a baby this young, that can be serious. Let's head to the nearest emergency department now. I'm sending the address. You're not alone."</em>
-              </div>
-            </div>
-            <div class="reveal">
-              <div class="highlight-box">We sketched dozens of micro-flows (latch basics, C-section pain, baby blues vs red flags, sleep triage), then cut to the flows a tired parent could use one-handed.</div>
-              <div class="ideation-images" style="margin-top:1rem">
-                <img src="auntiestickies.png" alt="Ideation stickies">
-                <img src="auntiemoodboard.png" alt="Moodboard">
-              </div>
-            </div>
+          <h2 class="section-heading">The channel was the product.</h2>
+          <p class="lede">Distribution is not a marketing problem you get to solve after the build. Here it was the build.</p>
+          <p>SMS shipped first because SMS is the most boring and most reliable thing in the world. It works at four percent battery, on a cracked screen, in a hospital corridor with one bar, and it never needs updating. Voice came second, once texting was steady, because a parent holding a baby has no hands.</p>
+          <div class="img-grid reveal">
+            <figure class="img-tile img-tile--tall"><img src="../auntiephone.png" alt="Auntie's SMS thread: a caring line, one action, and what to watch for" loading="lazy"><figcaption>The whole interface. No account, no tabs, nowhere to get lost.</figcaption></figure>
+            <figure class="img-tile"><img src="auntiesolution.png" alt="Solution diagram: one Auntie persona across SMS and voice, with escalation routes" loading="lazy"><figcaption>One persona, two surfaces, no costume change between them.</figcaption></figure>
           </div>
-          <div class="big-image reveal">
-            <img src="auntiesolution.png" alt="Solution overview">
+          <div class="video-embed reveal">
+            <iframe
+              id="yt-auntie-call"
+              src="https://www.youtube.com/embed/BUi3fAiD7To?rel=0&modestbranding=1&playsinline=1"
+              title="Auntie voice demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
           </div>
-
-          <!-- must-haves -->
-          <div class="must-haves-container reveal" style="margin-top:2.5rem">
-            <div class="must-haves-left reveal">
-              <span class="eyebrow">Must-haves</span>
-              <h3 class="sub-heading">The non-negotiables</h3>
-              <p style="font-size:.95rem;line-height:1.6;opacity:.85">Texts are one-breath, kind, and end with a single next step. Calls are warmer and slower, with human pauses and plain language—tuned to sound like a real aunt, not a bot reading a script.</p>
-              <p style="font-size:.95rem;line-height:1.6;opacity:.85;margin-top:.75rem">When risk appears, the tone stays steady: no sirens, no blame—just a gentle, actionable handoff. One Auntie. Two surfaces. No uncanny costume changes.</p>
-            </div>
-            <div class="must-haves-right reveal">
-              <div class="must-haves-card reveal">
-                <h4>☎️ Phone-first distribution</h4>
-                <p>Distribution is the product. SMS shipped first for reliability and speed; voice layered on when stable. No dashboards, no portals—just the lowest-friction path to comfort and care.</p>
-              </div>
-              <div class="must-haves-card reveal">
-                <h4>😌 One-breath messaging</h4>
-                <p>Every SMS/call: a caring line to lower panic, one clear action, one "what to watch." If a message took two breaths to read, it got cut.</p>
-              </div>
-              <div class="must-haves-card reveal">
-                <h4>⚠️ Deterministic answers, not vibes</h4>
-                <p>Gemini returns a structured intent—Comfort, Resource, or Escalate—plus topic and region. From there: compose the reply, attach 2–3 vetted resources. No black-box rummaging, no link dumps.</p>
-              </div>
-              <div class="must-haves-card reveal">
-                <h4>🔁 Safety contracts</h4>
-                <p>Short-lived context (delivery type, feeding, weeks postpartum, region) tied to a hashed number. Enough to avoid repeating yourself. Not enough to feel like surveillance.</p>
-              </div>
-            </div>
-          </div>
+          <p class="cap">The voice line. Same persona sized for audio, and it texts you afterwards so nothing is lost.</p>
+          <p>Same Auntie on both. That sounds obvious and it is the part most multi channel products get wrong: they let the voice assistant become a brighter, more corporate person than the chat. We wrote one persona and sized her per channel. Texts get one breath. Calls get warmth, real pauses, and permission to trail off. After any call she texts you the key steps, because nobody at 3 a.m. remembers what a kind voice just said.</p>
         </div>
       </section>
 
-      <hr class="section-rule">
-
-      <!-- WHAT WE BUILT -->
-      <section class="design-process" id="design-process">
+      <section id="breath">
         <div class="section-content reveal">
-          <span class="eyebrow">What We Built</span>
-          <h2 class="section-heading">We didn't prototype screens. We prototyped conversations.</h2>
-
-          <div class="process-subsection reveal">
-            <h3 class="sub-heading">The identity system</h3>
-            <p>Instead of a visual design system, our core identity is how Auntie speaks and escalates. We defined:</p>
-            <div class="highlight-box">
-              → <strong>Intent taxonomy:</strong> Comfort · Resource · Escalate<br>
-              → <strong>Evidence micro-cards:</strong> short, vetted snippets (WHO/CDC/ACOG/PSI) fed deterministically to ground answers<br>
-              → <strong>Red-flag lexicon + scripts:</strong> gentle, non-alarmist escalation language
+          <h2 class="section-heading">One breath, one step, one thing to watch.</h2>
+          <p class="lede">Our first drafts were paragraphs. A tired parent skims a paragraph and misses the only sentence that mattered.</p>
+          <p>So we made a rule, and then we made the rule testable. If a message took two breaths to read out loud, it got cut. Reading them aloud was not a flourish, it was the test, and it killed more copy than anything else we did.</p>
+          <div class="steps reveal">
+            <div class="step-card">
+              <span class="n">01</span>
+              <h4>Say the kind thing first</h4>
+              <p>You are not alone. That line buys the next twelve seconds of her attention, and nothing else works without it.</p>
+              <div class="step-art"><img src="svg/kind-first.svg" alt="A message with a heart in it" loading="lazy"></div>
             </div>
-            <p style="margin-top:1.25rem"><strong>SMS Copy Testing:</strong> Early drafts were too wordy—a tired parent skimmed and missed the action. We cut to "one breath" rules: one line of comfort, one step, one "what to watch."</p>
-            <p><strong>Voice Tuning:</strong> OpenAI's TTS gave warmth, but some voices sounded uncanny. We iterated until Auntie sounded human, not robotic.</p>
-            <p><strong>Escalation Language:</strong> First drafts felt clinical ("seek medical attention"). We softened: "Love, let's call your provider now—here's the number." The moms we worked with confirmed: balanced safety and calm. These weren't polish—they were product design.</p>
-            <div class="process-dense-row reveal">
-              <div class="process-dense-left">
-                <div class="highlight-box">
-                  <strong>Contracts:</strong><br>
-                  Brain → Telephony returns <code>{ intent, topic, region, reply_text, red_flags }</code><br>
-                  Telephony ↔ Snowflake: topic + region → top 2–3 vetted resources<br>
-                  Telephony ↔ Mongo: short-lived session + minimal context for personalization
-                </div>
-                <div class="highlight-box" style="margin-top:.75rem">Clear contracts between Brain ↔ Telephony ↔ Snowflake ↔ Mongo let four people ship like one mind. Crucial for a 36-hour window.</div>
-              </div>
-              <div class="process-dense-right">
-                <div class="mini-images reveal">
-                  <img src="auntiestack.png" alt="Stack diagram">
-                  <img src="../auntiephone.png" alt="Phone demo">
-                </div>
-              </div>
+            <div class="step-card">
+              <span class="n">02</span>
+              <h4>Give exactly one action</h4>
+              <p>Not three options with trade-offs. One. Skin to skin. Call this number. Go now.</p>
+              <div class="step-art"><img src="svg/one-action.svg" alt="Two options struck out and one chosen" loading="lazy"></div>
             </div>
-            <div class="big-image reveal">
-              <img src="auntieinfo.png" alt="System information flow">
+            <div class="step-card">
+              <span class="n">03</span>
+              <h4>Name what to watch</h4>
+              <p>One specific thing that would change the answer, so she knows when to stop waiting and act.</p>
+              <div class="step-art"><img src="svg/watch.svg" alt="An open eye" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">04</span>
+              <h4>Then read it out loud</h4>
+              <p>Two breaths meant too long. This is the only rule that reliably caught our own cleverness.</p>
+              <div class="step-art"><img src="svg/read-aloud.svg" alt="A mouth speaking, with sound arcs" loading="lazy"></div>
             </div>
           </div>
-
-          <div class="process-subsection reveal">
-            <h3 class="sub-heading">Prototyping &amp; iteration</h3>
-            <p>By Sunday, two shippable prototypes that felt like the same Auntie across channels: SMS for fastest, lowest-friction support; Voice for hands-free reassurance when you're holding a baby at 3 a.m.</p>
-            <p>The SMS flow uses the "one-breath" rule: caring line → clear step → "what to watch." Grounded by Gemini's structured intent, with 2–3 vetted region-aware resources attached. After any call, Auntie follows up by text so guidance isn't lost in the moment.</p>
-            <p>The voice line uses the same persona, sized for audio: warmer pacing, natural pauses, same escalation copy. If risk appears: gentle, specific handoff. Post-call, Auntie texts the key steps so a sleep-deprived parent doesn't have to remember.</p>
-            <div class="video-embed reveal">
-              <iframe
-                id="yt-auntie-text"
-                src="https://www.youtube.com/embed/kARMZuwfmMA?rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
-                title="Auntie Text Demo"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-              ></iframe>
-            </div>
-            <div class="video-embed reveal">
-              <iframe
-                id="yt-auntie-call"
-                src="https://www.youtube.com/embed/BUi3fAiD7To?rel=0&modestbranding=1&playsinline=1"
-                title="Auntie Call Demo"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-              ></iframe>
-            </div>
-          </div>
+          <div class="highlight-box"><strong>The escalation rewrite</strong>Our first red flag script said <em>seek medical attention</em>. Clinically correct, emotionally useless. It became: <em>Love, with a baby this young that can be serious. Let&rsquo;s head to the nearest emergency department now, I&rsquo;m sending the address. You&rsquo;re not alone.</em> The mothers we had interviewed confirmed it read as safe without reading as frightening.</div>
+          <p>The voice had the same problem in a different key. OpenAI&rsquo;s realtime text to speech is warm out of the box and also, in certain voices, deeply uncanny. We auditioned until Auntie sounded like somebody&rsquo;s actual aunt rather than a hold message.</p>
         </div>
       </section>
 
-      <hr class="section-rule">
+      <section id="triage">
+        <div class="section-content reveal">
+          <h2 class="section-heading">The one part that was never allowed to improvise.</h2>
+          <p class="lede">A warm companion that guesses about a newborn&rsquo;s fever is not a warm companion. It is a liability with a nice voice.</p>
+          <p>So the model never answers. It classifies. Gemini reads the message and returns a structure: an intent, a topic, a region, a draft reply, and any red flags it spotted. The intent can only ever be one of three things.</p>
+          <div class="chip-row"><span class="chip">Comfort</span><span class="chip">Resource</span><span class="chip">Escalate</span></div>
+          <figure class="img-wide img-flow reveal">
+            <img src="svg/flow.svg" alt="Flow: a text or a call arrives, is classified into intent, topic and region, routes to comfort, resource or escalate, and always ends in a follow up text" loading="lazy">
+            <figcaption>Text in or call in, one classifier, three possible ends, and a follow up text whichever way it goes.</figcaption>
+          </figure>
+          <p>From there it is deterministic code. Topic plus region goes to Snowflake and comes back with two or three vetted resources you can actually phone. The evidence is short pre written cards drawn from the WHO, the CDC, the American College of Obstetricians and Gynecologists and Postpartum Support International, fed in rather than recalled. Auntie never freestyles medical advice because she structurally cannot.</p>
+          <div class="highlight-box"><strong>Contracts are what let four people ship like one mind</strong>The classifier service returns <span class="px">{ intent, topic, region, reply_text, red_flags }</span>. The phone and text service asks the resource database for the local lines and the profile store for the small bit of context. Nobody had to read anybody else&rsquo;s code, and nothing had to be rewritten at hour thirty.</div>
+          <figure class="mini-images reveal">
+            <img src="auntiestack.png" alt="Architecture: Twilio telephony, Gemini intent and safety, Snowflake resources, MongoDB Atlas session context, orchestrated in TypeScript" loading="lazy">
+          </figure>
+          <p class="cap">Four services, four owners, one written contract between each pair.</p>
+          <p>Memory is the other thing we kept deliberately small. Four fields: delivery type, feeding, weeks postpartum, region, tied to a hashed number and short lived. Enough that a mother who had a caesarean never has to say so twice. Not enough to feel watched.</p>
+          <figure class="mini-images reveal">
+            <img src="auntieinfo.png" alt="Information architecture for Auntie's evidence cards and region aware resource lookup" loading="lazy">
+          </figure>
+          <p class="cap">Evidence as pre written cards, so the answer is retrieved and never invented.</p>
+          <p>What we cut to get there: WhatsApp, every dashboard, and semantic embeddings over the whole corpus. A short list of topic tags and a small lookup answered faster and were far easier to reason about at hour thirty with four underslept people.</p>
+        </div>
+      </section>
 
-      <!-- TAKEAWAYS -->
       <section class="takeaways" id="takeaways">
         <div class="section-content reveal">
-          <span class="eyebrow">Takeaways</span>
-          <h2 class="section-heading">What we learned and what we'll keep.</h2>
-          <div class="cards reveal">
-            <div class="card reveal">
-              <h4>01</h4>
-              <h3>Ship the channel, not the chore</h3>
-              <p>Phone/SMS beat any elegant app onboarding when attention is scarce.</p>
+          <h2 class="section-heading">What I would carry into the next one.</h2>
+          <p class="lede">A hackathon is a cheap way to find out which of your instincts are real.</p>
+          <div class="steps reveal">
+            <div class="step-card">
+              <span class="n">01</span>
+              <h4>Ship the channel, not the chore</h4>
+              <p>Phone and SMS beat any elegant onboarding when attention is the scarce resource. Distribution was the design decision, not a launch task.</p>
+              <div class="step-art"><img src="svg/channel.svg" alt="A phone with signal beside a form struck through" loading="lazy"></div>
             </div>
-            <div class="card reveal">
-              <h4>02</h4>
-              <h3>Warmth is a feature</h3>
-              <p>A one-breath message and a kind line reduce panic better than paragraphs.</p>
+            <div class="step-card">
+              <span class="n">02</span>
+              <h4>Warmth is a feature with a spec</h4>
+              <p>One breath, one step, one thing to watch. Written down it stops being a vibe and starts being something a draft can fail.</p>
+              <div class="step-art"><img src="svg/warm-spec.svg" alt="A warm message with measurement ticks beneath it" loading="lazy"></div>
             </div>
-            <div class="card reveal">
-              <h4>03</h4>
-              <h3>Safety needs contracts</h3>
-              <p>Structured intents, deterministic resources, and explicit escalation language prevent silent failure.</p>
+            <div class="step-card">
+              <span class="n">03</span>
+              <h4>Safety is a contract, not a disclaimer</h4>
+              <p>Structured intents and deterministic lookups mean the model cannot improvise the dangerous part. A design choice long before an engineering one.</p>
+              <div class="step-art"><img src="svg/contract.svg" alt="A signed document with a medical seal" loading="lazy"></div>
             </div>
-            <div class="card reveal">
-              <h4>04</h4>
-              <h3>Personalize light, not forever</h3>
-              <p>Remember just enough (delivery, feeding, weeks postpartum, region) and make retention short and documented.</p>
+            <div class="step-card">
+              <span class="n">04</span>
+              <h4>Personalise light, and say so</h4>
+              <p>Four fields, hashed, short lived. Remembering the caesarean matters. Remembering everything is surveillance with a friendly voice.</p>
+              <div class="step-art"><img src="svg/four-fields.svg" alt="Four remembered fields behind a padlock" loading="lazy"></div>
             </div>
           </div>
-
-          <div class="reflection reveal">
-            <h3>What we shipped — and why it mattered</h3>
-            <p>In 36 hours we turned a fragile idea into a working lifeline: SMS first, voice optional, same warm Auntie across both. That mattered because our users aren't looking for a new app at 3 a.m.—they're looking for a human-sounding helper who answers in seconds and gives one doable next step. We proved that with live call + text flows on stage, letting a judge dial in and see Auntie's gentle reassurance, concise guidance, and the follow-up text so nothing gets lost.</p>
-            <p>Behind the warmth, the system held up: structured intent triage, privacy-first "light memory," and deterministic local resources—clear contracts between services instead of ad-hoc glue. That made the demo reliable, the handoffs safe, and the story credible to both judges and clinicians in the room.</p>
-          </div>
-
-          <div class="reflection reveal">
-            <h3>What we're proud of</h3>
-            <p>→ <strong>Multi-modal in a weekend.</strong> Live SMS + voice with natural TTS—same persona, tuned per channel—so parents could choose the lowest-friction path in the moment.</p>
-            <p>→ <strong>Triaging that feels kind, not clinical.</strong> Comfort/Resource/Escalate showed up in the copy, the routing, and the escalation language ("Love…")—a safety feature disguised as empathy.</p>
-            <p>→ <strong>Privacy-first memory.</strong> Short-lived context so Auntie remembers what matters without hoarding more than she needs.</p>
-            <p>→ <strong>Deterministic resources.</strong> Topic + region → 2–3 vetted links you can actually call—no model hand-waving.</p>
-            <p>→ <strong>Judge-proof artifacts.</strong> We showed the triage JSON, Atlas collections, and Snowflake lookups—receipts that the thing worked, not just vibes.</p>
-          </div>
-
-          <div class="reflection reveal">
-            <h3>What we learned (and will keep)</h3>
-            <p>→ <strong>Scope like surgeons.</strong> Tier-1 tags/micro-RAG beat "let's vectorize the world." Faster answers, easier to reason about under pressure.</p>
-            <p>→ <strong>Conversation design is product design.</strong> One-breath messages, tone guides, and red-flag scripts did more for trust than any UI flourish.</p>
-            <p>→ <strong>Contracts prevent meltdowns.</strong> Clear inputs/outputs between Brain ↔ Telephony ↔ Snowflake ↔ Mongo let four people ship like one mind.</p>
-            <p>→ <strong>Safety is a feature, not a disclaimer.</strong> Escalation copy that sounds like Auntie—warm, specific, actionable—turns a scary moment into a guided handoff.</p>
-          </div>
-
-          <div class="reflection reveal">
-            <h3>Why we think we won</h3>
-            <p>We designed for the real 3 a.m.—no apps, no accounts, no homework—and we proved it live. Judges didn't just hear a story; they called, texted, and watched Auntie route help. That blend of empathy, reliability, and receipts made the impact legible: tech that reduces cognitive load for exhausted new parents, with safety you can trust.</p>
-            <p>We wired the sponsor stack wall-to-wall: Gemini (intent + safety), MongoDB Atlas (short-lived memory), Snowflake API (deterministic, region-aware resources), Twilio (SMS/Voice), and OpenAI Realtime voice. All orchestrated in TypeScript/Node and deployed live. While most teams built an app, we shipped the channel parents already use at 3 a.m. and proved it on stage with real flows, visible triage JSON, and sub-5s SMS round-trip. That's what earned us a spot among the winners—and it's the bar we'll keep meeting.</p>
-          </div>
-
+          <p>The thing I did not expect was how much of it was writing. Not copywriting, writing: the taxonomy, the red flag lexicon, the escalation script, the four fields we were willing to keep. By Sunday the repository held less code than I assumed it would and more decisions than I thought a weekend could hold.</p>
+          <p>And the instinct that turned out to be real is the one I keep building on. The load was always going to exist. The only question is whether the system carries it or the person does.</p>
           <div class="works-cited reveal">
             <h3>Works Cited</h3>
-            <p>Carlson, K., Mughal, S., Azhar, Y., &amp; Siddiqui, W. (2025, January 22). Perinatal depression. StatPearls - NCBI Bookshelf. https://www.ncbi.nlm.nih.gov/books/NBK519070/</p>
-            <p>Symptoms of depression among women. (2024, May 15). Reproductive Health. https://www.cdc.gov/reproductive-health/depression/index.html</p>
-            <p>World Health Organization. (n.d.). Mental Health, Brain Health and Substance Use: Maternal Mental Health. WHO. https://www.who.int/teams/mental-health-and-substance-use/promotion-prevention/maternal-mental-health</p>
+            <p>Carlson, K., Mughal, S., Azhar, Y., &amp; Siddiqui, W. (2025, January 22). <em>Perinatal depression.</em> StatPearls, NCBI Bookshelf. https://www.ncbi.nlm.nih.gov/books/NBK519070/</p>
+            <p>Centers for Disease Control and Prevention. (2024, May 15). <em>Symptoms of depression among women.</em> Reproductive Health. https://www.cdc.gov/reproductive-health/depression/index.html</p>
+            <p>World Health Organization. (n.d.). <em>Maternal mental health.</em> Mental Health, Brain Health and Substance Use. https://www.who.int/teams/mental-health-and-substance-use/promotion-prevention/maternal-mental-health</p>
           </div>
         </div>
       </section>
@@ -918,8 +1106,39 @@
     addEventListener('mouseenter',()=>{cursor.style.opacity='1'});
 
     // reveal (skip .section-heading — handled by scramble observer below)
-    const io=new IntersectionObserver((es,o)=>{es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('active');o.unobserve(en.target);}})},{threshold:.2});
+    /* A block taller than (viewport / threshold) can never reach that ratio,
+       so a long section used to sit at opacity 0 for ever. Menzo's migration
+       jam was 3778px against a 775px window: a ceiling of 0.205 against a
+       0.2 bar. The extra thresholds keep the callback firing while you
+       scroll, and a block too tall to qualify on its own ratio qualifies on
+       how much of the screen it fills instead. */
+    const io=new IntersectionObserver((es,o)=>{
+      es.forEach(en=>{
+        if(!en.isIntersecting) return;
+        if(en.intersectionRatio>=.2 || en.intersectionRect.height>=innerHeight*.25){en.target.classList.add('active');o.unobserve(en.target);}
+      });
+    },{threshold:[0,.05,.1,.15,.2]});
     document.querySelectorAll('.reveal:not(.section-heading)').forEach(el=>io.observe(el));
+
+    /* Safety net. The reveal is decoration, so nothing on the page is allowed
+       to stay invisible because an observer did not fire: no scroll events
+       reach this document while it is embedded in the portfolio pane, so this
+       polls instead, and retires itself the moment everything is shown. */
+    (function(){
+      const SEL = '.reveal:not(.section-heading)';
+      let ticks = 0;
+      const sweep = () => {
+        const left = document.querySelectorAll(SEL + ':not(.active)');
+        left.forEach(el => {
+          const r = el.getBoundingClientRect();
+          if (r.top < innerHeight * 0.92 && r.bottom > 0) el.classList.add('active');
+        });
+        if (!left.length || ++ticks > 300) clearInterval(timer);
+      };
+      const timer = setInterval(sweep, 200);
+      sweep();
+    })();
+
 
     // Section heading: scramble-in + font mixing (DotempDemo ×3 / Didot ×2)
     (function(){
@@ -1009,50 +1228,21 @@
     })();
   </script>
 
-  <!-- background.html loader -->
-  <script>
-    (function(){
-      if(document.getElementById('bg-host'))return;
-      const host=document.createElement('div'); host.id='bg-host';
-      const frame=document.createElement('iframe'); frame.src='background.html'; frame.loading='eager';
-      frame.setAttribute('aria-hidden','true'); frame.tabIndex=-1;
-      host.appendChild(frame); document.body.prepend(host);
-    })();
-  </script>
-
-  <!-- partials loader (nav) -->
-  <script>
-    (async function includePartials(){
-      const targets=document.querySelectorAll('[data-include]');
-      for (const el of targets){
-        const url=el.getAttribute('data-include');
-        try{
-          const res=await fetch(url,{credentials:'same-origin'});
-          if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-          const html=await res.text();
-          el.innerHTML=html;
-          const scripts=el.querySelectorAll('script');
-          for (const oldScript of scripts){
-            const s=document.createElement('script');
-            for (const {name,value} of [...oldScript.attributes]) s.setAttribute(name,value);
-            if (oldScript.src) s.src=oldScript.src; else s.textContent=oldScript.textContent||'';
-            oldScript.replaceWith(s);
-          }
-        }catch(err){console.warn(`Failed to include ${url}:`,err);}
-      }
-    })();
-  </script>
-
   <!-- QUICK LINKS WIDGET -->
   <style>
     html{scroll-behavior:smooth}
-    #ql-widget{position:fixed;right:1.5rem;top:110px;z-index:900;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
-    #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(14,4,10,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
+    /* top:110px used to sit under the nav pill; with the nav gone it landed
+       on the copy, so the jump list moves out of the reading column */
+    #ql-widget{position:fixed;right:1.4rem;bottom:1.4rem;top:auto;z-index:900;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:.4rem}
+    /* the portfolio rail carries the contents when embedded, so the
+       floating widget would just be a second copy of the same list */
+    html[data-embedded] #ql-widget{display:none!important}
+    #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(var(--chrome-rgb),.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
     #ql-panel.open{max-height:520px;opacity:1;padding:.45rem}
-    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:.4rem .7rem;border-radius:6px;transition:background .18s,color .18s}
-    #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:.6rem;opacity:.45;margin-right:.25rem}
+    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:.4rem .7rem;border-radius:6px;transition:background .18s,color .18s}
+    #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:0.75rem;opacity:.45;margin-right:.25rem}
     #ql-panel a:hover{background:var(--glass-highlight-1);color:var(--text-secondary)}
-    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(14,4,10,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Montserrat Alternates',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
+    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(var(--chrome-rgb),.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
     #ql-toggle:hover{background:var(--glass-highlight-1);border-color:var(--rule)}
     #ql-icon{font-size:1rem;line-height:1}
     @media(max-width:768px){#ql-widget{right:1rem;top:auto;bottom:1.5rem;left:auto;transform:none;flex-direction:column-reverse;align-items:flex-end}#ql-panel{min-width:min(180px,80vw)}}
@@ -1079,17 +1269,129 @@
         return a;
       }
       panel.appendChild(mkLink('#',0,'Overview',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});close();}));
+      const ITEMS=[{id:'',label:'Overview',num:0}];
       let n=1;
-      document.querySelectorAll('section[id], section.press-section').forEach(sec=>{
-        const eb=sec.querySelector('.eyebrow');
-        if(!eb)return;
-        const text=eb.textContent.trim();
-        if(text.length>60)return;
-        if(!sec.id)sec.id='press';
-        panel.appendChild(mkLink('#'+sec.id,n++,text));
+      /* this page has no section eyebrows to read labels off, so they
+         live here */
+      const LABELS={
+        'three-am':'Three in the morning','listening':'Five mothers',
+        'demo':'The call','channel':'The channel was the product',
+        'breath':'One breath at a time','triage':'The safety triage',
+        'takeaways':'Takeaways'
+      };
+      document.querySelectorAll('section[id]').forEach(sec=>{
+        const label=LABELS[sec.id];
+        if(!label)return;
+        const num=n++;
+        ITEMS.push({id:sec.id,label:label,num:num});
+        panel.appendChild(mkLink('#'+sec.id,num,label));
       });
       toggle.addEventListener('click',e=>{e.stopPropagation();open=!open;panel.classList.toggle('open',open);toggle.setAttribute('aria-expanded',open);icon.textContent=open?'×':'≡';});
       document.addEventListener('click',e=>{if(open&&!document.getElementById('ql-widget').contains(e.target))close();});
+
+      /* embedded, the portfolio rail carries these instead of the widget:
+         hand them up, answer a request, take scroll orders, and keep the
+         rail's highlight on whatever the reader is actually looking at */
+      if(window.parent!==window){
+        const post=m=>{try{window.parent.postMessage(m,'*');}catch(e){}};
+        const sendToc=()=>post({type:'caseToc',items:ITEMS});
+        /* the browser drops programmatic smooth scrolls inside this pane,
+           so the glide is ours. scroll-behavior goes to auto for the
+           duration or every frame tries to animate on top of us. */
+        const scroller=()=>document.scrollingElement||document.documentElement;
+        const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+        let anim=0;
+        const stopGlide=()=>{
+          cancelAnimationFrame(anim);
+          scroller().style.scrollBehavior='';
+        };
+        const glide=to=>{
+          const se=scroller();
+          const from=se.scrollTop;
+          const dist=Math.max(0,Math.min(to,se.scrollHeight-innerHeight))-from;
+          if(!dist)return;
+          stopGlide();
+          se.style.scrollBehavior='auto';
+          const t0=performance.now();
+          const dur=Math.min(900,Math.max(320,Math.abs(dist)*0.45));
+          const step=now=>{
+            const t=Math.min(1,(now-t0)/dur);
+            se.scrollTop=from+dist*ease(t);
+            if(t<1)anim=requestAnimationFrame(step);
+            else se.style.scrollBehavior='';
+          };
+          anim=requestAnimationFrame(step);
+        };
+        addEventListener('wheel',stopGlide,{passive:true});
+        addEventListener('touchstart',stopGlide,{passive:true});
+        sendToc();
+        addEventListener('message',ev=>{
+          const d=ev.data;
+          if(!d||typeof d!=='object')return;
+          if(d.type==='caseTocRequest')sendToc();
+          else if(d.type==='caseScrollTo'){
+            const el=d.id?document.getElementById(d.id):null;
+            glide(el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
+          }
+        });
+        /* tell the rail which section the reader is in */
+        let last=null,ticking=false;
+        const spy=()=>{
+          ticking=false;
+          const line=innerHeight*0.32;
+          let id='';
+          for(const it of ITEMS){
+            if(!it.id)continue;
+            const el=document.getElementById(it.id);
+            if(el&&el.getBoundingClientRect().top<=line)id=it.id;
+          }
+          if(id!==last){last=id;post({type:'caseSection',id:id});}
+        };
+        addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(spy);}},{passive:true});
+        spy();
+      }
+    })();
+  </script>
+
+  <!-- theme: the portfolio shell posts its theme in, and standalone we read
+       it ourselves, so this page is never stuck in the wrong one -->
+  <script>
+    (function(){
+      function set(t){ document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+      var t; try { t = localStorage.getItem('theme'); } catch(e) {}
+      if(!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      set(t);
+      addEventListener('message', function(e){
+        if(e && e.data && e.data.type === 'theme') set(e.data.value);
+      });
+    })();
+  </script>
+
+  <!-- cursor: the shell draws the one cursor and already listens for these,
+       so embedded we hide ours and feed it. Standalone, ours stays. -->
+  <script>
+    (function(){
+      if (window.parent === window) return;
+      document.documentElement.setAttribute('data-embedded', '');
+      var ring = document.getElementById('cursor');
+      if (ring) ring.style.display = 'none';
+      var HOVER = 'a,button,input,select,textarea,summary,[role="button"],[onclick],' +
+                  '.skip-button,.card,.role-card,.quote-card,.stats-card,.must-haves-card,' +
+                  '.glass-card,.chip,.img-tile,.spec-row,.metric,img';
+      function post(m){ try { window.parent.postMessage(m, '*'); } catch (e) {} }
+      // posted straight from the event: rAF inside a pane the browser is
+      // throttling can stall, and that shows up as a cursor that lags or sticks
+      var lx = -1, ly = -1;
+      addEventListener('mousemove', function(e){
+        if (e.clientX === lx && e.clientY === ly) return;
+        lx = e.clientX; ly = e.clientY;
+        post({type:'iframeMouse', x:lx, y:ly});
+      });
+      addEventListener('mousedown',  function(){ post({type:'iframeDown'}); });
+      addEventListener('mouseup',    function(){ post({type:'iframeUp'}); });
+      addEventListener('mouseleave', function(){ post({type:'iframeLeave'}); });
+      addEventListener('mouseover', function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:true}); });
+      addEventListener('mouseout',  function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:false}); });
     })();
   </script>
 </body>

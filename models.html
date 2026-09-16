@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Work</title>
   <style>
+    /* ── type scale ────────────────────────────────────────────────
+       One fluid root so every rem on the page grows with the screen
+       instead of sitting at a fixed 16px. The floor and ceiling are
+       in rem, not px, so a reader who has raised their browser's
+       default font size keeps that increase (WCAG 1.4.4). */
+    html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
+
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap');
 
     @font-face {
@@ -180,25 +187,49 @@
     import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
 
     /* ─── stations ─── */
+    /* screen + decal textures. declared above `stations` because the station
+       configs reference them directly. */
+    const overlayURL          = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png';
+    const laptopOverlayURL    = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';
+    const auntieOverlayURL    = './auntiephone.png';
+
     const stations = [
+      {
+        name:'Trove', category:'Product Design Engineering / AI',
+        desc:'Founding product design engineer on a behavioral identity platform. Took it from a Valentine\u2019s demo to a daily product in four months: 1,331 commits, the story and card generation engines, and a mascot rig that dresses 14 poses from 75 hand-placed anchors.',
+        href:'Trove/index.html',
+        models:[
+          {url:'./models/iphone.glb', scale:0.019*1.5, baseEuler:[0,  22,  7], pos:[-1.55,-0.55,0],
+           screen:{ url:'./Trove/img/screens/phone-screen.png', size:[40,88], pos:[0,45.7,8.5] }},
+          {url:'./models/iphone.glb', scale:0.019*1.5, baseEuler:[0, -20, -6], pos:[ 1.55,-1.15,-0.4],
+           screen:{ url:'./Trove/img/screens/phone-screen-2.png', size:[40,88], pos:[0,45.7,8.5] }}
+        ],
+        theme:{ accent:'236, 127, 14' },
+      },
       {
         name:'Skrimp AI', category:'Product Design / AI',
         desc:'Founder & CEO — AI sous chef making the cost of living feel livable',
         href:'Skrimp/index.html', model:'./models/yummymeal.glb',
-        scale:0.25*1.5, baseEuler:[32,15,0]
+        scale:0.25*1.5, baseEuler:[32,15,0],
+        decals:[
+          {url:'./SkrimpCelebrate.png', size:[1.1,1.32], pos:[ 2.0,-0.30,1.6]},
+          {url:'./SkrimpThinking.png',  size:[1.1,1.32], pos:[-1.8,-0.52,2.2], rotY:0.45}
+        ]
       },
       {
         name:'Path to Menzoberranzan', category:'Technical Direction / Game',
         desc:"Technical Director — Unofficial Baldur's Gate 3 expansion, 100+ person studio",
         href:'Menzo/index.html',
-        model:'./models/steamdeck.glb', scale:0.30*1.5, baseEuler:[0,-10,0]
+        model:'./models/steamdeck.glb', scale:0.30*1.5, baseEuler:[0,-10,0],
+        screen:{ url:overlayURL, size:[4.52,2.8], pos:[0,0.35,1.06] }
       },
       {
         name:'MyAuntie', category:'UX Design / AI',
         desc:'[ 🏆 WINNER — TechNova 2025 ] The first AI companion for postpartum women',
         href:'MyAuntie/index.html',
         models:[
-          {url:'./models/iphone.glb',    scale:0.02*1.5, baseEuler:[0, 15,10], pos:[-1.2,-1,0]},
+          {url:'./models/iphone.glb',    scale:0.02*1.5, baseEuler:[0, 15,10], pos:[-1.2,-1,0],
+           screen:{ url:auntieOverlayURL, size:[40,88], pos:[0,45.7,8.5] }},
           {url:'./models/robodrone.glb', scale:0.9*1.5,  baseEuler:[0,-15, 0], pos:[ 1.2, 0,0]}
         ]
       },
@@ -214,13 +245,14 @@
         name:'Seniors Connect', category:'UX Design / Social',
         desc:'High-fidelity prototype to end senior loneliness — winning hearts one screen at a time',
         href:'SeniorsConnect/index.html', model:'./models/laptop.glb',
-        scale:0.07*1.5, baseEuler:[5,35,0]
+        scale:0.07*1.5, baseEuler:[5,35,0],
+        screen:{ url:laptopOverlayURL, size:[29,17], pos:[0,10.7,-10.5] }
       },
     ];
 
     const RADIUS=6, TURNS=3.6, PITCH=1.7;
     const THETA_MAX = TURNS * Math.PI * 2;
-    const tStops   = [0.07, 0.27, 0.50, 0.72, 0.93];
+    const tStops   = [0.06, 0.23, 0.40, 0.57, 0.74, 0.93];
     const SCROLL_K = 1/2600, TOUCH_K = 1/1400, EPS = 0.0015;
     const BG       = 0x070b10;
     const EQUINOX_IDX = stations.findIndex(s => s.parallax);
@@ -343,11 +375,6 @@
     /* ─── stations ─── */
     const loader    = new GLTFLoader();
     const texLoader = new THREE.TextureLoader();
-    const overlayURL          = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png';
-    const laptopOverlayURL    = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';
-    const auntieOverlayURL    = './auntiephone.png';
-    const skrmpCelebrateURL   = './SkrimpCelebrate.png';
-    const skrmpThinkingURL    = './SkrimpThinking.png';
 
     function addOverlay(model, url, sizeXY, posXYZ) {
       texLoader.load(url, tex => {
@@ -411,7 +438,7 @@
             const p = m.pos ?? [(j===0?-1.4:1.4),0,0];
             mdl.position.set(p[0],p[1],p[2]);
             pivot.add(mdl);
-            if(i===2&&j===0) addOverlay(mdl, auntieOverlayURL, [40,88], [0,45.7,8.5]);
+            if (m.screen) addOverlay(mdl, m.screen.url, m.screen.size, m.screen.pos);
             onSettled();
           }, undefined, onSettled);
         });
@@ -421,37 +448,24 @@
           mdl.scale.setScalar(cfg.scale);
           mdl.rotation.copy(eul(...cfg.baseEuler));
           pivot.add(mdl);
-          if(i===0) {
-            texLoader.load(skrmpCelebrateURL, tex => {
+          // sprites that float beside a model (Skrimp's two mascots)
+          (cfg.decals || []).forEach(dc => {
+            texLoader.load(dc.url, tex => {
               tex.colorSpace = THREE.SRGBColorSpace;
               tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
               tex.minFilter = THREE.LinearMipmapLinearFilter;
               tex.magFilter = THREE.LinearFilter;
-              const celebrate = new THREE.Mesh(
-                new THREE.PlaneGeometry(1.1, 1.32),
+              const sprite = new THREE.Mesh(
+                new THREE.PlaneGeometry(dc.size[0], dc.size[1]),
                 new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false })
               );
-              celebrate.position.set(2.0, -0.3, 1.6);
-              celebrate.renderOrder = 12;
-              pivot.add(celebrate);
+              sprite.position.set(dc.pos[0], dc.pos[1], dc.pos[2]);
+              if (dc.rotY) sprite.rotation.y = dc.rotY;
+              sprite.renderOrder = 12;
+              pivot.add(sprite);
             });
-            texLoader.load(skrmpThinkingURL, tex => {
-              tex.colorSpace = THREE.SRGBColorSpace;
-              tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
-              tex.minFilter = THREE.LinearMipmapLinearFilter;
-              tex.magFilter = THREE.LinearFilter;
-              const thinking = new THREE.Mesh(
-                new THREE.PlaneGeometry(1.1, 1.32),
-                new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false })
-              );
-              thinking.position.set(-1.8, -0.52, 2.2);
-              thinking.rotation.y = 0.45;
-              thinking.renderOrder = 12;
-              pivot.add(thinking);
-            });
-          }
-          if(i===1) addOverlay(mdl, overlayURL,       [4.52,2.8], [0, 0.35, 1.06]);
-          if(i===4) addOverlay(mdl, laptopOverlayURL, [29,17],    [0,10.7,-10.5]);
+          });
+          if (cfg.screen) addOverlay(mdl, cfg.screen.url, cfg.screen.size, cfg.screen.pos);
           onSettled();
         }, undefined, onSettled);
       }
@@ -485,6 +499,7 @@
       document.documentElement.style.setProperty('--sa', s.theme?.accent || '102, 252, 241');
       if (s.playHref) {
         playEl.href = s.playHref; playEl.style.display = '';
+        playEl.textContent = (s.playLabel || 'Play game') + ' \u2192';
       } else {
         playEl.style.display = 'none';
       }

@@ -4,12 +4,19 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="../HenLogo.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Skrimp – Case Study</title>
+  <title>Skrimp Case Study</title>
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital, wght@0, 400;0, 500;1, 400;1, 500&display=swap" rel="stylesheet" />
 
   <style>
+    /* ── type scale ────────────────────────────────────────────────
+       One fluid root so every rem on the page grows with the screen
+       instead of sitting at a fixed 16px. The floor and ceiling are
+       in rem, not px, so a reader who has raised their browser's
+       default font size keeps that increase (WCAG 1.4.4). */
+    html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
+
     @font-face {
       font-family: 'DotempDemo';
       src: url('../fonts/DotempDemo.ttf') format('truetype');
@@ -19,34 +26,77 @@
     .di { font-family: 'Didot', 'Cormorant Garamond', serif !important; font-style: italic !important; font-weight: 700; }
 
     :root {
+      --accent-rgb: 42,200,192;
+      --accent-soft-rgb: 100,220,215;
+      --accent-deep-rgb: 40,180,200;
+      --deep-rgb: 6,16,18;
+      --chrome-rgb: 4,10,12;
+      --lift-rgb: 255,255,255;
+      --ink-rgb: 241,250,238;
+      --sh-rgb: 0,0,0;
+      --sh-k: 1;
+      --paper: #041519;
+      --on-accent: #041519;
       --text-primary: #f1faee;
       --text-secondary: #a0e8e4;
       --accent-teal: #2ac8c0;
       --accent-blue: #1a9faf;
       --accent-purple: #7ec8c4;
-      --glass-deep-1: rgba(6,16,18,0.91);
-      --glass-deep-2: rgba(8,24,28,0.96);
-      --glass-border: rgba(100,210,200,0.22);
-      --glass-highlight-1: rgba(80,220,210,.10);
-      --glass-highlight-2: rgba(40,180,200,.14);
-      --glass-bg: rgba(6,16,18,0.35);
-      --inner-card: rgba(6,16,18,.42);
-      --rule: rgba(100,210,200,0.24);
+      --glass-deep-1: rgba(var(--deep-rgb),0.91);
+      --glass-deep-2: rgba(var(--deep-rgb),0.96);
+      --glass-border: rgba(var(--accent-soft-rgb),0.22);
+      --glass-highlight-1: rgba(var(--accent-soft-rgb),.10);
+      --glass-highlight-2: rgba(var(--accent-deep-rgb),.14);
+      --glass-bg: rgba(var(--deep-rgb),0.35);
+      --inner-card: rgba(var(--deep-rgb),.42);
+      --rule: rgba(var(--accent-soft-rgb),0.24);
+    }
+
+    /* ── LIGHT THEME ───────────────────────────────────────────
+       Authored dark, so light restates the same colour families
+       rather than inverting them: glass goes to paper, the deep
+       washes go pale, and every accent drops to a value that
+       clears WCAG AA on the light surface it lands on. */
+    :root[data-theme="light"] {
+      --text-primary: #0B1C20;
+      --text-secondary: #0E5F5A;
+      --accent-teal: #0E7C76;
+      --accent-blue: #0B6C79;
+      --accent-purple: #2E6F6B;
+      --glass-deep-1: rgba(255,255,255,0.94);
+      --glass-deep-2: rgba(247,254,253,0.97);
+      --glass-border: rgba(14,124,118,0.26);
+      --glass-highlight-1: rgba(14,124,118,.07);
+      --glass-highlight-2: rgba(11,108,121,.08);
+      --glass-bg: rgba(255,255,255,0.74);
+      --inner-card: rgba(255,255,255,0.80);
+      --rule: rgba(14,124,118,0.24);
+      --accent-rgb: 14,124,118;
+      --accent-soft-rgb: 14,95,90;
+      --accent-deep-rgb: 11,108,121;
+      --deep-rgb: 224,246,244;
+      --chrome-rgb: 255,255,255;
+      --lift-rgb: 14,124,118;
+      --ink-rgb: 11,28,32;
+      --sh-rgb: 18,60,64;
+      --sh-k: .34;
+      --paper: #F1FCFB;
+      --on-accent: #F1FCFB;
+    }
+    :root[data-theme="light"] .intro-left h1 {
+      background-image:linear-gradient(45deg,#0B6C79,#0E7C76,#12958C,#0E5F5A,#0B6C79);
+      background-size:200% 200%;
     }
 
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{background:transparent !important}
-    body{font-family:Montserrat,system-ui,-apple-system,sans-serif;color:var(--text-primary)}
+        body{font-family:Montserrat,system-ui,-apple-system,sans-serif;color:var(--text-primary)}
     a{text-decoration:none;color:inherit}
     ul{list-style:disc inside}
 
-    #bg-host{position:fixed;inset:0;z-index:-1;pointer-events:none}
-    #bg-host>iframe{width:100%;height:100%;border:0;display:block}
-
     /* custom cursor */
-    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(42,200,192,.3);border:2px solid rgba(42,200,192,.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(42,200,192,.4),inset 0 0 10px rgba(42,200,192,.1)}
-    .custom-cursor.clicking{background:rgba(42,200,192,.9);border-color:rgba(42,200,192,1);transform:translate(-50%,-50%) scale(.8)}
-    .custom-cursor.hovering{width:30px;height:30px;background:rgba(42,200,192,.4);border-color:rgba(42,200,192,.9);box-shadow:0 0 20px rgba(42,200,192,.6)}
+    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(var(--accent-rgb),.3);border:2px solid rgba(var(--accent-rgb),.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(var(--accent-rgb),.4),inset 0 0 10px rgba(var(--accent-rgb),.1)}
+    .custom-cursor.clicking{background:rgba(var(--accent-rgb),.9);border-color:rgba(var(--accent-rgb),1);transform:translate(-50%,-50%) scale(.8)}
+    .custom-cursor.hovering{width:30px;height:30px;background:rgba(var(--accent-rgb),.4);border-color:rgba(var(--accent-rgb),.9);box-shadow:0 0 20px rgba(var(--accent-rgb),.6)}
     *,*::before,*::after{cursor:none !important}
 
     @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
@@ -68,17 +118,24 @@
     h1,h2,h3,h4{font-family:'Montserrat Alternates',sans-serif}
 
     /* ---- CONFIDENTIALITY NOTICE ---- */
+    /* Amber rather than the page accent: this sheet's accent is teal, so a
+       teal notice on a teal-and-mint page read as more furniture. Orange is
+       the one hue the palette does not already use, which is the point of a
+       notice. */
     .confidentiality-notice {
-      border: 1px solid rgba(42,200,192,0.4);
-      border-left: 3px solid rgba(42,200,192,0.8);
-      background: rgba(42,200,192,0.07);
+      --notice-rgb: 232,138,32;
+      --notice-ink: 178,92,8;
+      border: 1px solid rgba(var(--notice-rgb),0.58);
+      border-left: 5px solid rgb(var(--notice-rgb));
+      background: linear-gradient(90deg, rgba(var(--notice-rgb),0.20), rgba(var(--notice-rgb),0.11) 55%, rgba(var(--notice-rgb),0.08));
+      box-shadow: 0 6px 22px rgba(var(--notice-rgb),0.18);
       border-radius: 0 12px 12px 0;
       padding: 1.25rem 1.5rem;
-      margin-bottom: clamp(28px,4vh,44px);
+      margin: 0 0 clamp(28px,4vh,44px);
     }
     .confidentiality-notice .notice-label {
-      font-size: .7rem; font-weight: 700; letter-spacing: .18em;
-      text-transform: uppercase; color: rgba(100,220,215,0.85);
+      font-size: 0.78rem; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: rgb(var(--notice-ink));
       margin-bottom: .5rem; display: block;
     }
     .confidentiality-notice p {
@@ -88,11 +145,11 @@
 
     /* ---- EYEBROW ---- */
     .eyebrow {
-      display: block; font-size: .72rem; font-weight: 700;
+      display: block; font-size: 0.84rem; font-weight: 700;
       letter-spacing: .14em; text-transform: uppercase;
       color: var(--accent-teal); margin-bottom: .6rem; opacity: .85;
     }
-    .eyebrow.green { color: rgba(100,220,215,0.9); }
+    .eyebrow.green { color: rgba(var(--accent-soft-rgb),0.9); }
 
     /* ---- HEADINGS ---- */
     .section-heading {
@@ -122,7 +179,7 @@
       border: 1px solid var(--glass-border);
       backdrop-filter: blur(18px) saturate(120%);
       -webkit-backdrop-filter: blur(18px) saturate(120%);
-      box-shadow: 0 24px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow: 0 24px 80px rgba(var(--sh-rgb), calc(.55 * var(--sh-k))), inset 0 1px 0 rgba(var(--lift-rgb),.04);
       overflow: hidden;
     }
     .hero-container::before, .hero-container::after {
@@ -161,20 +218,20 @@
     .tldr-pills { display:flex; flex-wrap:wrap; gap:6px 8px; margin-top:.85rem; padding:0; list-style:none; }
     .tldr-pills .pill {
       display:inline-flex; align-items:center; gap:6px;
-      font-size:.78rem; line-height:1.15; padding:4px 10px; border-radius:999px;
-      background:rgba(255,255,255,.05); border:1px solid rgba(42,200,192,0.18);
+      font-size:0.84rem; line-height:1.15; padding:4px 10px; border-radius:999px;
+      background:rgba(var(--lift-rgb),.05); border:1px solid rgba(var(--accent-rgb),0.18);
     }
 
-    .skip-link { margin-top: 1rem; }
+    .skip-link { margin-top: 1rem; ; display:flex; justify-content:flex-end; }
     .skip-button {
       display:inline-block;
       background:linear-gradient(45deg,var(--accent-teal),var(--accent-blue));
-      color:var(--text-primary);font-size:.9rem;font-weight:700;text-transform:uppercase;
+      color:var(--on-accent);font-size:.9rem;font-weight:700;text-transform:uppercase;
       padding:1rem 2rem;border:none;border-radius:50px;transition:all .3s ease;
-      box-shadow:0 4px 15px rgba(42,200,192,.4);position:relative;overflow:hidden
+      box-shadow:0 4px 15px rgba(var(--accent-rgb),.4);position:relative;overflow:hidden
     }
-    .skip-button:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(42,200,192,.6)}
-    .skip-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s}
+    .skip-button:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(var(--accent-rgb),.6)}
+    .skip-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(var(--lift-rgb),.2),transparent);transition:left .5s}
     .skip-button:hover::before{left:100%}
 
     /* ---- OUTCOME STRIP ---- */
@@ -198,17 +255,52 @@
     /* ---- RULE ---- */
     .section-rule { border:0; border-top:1px solid var(--rule); margin: clamp(32px,5vh,56px) 0; }
 
+    /* ---- BANNER + META HEADER ---- */
+    .case-banner{
+      width:100%; border-radius:18px; overflow:hidden;
+      border:1px solid var(--glass-border);
+      box-shadow:0 10px 34px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      margin-bottom:clamp(30px,5vh,60px);
+      background:var(--inner-card);
+    }
+    .case-banner img{display:block;width:100%;height:auto}
+    .meta-grid{
+      display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:1.6rem 2rem; margin-bottom:clamp(34px,6vh,72px);
+    }
+    .meta-col h4{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); margin-bottom:.8rem;
+    }
+    .meta-col p{font-size:.93rem;line-height:1.6;color:var(--text-primary)}
+    .overview-label{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); display:block; margin-bottom:.9rem;
+    }
+    .overview-head{
+      font-size:clamp(1.5rem,3.1vw,2.35rem); font-weight:700; line-height:1.22;
+      color:var(--text-primary); margin-bottom:1.1rem; letter-spacing:-.01em;
+    }
+    .overview-body p{font-size:clamp(.92rem,1.15vw,1rem);line-height:1.78;margin-bottom:1rem}
+    .overview-body p:last-child{margin-bottom:0}
+    /* the banner carries the wordmark, so the heading is for screen readers */
+    .sr-only{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+    }
+    @media(max-width:900px){ .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media(max-width:560px){ .meta-grid{grid-template-columns:1fr} }
+
     /* ---- SECTIONS ---- */
     section { width:100%; padding: clamp(32px,5vh,56px) 0; position:relative; }
     .section-content { max-width:100%; margin:0 auto; text-align:left; }
-    .section-content p {
-      font-size:1.05rem; line-height:1.65; max-width:min(100%,72ch);
-      margin-bottom:1.4rem; color:var(--text-primary); opacity:.92;
-    }
+    .section-content p{ font-size:clamp(.92rem,1.15vw,1rem); line-height:1.78; margin-bottom:1rem; color:var(--text-secondary); }
 
     /* ---- PULL QUOTE ---- */
     .pull-quote {
-      border-left: 3px solid rgba(42,200,192,0.7);
+      border-left: 3px solid rgba(var(--accent-rgb),0.7);
       padding: .9rem 1.5rem; margin: 1.5rem 0;
       font-size:1.15rem; font-style:italic;
       color:var(--text-secondary); line-height:1.5;
@@ -220,73 +312,79 @@
 
     /* ---- HIGHLIGHT BOX ---- */
     .highlight-box {
-      border-left:2px solid rgba(42,200,192,0.45);
+      border-left:2px solid rgba(var(--accent-rgb),0.45);
       padding:.9rem 1.1rem .9rem 1.25rem; margin-top:.75rem;
-      background:rgba(8,18,12,.3); border-radius:0 10px 10px 0;
+      background:rgba(var(--deep-rgb),.3); border-radius:0 10px 10px 0;
       font-size:.95rem; line-height:1.55; color:var(--text-primary);
     }
     .highlight-box.green {
-      border-left-color: rgba(42,200,192,0.5);
-      background: rgba(42,200,192,.06);
+      border-left-color: rgba(var(--accent-rgb),0.5);
+      background: rgba(var(--accent-rgb),.06);
     }
     .highlight-box strong { color:var(--text-secondary); }
 
     /* ---- TWO COL ---- */
-    .two-col { display:flex; gap:2.5rem; flex-wrap:wrap; align-items:flex-start; margin-top:1.5rem; }
+    /* Single column, matching the Trove case study — the side-by-side rail
+       broke reading order and made the page feel twice as long. */
+    .two-col{ display:block; margin-top:1.5rem; }
+    .two-col > *{ }
+    .two-col > * + *{ margin-top:1.1rem; }
     .two-col > * { flex:1; min-width:260px; }
 
     /* ---- QUOTE GRID ---- */
     .quote-grid{display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:1.1rem;justify-content:center;margin-bottom:2rem}
-    .quote-card{background:var(--inner-card);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.2);padding:1.25rem;min-height:160px;opacity:0;transform:translateY(18px);transition:opacity .5s ease-out,transform .5s ease-out;will-change:opacity,transform;border:1px solid var(--glass-border);position:relative;overflow:hidden}
-    .quote-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(42,200,192,.05),transparent);transition:left .6s}
+    .quote-card{background:var(--inner-card);border-radius:16px;box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.2 * var(--sh-k)));padding:1.25rem;min-height:160px;opacity:0;transform:translateY(18px);transition:opacity .5s ease-out,transform .5s ease-out;will-change:opacity,transform;border:1px solid var(--glass-border);position:relative;overflow:hidden}
+    .quote-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.05),transparent);transition:left .6s}
     .quote-card:hover::before{left:100%}
     .quote-text{font-size:1rem;line-height:1.5;margin-bottom:.75rem;color:var(--text-primary)}
     .quote-author{font-size:.92rem;opacity:.85;text-align:right;color:var(--text-secondary)}
 
     /* ---- STATS GRID ---- */
-    .stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; margin-bottom:2rem; }
-    .stats-card { padding:1.5rem 1.1rem; border-top:2px solid var(--accent-teal); opacity:0; transform:translateY(20px); transition:all .5s ease; }
+    .stats-grid{ display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin:clamp(24px,3.2vh,36px) 0 clamp(14px,2vh,22px); align-items:flex-start; }
+    .stats-card{ flex:1 1 220px; min-width:200px; max-width:251px; background:var(--inner-card); border:1px solid var(--glass-border); border-radius:16px; padding:1rem 1rem 1.05rem; box-shadow:0 6px 22px rgba(var(--sh-rgb), calc(.28 * var(--sh-k))); transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease; }
     .stat-number { font-family:'Didot','Cormorant Garamond',serif; font-style:italic; font-size:clamp(2rem,3.5vw,2.8rem); font-weight:700; color:var(--text-secondary); line-height:1; margin-bottom:.5rem; letter-spacing:.04em; }
     .stats-title { font-size:.85rem; font-weight:600; color:var(--text-secondary); margin-bottom:.4rem; line-height:1.3; }
     .stats-desc { font-size:.85rem; line-height:1.45; color:var(--text-primary); opacity:.8; }
 
     /* ---- CARDS ---- */
     .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; margin:0 auto; }
-    .card { border-top:2px solid var(--accent-teal); padding:1.5rem; background:rgba(8,18,12,.3); border-radius:0 0 14px 14px; transition:.25s; }
-    .card:hover { background:rgba(8,18,12,.5); }
-    .card h4 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; font-weight:700; opacity:.65; margin-bottom:.35rem; color:var(--accent-teal); }
+    .card { border-top:2px solid var(--accent-teal); padding:1.5rem; background:rgba(var(--deep-rgb),.3); border-radius:0 0 14px 14px; transition:.25s; }
+    .card:hover { background:rgba(var(--deep-rgb),.5); }
+    .card h4 { font-size:0.78rem; text-transform:uppercase; letter-spacing:.12em; font-weight:700; opacity:.65; margin-bottom:.35rem; color:var(--accent-teal); }
     .card h3 { font-size:1.15rem; margin-bottom:.4rem; color:var(--text-secondary); font-family:'Montserrat Alternates',sans-serif; }
     .card p { font-size:.95rem; line-height:1.45; color:var(--text-primary); opacity:.85; }
 
     /* ---- CONSTRAINTS ---- */
-    .constraints-row{display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-top:1.5rem}
+    /* single column, matching Trove (two constraint blocks side by side removed) */
+    .constraints-row{display:block;gap:2rem;flex-wrap:wrap;justify-content:space-between;margin-top:1.5rem}
     .constraints-left,.constraints-right{flex:1;min-width:260px}
 
     /* ---- IDEATION ---- */
-    .ideation-row,.challenge-row{display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-top:1.5rem}
+    .ideation-row,/* single column, matching Trove (image beside text removed) */
+    .challenge-row{display:block;gap:2rem;flex-wrap:wrap;justify-content:space-between;margin-top:1.5rem}
     .ideation-col,.challenge-col{flex:1;min-width:280px}
-    .must-haves-container{display:grid;grid-template-columns:minmax(200px,0.85fr) 1.4fr;gap:1.5rem 2rem;align-items:start;margin:2rem auto 0}
+    /* single column, matching Trove (the asymmetric label rail (0.85fr / 1.4fr) removed) */
+    .must-haves-container{display:block;gap:1.5rem 2rem;margin:2rem auto 0}
     .must-haves-left{position:sticky;top:24px}
-    .must-haves-right{display:grid;grid-template-columns:1fr;gap:1rem}
-    .must-haves-card{border-left:2px solid rgba(100,210,200,0.3);padding:1rem 1.1rem 1rem 1.25rem;background:rgba(6,16,18,.25);border-radius:0 10px 10px 0;transition:.3s}
+    .must-haves-right{display:grid;gap:1rem}
+    .must-haves-card{border-left:2px solid rgba(var(--accent-soft-rgb),0.3);padding:1rem 1.1rem 1rem 1.25rem;background:rgba(var(--deep-rgb),.25);border-radius:0 10px 10px 0;transition:.3s}
     .must-haves-card h4{font-size:.88rem;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem}
     .must-haves-card p{font-size:.9rem;line-height:1.5;color:var(--text-primary);opacity:.85}
 
     /* ---- PROCESS ---- */
-    .process-subsection{margin-bottom:2.75rem}
     .process-dense-row{display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-top:1.5rem}
     .process-dense-left,.process-dense-right{flex:1;min-width:260px}
     .mini-images{display:flex;justify-content:center;align-items:center;gap:clamp(14px,2vw,28px);margin:clamp(8px,1.5vw,24px) auto;max-width:min(500px,95%)}
-    .mini-images img{display:block;border-radius:16px;height:auto;max-width:100%;box-shadow:0 8px 24px rgba(0,0,0,.18);border:1px solid var(--glass-border)}
+    .mini-images img{display:block;border-radius:16px;height:auto;max-width:100%;box-shadow:0 8px 24px rgba(var(--sh-rgb), calc(.18 * var(--sh-k)));border:1px solid var(--glass-border)}
     .ideation-big-image{text-align:center;margin-top:1.25rem}
-    .ideation-big-image img{max-width:100%;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);border:1px solid var(--glass-border)}
+    .ideation-big-image img{max-width:100%;border-radius:16px;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));border:1px solid var(--glass-border)}
     .scene-big-image{text-align:center;margin-top:1.5rem}
-    .scene-big-image img{max-width:100%;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);border:1px solid var(--glass-border)}
+    .scene-big-image img{max-width:100%;border-radius:16px;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));border:1px solid var(--glass-border)}
 
     /* ---- VIDEO EMBEDS ---- */
     .shorts-container{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:1.25rem}
-    .shorts-container iframe{width:480px;height:270px;border:none;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
-    .video-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin:1.5rem auto 0;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+    .shorts-container iframe{width:480px;height:270px;border:none;border-radius:16px;box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)))}
+    .video-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin:1.5rem auto 0;border-radius:16px;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)))}
     .video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:16px}
 
     /* ---- REFLECTION ---- */
@@ -295,14 +393,257 @@
     .reflection p { font-size:1rem; line-height:1.6; color:var(--text-primary); opacity:.88; margin-bottom:.75rem; }
 
     /* ---- BODY IMAGES ---- */
-    .body-img { width:100%; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,.4); border:1px solid var(--glass-border); margin:1.5rem 0 .4rem; display:block; }
+    .body-img { width:100%; border-radius:12px; box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.4 * var(--sh-k))); border:1px solid var(--glass-border); margin:1.5rem 0 .4rem; display:block; }
     .body-img-caption {
       font-family: 'Cormorant Garamond', 'Didot', serif; font-style: italic;
-      font-size: .68rem; letter-spacing: .03em; text-align: center;
+      font-size: 0.78rem; letter-spacing: .03em; text-align: center;
       color: var(--text-secondary); opacity: .45; margin-bottom: 1.5rem;
       max-width: 100% !important; width: 100%; display: block;
     }
-    .overview-cover{width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.35);border:1px solid var(--glass-border);margin-top:1.25rem}
+    /* Product clips. The landing page scales these 1.2x inside an
+       overflow-hidden box so the recordings crop past their dead margins —
+       same treatment here. */
+    .vid-crop{
+      width:100%; margin-top:1.35rem; overflow:hidden; border-radius:12px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.35 * var(--sh-k)));
+      background:#0b1416; line-height:0;
+    }
+    .vid-crop video{ width:100%; display:block; transform:scale(1.2); transform-origin:center; }
+
+
+    .lede{ font-size:clamp(1.02rem,1.65vw,1.2rem); line-height:1.55; font-weight:600; color:var(--text-primary); margin-bottom:1.1rem; max-width:62ch; }
+
+
+    /* CTV clip. Same pattern as the Equinox case study: autoplays muted with
+       its own unmute control, iframe pointer-events off so YouTube's chrome
+       never surfaces. No playlist param, since that makes the embed draw its
+       prev/pause/next transport over the video. */
+    /* one-off: the inflation chart reads better small and beside the prose than
+       full width. the wrapper establishes a BFC so the float stays contained. */
+    .chart-aside{ overflow:hidden; }
+    .chart-figure{ float:right; width:calc(50% - .875rem); margin:.4rem 0 1rem 1.75rem; }
+    .chart-figure img{
+      display:block; width:100%; height:auto; border-radius:10px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 10px 30px rgba(var(--sh-rgb), calc(.26 * var(--sh-k)));
+    }
+    .chart-figure figcaption{
+      margin-top:.5rem; font-size:0.84rem; line-height:1.45;
+      color:var(--text-secondary);
+    }
+    @media(max-width:768px){
+      .chart-figure{ float:none; width:100%; margin:1.25rem 0 .5rem; }
+      .chart-figure figcaption{ text-align:center; }
+    }
+
+    .ctv-video-wrap{
+      position:relative; width:100%; aspect-ratio:16/9;
+      border-radius:12px; overflow:hidden;
+      border:1px solid var(--glass-border);
+      box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.42 * var(--sh-k)));
+      background:#0b1416; margin:1.25rem 0 .5rem;
+    }
+    /* the API replaces this div with the iframe. it has to already have size,
+       or YouTube sees a 0x0 player and refuses to autoplay. */
+    .ctv-video-wrap #ctv-yt-player,
+    .ctv-video-wrap iframe{
+      position:absolute; inset:0; width:100%; height:100%; border:0; display:block;
+      pointer-events:none;
+    }
+    /* only if YouTube refuses the embed */
+    /* display:flex would otherwise beat the [hidden] attribute, leaving this
+       sitting on top of the iframe and making YouTube treat it as occluded */
+    .ctv-video-wrap .ctv-fallback[hidden]{ display:none; }
+    .ctv-video-wrap .ctv-fallback{
+      position:absolute; inset:0; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:.6rem; text-align:center;
+      padding:1.5rem; color:var(--text-secondary); font-size:.9rem;
+    }
+    .ctv-video-wrap .ctv-fallback a{ color:var(--accent); text-decoration:underline; }
+    .ctv-mute-btn{
+      position:absolute; bottom:12px; right:12px; z-index:10;
+      background:rgba(var(--sh-rgb), calc(.55 * var(--sh-k)));
+      border:1px solid rgba(var(--accent-rgb),.45); border-radius:8px;
+      color:var(--text-primary); cursor:pointer; padding:6px 10px; font-size:15px;
+      display:flex; align-items:center; gap:5px;
+      backdrop-filter:blur(8px); transition:background .2s;
+    }
+    .ctv-mute-btn:hover{ background:rgba(var(--accent-rgb),.28); }
+
+    /* ── Step cards ──────────────────────────────────────────────────────
+       Skeleton ported from the Trove case study, but every colour comes from
+       Skrimp's own tokens, so these stay teal and follow the light/dark
+       toggle rather than importing Trove's warm palette. Reused in more than
+       one section on purpose — it's the page's unit for "here are the parts
+       of a hard problem". */
+    .steps:has(> :nth-child(4)){ justify-content:flex-start; }
+    .steps{
+      display:flex; justify-content:center; flex-wrap:wrap; gap:16px;
+      margin:clamp(24px,3.2vh,36px) 0 clamp(14px,2vh,22px);
+      align-items:flex-start;
+    }
+    .step-card{ flex:1 1 220px; min-width:200px; max-width:251px;
+      background:var(--inner-card);
+      border:1px solid var(--glass-border);
+      border-radius:16px; padding:1rem 1rem 1.05rem;
+      box-shadow:0 6px 22px rgba(var(--sh-rgb), calc(.28 * var(--sh-k)));
+      transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+    }
+    .step-card:hover{
+      transform:translateY(-3px);
+      box-shadow:0 12px 32px rgba(var(--sh-rgb), calc(.36 * var(--sh-k)));
+    }
+    .step-card .n{
+      display:block; font-family:'DotempDemo',monospace; font-size:0.78rem;
+      letter-spacing:.14em; color:var(--accent-teal); margin-bottom:.45rem;
+    }
+    /* emoji badges need real size; the pixel-font numbering is tiny by design */
+    .step-card .n.ico{ font-size:1.2rem; letter-spacing:0; line-height:1; margin-bottom:.35rem; }
+    .step-card h4{
+      font-size:.98rem; font-weight:600; line-height:1.3;
+      color:var(--text-primary); margin:0 0 .4rem;
+    }
+    .step-card p{
+      font-size:.84rem; line-height:1.6; color:var(--text-secondary); margin:0;
+    }
+
+    /* No frame around the art. The tinted box read as a second card inside the
+       card; the aspect ratio stays so a row of them keeps a common baseline. */
+    .step-art{
+      margin-top:.6rem;
+      aspect-ratio:4 / 3; display:flex; align-items:center; justify-content:center;
+      padding:.4rem 0 0;
+    }
+    .step-art img{ max-width:100%; max-height:100%; object-fit:contain; display:block; }
+
+
+    /* Tilted like Trove's, so a row of cards reads as laid down rather than
+       ruled. Hover straightens whichever one you are on. */
+    .step-card:nth-child(1){transform:rotate(-2.6deg) translateY(2px)}
+    .step-card:nth-child(2){transform:rotate(2.1deg) translateY(17px)}
+    .step-card:nth-child(3){transform:rotate(-1.8deg) translateY(6px)}
+    .step-card:nth-child(4){transform:rotate(2.7deg) translateY(21px)}
+    .step-card:hover{transform:rotate(0deg) translateY(-5px)}
+    .stats-card:hover,.quote-card:hover{transform:rotate(0deg) translateY(-4px)}
+    .stats-card,.quote-card{transition:transform .32s cubic-bezier(.22,1,.36,1)}
+
+
+    /* the number does the job the step-card art does */
+    .stats-number,.stats-card .stats-number{
+      font-family:'DotempDemo',monospace; font-style:normal; font-weight:400;
+      font-size:clamp(1.7rem,3.3vw,2.4rem); line-height:1.15; color:var(--accent-teal);
+      margin-bottom:.5rem; letter-spacing:.01em;
+    }
+    .stats-title{ font-size:.98rem; font-weight:600; color:var(--text-primary); margin-bottom:.4rem; }
+    .stats-desc{ font-size:.84rem; line-height:1.6; color:var(--text-secondary); margin:0; }
+    .stats-card:nth-child(1){transform:rotate(-2.6deg) translateY(2px)}
+    .stats-card:nth-child(2){transform:rotate(2.1deg) translateY(17px)}
+    .stats-card:nth-child(3){transform:rotate(-1.8deg) translateY(6px)}
+    .stats-card:nth-child(4){transform:rotate(2.7deg) translateY(21px)}
+    .stats-card:hover{transform:rotate(0deg) translateY(-5px)}
+
+    /* Pull-quote / caveat band. Same job as Trove's highlight-box: the place
+       the page admits what it does not know. */
+    .highlight-box{
+      background:var(--glass-bg);
+      border:1px solid var(--glass-border);
+      border-left:3px solid var(--accent-teal);
+      border-radius:0 14px 14px 0;
+      padding:1rem 1.15rem; margin:1.2rem 0;
+      font-size:.9rem; line-height:1.65; color:var(--text-secondary);
+      box-shadow:0 4px 16px rgba(var(--sh-rgb), calc(.2 * var(--sh-k)));
+    }
+    .highlight-box strong{
+      display:block; color:var(--text-primary);
+      font-weight:600; margin-bottom:.3rem;
+    }
+
+    /* ── Phone showcase ──────────────────────────────────────────────────
+       Portrait clips (product capture, social reels) sit in a device frame;
+       landscape news footage uses .news-band below instead. */
+    .showcase{ margin:clamp(20px,3vh,34px) 0; }
+    .showcase-stage{
+      display:flex; justify-content:center; align-items:flex-start;
+      gap:clamp(14px,2vw,28px); flex-wrap:wrap;
+    }
+    .phone{
+      width:min(320px,82vw); border-radius:28px; padding:8px;
+      background:var(--glass-deep-2);
+      border:1px solid var(--glass-border);
+      box-shadow:0 18px 48px rgba(var(--sh-rgb), calc(.4 * var(--sh-k)));
+    }
+    .showcase-stage.solo .phone{ width:min(356px,84vw); }
+    .showcase-stage.trio .phone{ width:min(276px,80vw); }
+    .phone-screen{
+      position:relative; border-radius:21px; overflow:hidden;
+      background:#0b1416; aspect-ratio:9 / 19.5;
+    }
+    .phone-screen video,.phone-screen img{
+      width:100%; height:100%; object-fit:cover; display:block;
+    }
+    .showcase .cap{
+      margin-top:.9rem; text-align:center;
+      font-size:.82rem; line-height:1.55; color:var(--text-secondary);
+    }
+    @media(max-width:720px){
+      .showcase-stage{ gap:1.4rem; }
+      .phone,.showcase-stage.solo .phone{ width:min(300px,80vw); }
+    }
+    @media(prefers-reduced-motion:reduce){ .phone-screen video{ display:none; } }
+
+    .phone.pending .phone-screen,
+    .news-pending{
+      display:grid; place-items:center; padding:1.3rem;
+      background:var(--glass-bg);
+      border:1px dashed var(--glass-border); border-radius:12px;
+    }
+    .news-pending{ aspect-ratio:16 / 9; }
+    .phone.pending .phone-screen{ border-radius:21px; }
+    .pending-note{
+      font-size:0.84rem; line-height:1.6; color:var(--text-secondary);
+      text-align:center; margin:0;
+    }
+    .pending-note b{
+      display:block; font-family:'DotempDemo',monospace; font-size:0.78rem;
+      letter-spacing:.08em; color:var(--accent-teal); margin-bottom:.45rem;
+    }
+
+    /* Landscape news footage — full-width band, not a phone. */
+    .news-band{
+      display:grid; gap:clamp(12px,1.6vw,20px);
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      margin:clamp(20px,3vh,32px) 0;
+    }
+    .news-band figure{ margin:0; }
+    .news-band video{
+      width:100%; display:block; border-radius:12px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 8px 28px rgba(var(--sh-rgb), calc(.32 * var(--sh-k)));
+      background:#0b1416;
+    }
+    .news-band figcaption{
+      margin-top:.55rem; font-size:0.84rem; line-height:1.5;
+      color:var(--text-secondary);
+    }
+
+    /* ── Sources ─────────────────────────────────────────────────────────
+       Citations for the figures used in the argument. Distinct from the press
+       strip, which is coverage, not evidence. */
+    .sources{ margin-top:clamp(22px,3vh,34px); }
+    .sources h3{
+      font-size:0.78rem; letter-spacing:.14em; text-transform:uppercase;
+      color:var(--accent-teal); margin:0 0 .7rem; font-weight:700;
+    }
+    .sources ol{ margin:0; padding-left:1.1rem; }
+    .sources li{
+      font-size:0.84rem; line-height:1.65; color:var(--text-secondary);
+      margin-bottom:.35rem;
+    }
+    .sources a{ color:var(--text-secondary); text-decoration:underline; text-underline-offset:2px; }
+    .sources a:hover{ color:var(--accent-teal); }
+
+    .overview-cover{width:100%;border-radius:12px;box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.35 * var(--sh-k)));border:1px solid var(--glass-border);margin-top:1.25rem}
 
     /* ---- GREEN PAGE TINT ---- */
     body::after {
@@ -327,7 +668,7 @@
       border: 1px solid var(--glass-border);
       backdrop-filter: blur(18px) saturate(120%);
       -webkit-backdrop-filter: blur(18px) saturate(120%);
-      box-shadow: 0 24px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow: 0 24px 80px rgba(var(--sh-rgb), calc(.55 * var(--sh-k))), inset 0 1px 0 rgba(var(--lift-rgb),.04);
       overflow: hidden;
     }
     .press-track-outer { position: relative; margin: 2rem -clamp(18px,2.4vw,40px) 0; }
@@ -346,19 +687,19 @@
       display: flex; flex-direction: column;
       transition: border-color .3s, transform .25s;
     }
-    .press-card:hover { border-color: rgba(42,200,192,.5); transform: translateY(-4px); }
+    .press-card:hover { border-color: rgba(var(--accent-rgb),.5); transform: translateY(-4px); }
     .press-card-img { width: 100%; height: 160px; object-fit: cover; display: block; }
     .press-card-placeholder {
       width: 100%; height: 160px;
       display: flex; align-items: center; justify-content: center;
       font-size: 2.4rem;
-      background: linear-gradient(135deg, rgba(42,200,192,.18), rgba(26,160,175,.12));
+      background: linear-gradient(135deg, rgba(var(--accent-rgb),.18), rgba(var(--accent-deep-rgb),.12));
     }
     .press-card-body { padding: .85rem 1rem 1.1rem; display: flex; flex-direction: column; gap: .3rem; flex: 1; }
-    .press-outlet { font-size: .62rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgba(100,220,215,.8); }
-    .press-date { font-size: .62rem; color: rgba(168,218,220,.45); letter-spacing: .05em; }
+    .press-outlet { font-size: 0.78rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgba(var(--accent-soft-rgb),.8); }
+    .press-date { font-size: 0.78rem; color: rgba(var(--ink-rgb),.74); letter-spacing: .05em; }
     .press-headline { font-size: .86rem; line-height: 1.42; color: var(--text-primary); font-weight: 500; margin-top: .15rem; flex: 1; }
-    .press-read { font-size: .75rem; color: var(--accent-teal); margin-top: .55rem; display: flex; align-items: center; gap: 4px; transition: gap .2s; }
+    .press-read { font-size: 0.84rem; color: var(--accent-teal); margin-top: .55rem; display: flex; align-items: center; gap: 4px; transition: gap .2s; }
     .press-card:hover .press-read { gap: 8px; }
     .press-nav-row { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1.1rem; padding: 0 clamp(18px,2.4vw,40px); }
     .press-nav-btn {
@@ -368,7 +709,7 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 1rem; transition: all .25s;
     }
-    .press-nav-btn:hover { border-color: rgba(42,200,192,.5); color: var(--text-secondary); background: rgba(42,200,192,.1); }
+    .press-nav-btn:hover { border-color: rgba(var(--accent-rgb),.5); color: var(--text-secondary); background: rgba(var(--accent-rgb),.1); }
 
     /* ---- GLITCH STATES ---- */
     .intro-left h1.h-scrambling {
@@ -386,9 +727,77 @@
     }
     .section-heading.h-settled { animation: hCaSettle 3s ease-in-out infinite; }
 
+
+    /* ══ VERTICAL RHYTHM ═══════════════════════════════════════════════
+       One scale for every block in the flow. Before this each component
+       carried its own ad hoc margins and the gaps between neighbours ran
+       from -12px to +51px, including several outright collisions.
+
+       The crooked card rows are the subtle one: their cards are pushed
+       down by up to 21px with translateY, which happens AFTER layout and
+       so sits outside the container's own box. Without that added back as
+       bottom margin the next block lands on top of the lowest card. */
+    .section-content > *{ margin-top:0 }
+    .lede{ margin:0 0 1.25rem }
+    /* the float wrapper is prose, so it keeps prose spacing, not block spacing */
+    .chart-aside{ margin:0 0 1rem }
+
+    .steps, .quote-grid, .stats-grid, .img-grid, .img-wide, .mini-images,
+    .video-embed, .showcase, .mood-ladder, .tot-matrix-wrap, .big-image,
+    .vid-crop, .ideation-images, .process-dense-row, .role-cols, .cards,
+    .must-haves-grid, .outcome-strip, .quote-grid{
+      margin:2rem 0 1.7rem;
+    }
+    .steps, .quote-grid, .stats-grid{ margin-bottom:2.9rem }   /* + the tilt drop */
+    .steps:has(+ .cap){ margin-bottom:1.4rem }
+
+    /* a caption belongs to the thing above it, not to the paragraph below */
+    .cap, .img-grid figcaption, .img-wide figcaption{ margin-top:.55rem; margin-bottom:0 }
+    .video-embed + .cap, .mini-images + .cap, .img-wide + .cap,
+    .showcase + .cap{ margin-top:.75rem }
+    .cap + p, figcaption + p{ margin-top:1.6rem }
+
+    .highlight-box{ margin:1.9rem 0 2rem }
+    .chip-row{ margin:2rem 0 1.7rem }
+
+    /* A caption has to hug the thing it captions. Without this the media's own
+       bottom margin (27px) collapses against the caption's top margin and wins,
+       so the label floats halfway to the next paragraph. */
+    .video-embed:has(+ .cap), .mini-images:has(+ .cap),
+    .img-wide:has(+ .cap), .showcase:has(+ .cap){ margin-bottom:0 }
+    .video-embed + .cap, .mini-images + .cap,
+    .img-wide + .cap, .showcase + .cap{ margin-top:.7rem }
+    .works-cited{ margin-top:2.8rem }
+
+    /* a heading always gets clear air above it */
+    .section-heading{ margin-top:0 }
+    .section-content > p + .section-heading{ margin-top:2.4rem }
+
+    /* the skip control needs room before the story starts */
+    .skip-link{ margin:1.2rem 0 clamp(30px,4.5vh,52px) }
+
+    /* four cards in a row were nearly touching */
+    .steps, .quote-grid, .stats-grid, .img-grid{ gap:clamp(14px,1.9vw,26px) }
+
     /* ---- REVEALS ---- */
     .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s ease-out,transform .5s ease-out; will-change:opacity,transform; }
-    .active { opacity:1 !important; transform:translateY(0) !important; }
+    /* The reveal used to force transform:none on everything it animated in,
+       which flattened every tilted card the moment it scrolled into view.
+       Opacity still resets for all; the transform reset now skips the cards
+       so their crooked angles survive. */
+    .active { opacity:1 !important; }
+    .active:not(.step-card):not(.stats-card):not(.quote-card):not(.must-haves-card){
+      transform:translateY(0) !important;
+    }
+    .step-card.active:nth-child(1),.stats-card.active:nth-child(1){transform:rotate(-2.6deg) translateY(2px) !important}
+    .step-card.active:nth-child(2),.stats-card.active:nth-child(2){transform:rotate(2.1deg) translateY(17px) !important}
+    .step-card.active:nth-child(3),.stats-card.active:nth-child(3){transform:rotate(-1.8deg) translateY(6px) !important}
+    .step-card.active:nth-child(4),.stats-card.active:nth-child(4){transform:rotate(2.7deg) translateY(21px) !important}
+    .quote-card.active:nth-child(odd){transform:rotate(1.5deg) !important}
+    .quote-card.active:nth-child(even){transform:rotate(-1.3deg) translateY(10px) !important}
+    .step-card.active:hover,.stats-card.active:hover,.quote-card.active:hover{
+      transform:rotate(0deg) translateY(-5px) !important;
+    }
 
     /* ---- RESPONSIVE ---- */
     @media(max-width:900px) {
@@ -399,7 +808,6 @@
       .outcome-item:nth-child(4) { border-top:1px solid var(--rule); }
     }
     @media(max-width:768px) {
-      .hero-container { width:min(96vw,720px); }
       .intro { flex-direction:column; align-items:flex-start; padding:1.5rem; }
       .intro-left { padding-right:0; }
       .intro-right { max-width:100%; }
@@ -418,46 +826,85 @@
       .outcome-item { border-right:0; border-bottom:1px solid var(--rule); }
       .outcome-item:last-child { border-bottom:0; }
     }
+      /* ── PANE MODE ─────────────────────────────────────────────
+       This page is read inside the portfolio's right-hand pane,
+       which now supplies both the paper and the tinted sky. So it
+       stops painting a floating card on a sky of its own — the
+       container is just a reading column — and it paints the paper
+       itself so it still stands up when opened standalone. */
+    html,body{background:var(--paper)}
+    /* in the pane the shell paints the paper — translucent, so the one sky
+       reads through the reading surface the way it does on the home page.
+       Standalone there is no sky behind us, so we keep painting it ourselves. */
+    html[data-embedded],html[data-embedded] body{background:transparent}
+    .hero{padding:0}
+    .hero-container{
+      /* the PANE paints the paper edge to edge; this is only the reading
+         column, centred in it — so the margins each side are paper, never
+         a second sky like the old floating card had */
+      width:100%; max-width:1180px; margin-inline:auto;
+      border:none; border-radius:0;
+      background:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+      box-shadow:none;
+      padding:clamp(30px,4.5vh,60px) clamp(22px,4vw,60px) clamp(60px,9vh,110px);
+    }
+    .hero-container::before,.hero-container::after{display:none}
+    /* nothing breaks the gutter: media is bounded by the column, not the pane */
+    .hero-container img,
+    .hero-container video,
+    .hero-container iframe,
+    .hero-container canvas{max-width:100%}
+    .hero-container img{height:auto}
+    /* a flex row of percentage-width images can still sum past its own box
+       (two at 70% each), so let the row wrap and the items shrink */
+    .hero-container [class$="-images"],
+    .hero-container .mini-images{flex-wrap:wrap}
+    .hero-container [class$="-images"] > img,
+    .hero-container .mini-images > img{min-width:0;flex-shrink:1}
+    /* flex and grid children only stay inside the column if allowed to shrink */
+    .intro-left,.intro-right,.section-content,.two-col > *{min-width:0}
+    /* the press panel was the bottom half of the hero card — that card is
+       gone, so it stops floating and takes the same measure as everything else */
+    .press-wrapper{
+      width:100%; max-width:1180px; margin-inline:auto;
+      padding:clamp(18px,2.4vw,40px) clamp(22px,4vw,60px);
+      background:none; border:none; border-radius:0; box-shadow:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+    }
+    .press-wrapper::before,.press-wrapper::after{display:none}
   </style>
 </head>
 <body>
   <div class="custom-cursor" id="cursor"></div>
-  <div id="nav-slot" data-include="../nav.html"></div>
-  <br><br><br><br><br><br><br>
-
   <header class="hero" id="hero">
     <div class="hero-container">
 
-      <!-- INTRO -->
-      <div class="intro reveal">
-        <div class="intro-left">
-          <span class="eyebrow green">Live Product — Entrepreneurship Co-op, University of Waterloo</span>
-          <h1>Skrimp</h1>
-          <p class="tagline">Ontario's AI sous chef — turning flyer deals into a full weekly meal plan and shopping list in under 60 seconds.</p>
-          <ul class="tldr-pills">
-            <li class="pill"><span>🧑‍🍳</span><span><b>Founder &amp; CEO</b></span></li>
-            <li class="pill"><span>💸</span><span>Families save <b>$50–$100/week</b></span></li>
-            <li class="pill"><span>📰</span><span>CTV News · UWaterloo · Waterloo Region Record</span></li>
-            <li class="pill"><span>🇨🇦</span><span>Live in Ontario for all stores</span></li>
-          </ul>
+      <!-- BANNER -->
+      <h1 class="sr-only">Skrimp</h1>
+      <figure class="case-banner reveal">
+        <img src="skrimp-banner.webp"
+             alt="Skrimp, the web app's Save more on every grocery run landing page, the mobile meal plan and pantry-check screens, recipe cards, and the Skrimp chef mascot and wordmark."
+             width="2400" height="737" fetchpriority="high">
+      </figure>
+
+      <!-- META -->
+      <div class="meta-grid reveal">
+        <div class="meta-col">
+          <h4>Project Type</h4>
+          <p>Live consumer product, a funded startup out of the Entrepreneurship Co-op at the University of Waterloo.</p>
         </div>
-        <div class="intro-right reveal">
-          <div class="header-info">
-            <p><strong>Role:</strong> Founder &amp; CEO</p>
-            <p><strong>Timeline:</strong> Apr 2025 – present</p>
-            <p><strong>Tools &amp; Skills:</strong></p>
-            <ul>
-              <li>User Research &amp; Listening Sessions</li>
-              <li>Prototyping (mobile + web)</li>
-              <li>Data Ingestion (flyers/prices)</li>
-              <li>IA &amp; Systems Design</li>
-              <li>Accessibility (WCAG)</li>
-              <li>Ethical AI (privacy, explainability)</li>
-            </ul>
-          </div>
-          <div class="skip-link">
-            <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
-          </div>
+        <div class="meta-col">
+          <h4>Role</h4>
+          <p>Founder and CEO.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Timeline</h4>
+          <p>Apr 2025 to present, live across Ontario for all stores.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Skills &amp; Tools</h4>
+          <p>User research and listening sessions, prototyping for mobile and web, data ingestion for flyers and prices, IA and systems design, accessibility to WCAG, and ethical AI covering privacy and explainability.</p>
         </div>
       </div>
 
@@ -465,11 +912,11 @@
       <div class="outcome-strip reveal">
         <div class="outcome-item">
           <span class="outcome-num">Funded</span>
-          <span class="outcome-label">non-dilutive — Conrad School, Velocity &amp; KWC municipal governments</span>
+          <span class="outcome-label">non-dilutive, Conrad School, Velocity &amp; KWC municipal governments</span>
         </div>
         <div class="outcome-item">
           <span class="outcome-num">$5K/yr</span>
-          <span class="outcome-label">potential savings per family — per Waterloo Region Record</span>
+          <span class="outcome-label">potential savings per family, per Waterloo Region Record</span>
         </div>
         <div class="outcome-item">
           <span class="outcome-num">&lt;60s</span>
@@ -477,8 +924,13 @@
         </div>
         <div class="outcome-item">
           <span class="outcome-num">Free</span>
-          <span class="outcome-label">always — families truly in need will never pay a cent</span>
+          <span class="outcome-label">always, families truly in need will never pay a cent</span>
         </div>
+      </div>
+
+      <!-- SKIP -->
+      <div class="skip-link reveal">
+        <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
       </div>
 
       <!-- CONFIDENTIALITY NOTICE -->
@@ -487,123 +939,126 @@
         <p>Skrimp is a live, actively developed startup. Technical architecture, supplier agreements, LLM implementation details, growth strategies, and non-public user data are not discussed here. What follows covers the design process, research methodology, public coverage, and the product decisions I can speak to without compromising ongoing commercial development.</p>
       </div>
 
-      <!-- OVERVIEW -->
-      <section id="project-overview">
-        <div class="section-content reveal">
-          <span class="eyebrow">The Product</span>
-          <h2 class="section-heading">Skrimp collapses the grocery paradox. Deals, meals, and a shopping list — in one workflow.</h2>
-          <p>Canadian families already do this. Every week, in their heads: scan the flyer, price the recipe mentally, cross-reference two stores, carry the number home, discover at the aisle that the deal expired Thursday. The workflow exists. It just costs forty-five minutes and a lot of goodwill.</p>
-          <p>Skrimp doesn't ask families to change their behaviour. It automates the part that was always tedious — and closes the loop all the way to the cart.</p>
-          <video src="skrimp-smartload-demo.mp4" class="overview-cover" autoplay muted loop playsinline></video>
-        </div>
-      </section>
-
-      <hr class="section-rule">
-
-      <!-- CHALLENGE -->
+      <!-- OVERVIEW BLOCK -->
       <section id="challenge">
         <div class="section-content reveal">
-          <span class="eyebrow">The Challenge</span>
-          <h2 class="section-heading">The grocery problem is not just money — it's mental bandwidth.</h2>
+          <h2 class="section-heading">Food prices outran wages for four straight years. So the one thing Skrimp was never allowed to cost a family was time.</h2>
+          <p class="lede">Groceries are up <span class="px">26.8%</span> since 2020. Pay is not.</p>
+
+          <div class="chart-aside">
+            <figure class="chart-figure">
+              <img src="img/food-vs-wage-inflation.webp" alt="Line chart comparing Canadian food inflation against wage inflation from June 2021 to 2024, with food rising to 1.21 and wages to 1.12" loading="lazy">
+              <figcaption>Food vs. wage inflation, June 2021 to 2024. Sources: Canada Food Price Report 2025, Statistics Canada 2021 to 2024, WSJ March 2024.</figcaption>
+            </figure>
+
+            <p>I pulled Statistics Canada's food and wage series for June 2021 to 2024 and plotted them against each other, because I wanted to know whether this was a spending problem or an arithmetic one. Food inflation ran at <span class="px">6.6%</span>. Wage inflation ran at <span class="px">3.7%</span>. The lines separate in early 2022 and never come back together.</p>
+
+            <p>That gap is not abstract inflation. It is the item you put back. The recipe you stopped making. The Sunday session that used to feel like cooking and now feels like damage control. Younger households, already carrying <span class="px">30%</span> less generational wealth than boomers were at the same age, absorb it worst.</p>
+          </div>
+
+          <p>Nobody can really control their rent, their utilities or their car insurance. Groceries were the one line families told me felt like something they could actually tackle, which is exactly why they were already working so hard at it. Every household I spoke to was running a manual savings algorithm in their head, every week, unasked. That is not a motivation problem. It is a tooling problem.</p>
           <div class="challenge-row">
-            <div class="challenge-col left">
-              <img src="https://uwaterloo.ca/news/sites/ca.news/files/styles/feature_large/public/9b9a0026.jpg_5.jpg?itok=eHXw2qKn" alt="Henrietta van Niekerk, Skrimp founder, University of Waterloo" class="body-img" loading="lazy" style="margin:0 0 .4rem">
-              <p class="body-img-caption">[Photo: University of Waterloo News, Jan 2026]</p>
+          <div class="ctv-video-wrap">
+            <div id="ctv-yt-player"></div>
+            <div class="ctv-fallback" id="ctv-fallback" hidden>
+              <span>The embed is blocked for this clip.</span>
+              <a href="https://www.youtube.com/watch?v=DAqwtAXLU54&amp;t=2s" target="_blank" rel="noopener">watch on YouTube</a>
             </div>
-            <div class="challenge-col right">
+            <button class="ctv-mute-btn" id="ctv-mute-btn" aria-label="Unmute">&#128263;</button>
+          </div>
+          <p class="body-img-caption">CTV News Kitchener, September 2025. The cost of living story, and Skrimp inside it.</p>
+<div class="challenge-col right">
               <p>Three tools. None of them talking to each other.<br>→ Flyer apps show what's on sale. They have no idea what you're cooking.<br>→ Recipe apps look beautiful. They have no idea what things cost.<br>→ Budget apps tell you what you spent. After you've already spent it.</p>
-              <p>Families don't stop trying because they aren't motivated. They stop because the coordination tax compounds: the deal that expired before you got there. The "budget recipe" that quietly needs three specialty items. The list you built carefully at home and abandoned halfway down the aisle. Not a motivation problem. A tooling problem — invisible, persistent, and costing real money every single week.</p>
-              <div class="highlight-box">Not another tab. One workflow — deals inform the plan, the plan generates the list, the list loads the cart. The whole chain, end to end, for the first time.</div>
+              <p>Families don't stop trying because they aren't motivated. They stop because the coordination tax compounds: the deal that expired before you got there. The "budget recipe" that quietly needs three specialty items. The list you built carefully at home and abandoned halfway down the aisle. Not a motivation problem. A tooling problem, invisible, persistent, and costing real money every single week.</p>
+            </div>
+          
+          <div class="steps reveal">
+            <div class="step-card">
+              <span class="n">A</span>
+              <h4>Food they like</h4>
+              <p>Recipe apps nail this one and then quietly price you out of it. A plan nobody wants to cook is not a plan, it is a spreadsheet with pictures.</p>
+              <div class="step-art"><img src="img/like.webp" alt="Skrimp mascot cooking" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">B</span>
+              <h4>At prices they can afford</h4>
+              <p>Budget apps nail this one, but only in hindsight. They tell you what you spent after you have already spent it, which is not help, it is a receipt.</p>
+              <div class="step-art"><img src="img/afford.webp" alt="Skrimp mascot thinking it over" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">C</span>
+              <h4>On what is actually on sale</h4>
+              <p>Flyer apps nail this one and have no idea what you are cooking. A deal you cannot build a week around is just a number on a page.</p>
+              <div class="step-art"><img src="img/onsale.webp" alt="Skrimp mascot pushing a trolley" loading="lazy"></div>
             </div>
           </div>
+
+          <div class="highlight-box"><strong>Any two of these is a solved problem</strong>Every category above already ships one pair well, which is why they all exist. Skrimp only lives in the overlap, and the overlap is the only place a family actually stands. Drop any one of the three and I have built something you can already download.</div>
+</div>
+
+
+
+          <p>Families were already running this algorithm in their heads, so Skrimp was never allowed to ask them to change. It compares live flyer prices across 15+ Canadian grocery stores, plans the week around whatever is actually on sale, and auto-adds the list to the cart. Families save <b>$50-$100 a week</b>, and it stays free, because a household that cannot afford food cannot afford a subscription to save on it either.</p>
+        
         </div>
       </section>
 
       <hr class="section-rule">
 
-      <!-- SCENE -->
-      <section id="scene">
-        <div class="section-content reveal">
-          <span class="eyebrow">The Context</span>
-          <h2 class="section-heading">Food inflation hit <span class="px">40-year</span> highs. A family of four in Canada now spends over <span class="px">$16,000</span> a year.</h2>
-          <div class="two-col">
-            <div>
-              <p>Up <span class="px">28.6%</span> since 2020. Younger households — already carrying <span class="px">30%</span> less generational wealth than boomers at the same age — feel this differently than the statistic suggests. It's not abstract inflation. It's the item you put back. The recipe you stopped making. The Sunday session that used to feel like cooking and now feels like damage control.</p>
-              <blockquote class="pull-quote reveal">
-                "People can't really control their car insurance or their rent or their utilities. But grocery bills felt like something we could actually tackle."
-                <cite>— Henrietta van Niekerk, CTV News, Sept 2025</cite>
-              </blockquote>
-            </div>
-            <div>
-              <div class="highlight-box green reveal">Every family is already running a manual savings algorithm in their head every week. Nobody asked them to. Nobody gave them a better option.</div>
-              <div class="highlight-box green reveal" style="margin-top:.75rem">This isn't a motivation problem. It's a tooling problem. Give people the right system and they'll do the rest.</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <hr class="section-rule">
-
-      <!-- RESEARCH -->
       <section class="research" id="research-results">
         <div class="section-content reveal">
-          <span class="eyebrow">Research &amp; Findings</span>
-          <h2 class="section-heading">We listened — not just surveyed. Interviews, listening sessions, community conversations.</h2>
-          <p>The methodology was deliberate — <span class="px">listening sessions</span>, not questionnaires. Not "what would you want from a grocery app?" but "tell me about last Sunday." Ask someone their grocery budget and they give you a number. Ask them to narrate the shop and they describe a system — intricate, habitual, entirely their own — they didn't know they had. Flyer-first thinking. Mental price matching. Brand loyalty that predates memory. Routes through the store that save six minutes. Recipes never written down because they live in the body. The <span class="px">GBDA</span> training holds: qualitative first, quantitative to confirm. The insight wasn't that people want to save money. Everyone wants that. The insight was: people are already the system. They are already doing this work, alone, in their heads, every single week. Skrimp's job wasn't to design something new — it was to automate something ancient.</p>
+          <h2 class="section-heading">I ran listening sessions instead of surveys, and gave up a clean number to do it.</h2>
+          <p class="lede">Ask someone their budget and you get a number. Ask about last Sunday and you get a system.</p>
+          <p>I ran listening sessions, not questionnaires. Not what would you want from a grocery app, but tell me about last Sunday. Ask someone their budget and they give you a number. Ask them to narrate the shop and they describe a system they did not know they had: flyer-first thinking, mental price matching, routes through the store that save six minutes, recipes that live in the body and were never written down.</p><p>The cost of that choice is that I came out with no clean quantitative baseline, only patterns. I took it, because the insight underneath was the whole product. People are already the system. Skrimp was never going to design something new, it was going to automate something ancient.</p>
 
           <div class="quote-grid reveal">
             <div class="quote-card reveal">
               <div class="quote-text">"I know there are deals, but I don't have the energy to piece them together."</div>
-              <div class="quote-author">— Parent, early tester</div>
+              <div class="quote-author">Parent, early tester</div>
             </div>
             <div class="quote-card reveal">
               <div class="quote-text">"Budget apps tell me I spent too much, but after the fact."</div>
-              <div class="quote-author">— Upper-year uni student, user interview</div>
+              <div class="quote-author">Upper-year uni student, user interview</div>
             </div>
             <div class="quote-card reveal">
               <div class="quote-text">"Your recipes don't require eleven ingredients I'll never use again, and it's stuff my kids will actually eat."</div>
-              <div class="quote-author">— Lisa Freeman, CTV News</div>
+              <div class="quote-author">Lisa Freeman, CTV News</div>
             </div>
             <div class="quote-card reveal">
-              <div class="quote-text">"Families testing the app have reported cutting their grocery bills by as much as $100 a week, close to $5,000 a year."</div>
-              <div class="quote-author">— Waterloo Region Record, 2025</div>
+              <div class="quote-text">"Families testing the app have reported cutting their grocery bills by as much as $100 a week, close to $5, 000 a year."</div>
+              <div class="quote-author">Waterloo Region Record, 2025</div>
             </div>
             <div class="quote-card reveal">
-              <div class="quote-text">"[Henrietta and Skrimp show that] AI does not have to be scary — it can be compassionate, practical, and profoundly human."</div>
-              <div class="quote-author">— Mary Wells, Dean of Engineering @ UWaterloo</div>
+              <div class="quote-text">"[Henrietta and Skrimp show that] AI does not have to be scary, it can be compassionate, practical, and profoundly human."</div>
+              <div class="quote-author">Mary Wells, Dean of Engineering @ UWaterloo</div>
             </div>
             <div class="quote-card reveal">
               <div class="quote-text">"It's pretty easy to use, user friendly, very straightforward."</div>
-              <div class="quote-author">— Lisa Freeman, CTV News, Sept 2025</div>
+              <div class="quote-author">Lisa Freeman, CTV News, Sept 2025</div>
             </div>
           </div>
-
-          <blockquote class="pull-quote">
-            "<span class="px">AI</span> does not have to be scary — it can be compassionate, practical, and profoundly human."
-            <cite>— Mary Wells, Dean of Engineering, University of Waterloo</cite>
-          </blockquote>
 
           <h3 class="sub-heading" style="margin-top:2rem;margin-bottom:2rem">Key Findings</h3>
           <div class="stats-grid reveal">
             <div class="stats-card reveal">
-              <div class="stat-number">60%</div>
+              <div class="stats-number">60%</div>
               <div class="stats-title">hunt deals more often</div>
               <p class="stats-desc">Deal-seeking is at a record high, but the workflow to act on deals is completely fragmented.</p>
             </div>
             <div class="stats-card reveal">
-              <div class="stat-number">52%</div>
+              <div class="stats-number">52%</div>
               <div class="stats-title">are cutting back on food</div>
-              <p class="stats-desc">Cost pressure is changing what ends up in the basket — not just which brands.</p>
+              <p class="stats-desc">Cost pressure is changing what ends up in the basket, not just which brands.</p>
             </div>
             <div class="stats-card reveal">
-              <div class="stat-number">28%</div>
-              <div class="stats-title">spending rise since 2020</div>
+              <div class="stats-number">26.8%</div>
+              <div class="stats-title">grocery price jump since 2020</div>
               <p class="stats-desc">Cumulative food price increases have permanently reshaped how families plan.</p>
             </div>
             <div class="stats-card reveal">
-              <div class="stat-number">20%</div>
+              <div class="stats-number">20%</div>
               <div class="stats-title">have started skipping meals</div>
-              <p class="stats-desc">Cost pressure is no longer theoretical — it is directly affecting nutrition.</p>
+              <p class="stats-desc">Cost pressure is no longer theoretical, it is directly affecting nutrition.</p>
             </div>
           </div>
         </div>
@@ -611,189 +1066,177 @@
 
       <hr class="section-rule">
 
-      <!-- CONSTRAINTS -->
-      <section class="constraints" id="constraints">
-        <div class="section-content reveal">
-          <span class="eyebrow">Constraints</span>
-          <h2 class="section-heading">A tight scope — and families in immediate need — shaped every decision.</h2>
-          <div class="constraints-row">
-            <div class="constraints-left">
-              <div class="highlight-box reveal">
-                <strong>📄 Flyer data is unstructured chaos</strong>
-                <p style="margin-top:.5rem">Weekly flyers arrive with no standard format, no consistent product taxonomy, and no guarantee last week's layout matches this one. The pipeline had to be designed for variation, not consistency.</p>
-              </div>
-              <div class="highlight-box reveal" style="margin-top:.75rem">
-                <strong>🔤 Ingredients have too many names</strong>
-                <p style="margin-top:.5rem">"Chicken thighs," "bone-in thighs," "poultry" — same ingredient, entirely different strings. Resolving those aliases across recipes and flyers was the quiet core of the whole system.</p>
-              </div>
-              <div class="highlight-box reveal" style="margin-top:.75rem">
-                <strong>👤 Feature creep would have killed us</strong>
-                <p style="margin-top:.5rem">Solo founder, real users, real need. Every build decision had to prove immediate value — or it didn't ship. Ruthlessness about scope was the only way to stay moving.</p>
-              </div>
-              <div class="highlight-box reveal" style="margin-top:.75rem">
-                <strong>💸 Can't charge families who can't afford food</strong>
-                <p style="margin-top:.5rem">The user base is cost-stressed by definition. Free first isn't a growth hack — it's the only ethical starting point. Skrimp had to earn the relationship before it could ask for anything.</p>
-              </div>
-            </div>
-            <div class="constraints-right">
-              <h3 class="sub-heading">The Problem &amp; Our Scope</h3>
-              <p>Skrimp is not a meal kit. Not a subscription box. Not another app that pretends to care about your budget. It is connective tissue — unifying deals, meals, and shopping into a single workflow that feels obvious once you're in it, and inexplicable that it didn't exist before.</p>
-              <p>Ethical guardrails weren't added later. They were constraints from the first commit: minimum data collected, plain-language explanations for every pricing call, easy edit and delete flows, no dark patterns pushing upsells at users who are already financially stretched.</p>
-              <p>Recipes reviewed for cultural bias. Allergen filters that persist across weeks without being asked again. No "one perfect plan" — the goal is agency returned to the household, not dependence on an algorithm that doesn't know what Tuesday looks like in your kitchen.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <hr class="section-rule">
-
-      <!-- IDEATION -->
       <section class="ideation" id="ideation">
         <div class="section-content reveal">
-          <span class="eyebrow">Ideation</span>
-          <h2 class="section-heading">Every flow had to answer one question: does this reduce the user's cognitive load?</h2>
+          <h2 class="section-heading">I inverted the order. What is on sale became the prompt, not the filter.</h2>
+          <p class="lede">Which means I cannot promise you a specific meal. I decided that trade was worth making.</p>
           <div class="two-col">
             <div>
-              <p>The philosophical flip came early and shaped everything that followed. Most food apps start with a recipe — beautiful, curated, aspirational — and then, quietly, price you out of it. Skrimp inverts that entirely. What's on sale at your store this week is the prompt. The meal plan is the answer. Deals aren't a filter applied after you've committed to a recipe. They're the foundation the plan is built on.</p>
-              <p>If a step felt like homework, it got cut. Journey maps were ruthless: postal code → store → constraints → plan → list. Anything that didn't earn its place in that chain got removed. The listening sessions held the standard throughout: users can rarely say what they want, but they can describe — with surprising precision — exactly what's breaking their current system. We built for that.</p>
+              <p>Most food apps start with a recipe, beautiful and aspirational, then quietly price you out of it. I inverted it. What is on sale at your store this week is the prompt; the meal plan is the answer. Deals are not a filter applied after you have committed to a recipe, they are the foundation the plan is built on.</p><p>The price of that decision is real: I cannot promise you a specific meal on a specific night. A family who wants lasagne on Tuesday regardless of cost is not who this is for. I decided that was the right trade, because the family who needs the forty dollars more than the lasagne is.</p>
+              <p>If a step felt like homework, it got cut. Journey maps were ruthless: postal code → store → constraints → plan → list. Anything that didn't earn its place in that chain got removed. The listening sessions held the standard throughout: users can rarely say what they want, but they can describe, with surprising precision, exactly what's breaking their current system. We built for that.</p>
             </div>
-            <div>
-              <div class="highlight-box reveal">Budget-first, not recipe-first. The plan hits your number before you fall in love with it. Not the other way around.</div>
-              <div class="highlight-box reveal" style="margin-top:.75rem">Defaults do the work. Power users get the controls. Everyone else gets a plan that simply works.</div>
+            <p>Budget-first, not recipe-first: the plan hits your number before you fall in love with it, never the other way around. Defaults do the work, power users get the controls, and everyone else gets a plan that simply works.</p>
+          </div>
+          <h3 class="sub-heading">Must-haves</h3>
+          <p>The non-negotiables. Built-in, not bolted on.</p>
+          <div class="steps reveal">
+            <div class="step-card">
+              <span class="n ico">🧭</span>
+              <h4>Explainable savings</h4>
+              <p>Every meal shows its working, not just a total, a reason. "Cheap" is a claim. A line item is evidence. Families under financial pressure have been misled enough. Skrimp doesn't ask for trust it hasn't earned.</p>
+            </div>
+            <div class="step-card">
+              <span class="n ico">🔁</span>
+              <h4>Swap and recalculate</h4>
+              <p>Change one ingredient. Every number updates instantly. Swaps surface substitutes; use-up suggestions prevent the half-bag of lentils from disappearing to the back of the cupboard. The plan is alive, not a document you print and abandon.</p>
+            </div>
+            <div class="step-card">
+              <span class="n ico">👨‍👩‍👧</span>
+              <h4>Built for households, not individuals</h4>
+              <p>One person plans. Everyone else arrives at the aisle with half the context. Household sharing and real-time sync exist because meal planning was never supposed to be a solo activity, and designing it that way was always leaving something essential out.</p>
+            </div>
+            <div class="step-card">
+              <span class="n ico">🛡️</span>
+              <h4>Minimum viable data</h4>
+              <p>Families under financial pressure have less margin for everything, including data risk. Skrimp collects what's needed for utility, explains why, and makes deletion a single action. This was a constraint before it was a principle.</p>
             </div>
           </div>
-          <div class="must-haves-container reveal">
-            <div class="must-haves-left reveal">
-              <h3 class="sub-heading">Must-haves</h3>
-              <p>The non-negotiables. Built-in, not bolted on.</p>
-            </div>
-            <div class="must-haves-right reveal">
-              <div class="must-haves-card reveal">
-                <h4>🧭 Explainable savings</h4>
-                <p>Every meal shows its working — not just a total, a reason. "Cheap" is a claim. A line item is evidence. Families under financial pressure have been misled enough. Skrimp doesn't ask for trust it hasn't earned.</p>
-              </div>
-              <div class="must-haves-card reveal">
-                <h4>🔁 Swap and recalculate</h4>
-                <p>Change one ingredient. Every number updates instantly. Swaps surface substitutes; use-up suggestions prevent the half-bag of lentils from disappearing to the back of the cupboard. The plan is alive — not a document you print and abandon.</p>
-              </div>
-              <div class="must-haves-card reveal">
-                <h4>👨‍👩‍👧 Built for households, not individuals</h4>
-                <p>One person plans. Everyone else arrives at the aisle with half the context. Household sharing and real-time sync exist because meal planning was never supposed to be a solo activity — and designing it that way was always leaving something essential out.</p>
-              </div>
-              <div class="must-haves-card reveal">
-                <h4>🛡️ Minimum viable data</h4>
-                <p>Families under financial pressure have less margin for everything — including data risk. Skrimp collects what's needed for utility, explains why, and makes deletion a single action. This was a constraint before it was a principle.</p>
-              </div>
-            </div>
-          </div>
+          <div class="vid-crop"><video src="media/skrimp-browse-recipes.mp4" autoplay muted loop playsinline></video></div>
         </div>
       </section>
 
       <hr class="section-rule">
 
-      <!-- DESIGN PROCESS -->
       <section class="design-process" id="design-process">
         <div class="section-content reveal">
-          <span class="eyebrow">Design Process</span>
-          <h2 class="section-heading">From listening sessions to a live product — and an ongoing conversation with users.</h2>
+          <h2 class="section-heading">Flyers arrive as images that code cannot read, so I built for chaos as the default case.</h2>
+          <p class="lede">Every Monday is a negotiation with data nobody ever intended a machine to read.</p>
 
-          <div class="process-subsection reveal">
-            <h3 class="sub-heading">5.1 // Meal Engine &amp; Data Pipelines</h3>
-            <p>Flyers don't cooperate. They arrive as <span class="px">PDFs</span> — inconsistent layouts, no shared taxonomy, no guarantee this week's format matches last week's. Every Monday is a negotiation with data that was never designed to be machine-readable. Building a reliable <span class="di">meal engine</span> on top of that required treating chaos as a given, not an exception. Nothing reaches a family's grocery list on the algorithm's first pass. Products earn their place.</p>
-            <p>The second problem was quieter and harder. Ingredients don't have one name. A recipe calls for chicken. The flyer has "bone-in thighs." Are those the same for pricing? They are — but only if the system is built to know that. Resolving those relationships, quietly, across retailers and hundreds of recipes, is what makes the price calculations feel trustworthy rather than approximate. That work is not glamorous. It is the load-bearing wall.</p>
-            <div class="two-col">
-              <div>
-                <div class="highlight-box reveal">Every plan shows its working — which items are on sale, which store, what they cost this week. Not a black box. A receipt you can interrogate.</div>
-                <div class="highlight-box reveal" style="margin-top:.75rem">Resilient by design — handles layout changes, missing products, and store quirks without surfacing the chaos to the user.</div>
-              </div>
-              <div>
-                <img src="https://cloudfront-us-east-1.images.arcpublishing.com/bellmediainc/CXDTOJSBVNETVH46QRNNIWB7CM.jpg" alt="Henrietta van Niekerk with Skrimp — CTV News" class="body-img" loading="lazy" style="margin:0 0 .4rem">
-                <p class="body-img-caption">[Photo: Heather Senoran / CTV News Kitchener, Sept 2025]</p>
-              </div>
+          <p>A flyer is a photograph of a page. Nothing in it is text, so nothing in it is readable, and the store that published it is under no obligation to publish it the same way twice. I designed the pipeline to assume that rather than to be surprised by it. Nothing reaches a family's list on the first pass. Products earn their place, and the different names one ingredient goes by get resolved silently across hundreds of recipes, because a user base that cannot afford for the numbers to be wrong is also a user base that will not stop to correct them.</p>
+
+          <div class="steps reveal">
+            <div class="step-card">
+              <span class="n">01</span>
+              <h4>They are pictures, not data</h4>
+              <p>A flyer is a picture of a page. There is no text in it, so there is nothing for code to read. Every price on it has to be pulled out of an image before it means anything.</p>
+              <div class="step-art"><img src="img/pictures.webp" alt="Skrimp mascot reading a flyer" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">02</span>
+              <h4>&ldquo;This week&rdquo; has more than one answer</h4>
+              <p>A store runs a weekly flyer and a monthly one at once, and they disagree. I had to pick which one wins, because the family cannot be asked to.</p>
+              <div class="step-art"><img src="img/week.webp" alt="Skrimp mascot puzzling over two dates" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">03</span>
+              <h4>Nobody shares a vocabulary</h4>
+              <p>A recipe asks for chicken, the flyer has bone-in thigh, and nobody sells the juice of two lemons. I resolve those silently, because a parent at 6pm will not answer a disambiguation prompt.</p>
+              <div class="step-art"><img src="img/vocab.webp" alt="Skrimp robot chef" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">04</span>
+              <h4>The units do not line up</h4>
+              <p>Recipes measure in cups. Flyers price per pound, per unit, per 100g, sometimes two ways on one page. The conversion has to be invisible or the number is not trustworthy.</p>
+              <div class="step-art"><img src="img/units.webp" alt="Skrimp mascot holding a measure" loading="lazy"></div>
             </div>
           </div>
 
-          <div class="process-subsection reveal">
-            <h3 class="sub-heading">5.2 // Prototyping &amp; Iteration</h3>
-            <p>Prototyped <span class="px">mobile-first</span> for in-aisle use, desktop for the Sunday planning session. But the most important thing testing surfaced wasn't a UI fix. It wasn't a screen at all.</p>
-            <p>Meal planning is not a solo activity. One person is almost always "the planner." Their partner shows up at the store with the list and none of the context — why this brand, why chicken this week, why no pasta. The planning is done. But it belongs to one person, in one head, invisible to everyone else who has to live by it. Household sharing and real-time sync weren't a feature for a later sprint. They were the thing the product was missing. Adding them didn't upgrade Skrimp. It finished it. The <span class="px">swap&nbsp;&amp;&nbsp;recalc</span> pattern, per-meal totals, allergen presets that persist week to week — all of it came from watching real households hit the same wall.</p>
-            <div class="two-col">
-              <div>
-                <div class="highlight-box reveal">Per-meal and per-week totals update on every change. The budget number is always live — never a surprise at checkout.</div>
-                <div class="highlight-box reveal" style="margin-top:.75rem">Allergen filters, store preferences, and dietary flags persist. You set them once; the plan remembers.</div>
-                <div class="highlight-box reveal" style="margin-top:.75rem">No dark patterns. No upsell friction aimed at users who are already financially stretched. That was a design constraint, not an afterthought.</div>
-              </div>
-              <div>
-                <div class="highlight-box green reveal">
-                  <strong>"Very quickly, I had two engineers who were very well versed in software."</strong>
-                  <p style="margin-top:.4rem;opacity:.7;font-size:.88rem">— Henrietta, UWaterloo News, Jan 2026</p>
-                </div>
-                <div class="highlight-box green reveal" style="margin-top:.75rem">
-                  <strong>"A lot of users struggle to articulate the exact things that they want, but they know the things that are making them struggle."</strong>
-                  <p style="margin-top:.4rem;opacity:.7;font-size:.88rem">— Henrietta, UWaterloo News, Jan 2026</p>
-                </div>
-              </div>
-            </div>
-            <!-- TODO: add Skrimp YouTube video IDs here -->
-          </div>
+
+          <div class="highlight-box"><strong>Quality is not evenly distributed</strong>The same pipeline is close to twice as accurate on one chain’s flyer as on another’s, and the variable is not my code. It is how good a photograph the store published that week. The discount chains, the ones our families actually shop at, publish the worst ones.</div>
+
+          <p>What a family sees is the opposite of all that. Every plan shows its working: which items are on sale, at which store, for what they cost this week. Not a black box, a receipt they can interrogate. Layout changes, missing products and store quirks get absorbed upstream and never reach them.</p>
+
+          <div class="vid-crop"><video src="media/skrimp-browse-flyers.mp4" autoplay muted loop playsinline></video></div>
+
+          <p>The most valuable thing testing surfaced was not a screen. Meal planning is not solo. One person plans, and their partner arrives at the store holding a list and none of the reasoning behind it. Household sharing was never a later sprint, it was the thing the product was missing. Adding it did not upgrade Skrimp, it finished it.</p>
+
+          <p>So per-meal and per-week totals update on every change, the number is live instead of a surprise at the till, and allergen filters, store preferences and dietary flags are set once and then remembered.</p>
         </div>
       </section>
 
       <hr class="section-rule">
 
-      <!-- TEAM / MENTORSHIP -->
+      <section class="constraints" id="constraints">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Sixty seconds was the ceiling, so anything that did not fit inside it died.</h2>
+          <p class="lede">If a step felt like homework, I cut it. Including several I liked.</p>
+<p>Sixty seconds is not a performance target, it is the whole product. Past a minute a family goes back to doing this in their head for free, and I have built nothing. So every feature had to survive the same question: does a household get a usable week out of this faster than they could assemble one themselves? Most of what I wanted to build did not.</p>
+
+          <div class="steps reveal">
+            <div class="step-card">
+              <span class="n ico">&#9201;</span>
+              <h4>The disambiguation prompt</h4>
+              <p>When a recipe and a flyer disagree, the obvious fix is to ask the user which they meant. A parent at six o'clock will not answer. The system resolves it and shows its working instead.</p>
+            </div>
+            <div class="step-card">
+              <span class="n ico">&#128203;</span>
+              <h4>The setup questionnaire</h4>
+              <p>A profile wizard would have made every call downstream easier, and it would have spent the first two minutes before anyone saw a plan. The week starts from a postal code and learns from there.</p>
+            </div>
+            <div class="step-card">
+              <span class="n ico">&#127837;</span>
+              <h4>The meal you asked for</h4>
+              <p>Letting a family request a specific dish breaks the premise, because the sale is the prompt and not the filter. I traded the request away for the price, knowingly.</p>
+            </div>
+            <div class="step-card">
+              <span class="n ico">&#128176;</span>
+              <h4>The paywall</h4>
+              <p>A subscription to save money on food is a joke played on the people who need it most. Free first is not a growth tactic here, it is the only version of this that is not insulting.</p>
+            </div>
+          </div>
+
+          <p>What survived is not a meal kit, a subscription box, or another app that claims to care about your budget. It is connective tissue. Deals inform the plan, the plan generates the list, the list loads the cart, and the whole chain runs inside the minute.</p>
+
+          <div class="vid-crop"><video src="media/skrimp-smartload-demo.mp4" autoplay muted loop playsinline></video></div>
+
+          <div class="showcase reveal">
+            <div class="showcase-stage solo">
+              <div class="phone pending"><div class="phone-screen">
+                <p class="pending-note"><b>DROP IN &rarr; Skrimp/vid/reel-product.mp4</b>Portrait social reel of the product doing the thing.</p>
+              </div></div>
+            </div>
+            <p class="cap">A reel: the plan, start to finish.</p>
+          </div>
+        
+            <div class="vid-crop"><video src="media/grocery-list-skrimp.mp4" autoplay muted loop playsinline></video></div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
       <section id="team">
         <div class="section-content reveal">
-          <span class="eyebrow">Growing a Team</span>
-          <h2 class="section-heading">Six engineering interns. One or two terms of university between them. Real production code.</h2>
-          <p>Six engineers joined Skrimp over the course of building it — not all at once, in rotations, one or two at a time. All funded by UWaterloo through the <span class="px">Bridging Entrepreneurs to Students</span> program. Most were in their first year of computer science. They could write code. What they hadn't yet learned was to think about systems.</p>
-          <p>That gap is smaller than it sounds and harder to close than it appears. First-year engineers aren't dangerous because they don't know enough. They're challenging because they don't know what they don't know yet. In a classroom, that's fine — mistakes are low stakes, isolated, graded. In a live startup, the wrong refactor doesn't fail the assignment. It compounds quietly for six weeks and then breaks something real.</p>
+          <h2 class="section-heading">I had to make the system legible enough that a first-year could not quietly break it.</h2>
+          <p class="lede">You cannot design your way out of somebody not knowing why a pipeline works.</p>
+          <p>Six engineers came through Skrimp in rotations, most of them first or second years. The risk was never that they would write bad code. It was that someone who does not know why a pipeline is shaped a certain way will quietly reshape it, and that breaks silently and compounds for weeks before it surfaces as something catastrophic.</p>
 
-          <blockquote class="pull-quote reveal">
-            "You're not teaching them to code. They already know how to code. You're teaching them to ask 'what does this break?' before they write the first line."
-            <cite>— Henrietta van Niekerk</cite>
-          </blockquote>
+          <p>You cannot design your way out of that, so I stopped trying to. The job became making the system legible enough that somebody else could reason about it under pressure, and onboarding people to the why before the how. They already knew how to code. What they had to learn was to ask what does this break before writing the first line, and the intern who understands the constraint makes a better call than the one who only knows the command.</p>
 
-          <div class="two-col">
-            <div>
-              <p>Systems thinking — holding the whole in mind while working on a single part — is learnable. But it requires someone willing to slow down in the middle of a deadline to explain why the shortcut that works today creates the emergency next month. That slowing down has a cost. You do it anyway.</p>
-              <p>The moments that stayed: the intern who wanted to delete a database field "just to clean things up." The one who learned, through a real incident, why staging environments aren't optional. The one who started asking "what could break?" before writing a line of code. That last one is the moment. That's the shift — from someone who can write code to someone who can build something.</p>
-              <p>There is no playbook for mentoring first-years on a live startup at 21 while finishing your own degree. The institutional knowledge lives mostly in conversation: why we do it this way, what happened last time we didn't, what constraint makes the obvious answer wrong. Writing that down is hard. Living it is harder. Watching someone else learn it, through their own version of the same mistakes, is something else entirely.</p>
+          <div class="showcase reveal">
+            <div class="showcase-stage solo">
+              <div class="phone pending"><div class="phone-screen">
+                <p class="pending-note"><b>DROP IN &rarr; Skrimp/vid/reel-behind.mp4</b>Portrait social reel. Team, process, whatever you have.</p>
+              </div></div>
             </div>
-            <div>
-              <div class="highlight-box reveal">
-                <strong>What I didn't expect to learn about leadership:</strong>
-                <p style="margin-top:.5rem">Your job isn't to fill the knowledge gap. It's to make it visible — to the intern, to themselves. The ones who leave as good engineers are the ones who learned to see their own blind spots.</p>
-              </div>
-              <div class="highlight-box reveal" style="margin-top:.75rem">
-                <strong>What I'd do differently:</strong>
-                <p style="margin-top:.5rem">Onboard to the <em>why</em> before the <em>how</em>. An intern who understands the product's constraints will make better decisions than one who only knows the codebase. Context is the real onboarding.</p>
-              </div>
-              <div class="highlight-box reveal" style="margin-top:.75rem">
-                <strong>What mentorship actually produces:</strong>
-                <p style="margin-top:.5rem">Not a feature list — though those mattered. The output is a person who leaves with a working model of how production systems fail, and the habit of caring about that before it happens.</p>
-              </div>
-            </div>
+            <p class="cap">A reel from behind the build.</p>
           </div>
         </div>
       </section>
 
       <hr class="section-rule">
 
-      <!-- TAKEAWAYS -->
       <section class="takeaways" id="takeaways">
         <div class="section-content reveal">
-          <span class="eyebrow">Takeaways</span>
           <h2 class="section-heading">What this taught me that a classroom couldn't.</h2>
           <blockquote class="pull-quote reveal">
-            "Families testing the app have reported cutting their grocery bills by as much as <span class="px">$100/week</span>, close to <span class="px">$5,000/yr</span>."
-            <cite>— Waterloo Region Record, 2025</cite>
+            "Families testing the app have reported cutting their grocery bills by as much as <span class="px">$100/week</span>, close to <span class="px">$5, 000/yr</span>."
+            <cite>Waterloo Region Record, 2025</cite>
           </blockquote>
           <div class="cards reveal">
             <div class="card reveal">
               <h4>01</h4>
               <h3>Automate what already exists</h3>
-              <p>Families were already running the algorithm. In their heads, every week, for free, at cost to their sanity. Skrimp didn't invent a behaviour — it inherited one and made it run without the labour.</p>
+              <p>Families were already running the algorithm. In their heads, every week, for free, at cost to their sanity. Skrimp didn't invent a behaviour, it inherited one and made it run without the labour.</p>
             </div>
             <div class="card reveal">
               <h4>02</h4>
@@ -808,26 +1251,27 @@
             <div class="card reveal">
               <h4>04</h4>
               <h3>Trust is the product</h3>
-              <p>Families under financial stress don't want to be impressed. They want to believe the number. Every decision — explainable savings, transparent swaps, no dark patterns — was an argument that the number on screen is one they can trust.</p>
+              <p>Families under financial stress don't want to be impressed. They want to believe the number. Every decision, explainable savings, transparent swaps, no dark patterns, was an argument that the number on screen is one they can trust.</p>
             </div>
           </div>
           <div class="reflection reveal">
             <h3>🛒 What I didn't expect</h3>
             <p>The thing that surprised me most wasn't the savings. It was the tone of voice.</p>
-            <p>Users didn't say "I saved $80 this week." They said things like: "I don't have to think about it anymore." "Sunday isn't a thing for us now." "My partner finally knows what we're having." That's not a savings story. That's a stress story. The problem was never purely financial — it was the invisible weight of managing money, alone, every week, in your head. Skrimp didn't solve a grocery problem. It solved a cognitive one. The savings are real, confirmed by families, confirmed by the press. But what people feel is the absence of something. The weekly drain that stopped.</p>
+            <p>Users didn't say "I saved $80 this week." They said things like: "I don't have to think about it anymore." "Sunday isn't a thing for us now." "My partner finally knows what we're having." That's not a savings story. That's a stress story. The problem was never purely financial, it was the invisible weight of managing money, alone, every week, in your head. Skrimp didn't solve a grocery problem. It solved a cognitive one. The savings are real, confirmed by families, confirmed by the press. But what people feel is the absence of something. The weekly drain that stopped.</p>
             <p><span class="di">That is what AI should do. Not impress you. Disappear.</span></p>
             <p><a href="https://www.skrimp.ai" target="_blank" rel="noopener" style="color:var(--text-secondary);text-decoration:underline;text-underline-offset:3px">→ Try Skrimp at skrimp.ai</a></p>
           </div>
 
           <div class="reflection reveal">
-            <h3>What I can't say yet — and why that's okay</h3>
+            <h3>What I can't say yet, and why that's okay</h3>
             <p>There is an entire category of work inside Skrimp I am proud of and not showing here. The architecture decisions that took months to arrive at. The commercial work still in motion. The technical choices that will shape this product for years and belong to the future, not a portfolio page written in the present tense.</p>
-            <p>That's the right call. And it is a strange thing — to have built something you can't fully show. The best work I've done on Skrimp isn't on this page. The most interesting problems I've solved are still inside a codebase I'm not opening up yet.</p>
-            <p>What you've read is the public surface: the design philosophy, the research, the leadership, the decisions I can speak to without compromising what's still being made. It is not a small surface. But it is a surface.</p>
-            <p>The discipline of keeping quiet about active development — of understanding that the story gets told when it's done, not while it's happening — is its own kind of skill. You don't perform progress. You make it, quietly, and you wait. Some things are worth waiting for.</p>
+            
+            
+            <p>The discipline of keeping quiet about active development, of understanding that the story gets told when it's done, not while it's happening, is its own kind of skill. You don't perform progress. You make it, quietly, and you wait. Some things are worth waiting for.</p>
           </div>
         </div>
       </section>
+
 
     </div>
   </header>
@@ -1062,58 +1506,56 @@
     })();
 
     // reveals (headings handle themselves via hio above)
+    /* A block taller than (viewport / threshold) can never reach that ratio,
+       so a long section used to sit at opacity 0 for ever. Menzo's migration
+       jam was 3778px against a 775px window: a ceiling of 0.205 against a
+       0.2 bar. The extra thresholds keep the callback firing while you
+       scroll, and a block too tall to qualify on its own ratio qualifies on
+       how much of the screen it fills instead. */
     const io=new IntersectionObserver((es,o)=>{
       es.forEach(en=>{
-        if(en.isIntersecting){en.target.classList.add('active');o.unobserve(en.target);}
+        if(!en.isIntersecting) return;
+        if(en.intersectionRatio>=.04 || en.intersectionRect.height>=innerHeight*.25){en.target.classList.add('active');o.unobserve(en.target);}
       });
-    },{threshold:.2});
+    },{threshold:[0,.05,.1,.15,.2]});
     document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-  </script>
 
-  <!-- background.html loader -->
-  <script>
+    /* Safety net. The reveal is decoration, so nothing on the page is allowed
+       to stay invisible because an observer did not fire: no scroll events
+       reach this document while it is embedded in the portfolio pane, so this
+       polls instead, and retires itself the moment everything is shown. */
     (function(){
-      if(document.getElementById('bg-host'))return;
-      const host=document.createElement('div'); host.id='bg-host';
-      const frame=document.createElement('iframe'); frame.src='background.html'; frame.loading='eager';
-      frame.setAttribute('aria-hidden','true'); frame.tabIndex=-1;
-      host.appendChild(frame); document.body.prepend(host);
+      const SEL = '.reveal';
+      let ticks = 0;
+      const sweep = () => {
+        const left = document.querySelectorAll(SEL + ':not(.active)');
+        left.forEach(el => {
+          const r = el.getBoundingClientRect();
+          if (r.top < innerHeight * 0.92 && r.bottom > 0) el.classList.add('active');
+        });
+        if (!left.length || ++ticks > 300) clearInterval(timer);
+      };
+      const timer = setInterval(sweep, 200);
+      sweep();
     })();
-  </script>
 
-  <!-- partials loader (nav) -->
-  <script>
-    (async function includePartials(){
-      const targets=document.querySelectorAll('[data-include]');
-      for (const el of targets){
-        const url=el.getAttribute('data-include');
-        try{
-          const res=await fetch(url,{credentials:'same-origin'});
-          if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-          const html=await res.text();
-          el.innerHTML=html;
-          const scripts=el.querySelectorAll('script');
-          for (const oldScript of scripts){
-            const s=document.createElement('script');
-            for (const {name,value} of [...oldScript.attributes]) s.setAttribute(name,value);
-            if (oldScript.src) s.src=oldScript.src; else s.textContent=oldScript.textContent||'';
-            oldScript.replaceWith(s);
-          }
-        }catch(err){console.warn(`Failed to include ${url}:`,err);}
-      }
-    })();
   </script>
 
   <!-- QUICK LINKS WIDGET -->
   <style>
     html{scroll-behavior:smooth}
-    #ql-widget{position:fixed;right:1.5rem;top:110px;z-index:900;display:flex;flex-direction:column;align-items:flex-end;gap:.4rem}
-    #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(4,10,12,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
+    /* top:110px used to sit under the nav pill; with the nav gone it landed
+       on the copy, so the jump list moves out of the reading column */
+    #ql-widget{position:fixed;right:1.4rem;bottom:1.4rem;top:auto;z-index:900;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:.4rem}
+    /* the portfolio rail carries the contents when embedded, so the
+       floating widget would just be a second copy of the same list */
+    html[data-embedded] #ql-widget{display:none!important}
+    #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(var(--chrome-rgb),.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
     #ql-panel.open{max-height:520px;opacity:1;padding:.45rem}
-    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:.4rem .7rem;border-radius:6px;transition:background .18s,color .18s}
-    #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:.6rem;opacity:.45;margin-right:.25rem}
+    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:.4rem .7rem;border-radius:6px;transition:background .18s,color .18s}
+    #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:0.75rem;opacity:.45;margin-right:.25rem}
     #ql-panel a:hover{background:var(--glass-highlight-1);color:var(--text-secondary)}
-    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(4,10,12,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Montserrat Alternates',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
+    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(var(--chrome-rgb),.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
     #ql-toggle:hover{background:var(--glass-highlight-1);border-color:var(--rule)}
     #ql-icon{font-size:1rem;line-height:1}
     @media(max-width:768px){#ql-widget{right:1rem;top:auto;bottom:1.5rem;left:auto;transform:none;flex-direction:column-reverse;align-items:flex-end}#ql-panel{min-width:min(180px,80vw)}}
@@ -1140,18 +1582,175 @@
         return a;
       }
       panel.appendChild(mkLink('#',0,'Overview',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});close();}));
+      const ITEMS=[{id:'',label:'Overview',num:0}];
       let n=1;
-      document.querySelectorAll('section[id], section.press-section').forEach(sec=>{
-        const eb=sec.querySelector('.eyebrow');
-        if(!eb)return;
-        const text=eb.textContent.trim();
-        if(text.length>60)return;
-        if(!sec.id)sec.id='press';
-        panel.appendChild(mkLink('#'+sec.id,n++,text));
+      const LABELS={
+        'challenge':'The crisis','research-results':'Listening',
+        'ideation':'What they needed','design-process':'The week is a mess',
+        'constraints':'Where they meet','team':'Handing it over','takeaways':'Takeaways','press':'In the press'
+      };
+      document.querySelectorAll('section[id]').forEach(sec=>{
+        const label=LABELS[sec.id];
+        if(!label)return;
+        const num=n++;
+        ITEMS.push({id:sec.id,label:label,num:num});
+        panel.appendChild(mkLink('#'+sec.id,num,label));
       });
       toggle.addEventListener('click',e=>{e.stopPropagation();open=!open;panel.classList.toggle('open',open);toggle.setAttribute('aria-expanded',open);icon.textContent=open?'×':'≡';});
       document.addEventListener('click',e=>{if(open&&!document.getElementById('ql-widget').contains(e.target))close();});
+
+      /* embedded, the portfolio rail carries these instead of the widget:
+         hand them up, answer a request, take scroll orders, and keep the
+         rail's highlight on whatever the reader is actually looking at */
+      if(window.parent!==window){
+        const post=m=>{try{window.parent.postMessage(m,'*');}catch(e){}};
+        const sendToc=()=>post({type:'caseToc',items:ITEMS});
+        /* the browser drops programmatic smooth scrolls inside this pane,
+           so the glide is ours. scroll-behavior goes to auto for the
+           duration or every frame tries to animate on top of us. */
+        const scroller=()=>document.scrollingElement||document.documentElement;
+        const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+        let anim=0;
+        const stopGlide=()=>{
+          cancelAnimationFrame(anim);
+          scroller().style.scrollBehavior='';
+        };
+        const glide=to=>{
+          const se=scroller();
+          const from=se.scrollTop;
+          const dist=Math.max(0,Math.min(to,se.scrollHeight-innerHeight))-from;
+          if(!dist)return;
+          stopGlide();
+          se.style.scrollBehavior='auto';
+          const t0=performance.now();
+          const dur=Math.min(900,Math.max(320,Math.abs(dist)*0.45));
+          const step=now=>{
+            const t=Math.min(1,(now-t0)/dur);
+            se.scrollTop=from+dist*ease(t);
+            if(t<1)anim=requestAnimationFrame(step);
+            else se.style.scrollBehavior='';
+          };
+          anim=requestAnimationFrame(step);
+        };
+        addEventListener('wheel',stopGlide,{passive:true});
+        addEventListener('touchstart',stopGlide,{passive:true});
+        sendToc();
+        addEventListener('message',ev=>{
+          const d=ev.data;
+          if(!d||typeof d!=='object')return;
+          if(d.type==='caseTocRequest')sendToc();
+          else if(d.type==='caseScrollTo'){
+            const el=d.id?document.getElementById(d.id):null;
+            glide(el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
+          }
+        });
+        /* tell the rail which section the reader is in */
+        let last=null,ticking=false;
+        const spy=()=>{
+          ticking=false;
+          const line=innerHeight*0.32;
+          let id='';
+          for(const it of ITEMS){
+            if(!it.id)continue;
+            const el=document.getElementById(it.id);
+            if(el&&el.getBoundingClientRect().top<=line)id=it.id;
+          }
+          if(id!==last){last=id;post({type:'caseSection',id:id});}
+        };
+        addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(spy);}},{passive:true});
+        spy();
+      }
     })();
   </script>
+
+  <!-- theme: the portfolio shell posts its theme in, and standalone we read
+       it ourselves, so this page is never stuck in the wrong one -->
+  <script>
+    (function(){
+      function set(t){ document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+      var t; try { t = localStorage.getItem('theme'); } catch(e) {}
+      if(!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      set(t);
+      addEventListener('message', function(e){
+        if(e && e.data && e.data.type === 'theme') set(e.data.value);
+      });
+    })();
+  </script>
+
+  <!-- cursor: the shell draws the one cursor and already listens for these,
+       so embedded we hide ours and feed it. Standalone, ours stays. -->
+  <script>
+    (function(){
+      if (window.parent === window) return;
+      document.documentElement.setAttribute('data-embedded', '');
+      var ring = document.getElementById('cursor');
+      if (ring) ring.style.display = 'none';
+      var HOVER = 'a,button,input,select,textarea,summary,[role="button"],[onclick],' +
+                  '.skip-button,.card,.role-card,.quote-card,.stats-card,.must-haves-card,' +
+                  '.glass-card,.chip,.img-tile,.spec-row,.metric,img';
+      function post(m){ try { window.parent.postMessage(m, '*'); } catch (e) {} }
+      // posted straight from the event: rAF inside a pane the browser is
+      // throttling can stall, and that shows up as a cursor that lags or sticks
+      var lx = -1, ly = -1;
+      addEventListener('mousemove', function(e){
+        if (e.clientX === lx && e.clientY === ly) return;
+        lx = e.clientX; ly = e.clientY;
+        post({type:'iframeMouse', x:lx, y:ly});
+      });
+      addEventListener('mousedown',  function(){ post({type:'iframeDown'}); });
+      addEventListener('mouseup',    function(){ post({type:'iframeUp'}); });
+      addEventListener('mouseleave', function(){ post({type:'iframeLeave'}); });
+      addEventListener('mouseover', function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:true}); });
+      addEventListener('mouseout',  function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:false}); });
+    })();
+  </script>
+
+  <script>
+    // CTV clip. same pattern as the Equinox cover video: autoplay muted with our
+    // own unmute control, iframe pointer-events off so YouTube's chrome never
+    // surfaces. no playlist param, that draws the prev/pause/next transport.
+    var ctvPlayer, ctvMuted = true;
+    function onYouTubeIframeAPIReady(){
+      ctvPlayer = new YT.Player('ctv-yt-player', {
+        videoId: 'DAqwtAXLU54',
+        playerVars: { autoplay:1, mute:1, controls:0, rel:0, modestbranding:1,
+                      playsinline:1, disablekb:1 },
+        events: {
+          onReady: function(e){
+            e.target.mute(); e.target.seekTo(2); e.target.playVideo();
+            // autoplay is refused while the clip sits below the fold, so kick it
+            // off when it scrolls in and keep nudging until it reports playing
+            var io = new IntersectionObserver(function(en){
+              if(!en[0].isIntersecting) return;
+              var n=0;
+              (function nudge(){
+                if(!ctvPlayer) return;
+                var st=ctvPlayer.getPlayerState();
+                if(st===YT.PlayerState.PLAYING||st===YT.PlayerState.BUFFERING) return;
+                ctvPlayer.playVideo();
+                if(++n<15) setTimeout(nudge,400);
+              })();
+            },{threshold:.25});
+            io.observe(document.querySelector('.ctv-video-wrap'));
+          },
+          onStateChange: function(e){
+            if (e.data === YT.PlayerState.ENDED) { e.target.seekTo(2); e.target.playVideo(); }
+          },
+          onError: function(e){
+            console.log('[ctv] youtube error', e.data);
+            document.getElementById('ctv-fallback').hidden = false;
+            document.getElementById('ctv-mute-btn').style.display = 'none';
+          }
+        }
+      });
+    }
+    document.getElementById('ctv-mute-btn').addEventListener('click', function(){
+      if(!ctvPlayer) return;
+      if(ctvMuted){ ctvPlayer.unMute(); ctvMuted=false; this.textContent='\u{1F50A}'; this.setAttribute('aria-label','Mute'); }
+      else        { ctvPlayer.mute();   ctvMuted=true;  this.textContent='\u{1F507}'; this.setAttribute('aria-label','Unmute'); }
+    });
+  </script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+
 </body>
 </html>

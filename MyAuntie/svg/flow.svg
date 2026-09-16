@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 250" width="650" height="250" preserveAspectRatio="xMidYMid meet" role="img" aria-hidden="true">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+  <path d="M0 0 L10 5 L0 10 z" fill="#C98AA0"/></marker></defs>
+<style>
+  .lbl{font:600 13px 'Montserrat',sans-serif;fill:#FFF1E6}
+  .sub{font:500 11px 'Montserrat',sans-serif;fill:#FFF1E6;opacity:.78}
+  .hd{font:700 11px 'Montserrat',sans-serif;fill:#7D1E3E;letter-spacing:.08em}
+  .ln{stroke:#C98AA0;stroke-width:2.5;fill:none;marker-end:url(#a)}
+</style>
+
+<rect x="14" y="86" width="104" height="46" rx="12" fill="#A82C55"/>
+<text class="lbl" x="66" y="106" text-anchor="middle">Text</text>
+<text class="sub" x="66" y="122" text-anchor="middle">SMS in</text>
+<rect x="14" y="148" width="104" height="46" rx="12" fill="#A82C55"/>
+<text class="lbl" x="66" y="168" text-anchor="middle">Call</text>
+<text class="sub" x="66" y="184" text-anchor="middle">voice in</text>
+
+<path class="ln" d="M118 109 L152 133"/>
+<path class="ln" d="M118 171 L152 147"/>
+
+<rect x="156" y="112" width="128" height="56" rx="12" fill="#F7A929"/>
+<text class="hd" x="220" y="132" text-anchor="middle">CLASSIFY</text>
+<text class="sub" x="220" y="150" text-anchor="middle" fill="#7D1E3E">intent, topic, region</text>
+
+<path class="ln" d="M284 132 L322 72"/>
+<path class="ln" d="M284 140 L322 140"/>
+<path class="ln" d="M284 148 L322 208"/>
+
+<rect x="326" y="48" width="150" height="48" rx="12" fill="#F79BB4"/>
+<text class="lbl" x="401" y="70" text-anchor="middle" fill="#2A1018">Comfort</text>
+<text class="sub" x="401" y="86" text-anchor="middle" fill="#2A1018">one kind line</text>
+
+<rect x="326" y="116" width="150" height="48" rx="12" fill="#3BA9EE"/>
+<text class="lbl" x="401" y="138" text-anchor="middle">Resource</text>
+<text class="sub" x="401" y="154" text-anchor="middle">2 to 3 vetted numbers</text>
+
+<rect x="326" y="184" width="150" height="48" rx="12" fill="#F0483C"/>
+<text class="lbl" x="401" y="206" text-anchor="middle">Escalate</text>
+<text class="sub" x="401" y="222" text-anchor="middle">gentle handoff, now</text>
+
+<path class="ln" d="M476 72 L512 128"/>
+<path class="ln" d="M476 140 L512 140"/>
+<path class="ln" d="M476 208 L512 152"/>
+
+<rect x="516" y="112" width="120" height="56" rx="12" fill="#A82C55"/>
+<text class="lbl" x="576" y="132" text-anchor="middle">Follow up</text>
+<text class="sub" x="576" y="150" text-anchor="middle">always by text</text>
+</svg>
