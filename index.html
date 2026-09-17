@@ -16,6 +16,13 @@
     <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <title>Henrietta's Portfolio</title>
+    <meta name="description" content="Henriëtta van Niekerk is a design engineer who builds systems that carry the load instead of the person. Founder of Skrimp, CTO of Path to Menzoberranzan. Case studies in behavioural AI, foodtech, game technical direction and conversational AI.">
+    <link rel="canonical" href="https://henliz.github.io/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Henriëtta van Niekerk — design engineer">
+    <meta property="og:description" content="Henriëtta van Niekerk is a design engineer who builds systems that carry the load instead of the person. Founder of Skrimp, CTO of Path to Menzoberranzan. Case studies in behavioural AI, foodtech, game technical direction and conversational AI.">
+    <meta property="og:url" content="https://henliz.github.io/">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="HenLogo.png">
     <link rel="shortcut icon" type="image/png" href="HenLogo.png">
     <style>
@@ -3489,7 +3496,17 @@
             </div>
             <canvas id="gl"></canvas>
 <div id="wrap">
-    <div class="bento-grid" id="grid"></div>
+    <div class="bento-grid" id="grid">
+      <!-- Real HTML so crawlers, AI fetchers and no-JS readers get the work.
+           The tile builder clears this and renders the interactive grid. -->
+      <ul class="grid-fallback">
+        <li><a href="/trove/"><strong>Trove</strong> — Turning behavioural data into a personality read people actually recognise. 0 to 10,250 users and 61.9K page views in six months.</a></li>
+        <li><a href="/skrimp/"><strong>Skrimp</strong> — Planning a week of dinners around live prices and whatever's already in the fridge. $5K/yr potential savings per family, free always.</a></li>
+        <li><a href="/menzo/"><strong>Path to Menzoberranzan</strong> — Running a volunteer studio on an undocumented engine. 140+ contributors, 1,700 Patreon members.</a></li>
+        <li><a href="/myauntie/"><strong>MyAuntie</strong> — Postpartum support that arrives as a text, not another app to download. TechNova 2025 winner.</a></li>
+        <li><a href="/equinox/"><strong>Equinox</strong> — Reading "Overcomplicated Screen Transitions" as a design constraint, not decoration. First of 88 at Comfy Jam: Winter 2026.</a></li>
+      </ul>
+    </div>
   </div>
         </div>
 
@@ -4692,6 +4709,9 @@ function glowTex(accent){
 const loader = new GLTFLoader();
 const texLoader = new THREE.TextureLoader();
 const grid = document.getElementById('grid');
+// the static list below is the no-JS view of exactly these projects; the
+// builder owns the grid from here
+grid.innerHTML = '';
 const views = [];
 
 
