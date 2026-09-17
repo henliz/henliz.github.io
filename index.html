@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-      // 404.html bounced a clean URL here (GitHub Pages can't rewrite). Put it
-      // back before anything renders, so the address bar never shows the hop.
-      (function () {
-        try {
-          var r = sessionStorage.getItem('route:pending');
-          if (r) { sessionStorage.removeItem('route:pending'); history.replaceState(null, '', r); }
-        } catch (e) {}
-      })();
       // runs before paint so a light-mode reload never flashes dark
       (function () {
         try {
@@ -96,9 +88,9 @@
                the bits that are missing hard-swap while the rest eases and the
                whole thing reads as a snap. radius, border, shadow and the ink
                were all missing. */
-            transition: width 0.34s cubic-bezier(.22, 1, .36, 1),
-                        height 0.34s cubic-bezier(.22, 1, .36, 1),
-                        border-radius 0.34s cubic-bezier(.22, 1, .36, 1),
+            transition: width 0.4s cubic-bezier(.22, 1, .36, 1),
+                        height 0.4s cubic-bezier(.22, 1, .36, 1),
+                        border-radius 0.4s cubic-bezier(.22, 1, .36, 1),
                         background 0.26s ease,
                         border-color 0.26s ease,
                         box-shadow 0.26s ease,
@@ -144,7 +136,7 @@
         :root[data-theme="dark"]  { --cur-ink: #08201e; }
 
         .custom-cursor.opening {
-            width: 80px; height: 80px;
+            width: 72px; height: 72px;
             border-radius: 50%;
             background: rgba(var(--rail-accent-rgb), 0.93);
             border-color: rgba(var(--rail-accent-rgb), 1);
@@ -164,31 +156,32 @@
             opacity: 0; transform: scale(0.6);
             font-family: 'Montserrat', sans-serif;
             font-size: 10px; font-weight: 700; line-height: 1.25;
-            letter-spacing: 0.05em; text-transform: lowercase;
+            letter-spacing: 0.02em; text-transform: lowercase;
             /* no delay on the way out, so the text clears before the circle
                shrinks instead of trailing behind it */
             transition: opacity 0.12s ease, transform 0.18s ease;
         }
         .custom-cursor.opening .cur-inner {
             opacity: 1; transform: scale(1);
-            transition: opacity 0.2s ease 0.09s,
-                        transform 0.34s cubic-bezier(.2, 1.25, .4, 1) 0.07s;
+            transition: opacity 0.22s ease 0.12s,
+                        transform 0.4s cubic-bezier(.2, 1.25, .4, 1) 0.1s;
         }
         .cur-line { display: flex; align-items: center; gap: 4px; }
         .cur-ico { width: 11px; height: 11px; flex: none; margin-bottom: 1px; }
 
-        /* each letter takes its turn, which is the whole charm of it */
-        .cur-line i {
-            display: inline-block; font-style: normal;
-            animation: curWave 1.15s ease-in-out infinite;
-            animation-delay: calc(var(--i) * 0.055s);
-        }
+        /* Each LINE takes its turn, not each letter. Per-letter animation
+           needs display:inline-block on every character, which gives each one
+           its own box and throws away kerning, so "open me!" came out looking
+           monospaced and was hard to read at 10px. Bobbing the two lines
+           keeps the type rendering untouched and still moves. */
+        .cur-line { animation: curWave 1.7s ease-in-out infinite; }
+        .cur-line:nth-child(2) { animation-delay: 0.15s; }
         @keyframes curWave {
-            0%, 62%, 100% { transform: translateY(0) }
-            28%           { transform: translateY(-3.5px) }
+            0%, 64%, 100% { transform: translateY(0) }
+            30%           { transform: translateY(-2.5px) }
         }
         @media (prefers-reduced-motion: reduce) {
-            .cur-line i { animation: none }
+            .cur-line { animation: none }
             .cur-inner { transition-duration: 0.01s }
         }
 
@@ -3359,7 +3352,7 @@
             <ul class="nav-links">
                 <li><a href="#" onclick="openResumePopup()">Re<span class="px">sum</span>e</a></li>
                 <li><a href="#projects">W<span class="px">or</span>k</a></li>
-                <li><a href="/about.html">A<span class="px">bo</span>ut</a></li>
+                <li><a href="/about/">A<span class="px">bo</span>ut</a></li>
             </ul>
             <div class="hamburger" onclick="toggleMobileMenu()">
                 <span></span>
@@ -3373,7 +3366,7 @@
             <ul>
                 <li><a href="#" onclick="openResumePopup(); closeMobileMenu()">Re<span class="px">sum</span>e</a></li>
                 <li><a href="#projects" onclick="closeMobileMenu()">W<span class="px">or</span>k</a></li>
-                <li><a href="/about.html" onclick="closeMobileMenu()">A<span class="px">bo</span>ut</a></li>
+                <li><a href="/about/" onclick="closeMobileMenu()">A<span class="px">bo</span>ut</a></li>
             </ul>
         </div>
 
@@ -3434,9 +3427,9 @@
                 <a class="sb-link" href="#projects"     data-scroll="#projects">my work</a>
                 <a class="sb-link" href="#northstar"    data-scroll="#northstar">north star</a>
                 <a class="sb-link" href="#endorsements" data-scroll="#endorsements">endorsements</a>
-                <a class="sb-link" href="about"       data-pane="about">about</a>
-                <a class="sb-link" href="resume" onclick="event.preventDefault(); go('resume')">resume</a>
-                <a class="sb-link" href="playground"  data-pane="playground">playground</a>
+                <a class="sb-link" href="/about/"       data-pane="about">about</a>
+                <a class="sb-link" href="/resume/" onclick="event.preventDefault(); routeTo('resume')">resume</a>
+                <a class="sb-link" href="/playground/"  data-pane="playground">playground</a>
             </nav>
 
             <div class="sb-foot">
@@ -3997,18 +3990,12 @@
                   + ' stroke="currentColor" stroke-width="2.3" stroke-linecap="round"'
                   + ' stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 11 13"/>'
                   + '<path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>';
-                let n = 0;
-                /* two lines so the circle can stay small, and one running index
-                   so the wave carries across the break instead of restarting */
+                /* two lines so the circle can stay small, each one a plain text
+                   node so the font keeps its kerning */
                 [['open', false], ['me!', true]].forEach(([word, tail]) => {
                   const line = document.createElement('span');
                   line.className = 'cur-line';
-                  [...word].forEach(ch => {
-                    const i = document.createElement('i');
-                    i.textContent = ch;
-                    i.style.setProperty('--i', n++);
-                    line.appendChild(i);
-                  });
+                  line.appendChild(document.createTextNode(word));
                   if (tail) line.insertAdjacentHTML('beforeend', ICO);
                   label.appendChild(line);
                 });
@@ -4148,6 +4135,8 @@
 
         function closeResumePopup() {
             document.getElementById('resume-popup').style.display = 'none';
+            // the popup has its own URL, so closing it has to give that URL back
+            if (window.routeHome) window.routeHome();
         }
 
     </script>
@@ -4540,14 +4529,14 @@ const eul = (x,y,z)=>new THREE.Euler(
         tagline:'Turning behavioural data into a personality read people actually recognise',
         stat:'0 \u2192 10,250 users and 61.9K page views in six months',
         tags:['Design engineer','LLM runtime','Web + iOS'],
-        href:'Trove/',
+        href:'/trove/',
         // the meadow + the tots are DOM (see the .tf block); the phone itself is
         // the real iphone.glb with the session mapped onto its screen as a video
         // texture, the same overlay trick MyAuntie's screenshot uses
         domScene:'field',
         models:[
           {url:'./models/iphone.glb', scale:0.019*1.5, baseEuler:[0, 15, 10], pos:[0,0,0],
-           screen:{ video:'Trove/vid/ob-play.mp4', mesh:'Wallpaper', aspect:362/814 }}
+           screen:{ video:'trove/vid/ob-play.mp4', mesh:'Wallpaper', aspect:362/814 }}
         ],
         driftAmp:0.13, fitScale:0.86,
         theme:{ accent:'236, 127, 14', accent2:'253, 213, 84', scene:'trove' },
@@ -4555,10 +4544,10 @@ const eul = (x,y,z)=>new THREE.Euler(
       {
         name:'Skrimp AI', category:'Product Design / AI',
         tagline:'Planning a week of dinners around live prices and whatever\u2019s already in the fridge',
-        video:{ kind:'file', src:'Skrimp/skrimp-smartload-demo.mp4' },
+        video:{ kind:'file', src:'skrimp/skrimp-smartload-demo.mp4' },
         stat:'$5K/yr potential savings per family \u2014 free, always',
         tags:['Solo founder','Live flyer data','Mobile + web'],
-        href:'Skrimp/',
+        href:'/skrimp/',
         // the aisle is the place; the laptop running the plan is the subject.
         // the plate used to BE the subject, which is why the tile read "food"
         // instead of "software" — it is set dressing on the worktop now.
@@ -4577,7 +4566,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         // lifts contrast and saturation or it reads as a blank screen.
         models:[
           {url:'./models/laptop.glb', scale:0.150, baseEuler:[4,-20,0], pos:[0,0,0],
-           screen:{ video:'Skrimp/media/grocery-list-skrimp.mp4', mesh:'ComputerScreen',
+           screen:{ video:'skrimp/media/grocery-list-skrimp.mp4', mesh:'ComputerScreen',
                     fit:'cover', crop:{x:132, y:0, w:1016, h:672},
                     punch:'contrast(1.22) saturate(1.35) brightness(0.97)' }},
           {url:'./models/yummymeal.glb', scale:0.445, baseEuler:[24,152,0], pos:[2.80,-1.00,2.1]}
@@ -4595,7 +4584,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         video:{ kind:'yt', id:'1oBlmSvi1So' },
         stat:'140+ contributors, 1,700 Patreon members, 0 docs from Larian',
         tags:['CTO','Build tooling','PC'],
-        href:'Menzo/',
+        href:'/menzo/',
         domScene:'underdark',
         theme:{ accent:'160, 120, 220', accent2:'192, 132, 252', scene:'menzo' },
         model:'./models/steamdeck.glb', scale:0.30*1.5, baseEuler:[0,-10,0],
@@ -4607,7 +4596,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         video:{ kind:'yt', id:'kARMZuwfmMA', start:8 },
         stat:'\ud83c\udfc6 TechNova 2025 \u2014 concept to live telephony in 36 hours',
         tags:['36-hour build','Telephony','No app'],
-        href:'MyAuntie/',
+        href:'/myauntie/',
         domScene:'nursery', award:'Winner',
         theme:{ accent:'196, 96, 122', accent2:'255, 179, 208', scene:'auntie' },
         // The default drift sways the pivot +/-0.30 rad, which is +/-17 degrees —
@@ -4625,7 +4614,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         decals:[
           // standing on the phone's own baseline (the GLB runs y 0 to ~2.95
           // at this scale), a little in front so nothing occludes her
-          {url:'./MyAuntie/auntie.webp', size:[1.58,2.60], pos:[-1.78,1.30,0.40]}
+          {url:'./myauntie/auntie.webp', size:[1.58,2.60], pos:[-1.78,1.30,0.40]}
         ]
       },
       {
@@ -4634,7 +4623,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         video:{ kind:'yt', id:'ou-piZ1dt4U' },
         stat:'\ud83c\udfc6 1st of 88 at Comfy Jam: Winter 2026, and 2nd on the limitation',
         tags:['Game jam win','Godot','Browser'],
-        href:'equinox/', award:'Winner',
+        href:'/equinox/', award:'Winner',
         playHref:'https://emstergrace.itch.io/equinox',
         cover:'equinox/equinox-banner.webp', noDrag:true,
         theme:{ accent:'200, 135, 74', accent2:'232, 192, 96', scene:'equinox' },
@@ -4857,7 +4846,7 @@ stations.forEach((cfg,i) => {
   // this is the one tile with no WebGL scene behind it.
   const phone = (src, poster, preload) =>
     `<div class="tf-phone"><div class="tf-screen">
-       <video src="Trove/vid/${src}" poster="Trove/vid/${poster}"
+       <video src="trove/vid/${src}" poster="trove/vid/${poster}"
               muted loop playsinline preload="${preload}"></video>
      </div></div>`;
   // Each station that wants one gets a room instead of a gradient: flat SVG
@@ -5561,17 +5550,17 @@ window.postMessage({type:'modelsReady'},'*');
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: 'Trove/',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: 'Skrimp/',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: 'Menzo/',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: 'MyAuntie/', scene: 'myauntie' },
-  equinox:    { name: 'Equinox',                href: 'equinox/',  scene: 'equinox'  },
+  trove:      { name: 'Trove',                  href: '/trove/',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: '/myauntie/', scene: 'myauntie' },
+  equinox:    { name: 'Equinox',                href: '/equinox/',  scene: 'equinox'  },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
   // which on a page with no table of contents just reads as a missing nav.
-  about:      { name: 'About',                  href: 'about.html',      plainRail: true },
-  playground: { name: 'Playground',             href: 'playground.html', plainRail: true },
+  about:      { name: 'About',                  href: '/about/',      plainRail: true },
+  playground: { name: 'Playground',             href: '/playground/', plainRail: true },
   // /resume is the popup rather than a pane, but it still deserves a URL
   resume:     { popup: true },
 };
@@ -5732,26 +5721,32 @@ const CASE_BY_HREF = Object.fromEntries(
     // drop the iframe only after the fade, so it doesn't blank mid-transition
     closeTimer = setTimeout(() => { if (!current && frame.contentWindow) frame.contentWindow.location.replace('about:blank'); }, 420);
     // back to the shell's own URL, whichever form we arrived in
-    const home = location.pathname.replace(/[^/]*$/, '');
-    if (location.hash.startsWith('#/') || location.pathname !== home) {
-      history.pushState(null, '', home + location.search);
+    if (location.hash.startsWith('#/') || location.pathname !== ROOT) {
+      history.pushState(null, '', ROOT + location.search);
     }
   };
 
-  // routes are real paths now, not hashes: /myauntie, /about, /playground.
-  // GitHub Pages has no rewrites, so 404.html stashes the path and bounces to
-  // the shell, which puts it back with replaceState — the URL the visitor
-  // sees and shares is always the clean one.
+  // Every route is a real directory with a real index.html, so /trove/ answers
+  // 200 with the full case study whether it is fetched by a browser, a crawler
+  // or an AI. Inside the shell we intercept and open it in the pane instead;
+  // the URL is the same either way.
+  // the site lives at the domain root and every route is an absolute path, so
+  // home is simply "/" — deriving it from location.pathname broke the moment a
+  // route had a trailing slash
+  const ROOT = '/';
   function slugFromPath() {
     const p = location.pathname.replace(/\/+$/, '').split('/').pop() || '';
     return p.toLowerCase();
   }
   function route() {
     const slug = slugFromPath();
+    const resumeEl = document.getElementById('resume-popup');
     if (CASES[slug] && CASES[slug].popup) {      // /resume opens the overlay
-      if (typeof openResumePopup === 'function') openResumePopup();
+      if (resumeEl) resumeEl.style.display = 'block';
       return;
     }
+    // any other route means the overlay should not be up
+    if (resumeEl && resumeEl.style.display === 'block') resumeEl.style.display = 'none';
     const m = CASES[slug] ? [null, slug] : location.hash.match(/^#\/([a-z0-9-]+)$/i);
     if (m && CASES[m[1].toLowerCase()]) openCase(m[1].toLowerCase());
     else if (current) {
@@ -5777,10 +5772,14 @@ const CASE_BY_HREF = Object.fromEntries(
 
   // one place that changes the URL, so back/forward stay honest
   function go(slug) {
-    const base = location.pathname.replace(/[^/]*$/, '');   // strip any leaf
-    history.pushState(null, '', base + slug);
+    history.pushState(null, '', ROOT + slug + '/');
     route();
   }
+  // the rail's inline handlers live outside this closure, so hand them a way in
+  window.routeTo = go;
+  window.routeHome = () => {
+    if (location.pathname !== ROOT) history.pushState(null, '', ROOT + location.search);
+  };
 
   // bento tiles open the pane instead of navigating away
   document.addEventListener('click', e => {

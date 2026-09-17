@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="description" content="Running a volunteer studio of 140+ contributors on an undocumented engine, funded by 1,700 Patreon members. Technical direction case study by Henriëtta van Niekerk, CTO.">
+  <link rel="canonical" href="https://henliz.github.io/menzo/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Path to Menzoberranzan — Henriëtta van Niekerk">
+  <meta property="og:description" content="Running a volunteer studio of 140+ contributors on an undocumented engine, funded by 1,700 Patreon members. Technical direction case study by Henriëtta van Niekerk, CTO.">
+  <meta property="og:url" content="https://henliz.github.io/menzo/">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/png" href="../HenLogo.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Path to Menzoberranzan – Case Study</title>
@@ -746,8 +753,42 @@
     }
     .press-wrapper::before,.press-wrapper::after{display:none}
   </style>
+
+<style>
+  /* Loaded on its own, a page had no way back and no site identity — the rail
+     only exists in the shell. This bar supplies both, and hides itself when the
+     shell has embedded the page in its pane (data-embedded). It is plain HTML
+     so it is there for crawlers and readers with no JS. */
+  .site-bar{position:sticky;top:0;z-index:9999;display:flex;align-items:center;gap:.75rem;
+    padding:.6rem clamp(.8rem,3vw,1.6rem);
+    background:rgba(255,255,255,.82);backdrop-filter:blur(12px) saturate(150%);
+    -webkit-backdrop-filter:blur(12px) saturate(150%);
+    border-bottom:1px solid rgba(18,24,31,.12);
+    font-family:'Montserrat',system-ui,sans-serif;font-size:.86rem}
+  .site-bar img{width:26px;height:26px;object-fit:contain;display:block}
+  .site-bar a{color:#135F5A;text-decoration:none;font-weight:600}
+  .site-bar a:hover{text-decoration:underline}
+  .site-bar .who{color:rgba(18,24,31,.72);font-weight:500}
+  .site-bar nav{margin-left:auto;display:flex;gap:.9rem;flex-wrap:wrap}
+  :root[data-embedded] .site-bar{display:none}
+  @media (max-width:640px){ .site-bar nav{display:none} }
+</style>
 </head>
 <body>
+<header class="site-bar">
+  <a href="/" aria-label="Henriëtta van Niekerk, home"><img src="/HenLogo.png" alt=""></a>
+  <span class="who"><a href="/">Henriëtta van Niekerk</a></span>
+  <nav>
+    <a href="/trove/">Trove</a>
+    <a href="/skrimp/">Skrimp</a>
+    <a href="/menzo/">Menzoberranzan</a>
+    <a href="/myauntie/">MyAuntie</a>
+    <a href="/equinox/">Equinox</a>
+    <a href="/about/">About</a>
+    <a href="/resume/">Résumé</a>
+  </nav>
+</header>
+
   <div class="custom-cursor" id="cursor"></div>
   <header class="hero" id="hero">
     <div class="hero-container">
@@ -839,7 +880,7 @@
           <p>Everyone on it is a volunteer who does not have to care and does anyway. That is the strangest and most sustaining thing about it, and it is also the fact that decides every technical call I make. I came in as <b>CTO and Technical Director</b>, which sounds like one job with two names and is not.</p>
 
           <div class="slot reveal tall">
-            <b>DROP IN &rarr; Menzo/img/underdark-wide.webp</b>
+            <b>DROP IN &rarr; menzo/img/underdark-wide.webp</b>
             <span>A wide environment shot from the press kit. The Underdark or Menzoberranzan proper, whichever reads best large.</span>
           </div>
           <p class="cap">The city, as it currently stands in engine.</p>
@@ -979,13 +1020,13 @@ size 48221184
           <p>The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would. Step fourteen cost nothing on the Friday. On the Sunday it was the entire project.</p>
 
           <div class="slot reveal">
-            <b>DROP IN &rarr; Menzo/vid/clone-before-after.mp4</b>
+            <b>DROP IN &rarr; menzo/vid/clone-before-after.mp4</b>
             <span>Screen recording, roughly fifteen seconds. The old repo cloning against the LFS repo cloning. The whole infrastructure argument, without a word of it.</span>
           </div>
           <p class="cap">Clone time, before and after.</p>
 
           <div class="slot reveal">
-            <b>DROP IN &rarr; Menzo/img/repo-size.webp</b>
+            <b>DROP IN &rarr; menzo/img/repo-size.webp</b>
             <span>Repo size over time: 2.5 GB actual against the 80 GB projection. A chart or a redacted screenshot of the storage dashboard, either works.</span>
           </div>
           <p class="cap">Where it was going, and where it went instead.</p>
@@ -1063,13 +1104,13 @@ size 48221184
           </blockquote>
 
           <div class="slot reveal tall">
-            <b>DROP IN &rarr; Menzo/img/brain-doc.webp</b>
+            <b>DROP IN &rarr; menzo/img/brain-doc.webp</b>
             <span>A page or two of the manual with the NDA parts blurred. Quoted twice on this page and never once seen, which is the biggest hole in the study.</span>
           </div>
           <p class="cap">The manual, redacted.</p>
 
           <div class="slot reveal">
-            <b>DROP IN &rarr; Menzo/img/departments.webp</b>
+            <b>DROP IN &rarr; menzo/img/departments.webp</b>
             <span>The department chart. 140 people across writing, art, engineering, audio and QA. Names off, shape on.</span>
           </div>
           <p class="cap">What 140 volunteers looks like when you draw it.</p>

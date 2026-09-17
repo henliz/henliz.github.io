@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="description" content="Planning a week of dinners around live grocery prices and whatever is already in the fridge. Skrimp compares live flyer data across 15+ Canadian retailers and saves families $50-$100 a week, free always. Case study by founder Henriëtta van Niekerk.">
+  <link rel="canonical" href="https://henliz.github.io/skrimp/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Skrimp — Henriëtta van Niekerk">
+  <meta property="og:description" content="Planning a week of dinners around live grocery prices and whatever is already in the fridge. Skrimp compares live flyer data across 15+ Canadian retailers and saves families $50-$100 a week, free always. Case study by founder Henriëtta van Niekerk.">
+  <meta property="og:url" content="https://henliz.github.io/skrimp/">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/png" href="../HenLogo.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Skrimp Case Study</title>
@@ -874,8 +881,42 @@
     }
     .press-wrapper::before,.press-wrapper::after{display:none}
   </style>
+
+<style>
+  /* Loaded on its own, a page had no way back and no site identity — the rail
+     only exists in the shell. This bar supplies both, and hides itself when the
+     shell has embedded the page in its pane (data-embedded). It is plain HTML
+     so it is there for crawlers and readers with no JS. */
+  .site-bar{position:sticky;top:0;z-index:9999;display:flex;align-items:center;gap:.75rem;
+    padding:.6rem clamp(.8rem,3vw,1.6rem);
+    background:rgba(255,255,255,.82);backdrop-filter:blur(12px) saturate(150%);
+    -webkit-backdrop-filter:blur(12px) saturate(150%);
+    border-bottom:1px solid rgba(18,24,31,.12);
+    font-family:'Montserrat',system-ui,sans-serif;font-size:.86rem}
+  .site-bar img{width:26px;height:26px;object-fit:contain;display:block}
+  .site-bar a{color:#135F5A;text-decoration:none;font-weight:600}
+  .site-bar a:hover{text-decoration:underline}
+  .site-bar .who{color:rgba(18,24,31,.72);font-weight:500}
+  .site-bar nav{margin-left:auto;display:flex;gap:.9rem;flex-wrap:wrap}
+  :root[data-embedded] .site-bar{display:none}
+  @media (max-width:640px){ .site-bar nav{display:none} }
+</style>
 </head>
 <body>
+<header class="site-bar">
+  <a href="/" aria-label="Henriëtta van Niekerk, home"><img src="/HenLogo.png" alt=""></a>
+  <span class="who"><a href="/">Henriëtta van Niekerk</a></span>
+  <nav>
+    <a href="/trove/">Trove</a>
+    <a href="/skrimp/">Skrimp</a>
+    <a href="/menzo/">Menzoberranzan</a>
+    <a href="/myauntie/">MyAuntie</a>
+    <a href="/equinox/">Equinox</a>
+    <a href="/about/">About</a>
+    <a href="/resume/">Résumé</a>
+  </nav>
+</header>
+
   <div class="custom-cursor" id="cursor"></div>
   <header class="hero" id="hero">
     <div class="hero-container">
@@ -1192,7 +1233,7 @@
           <div class="showcase reveal">
             <div class="showcase-stage solo">
               <div class="phone pending"><div class="phone-screen">
-                <p class="pending-note"><b>DROP IN &rarr; Skrimp/vid/reel-product.mp4</b>Portrait social reel of the product doing the thing.</p>
+                <p class="pending-note"><b>DROP IN &rarr; skrimp/vid/reel-product.mp4</b>Portrait social reel of the product doing the thing.</p>
               </div></div>
             </div>
             <p class="cap">A reel: the plan, start to finish.</p>
@@ -1215,7 +1256,7 @@
           <div class="showcase reveal">
             <div class="showcase-stage solo">
               <div class="phone pending"><div class="phone-screen">
-                <p class="pending-note"><b>DROP IN &rarr; Skrimp/vid/reel-behind.mp4</b>Portrait social reel. Team, process, whatever you have.</p>
+                <p class="pending-note"><b>DROP IN &rarr; skrimp/vid/reel-behind.mp4</b>Portrait social reel. Team, process, whatever you have.</p>
               </div></div>
             </div>
             <p class="cap">A reel from behind the build.</p>

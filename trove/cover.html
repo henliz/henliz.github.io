@@ -104,7 +104,7 @@ import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/
 
 /* ────────────────────────────────────────────────────────────────
    SCREENS — swap these for real captures and everything else works.
-   Put files in Trove/img/screens/ and list them here. Each one is
+   Put files in trove/img/screens/ and list them here. Each one is
    drawn onto the phone in order, crossfading. Anything 9:19.5-ish.
    With the list empty it falls back to the drawn placeholder below.
    ──────────────────────────────────────────────────────────────── */
@@ -169,7 +169,7 @@ function placeholderTexture(){
   g.fillText('screens land here', w/2, h*.52);
   g.font = '500 21px Montserrat, sans-serif';
   g.fillStyle = 'rgba(184,92,6,.38)';
-  g.fillText('Trove/img/screens/', w/2, h*.56);
+  g.fillText('trove/img/screens/', w/2, h*.56);
   const t = new THREE.CanvasTexture(cv);
   t.colorSpace = THREE.SRGBColorSpace;
   return t;

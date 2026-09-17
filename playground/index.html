@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Playground – Henriëtta van Niekerk</title>
-    <link rel="icon" type="image/png" href="HenLogo.png">
+    <link rel="icon" type="image/png" href="../HenLogo.png">
     <script>
       // follows the toggle on the main page (same origin, so same storage)
       (function () {
@@ -27,7 +27,7 @@
 
     @font-face {
       font-family: 'DotempDemo';
-      src: url('fonts/DotempDemo.ttf') format('truetype');
+      src: url('../fonts/DotempDemo.ttf') format('truetype');
       font-weight: normal; font-style: normal;
     }
     .px { font-family: 'DotempDemo', monospace; font-style: normal; font-size: 0.88em; }
@@ -440,8 +440,42 @@
       .minimap { display: none; }
     }
     </style>
+
+<style>
+  /* Loaded on its own, a page had no way back and no site identity — the rail
+     only exists in the shell. This bar supplies both, and hides itself when the
+     shell has embedded the page in its pane (data-embedded). It is plain HTML
+     so it is there for crawlers and readers with no JS. */
+  .site-bar{position:sticky;top:0;z-index:9999;display:flex;align-items:center;gap:.75rem;
+    padding:.6rem clamp(.8rem,3vw,1.6rem);
+    background:rgba(255,255,255,.82);backdrop-filter:blur(12px) saturate(150%);
+    -webkit-backdrop-filter:blur(12px) saturate(150%);
+    border-bottom:1px solid rgba(18,24,31,.12);
+    font-family:'Montserrat',system-ui,sans-serif;font-size:.86rem}
+  .site-bar img{width:26px;height:26px;object-fit:contain;display:block}
+  .site-bar a{color:#135F5A;text-decoration:none;font-weight:600}
+  .site-bar a:hover{text-decoration:underline}
+  .site-bar .who{color:rgba(18,24,31,.72);font-weight:500}
+  .site-bar nav{margin-left:auto;display:flex;gap:.9rem;flex-wrap:wrap}
+  :root[data-embedded] .site-bar{display:none}
+  @media (max-width:640px){ .site-bar nav{display:none} }
+</style>
 </head>
 <body>
+<header class="site-bar">
+  <a href="/" aria-label="Henriëtta van Niekerk, home"><img src="/HenLogo.png" alt=""></a>
+  <span class="who"><a href="/">Henriëtta van Niekerk</a></span>
+  <nav>
+    <a href="/trove/">Trove</a>
+    <a href="/skrimp/">Skrimp</a>
+    <a href="/menzo/">Menzoberranzan</a>
+    <a href="/myauntie/">MyAuntie</a>
+    <a href="/equinox/">Equinox</a>
+    <a href="/about/">About</a>
+    <a href="/resume/">Résumé</a>
+  </nav>
+</header>
+
 
 <div id="desk">
   <div id="world" aria-label="A draggable desk of side projects and experiments"></div>
@@ -466,7 +500,7 @@
    and add a line to ITEMS. Nothing else needs to change.
    ═══════════════════════════════════════════════════════════════ */
 
-const MEDIA = 'playground/media/';
+const MEDIA = 'media/';
 
 /* kinds
    note     the ruled welcome note
