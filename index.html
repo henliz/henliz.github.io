@@ -1022,7 +1022,8 @@
 
     /* === Press & Endorsements === */
     .pe-section {
-      background: #0f1419;
+      /* the body panel is the surface; sections never paint their own */
+      background: transparent;
       padding: 5rem 0 6rem;
       border-top: 1px solid rgba(var(--muted-rgb),0.12);
     }
@@ -1883,8 +1884,23 @@
             --rail-accent-rgb: 102, 252, 241;
             --rail-tint-rgb:   2, 5, 9;
             --panel-edge: rgba(168, 218, 220, 0.12);
+            /* One colour for both panels, mixed from the same tint. The body
+               is carried a little further toward solid than the rail: it is
+               four times the width, so the same alpha would let four times as
+               much sky variation through and text would sit on a moving
+               backdrop. Same hue, steadier ground. Every section inside the
+               body is transparent and sits on this. */
+            --panel-wash: linear-gradient(115deg,
+                rgba(var(--rail-tint-rgb), 0.86) 0%,
+                rgba(var(--rail-tint-rgb), 0.83) 55%,
+                rgba(var(--rail-tint-rgb), 0.80) 100%);
+            --body-wash: linear-gradient(115deg,
+                rgba(var(--rail-tint-rgb), 0.95) 0%,
+                rgba(var(--rail-tint-rgb), 0.93) 55%,
+                rgba(var(--rail-tint-rgb), 0.92) 100%);
+            --panel-blur: blur(14px) saturate(150%);
             --gap: 22px;            /* outer margin — lets the sky show */
-            --rail-w: clamp(318px, 23vw, 372px);
+            --rail-w: clamp(296px, 20.5vw, 344px);
             --rail-gutter: 16px;
             --sb-w: calc(var(--gap) + var(--rail-w) + var(--rail-gutter));
         }
@@ -1914,13 +1930,9 @@
             overflow-y: auto;
             overflow-x: hidden;
             overscroll-behavior: contain;
-            background: linear-gradient(
-                115deg,
-                rgba(var(--rail-tint-rgb), 0.86) 0%,
-                rgba(var(--rail-tint-rgb), 0.83) 55%,
-                rgba(var(--rail-tint-rgb), 0.80) 100%);
-            backdrop-filter: blur(14px) saturate(150%);
-            -webkit-backdrop-filter: blur(14px) saturate(150%);
+            background: var(--panel-wash);
+            backdrop-filter: var(--panel-blur);
+            -webkit-backdrop-filter: var(--panel-blur);
             border: 1px solid rgba(var(--muted-rgb),0.14);
             border-right: none;
             box-shadow: 0 18px 50px rgba(0,0,0,0.55);
@@ -1939,9 +1951,9 @@
             position: fixed;
             top: var(--gap); right: var(--gap); bottom: var(--gap);
             left: var(--sb-w);
-            /* a little sky reads through — deliberately far more opaque than
-               the rail, so the work stays the thing you look at */
-            background: rgba(7, 11, 16, 0.88);
+            background: var(--body-wash);
+            backdrop-filter: var(--panel-blur);
+            -webkit-backdrop-filter: var(--panel-blur);
             border-radius: 0 22px 22px 0;   /* crisp where it meets the rail */
             border: 1px solid rgba(var(--muted-rgb),0.08);
             border-left: none;
@@ -2002,8 +2014,9 @@
             align-items: center;
             gap: clamp(0.4rem, 1.2vh, 0.66rem);
             /* the surname's own line box sits high against a square mark, so
-               drop it a touch to share a centre line with it */
-            margin-top: clamp(0.06rem, 0.4vh, 0.18rem);
+               drop it to share a centre line with it and give the first name
+               room to breathe above */
+            margin-top: clamp(0.3rem, 1.25vh, 0.62rem);
             margin-bottom: clamp(0.1rem, 0.5vh, 0.26rem);
         }
         .name-row .rail-logo { margin-bottom: 0; }
@@ -2553,19 +2566,21 @@
 
     /* ── shell ── */
     :root[data-theme="light"] body { background: #dbe7ec; }
-    :root[data-theme="light"] .sidebar {
-        background: linear-gradient(115deg,
+    :root[data-theme="light"] {
+        --panel-wash: linear-gradient(115deg,
             rgba(var(--rail-tint-rgb),0.72) 0%,
             rgba(var(--rail-tint-rgb),0.67) 55%,
             rgba(var(--rail-tint-rgb),0.62) 100%);
+        --body-wash: linear-gradient(115deg,
+            rgba(var(--rail-tint-rgb),0.93) 0%,
+            rgba(var(--rail-tint-rgb),0.91) 55%,
+            rgba(var(--rail-tint-rgb),0.90) 100%);
+    }
+    :root[data-theme="light"] .sidebar {
         border-color: rgba(18,24,31,0.10);
         box-shadow: 0 18px 50px rgba(20,40,60,0.18);
     }
-    :root[data-theme="light"] .content-card {
-        background: rgba(246, 249, 250, 0.86);
-        border-color: rgba(18,24,31,0.10);
-    }
-    :root[data-theme="light"] .models-section { background: transparent; }
+    :root[data-theme="light"] .content-card { border-color: rgba(18,24,31,0.10); }
     :root[data-theme="light"] .case-pane {
         background: rgba(var(--case-paper-rgb, 246, 249, 250), 0.93);
         border-color: var(--case-edge, rgba(18,24,31,0.10));
@@ -2798,7 +2813,6 @@
     }
 
     /* ── north star ── */
-    :root[data-theme="light"] .northstar-section { background: #eef4f5; }
     :root[data-theme="light"] .ns-headline,
     :root[data-theme="light"] .ns-chaos-name,
     :root[data-theme="light"] .ns-principle-title,
@@ -2816,7 +2830,6 @@
     :root[data-theme="light"] .ns-masthead-rule { background: var(--line); }
 
     /* ── endorsements / press ── */
-    :root[data-theme="light"] .pe-section { background: #f6f9fa; }
     :root[data-theme="light"] .pe-quote,
     :root[data-theme="light"] .pe-track-label,
     :root[data-theme="light"] .pe-press-headline { color: var(--ink); }
@@ -3323,7 +3336,7 @@
                     </span>
                 </h1>
 
-                <p class="rail-pitch">is a design engineer who builds systems that carry the load instead of the person</p>
+                <p class="rail-pitch">is an award-winning design engineer who blends systems thinking with a love for visual craft to build things that hold up under pressure</p>
 
                 <!-- "and alsooo <fact>" — typewriter, with the Gilmore Girls easter egg -->
                 <div class="tagline" id="taglineMerged" onclick="handleTaglineClick()">
@@ -4899,18 +4912,38 @@ stations.forEach((cfg,i) => {
       if (document.readyState === 'complete') boot();
       else addEventListener('load', boot, { once: true });
 
-      // Visibility — never hover — drives the play state. Pausing is what
-      // surfaces the control overlay, so it only ever happens off screen.
-      const near = new IntersectionObserver(entries => {
-        entries.forEach(en => {
-          onScreen = en.isIntersecting;
-          try {
-            if (onScreen) player?.playVideo?.();
-            else          player?.pauseVideo?.();
-          } catch (e) {}
-        });
-      }, { rootMargin: '400px' });
+      /* Visibility — never hover — drives the play state. Pausing is what
+         surfaces the control overlay, so it only ever happens off screen.
+
+         An observer only reports a CHANGE, and with a 400px margin a tile
+         just below the fold already counts as intersecting on the first
+         callback — which lands before the player exists, so the play call
+         hits nothing. The player is then built off screen, where Chrome
+         refuses autoplay and YouTube never retries, and the tile sits
+         unprimed for the rest of the visit: hovering it does nothing.
+         So visibility is measured directly, and asked again on a slow
+         beat until the thing is actually running. */
+      const isOnScreen = () => {
+        const r = tile.getBoundingClientRect();
+        return r.bottom > 0 && r.top < innerHeight && r.width > 0;
+      };
+      const nudge = () => {
+        onScreen = isOnScreen();
+        if (!player) return;
+        try {
+          if (!onScreen) { player.pauseVideo?.(); return; }
+          const st = player.getPlayerState?.();
+          // unstarted, cued or paused all need a push; playing and buffering do not
+          if (st !== 1 && st !== 3) player.playVideo?.();
+        } catch (e) {}
+      };
+      const near = new IntersectionObserver(nudge,
+        { rootMargin: '200px', threshold: [0, 0.2, 0.5, 0.8] });
       near.observe(tile);
+      const keep = setInterval(() => {
+        if (primed && !hovering) { clearInterval(keep); return; }
+        nudge();
+      }, 1000);
     }
 
     function mount() {
