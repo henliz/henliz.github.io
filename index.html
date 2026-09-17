@@ -5570,24 +5570,27 @@ window.postMessage({type:'modelsReady'},'*');
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: '/myauntie/', scene: 'myauntie' },
-  equinox:    { name: 'Equinox',                href: '/equinox/',  scene: 'equinox'  },
+  trove:      { name: 'Trove',                  href: '/trove/case.html',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html', scene: 'myauntie' },
+  equinox:    { name: 'Equinox',                href: '/equinox/case.html',  scene: 'equinox'  },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
   // which on a page with no table of contents just reads as a missing nav.
-  about:      { name: 'About',                  href: '/about/',      plainRail: true },
-  playground: { name: 'Playground',             href: '/playground/', plainRail: true },
+  about:      { name: 'About',                  href: '/about/case.html',      plainRail: true },
+  playground: { name: 'Playground',             href: '/playground/case.html', plainRail: true },
   // /resume is the popup rather than a pane, but it still deserves a URL
   resume:     { popup: true },
 };
 // reverse lookup so the bento tiles (plain <a href>) can be intercepted
+// tiles link to the route (/trove/), the pane loads the content (/trove/case.html)
+// — map both back to the slug so a click is intercepted either way
 const CASE_BY_HREF = Object.fromEntries(
-  // the resume entry is a popup, not a page, so it has no href to map back
-  Object.entries(CASES).filter(([, c]) => c.href).map(([slug, c]) => [c.href.toLowerCase(), slug])
+  Object.entries(CASES).flatMap(([slug, c]) =>
+    c.href ? [[c.href.toLowerCase(), slug], ['/' + slug + '/', slug]] : []
+  )
 );
 
 (function () {

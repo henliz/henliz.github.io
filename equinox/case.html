@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="Reading Overcomplicated Screen Transitions as a design constraint, not decoration. First of 88 at Comfy Jam Winter 2026. Game design case study by Henriëtta van Niekerk.">
+  <link rel="canonical" href="https://henliz.github.io/equinox/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Equinox — Henriëtta van Niekerk">
+  <meta property="og:description" content="Reading Overcomplicated Screen Transitions as a design constraint, not decoration. First of 88 at Comfy Jam Winter 2026. Game design case study by Henriëtta van Niekerk.">
+  <meta property="og:url" content="https://henliz.github.io/equinox/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="../HenLogo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Equinox – Case Study</title>
+  <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── type scale ────────────────────────────────────────────────
+       One fluid root so every rem on the page grows with the screen
+       instead of sitting at a fixed 16px. The floor and ceiling are
+       in rem, not px, so a reader who has raised their browser's
+       default font size keeps that increase (WCAG 1.4.4). */
+    html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
+
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('../fonts/DotempDemo.ttf') format('truetype');
+      font-weight: normal; font-style: normal;
+    }
+    .px { font-family: 'DotempDemo', monospace !important; font-style: normal !important; font-weight: 400; font-size: 0.9em; }
+    .di { font-family: 'Didot', 'Cormorant Garamond', serif !important; font-style: italic !important; font-weight: 700; }
+
+    :root {
+      --accent-rgb: 200,135,74;
+      --accent-soft-rgb: 220,170,80;
+      --accent-deep-rgb: 180,110,60;
+      --deep-rgb: 14,8,2;
+      --chrome-rgb: 10,5,1;
+      --lift-rgb: 255,255,255;
+      --ink-rgb: 245,238,221;
+      --sh-rgb: 0,0,0;
+      --sh-k: 1;
+      --paper: #110810;
+      --text-primary: #f5eedd;
+      --text-secondary: #d4a86a;
+      --accent: #c8874a;
+      --accent-bright: #e0a060;
+      --glass-deep-1: #4b1520;
+      --glass-deep-2: #2b0b13;
+      --glass-border: rgba(var(--accent-rgb),0.22);
+      --glass-highlight-1: rgba(var(--accent-rgb),.10);
+      --glass-highlight-2: rgba(var(--accent-deep-rgb),.14);
+      --glass-bg: rgba(var(--deep-rgb),0.35);
+      --inner-card: rgba(var(--deep-rgb),.42);
+      --rule: rgba(var(--accent-rgb),0.24);
+    }
+
+    /* ── LIGHT THEME ───────────────────────────────────────────
+       Authored dark, so light restates the same colour families
+       rather than inverting them: glass goes to paper, the deep
+       washes go pale, and every accent drops to a value that
+       clears WCAG AA on the light surface it lands on. */
+    :root[data-theme="light"] {
+      --text-primary: #1C1209;
+      --text-secondary: #855314;
+      --accent: #96591D;
+      --accent-bright: #A8641C;
+      --glass-deep-1: rgba(255,255,255,0.95);
+      --glass-deep-2: rgba(253,247,238,0.97);
+      --glass-border: rgba(150,89,29,0.28);
+      --glass-highlight-1: rgba(150,89,29,.07);
+      --glass-highlight-2: rgba(120,60,40,.07);
+      --glass-bg: rgba(255,255,255,0.76);
+      --inner-card: rgba(255,255,255,0.82);
+      --rule: rgba(150,89,29,0.24);
+      --accent-rgb: 150,89,29;
+      --accent-soft-rgb: 133,83,20;
+      --accent-deep-rgb: 120,60,40;
+      --deep-rgb: 248,236,218;
+      --chrome-rgb: 255,255,255;
+      --lift-rgb: 150,89,29;
+      --ink-rgb: 28,18,9;
+      --sh-rgb: 70,48,24;
+      --sh-k: .34;
+      --paper: #FBF5EA;
+    }
+    :root[data-theme="light"] .intro-left h1 {
+      background-image:linear-gradient(45deg,#96591D,#A8641C,#855314,#7A4A18,#96591D);
+      background-size:200% 200%;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Montserrat,system-ui,-apple-system,sans-serif;color:var(--text-primary)}
+    a{text-decoration:none;color:inherit}
+    ul{list-style:disc inside}
+
+    /* custom cursor */
+    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(var(--accent-rgb),.3);border:2px solid rgba(var(--accent-rgb),.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(var(--accent-rgb),.4),inset 0 0 10px rgba(var(--accent-rgb),.1)}
+    .custom-cursor.clicking{background:rgba(var(--accent-rgb),.9);border-color:rgba(var(--accent-rgb),1);transform:translate(-50%,-50%) scale(.8)}
+    .custom-cursor.hovering{width:30px;height:30px;background:rgba(var(--accent-rgb),.4);border-color:rgba(var(--accent-rgb),.9);box-shadow:0 0 20px rgba(var(--accent-rgb),.6)}
+    *,*::before,*::after{cursor:none !important}
+
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    @keyframes hCaScramble {
+      0%   { text-shadow: 3px 0 rgba(255,100,30,.55),  -3px 0 rgba(255,220,100,.55); }
+      18%  { text-shadow: 5px 0 rgba(255,100,30,.8),   -5px 0 rgba(255,220,100,.8);  clip-path: inset(0 0 88% 0); }
+      19%  { clip-path: inset(0 0 0 0); }
+      40%  { text-shadow: 1px 0 rgba(255,100,30,.3),   -1px 0 rgba(255,220,100,.3); }
+      57%  { text-shadow: 6px 0 rgba(255,100,30,.85),  -6px 0 rgba(255,220,100,.85); clip-path: inset(72% 0 0 0); }
+      58%  { clip-path: inset(0 0 0 0); }
+      100% { text-shadow: 3px 0 rgba(255,100,30,.55),  -3px 0 rgba(255,220,100,.55); }
+    }
+    @keyframes hCaSettle {
+      0%, 100% { text-shadow: 1.5px 0 rgba(255,100,30,.18), -1.5px 0 rgba(255,220,100,.18); }
+      50%       { text-shadow: 2.5px 0 rgba(255,100,30,.28), -2.5px 0 rgba(255,220,100,.28); }
+    }
+
+    h1,h2,h3,h4{font-family:'Montserrat Alternates',sans-serif}
+
+    /* ---- EYEBROW ---- */
+    .eyebrow {
+      display: block; font-size: 0.84rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: .6rem; opacity: .85;
+    }
+    .eyebrow.warm { color: rgba(var(--accent-soft-rgb),0.9); }
+
+    /* ---- HEADINGS ---- */
+    .section-heading {
+      font-size: clamp(1.6rem,3.5vw,2.6rem); font-weight: 700;
+      color: var(--text-secondary); line-height: 1.15; margin-bottom: 1.25rem;
+      font-family: 'Didot','Cormorant Garamond',serif !important;
+      font-style: italic !important; letter-spacing: .06em;
+      opacity: 0;
+    }
+    .sub-heading {
+      font-size: clamp(1.1rem,2vw,1.45rem); font-weight: 600;
+      color: var(--text-secondary); margin-bottom: .75rem;
+      font-family: 'Montserrat Alternates', sans-serif;
+    }
+    .section-heading.h-scrambling {
+      font-family: 'DotempDemo', monospace !important;
+      font-style: normal !important;
+      animation: hCaScramble .7s ease-in-out infinite;
+    }
+    .section-heading.h-settled { animation: hCaSettle 3s ease-in-out infinite; }
+
+    /* ---- HERO ---- */
+    .hero { padding: clamp(56px,8vh,88px) 0 0; display:flex; justify-content:center; }
+    /* --- Equinox: add the centered “runner” panel --- */
+    .hero-container{
+      width: min(1080px, 90vw);
+      margin: 0 auto;
+      border-radius: 26px 26px 0 0;
+      padding: clamp(18px,2.4vw,40px);
+      position: relative;
+
+      background: linear-gradient(145deg, var(--glass-deep-1), var(--glass-deep-2));
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(18px) saturate(120%);
+      -webkit-backdrop-filter: blur(18px) saturate(120%);
+      box-shadow: 0 24px 80px rgba(var(--sh-rgb), calc(.55 * var(--sh-k))), inset 0 1px 0 rgba(var(--lift-rgb),.04);
+      overflow: hidden;
+    }
+
+    .hero-container::before,
+    .hero-container::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      pointer-events:none;
+      background:
+        radial-gradient(560px 200px at 8% -8%, var(--glass-highlight-1), transparent 60%),
+        radial-gradient(520px 180px at 108% 12%, var(--glass-highlight-2), transparent 60%);
+      mix-blend-mode: screen;
+      opacity: .7;
+    }
+
+    .intro { display:grid; grid-template-columns:1.45fr 0.85fr; gap:2.5rem; margin-bottom:clamp(28px,4vh,44px); }
+    .intro-left h1 {
+      font-family:'Montserrat Alternates',sans-serif;font-weight:800;
+      font-size:clamp(2.4rem,6vw,5.2rem); line-height:1.05; letter-spacing:-.02em;
+      background:linear-gradient(45deg,#d4943a,#e8c060,#f5eedd,#e0a850,#c87030);
+      background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      animation:gradientShift 5s ease infinite;
+    }
+    .intro-left h1.h-scrambling {
+      font-family:'DotempDemo',monospace !important; font-style:normal !important;
+      animation:gradientShift 5s ease infinite, hCaScramble .7s ease-in-out infinite !important;
+    }
+    .intro-left h1.h-settled {
+      animation:gradientShift 5s ease infinite, hCaSettle 3s ease-in-out infinite !important;
+    }
+    .tagline { font-size:clamp(1rem,1.6vw,1.2rem); line-height:1.5; opacity:.88; margin:.85rem 0 1.5rem; color:var(--text-primary); }
+    .tldr-pills { list-style:none; display:flex; flex-wrap:wrap; gap:.5rem; }
+    .pill {
+      display:inline-flex; align-items:center; gap:.45rem;
+      background:rgba(var(--accent-rgb),.08); border:1px solid rgba(var(--accent-rgb),.22);
+      border-radius:20px; padding:.35rem .85rem;
+      font-size:.82rem; font-weight:500; color:var(--text-primary);
+    }
+
+    .intro-right { display:flex; flex-direction:column; gap:1.5rem; }
+    .header-info {
+      background:var(--glass-bg); border:1px solid var(--glass-border);
+      backdrop-filter:blur(30px); border-radius:20px; padding:1.5rem;
+      font-size:.92rem; line-height:1.7;
+    }
+    .header-info strong { color:var(--text-secondary); }
+    .header-info ul { list-style:disc inside; margin-top:.4rem; padding-left:.5rem; font-size:.88rem; opacity:.85; }
+    .skip-link { display:flex; justify-content:flex-end; }
+    .skip-button {
+      font-size:0.84rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+      color:var(--text-secondary); border:1px solid var(--glass-border);
+      border-radius:20px; padding:.4rem 1rem;
+      background:rgba(var(--accent-rgb),.05);
+      transition:all .3s ease;
+    }
+    .skip-button:hover { background:rgba(var(--accent-rgb),.12); border-color:rgba(var(--accent-rgb),.4); }
+
+    /* ---- OUTCOME STRIP ---- */
+    .outcome-strip {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      border:1px solid var(--glass-border); border-radius:20px;
+      background:var(--glass-bg); backdrop-filter:blur(30px);
+      margin-bottom:clamp(32px,5vh,56px);
+    }
+    .outcome-item { padding:1.5rem 1.25rem; border-right:1px solid var(--rule); display:flex; flex-direction:column; gap:.3rem; }
+    .outcome-item:last-child { border-right:0; }
+    .outcome-num {
+      font-family:'Didot','Cormorant Garamond',serif;
+      font-style:italic; font-size:clamp(1.5rem,2.8vw,2.2rem);
+      font-weight:700; color:var(--text-secondary); line-height:1;
+      margin-bottom:.5rem; letter-spacing:.04em;
+    }
+    .outcome-label { font-size:.8rem; line-height:1.4; opacity:.75; }
+
+    /* ---- BANNER + META HEADER ---- */
+    .case-banner{
+      width:100%; border-radius:18px; overflow:hidden;
+      border:1px solid var(--glass-border);
+      box-shadow:0 10px 34px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      margin-bottom:clamp(30px,5vh,60px);
+      background:var(--inner-card);
+    }
+    .case-banner img{display:block;width:100%;height:auto}
+    .meta-grid{
+      display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:1.6rem 2rem; margin-bottom:clamp(34px,6vh,72px);
+    }
+    .meta-col h4{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); margin-bottom:.8rem;
+    }
+    .meta-col p{font-size:.93rem;line-height:1.6;color:var(--text-primary)}
+    .overview-label{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); display:block; margin-bottom:.9rem;
+    }
+    .overview-head{
+      font-size:clamp(1.5rem,3.1vw,2.35rem); font-weight:700; line-height:1.22;
+      color:var(--text-primary); margin-bottom:1.1rem; letter-spacing:-.01em;
+    }
+    .overview-body p{font-size:1.02rem;line-height:1.7;max-width:74ch;margin-bottom:.9rem}
+    .overview-body p:last-child{margin-bottom:0}
+    /* the banner carries the wordmark, so the heading is for screen readers */
+    .sr-only{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+    }
+    @media(max-width:900px){ .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media(max-width:560px){ .meta-grid{grid-template-columns:1fr} }
+
+    /* ---- SECTIONS ---- */
+    .hero-container > header { padding:0; }
+    header.hero { padding:0; }
+    #hero .hero-container { display:block; }
+
+    .section-content { padding: clamp(28px,4vh,48px) 0; }
+    .section-rule { border:none; border-top:1px solid var(--rule); margin:0; }
+
+    /* ---- TWO-COL ---- */
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem 2.5rem; margin-top:1.25rem; }
+
+    /* ---- HIGHLIGHT BOX ---- */
+    .highlight-box {
+      background:rgba(var(--accent-rgb),.07); border-left:2px solid rgba(var(--accent-rgb),.5);
+      border-radius:0 10px 10px 0; padding:1rem 1.1rem;
+      font-size:.92rem; line-height:1.6; color:var(--text-primary);
+    }
+    .highlight-box.warm {
+      border-left-color:rgba(var(--accent-soft-rgb),.6);
+      background:rgba(var(--accent-soft-rgb),.06);
+    }
+    .highlight-box strong { color:var(--text-secondary); display:block; margin-bottom:.2rem; }
+
+    /* ---- PULL QUOTE ---- */
+    .pull-quote {
+      border-left:3px solid rgba(var(--accent-rgb),.5);
+      padding:1rem 1.5rem; margin:1.5rem 0;
+      font-family:'Didot','Cormorant Garamond',serif;
+      font-style:italic; font-size:clamp(1.05rem,1.8vw,1.3rem);
+      line-height:1.6; color:var(--text-secondary);
+      background:rgba(var(--accent-rgb),.05); border-radius:0 12px 12px 0;
+    }
+    .pull-quote cite { display:block; margin-top:.6rem; font-size:.82rem; font-style:normal; opacity:.7; font-family:Montserrat,sans-serif; }
+
+    /* ---- BODY TEXT ---- */
+    p { font-size:clamp(.92rem,1.2vw,1rem); line-height:1.75; color:var(--text-primary); margin-bottom:1rem; opacity:.92; }
+    p:last-child { margin-bottom:0; }
+
+    /* ---- BODY IMAGE ---- */
+    .body-img { width:100%; border-radius:12px; display:block; }
+    .body-img-caption { font-size:0.84rem; opacity:.55; margin-top:.3rem; }
+
+    /* ---- EQX COVER VIDEO ---- */
+    .eqx-video-wrap { position:relative; width:100%; aspect-ratio:16/9; border-radius:4px; box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.5 * var(--sh-k))); border:1px solid var(--glass-border); overflow:hidden; background:#0b0d14; }
+    /* The page's own banner sits over the player until the video actually
+       starts, then dissolves. If YouTube is slow, blocked, or the visitor is
+       on a connection that will not carry it, this is what they see instead
+       of a black rectangle. */
+    .eqx-poster { position:absolute; inset:0; z-index:5; background:#0b0d14 url('equinox-banner.webp') center/cover no-repeat; transition:opacity .7s ease; pointer-events:none; }
+    .eqx-poster.gone { opacity:0; }
+    .eqx-video-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; pointer-events:none; }
+    .eqx-mute-btn { position:absolute; bottom:12px; right:12px; background:rgba(var(--sh-rgb), calc(.55 * var(--sh-k))); border:1px solid rgba(var(--accent-rgb),.45); border-radius:8px; color:var(--text-primary); cursor:none; padding:6px 10px; font-size:15px; display:flex; align-items:center; gap:5px; backdrop-filter:blur(8px); transition:background .2s; z-index:10; }
+    .eqx-mute-btn:hover { background:rgba(var(--sh-rgb), calc(.82 * var(--sh-k))); }
+
+    /* ---- OVERVIEW COVER ---- */
+    .overview-cover { width:100%; border-radius:16px; margin-top:1.5rem; display:block; border:1px solid var(--glass-border); }
+
+    /* ---- QUOTE GRID ---- */
+    .quote-grid { display:grid; grid-template-columns:repeat(3,minmax(200px,1fr)); gap:1.1rem; margin-bottom:2rem; }
+    .quote-card {
+      background:var(--inner-card); border-radius:16px;
+      box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.2 * var(--sh-k))); padding:1.25rem;
+      min-height:140px; opacity:0; transform:translateY(18px);
+      transition:opacity .5s ease-out,transform .5s ease-out;
+      border:1px solid var(--glass-border); position:relative; overflow:hidden;
+    }
+    .quote-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.05),transparent);transition:left .6s}
+    .quote-card:hover::before{left:100%}
+    .quote-card.active { opacity:1 !important; transform:translateY(0) !important; }
+    .quote-text { font-size:.95rem; line-height:1.5; margin-bottom:.75rem; color:var(--text-primary); opacity:.92; }
+    .quote-author { font-size:.85rem; opacity:.7; text-align:right; color:var(--text-secondary); }
+
+    /* ---- MUST-HAVES ---- */
+    .must-haves-container { display:grid; grid-template-columns:minmax(200px,0.85fr) 1.4fr; gap:1.5rem 2rem; align-items:start; margin:2rem auto 0; }
+    .must-haves-left { position:sticky; top:24px; }
+    .must-haves-right { display:grid; grid-template-columns:1fr; gap:1rem; }
+    .must-haves-card {
+      border-left:2px solid rgba(var(--accent-rgb),.3); padding:1rem 1.1rem 1rem 1.25rem;
+      background:rgba(var(--deep-rgb),.25); border-radius:0 10px 10px 0; transition:.3s;
+    }
+    .must-haves-card:hover { border-left-color:rgba(var(--accent-rgb),.7); background:rgba(var(--deep-rgb),.4); }
+    .must-haves-card h4 { font-size:.88rem; font-weight:600; color:var(--text-secondary); margin-bottom:.4rem; }
+    .must-haves-card p { font-size:.9rem; line-height:1.5; opacity:.85; margin:0; }
+
+    /* ---- PROCESS SUBSECTION ---- */
+    .process-subsection { padding:1.5rem 0; border-top:1px solid var(--rule); margin-top:1rem; }
+    .process-subsection:first-child { border-top:none; margin-top:0; }
+
+    /* ---- CHALLENGE ROW ---- */
+    .challenge-row { display:grid; grid-template-columns:0.6fr 1fr; gap:2rem; margin-top:1.25rem; }
+    .challenge-col.right { display:flex; flex-direction:column; gap:1rem; }
+
+    /* ---- CARDS (TAKEAWAYS) ---- */
+    .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:1.1rem; margin-bottom:2rem; }
+    .card {
+      background:var(--inner-card); border:1px solid var(--glass-border);
+      border-radius:16px; padding:1.5rem; opacity:0; transform:translateY(18px);
+      transition:opacity .5s ease-out,transform .5s ease-out;
+    }
+    .card.active { opacity:1 !important; transform:translateY(0) !important; }
+    .card:hover { border-color:rgba(var(--accent-rgb),.4); background:rgba(var(--deep-rgb),.55); }
+    .card h4 { font-size:0.78rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin-bottom:.5rem; font-family:Montserrat,sans-serif; }
+    .card h3 { font-size:1.1rem; color:var(--text-secondary); margin-bottom:.6rem; font-family:'Montserrat Alternates',sans-serif; }
+    .card p { font-size:.9rem; opacity:.82; margin:0; }
+
+    /* ---- REFLECTION ---- */
+    .reflection {
+      background:rgba(var(--accent-rgb),.05); border:1px solid rgba(var(--accent-rgb),.2);
+      border-radius:16px; padding:1.75rem 2rem; margin-top:1.5rem;
+    }
+    .reflection h3 { font-size:1.1rem; color:var(--text-secondary); margin-bottom:1rem; font-family:'Montserrat Alternates',sans-serif; }
+    .reflection p { font-size:.95rem; opacity:.88; }
+
+    /* ---- STATS ---- */
+    .stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; margin-bottom:2rem; }
+    .stats-card { padding:1.5rem 1.1rem; border-top:2px solid var(--accent); opacity:0; transform:translateY(20px); transition:all .5s ease; }
+    .stats-card.active { opacity:1 !important; transform:translateY(0) !important; }
+    .stat-number { font-family:'Didot','Cormorant Garamond',serif; font-style:italic; font-size:clamp(2rem,3.5vw,2.8rem); font-weight:700; color:var(--text-secondary); line-height:1; margin-bottom:.5rem; letter-spacing:.04em; }
+    .stats-title { font-size:.85rem; font-weight:600; color:var(--text-secondary); margin-bottom:.4rem; line-height:1.3; }
+    .stats-desc { font-size:.85rem; line-height:1.45; color:var(--text-primary); opacity:.8; }
+
+    /* ---- ROLE SECTION ---- */
+    .role-cols { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1.5rem; }
+    .role-card {
+      background:var(--inner-card); border:1px solid var(--glass-border);
+      border-radius:16px; padding:1.5rem; border-top:3px solid rgba(var(--accent-rgb),.5);
+    }
+    .role-card h4 { font-size:0.78rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin-bottom:.5rem; font-family:Montserrat,sans-serif; }
+    .role-card h3 { font-size:1.05rem; color:var(--text-secondary); margin-bottom:.75rem; font-family:'Montserrat Alternates',sans-serif; }
+    .role-card p { font-size:.9rem; opacity:.85; margin:0; }
+    .role-card ul { list-style:disc inside; font-size:.88rem; opacity:.82; padding-left:.5rem; }
+    .role-card li { margin-bottom:.3rem; }
+
+    /* ---- REVEALS ---- */
+    /* ── ported components ─────────────────────────────────────────────
+       The shared kit from the other studies, on Equinox's amber tokens:
+       the lede, the crooked card rows, captioned media, the terminal,
+       and one vertical scale for everything in the flow. */
+
+    .lede{
+      font-size:clamp(1.02rem,1.65vw,1.2rem); line-height:1.55;
+      font-weight:600; color:var(--text-primary); max-width:62ch;
+    }
+
+    .steps:has(> :nth-child(4)){ justify-content:flex-start; }
+    .steps{
+      display:flex; justify-content:center; flex-wrap:wrap; gap:16px;
+      align-items:flex-start;
+    }
+    .step-card{ flex:1 1 220px; min-width:200px; max-width:251px;
+      background:var(--inner-card);
+      border:1px solid var(--glass-border);
+      border-radius:16px; padding:1rem 1rem 1.05rem;
+      box-shadow:0 6px 22px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));
+      transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+    }
+    .step-card .n{
+      display:block; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+      font-size:.74rem; letter-spacing:.14em; color:var(--accent);
+      margin-bottom:.45rem;
+    }
+    .step-card h4{
+      font-size:.98rem; font-weight:600; line-height:1.3;
+      color:var(--text-primary); margin:0 0 .4rem;
+    }
+    .step-card p{
+      font-size:.84rem; line-height:1.6; color:var(--text-secondary); margin:0;
+    }
+    .step-card:nth-child(1){transform:rotate(-2.6deg) translateY(2px)}
+    .step-card:nth-child(2){transform:rotate(2.1deg) translateY(17px)}
+    .step-card:nth-child(3){transform:rotate(-1.8deg) translateY(6px)}
+    .step-card:nth-child(4){transform:rotate(2.7deg) translateY(21px)}
+    .step-card:hover{
+      transform:rotate(0deg) translateY(-5px);
+      box-shadow:0 12px 32px rgba(var(--sh-rgb), calc(.38 * var(--sh-k)));
+    }
+
+    /* ---- CAPTIONED MEDIA ---- */
+    .cap{ font-size:.84rem; line-height:1.5; color:var(--text-secondary);
+          opacity:.85; text-align:center; }
+    .img-wide img{
+      display:block; width:100%; height:auto; border-radius:12px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.4 * var(--sh-k)));
+    }
+    .video-embed{
+      position:relative; width:100%; aspect-ratio:16/9; overflow:hidden;
+      border-radius:12px; border:1px solid var(--glass-border);
+      box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.35 * var(--sh-k)));
+    }
+    .video-embed iframe,
+    .video-embed video{ position:absolute; inset:0; width:100%; height:100%; border:0; object-fit:cover; display:block }
+
+    /* ---- MEDIA SLOT ---- */
+    .slot{
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:.4rem; text-align:center; padding:clamp(22px,5vh,48px) 1.5rem;
+      border:1px dashed rgba(var(--accent-rgb),.5); border-radius:12px;
+      background:rgba(var(--accent-rgb),.05); min-height:180px;
+    }
+    .slot b{
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+      font-size:.8rem; letter-spacing:.04em; color:var(--accent);
+    }
+    .slot span{ font-size:.86rem; line-height:1.5; color:var(--text-secondary); max-width:44ch }
+
+    /* ---- SCOREBOARD ----
+       The jam's own result table. It is the outcome, so it gets to be a
+       component rather than a sentence. The weak row stays in. */
+    .board{
+      width:100%; border-collapse:collapse; overflow:hidden;
+      border:1px solid var(--glass-border); border-radius:12px;
+      background:var(--inner-card);
+    }
+    .board th,.board td{ padding:.62rem .9rem; text-align:left; font-size:.88rem;
+      border-bottom:1px solid rgba(var(--accent-rgb),.14); }
+    .board thead th{
+      font-size:.7rem; letter-spacing:.16em; text-transform:uppercase;
+      color:var(--accent); font-weight:700; background:rgba(var(--accent-rgb),.08);
+    }
+    .board tbody tr:last-child td{ border-bottom:0 }
+    .board td.rank{
+      font-family:'Didot','Cormorant Garamond',serif; font-style:italic;
+      font-weight:700; font-size:1.15rem; color:var(--text-secondary); width:5.5rem;
+    }
+    .board tr.gold td{ background:rgba(var(--accent-rgb),.14) }
+    .board tr.gold td.rank{ color:var(--accent-bright) }
+    .board td.score{ text-align:right; font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+      font-size:.82rem; opacity:.85; width:5rem }
+    .board-wrap{ overflow-x:auto }
+
+    /* ---- TERMINAL ---- */
+    .termcard{
+      border:1px solid var(--glass-border); border-radius:12px; overflow:hidden;
+      background:rgba(var(--chrome-rgb),.6);
+      box-shadow:0 10px 30px rgba(var(--sh-rgb), calc(.34 * var(--sh-k)));
+    }
+    :root[data-theme="light"] .termcard{ background:#2a1a0c }
+    .termcard .bar{
+      display:flex; align-items:center; gap:.45rem;
+      padding:.5rem .8rem; border-bottom:1px solid rgba(var(--accent-rgb),.18);
+      background:rgba(var(--accent-rgb),.14);
+    }
+    .termcard .bar i{ width:9px; height:9px; border-radius:50%;
+      background:rgba(var(--accent-soft-rgb),.5); display:block }
+    .termcard .bar em{
+      font-style:normal; margin-left:.4rem; font-size:.72rem; letter-spacing:.12em;
+      text-transform:uppercase; color:#e0a060; opacity:.85;
+    }
+    .termcard pre{
+      margin:0; padding:1rem 1.1rem; overflow-x:auto;
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+      font-size:.8rem; line-height:1.75; color:#f2e6d2;
+      white-space:pre; font-variant-ligatures:none;
+    }
+    .termcard pre .c{ color:#c8874a; opacity:.9 }
+    .termcard pre .k{ color:#8fd0b0 }
+
+    /* ══ VERTICAL RHYTHM ═══════════════════════════════════════════════ */
+    .section-content > *{ margin-top:0 }
+    .lede{ margin:0 0 1.25rem }
+    .steps, .stats-grid, .img-wide, .video-embed, .termcard, .slot,
+    .board-wrap, .role-cols, .two-col, .cards, .quote-grid, .img-grid,
+    .eqx-video-wrap, .must-haves-container{
+      margin:2rem 0 1.7rem;
+    }
+    .steps, .stats-grid, .quote-grid{ margin-bottom:2.9rem }
+    .highlight-box{ margin:1.9rem 0 2rem }
+    .pull-quote{ margin:1.9rem 0 2rem }
+    .sub-heading{ margin:2.4rem 0 .75rem }
+    .section-heading{ margin-top:0 }
+    .section-content > p + .section-heading{ margin-top:2.4rem }
+    .cap{ margin-top:.6rem; margin-bottom:0 }
+    .video-embed:has(+ .cap), .img-wide:has(+ .cap), .termcard:has(+ .cap),
+    .slot:has(+ .cap), .board-wrap:has(+ .cap), .img-grid:has(+ .cap),
+    .eqx-video-wrap:has(+ .cap){ margin-bottom:0 }
+    .cap + p, .cap + .sub-heading, .cap + div, .cap + figure{ margin-top:1.6rem }
+    /* the closing clip sits inside .reflection, which the selector list above
+       does not reach, so it gets its own spacing */
+    .reflection .video-embed{ margin:1.5rem 0 .8rem }
+    .skip-link{ margin:1.2rem 0 clamp(30px,4.5vh,52px) }
+    .steps, .stats-grid, .img-grid, .quote-grid{ gap:clamp(14px,1.9vw,26px) }
+
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s ease-out,transform .5s ease-out; will-change:opacity,transform; }
+    /* the reveal used to flatten every tilted card the moment it scrolled in */
+    .active { opacity:1 !important; }
+    .active:not(.step-card):not(.stats-card){ transform:translateY(0) !important; }
+    .step-card.active:nth-child(1){transform:rotate(-2.6deg) translateY(2px) !important}
+    .step-card.active:nth-child(2){transform:rotate(2.1deg) translateY(17px) !important}
+    .step-card.active:nth-child(3){transform:rotate(-1.8deg) translateY(6px) !important}
+    .step-card.active:nth-child(4){transform:rotate(2.7deg) translateY(21px) !important}
+    .step-card.active:hover{transform:rotate(0deg) translateY(-5px) !important}
+
+    /* ---- IMAGE GRID ---- */
+    .img-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.1rem; margin:2rem 0; }
+    .img-tile { aspect-ratio:1/1; border-radius:14px; overflow:hidden; border:1px solid var(--glass-border); background:var(--inner-card); }
+    .img-tile img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s ease; }
+    .img-tile:hover img { transform:scale(1.06); }
+
+    /* ---- SOUNDCLOUD MINI WIDGET ---- */
+    #sc-bar {
+      position:fixed; bottom:1.25rem; right:1.25rem; z-index:9000;
+      width:260px; display:flex; flex-direction:column; align-items:flex-end;
+      pointer-events:none;
+    }
+    #sc-toggle {
+      pointer-events:all;
+      background:rgba(var(--chrome-rgb),.95); border:1px solid rgba(var(--accent-rgb),.45);
+      border-radius:20px; padding:5px 14px;
+      font-size:0.75rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+      color:var(--text-secondary); cursor:none !important;
+      display:flex; align-items:center; gap:.4rem; margin-bottom:5px;
+      user-select:none; box-shadow:0 2px 16px rgba(var(--sh-rgb), calc(.6 * var(--sh-k)));
+      backdrop-filter:blur(12px);
+    }
+    #sc-toggle:hover { background:rgba(var(--accent-rgb),.14); }
+    #sc-frame-wrap {
+      width:100%; overflow:hidden; border-radius:12px;
+      border:1px solid rgba(var(--accent-rgb),.22); background:rgba(var(--chrome-rgb),.96);
+      transition:height .3s ease, opacity .3s ease;
+      height:80px; opacity:1; pointer-events:all;
+      box-shadow:0 4px 24px rgba(var(--sh-rgb), calc(.6 * var(--sh-k)));
+    }
+    #sc-bar.collapsed #sc-frame-wrap { height:0; opacity:0; pointer-events:none; }
+    #sc-bar iframe { width:100%; height:80px; border:0; display:block; }
+
+    @media(max-width:1024px){
+      .intro{grid-template-columns:1fr}
+      .intro-right{max-width:100%}
+      .outcome-strip{grid-template-columns:repeat(2,1fr)}
+      .outcome-item:nth-child(2){border-right:0}
+      .outcome-item:nth-child(3){border-top:1px solid var(--rule)}
+      .two-col,.challenge-row,.role-cols{grid-template-columns:1fr}
+      .must-haves-container{grid-template-columns:1fr}
+      .must-haves-left{position:static}
+    }
+    @media(max-width:768px){
+      .cards,.stats-grid,.quote-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){
+      .outcome-strip{grid-template-columns:1fr}
+      .outcome-item{border-right:0;border-bottom:1px solid var(--rule)}
+      .outcome-item:last-child{border-bottom:0}
+    }
+
+    /* ---- Equinox navbar overrides ---- */
+    .navbar .logo img { filter: sepia(1) saturate(1.8) hue-rotate(-8deg) brightness(1.05) !important; }
+    .navbar .logo:hover img { filter: sepia(1) saturate(2.2) hue-rotate(-8deg) brightness(1.2) !important; }
+    .navbar .nav-links a:hover { color: #c8874a !important; }
+    .navbar .nav-links a::after { background: linear-gradient(45deg, #c8874a, #e0a060) !important; }
+    .mobile-menu ul li a:hover { color: #c8874a !important; background: rgba(var(--accent-rgb),0.07) !important; }
+    .mobile-menu ul li { border-bottom-color: rgba(var(--accent-rgb),0.12); }
+      /* ── PANE MODE ─────────────────────────────────────────────
+       This page is read inside the portfolio's right-hand pane,
+       which now supplies both the paper and the tinted sky. So it
+       stops painting a floating card on a sky of its own — the
+       container is just a reading column — and it paints the paper
+       itself so it still stands up when opened standalone. */
+    html,body{background:var(--paper)}
+    /* in the pane the shell paints the paper — translucent, so the one sky
+       reads through the reading surface the way it does on the home page.
+       Standalone there is no sky behind us, so we keep painting it ourselves. */
+    html[data-embedded],html[data-embedded] body{background:transparent}
+    .hero{padding:0}
+    .hero-container{
+      /* the PANE paints the paper edge to edge; this is only the reading
+         column, centred in it — so the margins each side are paper, never
+         a second sky like the old floating card had */
+      width:100%; max-width:1180px; margin-inline:auto;
+      border:none; border-radius:0;
+      background:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+      box-shadow:none;
+      padding:clamp(30px,4.5vh,60px) clamp(22px,4vw,60px) clamp(60px,9vh,110px);
+    }
+    .hero-container::before,.hero-container::after{display:none}
+    /* nothing breaks the gutter: media is bounded by the column, not the pane */
+    .hero-container img,
+    .hero-container video,
+    .hero-container iframe,
+    .hero-container canvas{max-width:100%}
+    .hero-container img{height:auto}
+    /* a flex row of percentage-width images can still sum past its own box
+       (two at 70% each), so let the row wrap and the items shrink */
+    .hero-container [class$="-images"],
+    .hero-container .mini-images{flex-wrap:wrap}
+    .hero-container [class$="-images"] > img,
+    .hero-container .mini-images > img{min-width:0;flex-shrink:1}
+    /* flex and grid children only stay inside the column if allowed to shrink */
+    .intro-left,.intro-right,.section-content,.two-col > *{min-width:0}
+    /* the press panel was the bottom half of the hero card — that card is
+       gone, so it stops floating and takes the same measure as everything else */
+    .press-wrapper{
+      width:100%; max-width:1180px; margin-inline:auto;
+      padding:clamp(18px,2.4vw,40px) clamp(22px,4vw,60px);
+      background:none; border:none; border-radius:0; box-shadow:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+    }
+    .press-wrapper::before,.press-wrapper::after{display:none}
+  </style>
+</head>
+<body>
+
+  <div class="custom-cursor" id="cursor"></div>
+  <header class="hero" id="hero">
+    <div class="hero-container">
+
+      <!-- BANNER -->
+      <h1 class="sr-only">Equinox</h1>
+      <figure class="case-banner reveal">
+        <img src="equinox-banner.webp" alt="Equinox: the wizard&rsquo;s tower on a snowbound path at night, beacon lit, with the Equinox title." width="2400" height="737" fetchpriority="high">
+      </figure>
+
+      <!-- META -->
+      <div class="meta-grid reveal">
+        <div class="meta-col">
+          <h4>Project Type</h4>
+          <p>Game jam. A cozy first-person puzzle game, and the Comfy Jam: Winter 2026 winner.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Role</h4>
+          <p>Gameplay and UI programmer. Transitions, journal, minigame completion, pause and menus. My first game jam.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Timeline</h4>
+          <p>18 days in January 2026, with a team of fourteen.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Skills &amp; Tools</h4>
+          <p>Godot 4.5 and GDScript, scene transition systems, signal-based state, implementing UI from high-fidelity art, Git LFS for a binary-heavy repo, and pair programming on a deadline.</p>
+        </div>
+      </div>
+
+      <!-- OUTCOME STRIP -->
+      <div class="outcome-strip reveal">
+        <div class="outcome-item">
+          <span class="outcome-num">#1 of 88</span>
+          <span class="outcome-label">Overall at Comfy Jam: Winter 2026</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">1,350</span>
+          <span class="outcome-label">ratings cast across the jam, 21 of them on ours</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">#2</span>
+          <span class="outcome-label">on the Limitation, the one rule every entry had to compete on</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">18 days</span>
+          <span class="outcome-label">fourteen people, four of us writing code</span>
+        </div>
+      </div>
+
+      <!-- SKIP -->
+      <div class="skip-link reveal">
+        <a href="#takeaways" class="skip-button">SKIP &rarr; THE TAKEAWAYS</a>
+      </div>
+
+      <!-- THE RESULT -->
+      <section id="won">
+        <div class="section-content reveal">
+          <span class="eyebrow">Overview</span>
+          <h2 class="section-heading">A wizard&rsquo;s tower locked in winter, eighteen days to bring spring back, and first place out of eighty eight.</h2>
+          <p class="lede">A cozy first-person puzzle game built by fourteen people for the Comfy Jam: Winter 2026. I built the payoffs: the transitions between floors, the journal that unlocks as you finish a puzzle, the moment a minigame completes, and the menus around all of it.</p>
+
+          <div class="board-wrap reveal">
+            <table class="board">
+              <thead>
+                <tr><th>Rank</th><th>Category</th><th class="score">Score</th></tr>
+              </thead>
+              <tbody>
+                <tr class="gold"><td class="rank">#1</td><td>Overall</td><td class="score">4.305</td></tr>
+                <tr class="gold"><td class="rank">#1</td><td>Visuals</td><td class="score">4.667</td></tr>
+                <tr class="gold"><td class="rank">#1</td><td>Audio</td><td class="score">4.476</td></tr>
+                <tr><td class="rank">#2</td><td>Limitation</td><td class="score">4.238</td></tr>
+                <tr><td class="rank">#3</td><td>Gameplay</td><td class="score">3.952</td></tr>
+                <tr><td class="rank">#15</td><td>Theme</td><td class="score">4.190</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="cap">Comfy Jam: Winter 2026, hosted by Macrow. 88 entries, 1,350 ratings. Every category, including the one we came fifteenth in.</p>
+
+          <p>We won it on how the game lands rather than on what it asks. First in Visuals. First in Audio. Second in the Limitation, which was the one rule every single entry had to compete on. Third in Gameplay, and fifteenth in Theme. Equinox did not win on its mechanics, and it certainly did not win on being wintry. It won on how it feels to be inside, and on doing the thing the jam actually asked for.</p>
+
+          <div class="eqx-video-wrap reveal">
+            <div id="eqx-yt-player"></div>
+            <div class="eqx-poster" id="eqx-poster"></div>
+            <button class="eqx-mute-btn" id="eqx-mute-btn" aria-label="Unmute">&#128263;</button>
+          </div>
+          <p class="cap">The full showcase, with sound. Every clip below is cut out of these same three minutes.</p>
+
+          <h3 class="sub-heading">The game</h3>
+
+          <p>You are not the hero. You are the person the hero hired. The wizard&rsquo;s tower is meant to burn a light that ends winter and brings spring, and it has been dark long enough that the town below is frightened. They hire you, an adventurer at the tail end of a bad run, to go up there and find out why.</p>
+
+          <p>Four floors. Nine artefacts. No fail states, no timer, no combat, nothing at all to lose. You clean centuries of neglect off things, put fractured things back together, and read the wizard&rsquo;s notes as the journal hands them to you, until it becomes clear what he did. At the top there is a beacon with three concentric rings and nine seasonal inscriptions, and it is not going to hint at the answer.</p>
+
+          <p>Fourteen people built it in eighteen days. Four of us wrote code, and <span class="px">281</span> commits later it was on itch.</p>
+
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- WHERE I CAME IN -->
+      <section id="where">
+        <div class="section-content reveal">
+          <span class="eyebrow">Where I Came In</span>
+          <h2 class="section-heading">It was my first game jam, and the first time I had used Godot for anything real.</h2>
+          <p class="lede">Another programmer on the team built the player movement and stood the 3D pipeline up inside the first forty eight hours, which is the only reason a beginner was useful by day three.</p>
+
+          <p>Getting the substrate solid in the first two days is the highest leverage thing anybody can do on a jam team, and I have thought about it a lot since, because I now do a version of that job on a much larger volunteer project.</p>
+
+          <div class="highlight-box reveal">
+            <strong>What I got instead</strong>
+            Every moment where the game answers the player. The transition when you finish a floor. The artefact turning clean. The minigame closing itself. The journal page unlocking. That is one job, and it turned out to be the job the scoreboard was measuring.
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- THE LIMITATION -->
+      <section id="transitions">
+        <div class="section-content reveal">
+          <span class="eyebrow">The Limitation</span>
+          <h2 class="section-heading">Winter was the theme. &ldquo;Overcomplicated Screen Transitions&rdquo; was the rule.</h2>
+          <p class="lede">It is the one category every entry had to compete in, and we came second in it on the way to winning the jam outright.</p>
+
+          <p>The jam carried one required limitation: every scene, level or room change had to be an elaborate transition. Most teams read that as a visual dare, so make a nicer wipe. We read it as a brief about pacing. In a game with no fail states and no timer, transitions are the only punctuation you have. They are the difference between four rooms and four chapters.</p>
+
+          <p>I built the floor transitions. They live in <span class="px">portal.gd</span> and the transition canvas.</p>
+
+
+          <div class="steps reveal">
+            <div class="step-card reveal">
+              <span class="n">01</span>
+              <h4>Going up</h4>
+              <p>The stairs are a portal. Finishing a floor&rsquo;s artefacts unlocks it, and the transition covers the load while the floor name lands in the middle of the screen. It is the only moment the game tells you where you are.</p>
+            </div>
+            <div class="step-card reveal">
+              <span class="n">02</span>
+              <h4>The opening</h4>
+              <p>The intro got reworked in one sitting: 109 lines added and 249 deleted. What shipped is shorter than what came before it and better for it, because a cozy game should not open by lecturing you.</p>
+            </div>
+            <div class="step-card reveal">
+              <span class="n">03</span>
+              <h4>The credits</h4>
+              <p>Opening credits over the tower, so the game reads as a thing that was made, by people, on purpose, before it asks you for anything at all.</p>
+            </div>
+          </div>
+
+          <div class="highlight-box reveal">
+            <strong>The commit that reads worst is the one that scored</strong>
+            &ldquo;transition script kind of maybe working??&rdquo; is second place out of eighty eight entries in the only category the jam made compulsory. Jam code does not have to look confident. It has to land.
+          </div>
+
+          <div class="video-embed reveal">
+            <video src="vid/transition.mp4" poster="vid/transition.jpg"
+                   autoplay muted loop playsinline preload="metadata"
+                   aria-label="Equinox: climbing to the next floor, and the floor title card"></video>
+          </div>
+          <p class="cap">Leaving a finished floor. The stairs are a portal, the climb covers the load, and the floor name lands in the middle of the screen before the library appears.</p>
+
+          <div class="video-embed reveal">
+            <video src="vid/menu.mp4" poster="vid/menu.jpg"
+                   autoplay muted loop playsinline preload="metadata"
+                   aria-label="Equinox title screen with start and quit buttons"></video>
+          </div>
+          <p class="cap">Where a player starts. Our artists drew the screen; turning it into one that actually works was my first job on the project.</p>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- THE MINIGAMES -->
+      <section id="minigames">
+        <div class="section-content reveal">
+          <span class="eyebrow">The Minigames</span>
+          <h2 class="section-heading">Three of the four floors end the same way, and I built the end.</h2>
+          <p class="lede">Find something the wizard broke. Put it back together. Get the dirt off it. The tower gives you a page of his diary in return.</p>
+
+          <p>That loop has to survive being done nine times. It is the reason anybody stays in the tower past the first floor, and it is the reason a game with nothing to lose still has somewhere to go.</p>
+
+          <h3 class="sub-heading">First you put it back together</h3>
+
+          <p>A bust of the wizard is in pieces on the workbench. The repair minigame floats the fragments in front of you and you drag each one home. No timer, no failure, and <span class="px">R</span> puts every piece back where it started, because a cozy game cannot afford a move you regret.</p>
+
+          <div class="video-embed reveal">
+            <video src="vid/repair.mp4" poster="vid/repair.jpg"
+                   autoplay muted loop playsinline preload="metadata"
+                   aria-label="Reassembling the fractured wizard bust from floating fragments"></video>
+          </div>
+          <p class="cap">The bust, reassembled a fragment at a time.</p>
+
+          <h3 class="sub-heading">Then you get the dirt off it</h3>
+
+          <p>Cleaning is the interaction the whole game rests on. A shader keeps a mask over the artefact, your cursor is a soft brush that lifts dirt with falloff so it feels organic rather than geometric, and the system rasterizes the mesh UVs first so progress only counts over geometry you can actually see. At <span class="px">95%</span> it calls it done, and that last five percent is deliberate: nobody should have to hunt a single stubborn pixel behind an ear.</p>
+
+          <div class="video-embed reveal">
+            <video src="vid/clean.mp4" poster="vid/clean.jpg"
+                   autoplay muted loop playsinline preload="metadata"
+                   aria-label="Cleaning the repaired wizard bust until it completes and rotates"></video>
+          </div>
+          <p class="cap">The bust again, whole now and still filthy. Watch the end: it turns itself to show you, and the minigame closes without being asked.</p>
+
+          <h3 class="sub-heading">And one that is neither</h3>
+
+          <p>The library has a star globe instead. You turn it until the constellations match what the wizard&rsquo;s notes told you, which is a different verb for the same promise: the game will tell you plainly when you are right, and it will never punish you for being wrong on the way there.</p>
+
+          <div class="video-embed reveal">
+            <video src="vid/globe.mp4" poster="vid/globe.jpg"
+                   autoplay muted loop playsinline preload="metadata"
+                   aria-label="Rotating the celestial globe to align the constellations"></video>
+          </div>
+          <p class="cap">The star globe on the library floor. Q and E, and no clock.</p>
+
+          <h3 class="sub-heading">And the one at the top</h3>
+
+          <p>The beacon at the top is the last of them and the only one that asks something real of you. Three concentric rings, nine seasonal inscriptions, and a rotation the game refuses to hint at beyond the logic of the rings themselves. It has spent four floors quietly teaching you how to read it, and it is the last thing on this page.</p>
+
+
+          <h3 class="sub-heading">Who wrote which part</h3>
+
+          <p>I built cleaning and repair with another programmer on the team, on calls that ran five hours at a stretch, and came into the beacon the same way near the end. One of us drove and the other navigated, and we swapped whenever the person typing started making the same mistake twice. I would do it that way again on purpose: you get somebody&rsquo;s reasoning out loud while they are still having it, which is the fastest I have ever learned a codebase, and it left two people carrying the whole model instead of one.</p>
+
+          <p>What I own outright is where those minigames end. The artefact turns when it is done. The progress bar. The minigame closing itself instead of sitting there waiting to be dismissed. The handoff into the journal. Cleaning something should feel like finishing, and finishing is a separate design problem from the mechanic.</p>
+
+          <div class="highlight-box reveal">
+            <strong>The payoff is not the mechanic</strong>
+            You can build a cleaning system that works perfectly and still leave the player in a closed loop wondering whether anything happened. The last half second is where a minigame becomes satisfying, and it is usually the half second nobody has been assigned.
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- THE JOURNAL -->
+      <section id="journal">
+        <div class="section-content reveal">
+          <span class="eyebrow">The Journal</span>
+          <h2 class="section-heading">The wizard&rsquo;s story arrives because you earned it, not because a cutscene decided it was time.</h2>
+          <p class="lede">Pages start locked. A page unlocks when you finish a puzzle. That is the whole narrative delivery system.</p>
+
+          <p>I built the journal: the locked pages, the overlays, the layout, and the wiring that opens a page when an artefact is finished. The chain runs from the cleanable item through the game state manager into the journal UI, which means the story responds to progress rather than to sequence. Finish a floor&rsquo;s puzzles in any order you like and the entries still arrive in the right one.</p>
+
+          <div class="termcard reveal">
+            <div class="bar"><i></i><i></i><i></i><em>the unlock chain</em></div>
+<pre><span class="c">cleanable.gd</span>           artefact reaches 95%, emits finished
+        <span class="k">&darr;</span>
+<span class="c">game_state_manager.gd</span>  records floor progress, in any order
+        <span class="k">&darr;</span>
+<span class="c">journal_ui.gd</span>          unlocks the next page and opens to it</pre>
+          </div>
+          <p class="cap">Three files, one rule: the story responds to progress, never to sequence.</p>
+
+          <p>It matters because of what kind of game this is. There is nothing to lose in Equinox, so curiosity has to do the work that fear does everywhere else. The journal is that engine. You clean a thing, you learn a thing, and the reason to climb the next set of stairs is that you want to know what he did next.</p>
+
+          <div class="video-embed reveal">
+            <video src="vid/journal.mp4" poster="vid/journal.jpg"
+                   autoplay muted loop playsinline preload="metadata"
+                   aria-label="The Equinox journal opening to a newly unlocked page"></video>
+          </div>
+          <p class="cap">The same clean, picked up two seconds later. The journal opens itself to the page you just earned.</p>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- DAY ONE -->
+      <section id="dayone">
+        <div class="section-content reveal">
+          <span class="eyebrow">Day One</span>
+          <h2 class="section-heading">Before any art arrived, I wrote the file that stopped fourteen people corrupting each other&rsquo;s work.</h2>
+          <p class="lede">Godot, 3D models, textures, audio, and a repo on its way to 190 MB. On day one, a <span class="px">.gitattributes</span>.</p>
+
+          <p>Binary files do not merge. Two people touching the same model or the same scene file produce a conflict git cannot resolve, and on a jam clock that costs an afternoon nobody has to spare. Git LFS fixes it by keeping the large files outside the repository proper, but only if the tracking rules exist before the assets land.</p>
+
+          <div class="termcard reveal">
+            <div class="bar"><i></i><i></i><i></i><em>.gitattributes</em></div>
+<pre><span class="c"># 3D Models</span>
+*.fbx  *.gltf  *.glb  *.blend  *.obj
+
+<span class="c"># Images</span>
+*.png  *.jpg  *.tga  *.webp  *.exr  *.hdr  *.dds
+
+<span class="c"># Audio</span>
+*.mp3  *.wav  *.ogg
+
+<span class="c"># Godot LFS Specific</span>
+*.scn  *.res  *.material  *.anim  *.mesh  *.lmbake
+<span class="k">    filter=lfs diff=lfs merge=lfs -text</span></pre>
+          </div>
+          <p class="cap">Committed 10 January, the first day of the jam, before a single asset existed.</p>
+
+          <p>The last block is the part people miss. Most gamedev templates cover models, images and audio. Godot has its own binary formats on top of those, and <span class="px">.scn</span>, <span class="px">.res</span>, <span class="px">.material</span>, <span class="px">.anim</span>, <span class="px">.mesh</span> and <span class="px">.lmbake</span> will bloat a repository and conflict just as badly if nobody tracks them. It is the least glamorous thing on this page and it is the one I would do again first.</p>
+
+          <div class="highlight-box reveal">
+            <strong>The same file, from the other end</strong>
+            On a 140 person project I later ran the retroactive version of this: a full history rewrite over one weekend, on a repo that had not done it on day one, with a recovery in the middle of it. Doing it at the start takes twenty minutes. <a href="../index.html#/menzo" target="_top" style="color:var(--text-secondary);text-decoration:underline;text-underline-offset:3px">That story is in Path to Menzoberranzan</a>.
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <!-- TAKEAWAYS -->
+      <section class="takeaways" id="takeaways">
+        <div class="section-content reveal">
+          <span class="eyebrow">Takeaways</span>
+          <h2 class="section-heading">What my first jam taught me that a solo project could not.</h2>
+
+          <div class="cards reveal">
+            <div class="card reveal">
+              <h4>01</h4>
+              <h3>The payoff is a job</h3>
+              <p>Every moment a game confirms you did something right is a design problem of its own, and on most teams nobody owns it. I did, and it is what the scoreboard turned out to be measuring.</p>
+            </div>
+            <div class="card reveal">
+              <h4>02</h4>
+              <h3>Build the floor before anyone needs to stand on it</h3>
+              <p>Somebody built the movement and the model pipeline inside forty eight hours so that a first timer could be useful on day three. That is most of the reason fourteen people shipped anything.</p>
+            </div>
+            <div class="card reveal">
+              <h4>03</h4>
+              <h3>The graph records the driver, not the call</h3>
+              <p>Pair programming over Discord is how a lot of jam code gets written, and the commit lands under whoever was typing. Worth knowing when you read anybody&rsquo;s contribution graph, mine included.</p>
+            </div>
+            <div class="card reveal">
+              <h4>04</h4>
+              <h3>The constraint was the brief</h3>
+              <p>&ldquo;Overcomplicated Screen Transitions&rdquo; sounds like a gag. It was the only category every entry competed in, and treating it as a pacing problem rather than a visual one is why we placed second in it.</p>
+            </div>
+          </div>
+
+          <div class="reflection reveal">
+            <h3>The top of the tower</h3>
+            <p>Solve the beacon and the tower does the rest. The rings come down, the light catches properly for the first time, and the winter breaks over the valley while the credits roll. Eighteen days, fourteen people, and this is the minute all of it was for.</p>
+          <div class="video-embed reveal">
+            <video src="vid/beacon.mp4" poster="vid/beacon.jpg"
+                   autoplay muted loop playsinline preload="metadata"
+                   aria-label="The full beacon puzzle, the rings aligning, and the sunrise that follows"></video>
+          </div>
+          <p class="cap">Unedited, all the way through: an inscription going home, the flame catching, the rings coming down, and the first sunrise the valley has seen in a very long time.</p>
+            <p>Making a game is collaborative in a way making a product is not, quite. Everyone&rsquo;s contribution is load-bearing in a different direction. The artist builds the world, the composer tells you how to feel about it, the voice actor gives the wizard a voice, and the programmers make it run. I came in knowing almost nothing about any of it and left owning the part where the game says well done.</p>
+            <p><a href="https://emstergrace.itch.io/equinox" target="_blank" rel="noopener" style="color:var(--text-secondary);text-decoration:underline;text-underline-offset:3px">&rarr; Play Equinox on itch.io</a></p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </header>
+
+  <script type="module">
+    // cursor
+    const cursor=document.getElementById('cursor');let mouseX=0,mouseY=0,rafId;
+    const hoverSel='a,button,.skip-button,.quote-card,.stats-card,.must-haves-card,.card,.role-card,img';
+    function update(){cursor.style.left=mouseX+'px';cursor.style.top=mouseY+'px'}
+    addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;if(!rafId){rafId=requestAnimationFrame(()=>{update();rafId=null;});}});
+    addEventListener('mousedown',()=>cursor.classList.add('clicking'));
+    addEventListener('mouseup',()=>cursor.classList.remove('clicking'));
+    addEventListener('mouseover',e=>{if(e.target.closest(hoverSel))cursor.classList.add('hovering')});
+    addEventListener('mouseout',e=>{if(e.target.closest(hoverSel))cursor.classList.remove('hovering')});
+    addEventListener('mouseleave',()=>{cursor.style.opacity='0'});
+    addEventListener('mouseenter',()=>{cursor.style.opacity='1'});
+
+    // --- heading scramble + font-mix ---
+    (function(){
+      const CHARSET='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
+      const RUNS=[3,2];
+      function rand(){return CHARSET[Math.floor(Math.random()*CHARSET.length)];}
+
+      function scramble(el,text,dur,onDone){
+        const len=text.length;
+        const revealed=new Array(len).fill(false);
+        const t0=performance.now();
+        (function frame(now){
+          const p=Math.min(1,(now-t0)/dur);
+          const upto=Math.floor(p*len*1.15);
+          for(let i=0;i<upto;i++) if(!revealed[i]&&Math.random()<0.4) revealed[i]=true;
+          let out='';
+          for(let i=0;i<len;i++){
+            const c=text[i];
+            if(c===' '){out+='\u00a0';continue;}
+            out+=revealed[i]?c:rand();
+          }
+          el.textContent=out;
+          if(p<1||revealed.some(r=>!r)) requestAnimationFrame(frame);
+          else onDone();
+        })(performance.now());
+      }
+
+      function fontMix(el,text){
+        let html='',runIdx=0,runCount=0,usePx=true;
+        for(let i=0;i<text.length;i++){
+          const cp=text.codePointAt(i);
+          if(cp>127){html+=String.fromCodePoint(cp);if(cp>0xFFFF)i++;continue;}
+          const c=text[i];
+          if(c===' '){html+=' ';continue;}
+          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
+          if(++runCount>=RUNS[runIdx%2]){usePx=!usePx;runIdx++;runCount=0;}
+        }
+        el.innerHTML=html;
+      }
+
+      const hio=new IntersectionObserver((entries,obs)=>{
+        entries.forEach(en=>{
+          if(!en.isIntersecting)return;
+          obs.unobserve(en.target);
+          const el=en.target;
+          const text=el.textContent.trim();
+          el.style.opacity='1';el.style.transform='none';
+          el.classList.add('h-scrambling');
+          scramble(el,text,900,()=>{
+            el.classList.remove('h-scrambling');
+            fontMix(el,text);
+            el.classList.add('h-settled');
+          });
+        });
+      },{threshold:0.25});
+
+      document.querySelectorAll('.section-heading').forEach(h=>hio.observe(h));
+
+      // sub-headings + stat numbers — font mix on load, no animation
+      setTimeout(()=>{
+        document.querySelectorAll('.stat-number,.sub-heading').forEach(el=>{
+          fontMix(el,el.textContent.trim());
+        });
+      },100);
+
+      // hero h1
+      const h1=document.querySelector('.intro-left h1');
+      if(h1){
+        const h1Text=h1.textContent.trim();
+        setTimeout(()=>{
+          h1.classList.add('h-scrambling');
+          scramble(h1,h1Text,1100,()=>{
+            h1.classList.remove('h-scrambling');
+            fontMix(h1,h1Text);
+            h1.classList.add('h-settled');
+          });
+        },350);
+      }
+    })();
+
+    // SoundCloud toggle
+    const scBar=document.getElementById('sc-bar');
+    const scToggle=document.getElementById('sc-toggle');
+    if(scToggle&&scBar){
+      scToggle.addEventListener('click',()=>{
+        scBar.classList.toggle('collapsed');
+        scToggle.querySelector('.sc-arrow').textContent=scBar.classList.contains('collapsed')?'▲':'▼';
+      });
+    }
+
+    // reveals
+    /* A block taller than (viewport / threshold) can never reach that ratio,
+       so a long section used to sit at opacity 0 for ever. Menzo's migration
+       jam was 3778px against a 775px window: a ceiling of 0.205 against a
+       0.2 bar. The extra thresholds keep the callback firing while you
+       scroll, and a block too tall to qualify on its own ratio qualifies on
+       how much of the screen it fills instead. */
+    const io=new IntersectionObserver((es,o)=>{
+      es.forEach(en=>{
+        if(!en.isIntersecting) return;
+        if(en.intersectionRatio>=.2 || en.intersectionRect.height>=innerHeight*.25){en.target.classList.add('active');o.unobserve(en.target);}
+      });
+    },{threshold:[0,.05,.1,.15,.2]});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    /* Safety net. The reveal is decoration, so nothing on the page is allowed
+       to stay invisible because an observer did not fire: no scroll events
+       reach this document while it is embedded in the portfolio pane, so this
+       polls instead, and retires itself the moment everything is shown. */
+    (function(){
+      const SEL = '.reveal';
+      let timer = 0, queued = false;
+      const sweep = () => {
+        queued = false;
+        document.querySelectorAll(SEL + ':not(.active)').forEach(el => {
+          const r = el.getBoundingClientRect();
+          /* In view, or already scrolled past. A fast scroll, a jump from the
+             contents, or a restored scroll position can carry a block from
+             below the fold to above it without the observer ever seeing it
+             intersect — and it would then sit at opacity 0 for the rest of
+             the visit, which also stops its video from ever playing. */
+          if (r.top < innerHeight * 0.92) el.classList.add('active');
+        });
+        if (!document.querySelector(SEL + ':not(.active)')) {
+          clearInterval(timer);
+          removeEventListener('scroll', onScroll);
+        }
+      };
+      /* scroll drives it so it keeps up, and the interval is the backstop;
+         both retire together the moment nothing is left hidden */
+      const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(sweep); } };
+      addEventListener('scroll', onScroll, { passive: true });
+      timer = setInterval(sweep, 250);
+      sweep();
+    })();
+
+  </script>
+
+  <!-- EQX cover video -->
+  <script>
+    var eqxPlayer, eqxMuted = true;
+    /* The showcase opens on the main menu and then a text card; the game
+       itself starts at 0:13. `start` skips that on the first pass, but a
+       YouTube loop restarts at 0 regardless — which is why the menu kept
+       coming back around. So every wrap gets sent forward too. */
+    var EQX_START = 14;
+    function eqxSkipIntro(p) {
+      try { if (p.getCurrentTime() < EQX_START - 0.5) p.seekTo(EQX_START, true); } catch (err) {}
+    }
+    /* The player is built at load, while this block is still below the fold
+       and at opacity 0. Chrome refuses autoplay to a player it cannot see,
+       and YouTube never retries — which is how the tile ended up sitting
+       there black. So playback waits until the block is genuinely on
+       screen, and is asked for then. */
+    var eqxReady = false, eqxSeen = false;
+    function eqxMaybePlay() {
+      if (!eqxReady || !eqxSeen || !eqxPlayer) return;
+      try { eqxPlayer.mute(); eqxPlayer.playVideo(); } catch (err) {}
+    }
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting && en.intersectionRatio > 0.25) { eqxSeen = true; eqxMaybePlay(); }
+      });
+    }, { threshold: [0, 0.25, 0.6] }).observe(document.querySelector('.eqx-video-wrap'));
+
+    function onYouTubeIframeAPIReady() {
+      eqxPlayer = new YT.Player('eqx-yt-player', {
+        videoId: 'ou-piZ1dt4U',
+        playerVars: { autoplay:1, loop:1, controls:0, mute:1, playlist:'ou-piZ1dt4U', start:EQX_START, rel:0, modestbranding:1, playsinline:1, disablekb:1 },
+        events: {
+          onReady: function(e) { e.target.mute(); eqxReady = true; eqxMaybePlay(); },
+          onStateChange: function(e) {
+            if (e.data === YT.PlayerState.PLAYING) {
+              eqxSkipIntro(e.target);
+              var poster = document.getElementById('eqx-poster');
+              if (poster) poster.classList.add('gone');
+            }
+            // a playlist loop can wrap without ever reporting ENDED, so the
+            // interval below is the one that actually catches most of them
+            if (e.data === YT.PlayerState.ENDED) { e.target.seekTo(EQX_START, true); e.target.playVideo(); }
+          }
+        }
+      });
+      setInterval(function () { if (eqxPlayer) eqxSkipIntro(eqxPlayer); }, 1000);
+    }
+    document.getElementById('eqx-mute-btn').addEventListener('click', function() {
+      if (!eqxPlayer) return;
+      if (eqxMuted) { eqxPlayer.unMute(); eqxMuted = false; this.textContent = '🔊'; this.setAttribute('aria-label','Mute'); }
+      else          { eqxPlayer.mute();   eqxMuted = true;  this.textContent = '🔇'; this.setAttribute('aria-label','Unmute'); }
+    });
+  </script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <!-- SoundCloud sticky player -->
+  <div id="sc-bar">
+    <div id="sc-toggle">
+      <span>♪ OST</span><span class="sc-arrow">▼</span>
+    </div>
+    <div id="sc-frame-wrap">
+      <iframe
+        allow="autoplay"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/hellio-399157292/sets/equinox-the-wizards-lighthouse&color=%23c8874a&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
+        scrolling="no">
+      </iframe>
+    </div>
+  </div>
+
+  <!-- QUICK LINKS WIDGET -->
+  <style>
+    html{scroll-behavior:smooth}
+    /* top:110px used to sit under the nav pill; with the nav gone it landed
+       on the copy, so the jump list moves out of the reading column */
+    #ql-widget{position:fixed;right:1.4rem;bottom:1.4rem;top:auto;z-index:900;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:.4rem}
+    /* the portfolio rail carries the contents when embedded, so the
+       floating widget would just be a second copy of the same list */
+    html[data-embedded] #ql-widget{display:none!important}
+    #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(var(--deep-rgb),.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
+    #ql-panel.open{max-height:min(520px, calc(100dvh - 9rem));overflow-y:auto;opacity:1;padding:.45rem}
+    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:clamp(.66rem,1.6vh,.78rem);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:clamp(.2rem,.8vh,.4rem) .7rem;border-radius:6px;transition:background .18s,color .18s}
+    #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:0.75rem;opacity:.45;margin-right:.25rem}
+    #ql-panel a:hover{background:var(--glass-highlight-1);color:var(--text-secondary)}
+    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(var(--deep-rgb),.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
+    #ql-toggle:hover{background:var(--glass-highlight-1);border-color:var(--rule)}
+    #ql-icon{font-size:1rem;line-height:1}
+    @media(max-width:768px){#ql-widget{right:1rem;top:auto;bottom:1.5rem;left:auto;transform:none;flex-direction:column-reverse;align-items:flex-end}#ql-panel{min-width:min(180px,80vw)}}
+  </style>
+  <div id="ql-widget">
+    <button id="ql-toggle" aria-label="Toggle section links" aria-expanded="false">
+      <span id="ql-icon">≡</span>
+      <span>Sections</span>
+    </button>
+    <div id="ql-panel"></div>
+  </div>
+  <script>
+    (function(){
+      const panel=document.getElementById('ql-panel');
+      const toggle=document.getElementById('ql-toggle');
+      const icon=document.getElementById('ql-icon');
+      let open=false;
+      function close(){open=false;panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');icon.textContent='≡';}
+      function mkLink(href,num,label,clickFn){
+        const a=document.createElement('a');
+        a.href=href;
+        a.innerHTML=`<span class="ql-num">${String(num).padStart(2,'0')}</span>${label}`;
+        a.addEventListener('click',clickFn||close);
+        return a;
+      }
+      panel.appendChild(mkLink('#',0,'Overview',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});close();}));
+      const ITEMS=[{id:'',label:'Overview',num:0}];
+      let n=1;
+      document.querySelectorAll('section[id], section.press-section').forEach(sec=>{
+        const eb=sec.querySelector('.eyebrow');
+        if(!eb)return;
+        const text=eb.textContent.trim();
+        if(text.length>60)return;
+        if(!sec.id)sec.id='press';
+        const num=n++;
+        ITEMS.push({id:sec.id,label:text,num:num});
+        panel.appendChild(mkLink('#'+sec.id,num,text));
+      });
+      window.__caseToc=ITEMS;   /* the standalone rail reads the same list */
+      toggle.addEventListener('click',e=>{e.stopPropagation();open=!open;panel.classList.toggle('open',open);toggle.setAttribute('aria-expanded',open);icon.textContent=open?'×':'≡';});
+      document.addEventListener('click',e=>{if(open&&!document.getElementById('ql-widget').contains(e.target))close();});
+
+      /* embedded, the portfolio rail carries these instead of the widget:
+         hand them up, answer a request, take scroll orders, and keep the
+         rail's highlight on whatever the reader is actually looking at */
+      if(window.parent!==window){
+        const post=m=>{try{window.parent.postMessage(m,'*');}catch(e){}};
+        const sendToc=()=>post({type:'caseToc',items:ITEMS});
+        /* the browser drops programmatic smooth scrolls inside this pane,
+           so the glide is ours. scroll-behavior goes to auto for the
+           duration or every frame tries to animate on top of us. */
+        const scroller=()=>document.scrollingElement||document.documentElement;
+        const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+        let anim=0;
+        const stopGlide=()=>{
+          cancelAnimationFrame(anim);
+          scroller().style.scrollBehavior='';
+        };
+        const glide=to=>{
+          const se=scroller();
+          const from=se.scrollTop;
+          const dist=Math.max(0,Math.min(to,se.scrollHeight-innerHeight))-from;
+          if(!dist)return;
+          stopGlide();
+          se.style.scrollBehavior='auto';
+          const t0=performance.now();
+          const dur=Math.min(900,Math.max(320,Math.abs(dist)*0.45));
+          const step=now=>{
+            const t=Math.min(1,(now-t0)/dur);
+            se.scrollTop=from+dist*ease(t);
+            if(t<1)anim=requestAnimationFrame(step);
+            else se.style.scrollBehavior='';
+          };
+          anim=requestAnimationFrame(step);
+        };
+        addEventListener('wheel',stopGlide,{passive:true});
+        addEventListener('touchstart',stopGlide,{passive:true});
+        sendToc();
+        addEventListener('message',ev=>{
+          const d=ev.data;
+          if(!d||typeof d!=='object')return;
+          if(d.type==='caseTocRequest')sendToc();
+          else if(d.type==='caseScrollTo'){
+            const el=d.id?document.getElementById(d.id):null;
+            glide(el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
+          }
+        });
+        /* tell the rail which section the reader is in */
+        let last=null,ticking=false;
+        const spy=()=>{
+          ticking=false;
+          const line=innerHeight*0.32;
+          let id='';
+          for(const it of ITEMS){
+            if(!it.id)continue;
+            const el=document.getElementById(it.id);
+            if(el&&el.getBoundingClientRect().top<=line)id=it.id;
+          }
+          if(id!==last){last=id;post({type:'caseSection',id:id});}
+        };
+        addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(spy);}},{passive:true});
+        spy();
+      }
+    })();
+  </script>
+
+  <!-- theme: the portfolio shell posts its theme in, and standalone we read
+       it ourselves, so this page is never stuck in the wrong one -->
+  <script>
+    (function(){
+      function set(t){ document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+      // light is the default now; a saved choice still wins
+      var t; try { t = localStorage.getItem('theme'); } catch(e) {}
+      set(t || 'light');
+      addEventListener('message', function(e){
+        if(e && e.data && e.data.type === 'theme') set(e.data.value);
+      });
+    })();
+  </script>
+
+  <!-- cursor: the shell draws the one cursor and already listens for these,
+       so embedded we hide ours and feed it. Standalone, ours stays. -->
+  <script>
+    (function(){
+      if (window.parent === window) return;
+      document.documentElement.setAttribute('data-embedded', '');
+      var ring = document.getElementById('cursor');
+      if (ring) ring.style.display = 'none';
+      var HOVER = 'a,button,input,select,textarea,summary,[role="button"],[onclick],' +
+                  '.skip-button,.card,.role-card,.quote-card,.stats-card,.must-haves-card,' +
+                  '.glass-card,.chip,.img-tile,.spec-row,.metric,img';
+      function post(m){ try { window.parent.postMessage(m, '*'); } catch (e) {} }
+      // posted straight from the event: rAF inside a pane the browser is
+      // throttling can stall, and that shows up as a cursor that lags or sticks
+      var lx = -1, ly = -1;
+      addEventListener('mousemove', function(e){
+        if (e.clientX === lx && e.clientY === ly) return;
+        lx = e.clientX; ly = e.clientY;
+        post({type:'iframeMouse', x:lx, y:ly});
+      });
+      addEventListener('mousedown',  function(){ post({type:'iframeDown'}); });
+      addEventListener('mouseup',    function(){ post({type:'iframeUp'}); });
+      addEventListener('mouseleave', function(){ post({type:'iframeLeave'}); });
+      addEventListener('mouseover', function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:true}); });
+      addEventListener('mouseout',  function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:false}); });
+    })();
+  </script>
+</body>
+</html>

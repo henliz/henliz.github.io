@@ -16,6 +16,17 @@
 </style>
 </head>
 <body>
+  <script>
+    /* Old capitalised URLs (/Skrimp/, /Trove/, /MyAuntie/, /Menzo/) are dead
+       since the rename — bookmarks and browser autocomplete still offer them,
+       which is why /skrimp kept turning into /Skrimp and erroring. Send them
+       to the real page instead of showing this. */
+    (function () {
+      var p = location.pathname.replace(/\/+$/, '').split('/').pop().toLowerCase();
+      var known = ['trove','skrimp','menzo','myauntie','equinox','about','playground','resume'];
+      if (known.indexOf(p) !== -1) location.replace('/' + p + '/');
+    })();
+  </script>
   <main>
     <h1>That page isn't here</h1>
     <p>Every case study lives at its own address, so one of these should be what you wanted:</p>

@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="Postpartum support that arrives as a text, not another app to download. TechNova 2025 winner: concept to live telephony in 36 hours. Case study by Henriëtta van Niekerk.">
+  <link rel="canonical" href="https://henliz.github.io/myauntie/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="MyAuntie — Henriëtta van Niekerk">
+  <meta property="og:description" content="Postpartum support that arrives as a text, not another app to download. TechNova 2025 winner: concept to live telephony in 36 hours. Case study by Henriëtta van Niekerk.">
+  <meta property="og:url" content="https://henliz.github.io/myauntie/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="../HenLogo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Auntie &ndash; Case Study</title>
+  <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── type scale ────────────────────────────────────────────────
+       One fluid root so every rem on the page grows with the screen
+       instead of sitting at a fixed 16px. The floor and ceiling are
+       in rem, not px, so a reader who has raised their browser's
+       default font size keeps that increase (WCAG 1.4.4). */
+    html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
+
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('../fonts/DotempDemo.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    /* Font-mix classes — matches main portfolio */
+    .px { font-family: 'DotempDemo', monospace; font-style: normal; font-weight: 400; font-size: 0.9em; }
+    .di { font-family: 'Didot', 'Cormorant Garamond', serif; font-style: italic; font-weight: 700; }
+
+    :root{
+      --accent-rgb: 196,96,122;
+      --accent-soft-rgb: 220,140,170;
+      --accent-deep-rgb: 69,123,157;
+      --deep-rgb: 15,20,25;
+      --chrome-rgb: 14,4,10;
+      --lift-rgb: 255,255,255;
+      --ink-rgb: 241,250,238;
+      --sh-rgb: 0,0,0;
+      --sh-k: 1;
+      --paper: #1A0711;
+      --text-primary:#f1faee;
+      --text-secondary:#e8a8c4;
+      --accent-teal:#D0768D;   /* lifted: the pane is translucent now, so the sky raises the backdrop under it */
+      --accent-blue:#a04060;
+      --glass-deep-1: rgba(var(--deep-rgb),0.90);
+      --glass-deep-2: rgba(var(--deep-rgb),0.96);
+      --glass-border: rgba(var(--accent-soft-rgb),0.22);
+      --glass-highlight-1: rgba(var(--accent-soft-rgb),.10);
+      --glass-highlight-2: rgba(var(--accent-deep-rgb),.10);
+      --glass-bg: rgba(var(--deep-rgb),0.35);
+      --inner-card: rgba(var(--deep-rgb),.42);
+      --rule: rgba(var(--accent-soft-rgb),0.24);
+    }
+
+    /* ── LIGHT THEME ───────────────────────────────────────────
+       Authored dark, so light restates the same colour families
+       rather than inverting them: glass goes to paper, the deep
+       washes go pale, and every accent drops to a value that
+       clears WCAG AA on the light surface it lands on. */
+    :root[data-theme="light"] {
+      --text-primary: #200F17;
+      --text-secondary: #9A2C50;
+      --accent-teal: #A83557;
+      --accent-blue: #8C2545;
+      --glass-deep-1: rgba(255,255,255,0.94);
+      --glass-deep-2: rgba(255,248,251,0.97);
+      --glass-border: rgba(168,53,87,0.26);
+      --glass-highlight-1: rgba(168,53,87,.07);
+      --glass-highlight-2: rgba(45,90,125,.07);
+      --glass-bg: rgba(255,255,255,0.74);
+      --inner-card: rgba(255,255,255,0.80);
+      --rule: rgba(168,53,87,0.24);
+      --accent-rgb: 168,53,87;
+      --accent-soft-rgb: 154,44,80;
+      --accent-deep-rgb: 45,90,125;
+      --deep-rgb: 252,230,238;
+      --chrome-rgb: 255,255,255;
+      --lift-rgb: 168,53,87;
+      --ink-rgb: 32,15,23;
+      --sh-rgb: 74,32,48;
+      --sh-k: .34;
+      --paper: #FFF4F8;
+    }
+
+    /* reset + base */
+    *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;color:var(--text-primary)}
+    a{text-decoration:none;color:inherit}
+    ul{list-style:disc inside}
+
+    /* custom cursor */
+    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(var(--accent-rgb),.3);border:2px solid rgba(var(--accent-rgb),.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(var(--accent-rgb),.4),inset 0 0 10px rgba(var(--accent-rgb),.1)}
+    .custom-cursor.clicking{background:rgba(var(--accent-rgb),.9);border-color:rgba(var(--accent-rgb),1);transform:translate(-50%,-50%) scale(.8);box-shadow:0 0 25px rgba(var(--accent-rgb),.8),inset 0 0 15px rgba(var(--accent-rgb),.3)}
+    .custom-cursor.hovering{width:30px;height:30px;background:rgba(var(--accent-rgb),.4);border-color:rgba(var(--accent-rgb),.9);box-shadow:0 0 20px rgba(var(--accent-rgb),.6),inset 0 0 12px rgba(var(--accent-rgb),.2)}
+    *,*::before,*::after{cursor:none !important}
+
+    /* pink page tint */
+    body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;background:rgba(160,40,80,0.06);}
+    /* logo pink-shift */
+    .navbar .logo img{filter:hue-rotate(160deg) saturate(1.3) brightness(1.05) !important;transition:filter .4s ease;}
+    .navbar:not(.pill) .logo img{filter:hue-rotate(160deg) saturate(1.3) brightness(1.06) drop-shadow(0 4px 10px rgba(200,80,120,0.22)) !important;}
+
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    /* --- TYPE HIERARCHY --- */
+    h1,h2,h3,h4{font-family:'Montserrat Alternates',sans-serif}
+
+    /* Section eyebrow label */
+    .eyebrow{
+      display:block;
+      font-size:0.84rem;
+      font-weight:700;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--accent-teal);
+      margin-bottom:.6rem;
+      opacity:.85;
+    }
+
+    /* Editorial section heading — base font is overridden per-char after scramble */
+    .section-heading{
+      font-size: clamp(1.6rem,3.5vw,2.6rem);
+      font-weight:700;
+      color:var(--text-secondary);
+      line-height:1.15;
+      margin-bottom:1.25rem;
+      font-family: 'Didot', 'Cormorant Garamond', serif;
+      font-style: italic;
+      letter-spacing: 0.06em;
+    }
+    /* During scramble: monospace pixel font + CA pulse */
+    .section-heading.h-scrambling{
+      font-family: 'DotempDemo', monospace !important;
+      font-style: normal !important;
+      animation: hCaScramble 0.7s ease-in-out infinite;
+    }
+    /* After settle: gentle residual CA */
+    .section-heading.h-settled{
+      animation: hCaSettle 3s ease-in-out infinite;
+    }
+
+    /* Hero title — font-mix + scramble, gradient preserved */
+    .intro-left h1{
+      letter-spacing: 0.06em;
+    }
+    .intro-left h1.h-scrambling{
+      font-family: 'DotempDemo', monospace !important;
+      font-style: normal !important;
+      animation: gradientShift 4s ease infinite, hCaScramble 0.7s ease-in-out infinite !important;
+    }
+    .intro-left h1.h-settled{
+      animation: gradientShift 4s ease infinite, hCaSettle 3s ease-in-out infinite !important;
+    }
+
+    @keyframes hCaScramble {
+      0%   { text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(102,252,241,0.55); }
+      18%  { text-shadow: 5px 0 rgba(255,30,60,0.8),  -5px 0 rgba(102,252,241,0.8);  clip-path: inset(0 0 88% 0); }
+      19%  { clip-path: inset(0 0 0 0); }
+      40%  { text-shadow: 1px 0 rgba(255,30,60,0.3),  -1px 0 rgba(102,252,241,0.3); }
+      57%  { text-shadow: 6px 0 rgba(255,30,60,0.85), -6px 0 rgba(102,252,241,0.85); clip-path: inset(72% 0 0 0); }
+      58%  { clip-path: inset(0 0 0 0); }
+      100% { text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(102,252,241,0.55); }
+    }
+    @keyframes hCaSettle {
+      0%, 100% { text-shadow: 1.5px 0 rgba(255,30,60,0.18), -1.5px 0 rgba(102,252,241,0.18); }
+      50%       { text-shadow: 2.5px 0 rgba(255,30,60,0.28), -2.5px 0 rgba(102,252,241,0.28); }
+    }
+
+    /* Sub-heading */
+    .sub-heading{
+      font-size: clamp(1.15rem,2vw,1.5rem);
+      font-weight:600;
+      color:var(--text-secondary);
+      margin-bottom:.75rem;
+    }
+
+    /* --- HERO WRAPPER --- */
+    .hero{
+      padding: clamp(56px, 8vh, 88px) 0 0;
+      display:flex;
+      justify-content:center;
+    }
+
+    /* --- MAIN CONTAINER --- */
+    .hero-container{
+      width: min(1080px, 90vw);
+      margin: 0 auto clamp(24px, 4vh, 48px);
+      border-radius: 26px;
+      padding: clamp(18px, 2.4vw, 40px);
+      position: relative;
+      background: linear-gradient(145deg, var(--glass-deep-1), var(--glass-deep-2));
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(18px) saturate(120%);
+      -webkit-backdrop-filter: blur(18px) saturate(120%);
+      box-shadow: 0 24px 80px rgba(var(--sh-rgb), calc(.55 * var(--sh-k))), inset 0 1px 0 rgba(var(--lift-rgb),.04);
+      overflow: hidden;
+    }
+    .hero-container::before,
+    .hero-container::after{
+      content:"";
+      position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+      background:
+        radial-gradient(560px 200px at 8% -8%, var(--glass-highlight-1), transparent 60%),
+        radial-gradient(520px 180px at 108% 12%, var(--glass-highlight-2), transparent 60%);
+      mix-blend-mode:screen; opacity:.7;
+    }
+
+    /* --- HERO INTRO --- */
+    .intro{
+      display:flex; justify-content:space-between; align-items:flex-start; gap:2rem;
+      padding: 2.25rem;
+      border-bottom:1px solid var(--rule);
+      margin-bottom: clamp(24px, 4vh, 40px);
+    }
+    .intro-left{flex:1; padding-right:2rem}
+    .intro-left h1{
+      font-size: clamp(2.6rem, 7vw, 5.5rem); font-weight:800; line-height:1.05; margin-bottom:.6rem;
+      background:linear-gradient(45deg,#f4a0be,#c4607a,#f1faee,#ffb3d0,#e06080);
+      background-size:300% 300%;
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      animation:gradientShift 4s ease infinite;
+    }
+    .intro-left .tagline{
+      font-family: 'Cormorant Garamond', 'Didot', serif;
+      font-style: italic;
+      font-size: clamp(1.15rem, 2.2vw, 1.65rem);
+      font-weight:400;
+      color:var(--text-secondary);
+      margin-bottom:1rem;
+      line-height:1.4;
+      letter-spacing: 0.02em;
+    }
+    .intro-right{max-width:38%; display:flex; flex-direction:column; gap:.75rem; align-items:flex-start}
+    .header-info p{font-size:.95rem; margin-bottom:.4rem; color:var(--text-primary)}
+    .header-info ul{color:var(--text-secondary); margin:.2rem 0 0 1.2rem; font-size:.9rem; line-height:1.8}
+
+    /* TL;DR pills */
+    .tldr-pills{
+      display:flex; flex-wrap:wrap; gap:6px 8px; margin-top:.85rem; padding:0; list-style:none;
+    }
+    .tldr-pills .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:0.84rem; line-height:1.15;
+      padding:4px 10px; border-radius:999px;
+      background:rgba(var(--lift-rgb),.05); border:1px solid rgba(var(--accent-soft-rgb),0.15);
+    }
+
+    /* --- OUTCOME STRIP --- */
+    /* Skrimp's skip button, in this page's own colours: a gradient pill with a
+       lift on hover and a sheen that sweeps across it. MyAuntie had no .skip-button rule at all, so it was rendering as a plain anchor. */
+    .skip-link { margin-top:1rem; display:flex; justify-content:flex-end; }
+    .skip-button {
+      display:inline-block;
+      background:linear-gradient(45deg,var(--accent-teal),var(--accent-blue));
+      color:#FFF4F8; font-size:.82rem; font-weight:700; letter-spacing:.08em;
+      text-transform:uppercase; text-decoration:none;
+      padding:.85rem 1.8rem; border:none; border-radius:50px;
+      transition:transform .3s ease, box-shadow .3s ease;
+      box-shadow:0 4px 15px rgba(var(--accent-rgb),.40);
+      position:relative; overflow:hidden;
+    }
+    .skip-button:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(var(--accent-rgb),.60); }
+    .skip-button::before {
+      content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+      transition:left .5s;
+    }
+    .skip-button:hover::before { left:100%; }
+
+    .outcome-strip{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:0;
+      border:1px solid var(--rule);
+      border-radius:16px;
+      overflow:hidden;
+      margin-bottom: clamp(32px, 5vh, 56px);
+    }
+    .outcome-item{
+      padding:1.5rem 1.25rem;
+      border-right:1px solid var(--rule);
+      display:flex; flex-direction:column; gap:.3rem;
+    }
+    .outcome-item:last-child{border-right:0}
+    .outcome-num{
+      font-family: 'Didot', 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight:700;
+      color:var(--text-secondary);
+      line-height:1;
+      letter-spacing: 0.06em;
+    }
+    .outcome-label{
+      font-size:.8rem;
+      color:var(--text-primary);
+      opacity:.75;
+      line-height:1.4;
+    }
+
+    /* --- DIVIDER --- */
+    .section-rule{
+      border:0;
+      border-top:1px solid var(--rule);
+      margin: clamp(32px, 5vh, 56px) 0;
+    }
+
+    /* shared section spacing */
+    section{width:100%;padding: clamp(32px, 5vh, 56px) 0;position:relative}
+
+    .section-content{max-width:100%;margin:0 auto;text-align:left}
+
+    /* No measure cap. Trove's prose runs the full column and this one now
+       matches; the 72ch limit is what made the page read as a narrow gutter
+       with acres of dead space either side. */
+    .section-content p{
+      font-size:clamp(.95rem,1.18vw,1.04rem);
+      line-height:1.78;
+      margin-bottom:1rem;
+      color:var(--text-primary);
+      opacity:.92;
+    }
+    .lede{
+      font-size:clamp(1.04rem,1.7vw,1.22rem); line-height:1.55; font-weight:600;
+      color:var(--text-primary); opacity:1; margin-bottom:1.1rem;
+    }
+    .cap{
+      font-size:0.84rem; color:var(--text-secondary); opacity:.8;
+      margin-top:.6rem; text-align:center;
+    }
+
+    /* --- EDITORIAL PULL QUOTES --- */
+    .pull-quote{
+      border-left:3px solid var(--accent-teal);
+      padding:.9rem 1.5rem;
+      margin:1.5rem 0;
+      font-size:1.15rem;
+      font-style:italic;
+      color:var(--text-secondary);
+      line-height:1.5;
+    }
+    .pull-quote cite{
+      display:block;
+      margin-top:.5rem;
+      font-size:.85rem;
+      font-style:normal;
+      opacity:.7;
+      color:var(--text-primary);
+    }
+
+    /* quote grid — editorial style */
+    .quote-grid{display:grid;grid-template-columns:repeat(3,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+    .quote-card{
+      border-left:2px solid var(--accent-teal);
+      padding:1.1rem 1.25rem;
+      background:rgba(var(--deep-rgb),.3);
+      border-radius:0 12px 12px 0;
+      opacity:0;transform:translateY(18px);transition:.5s;
+    }
+    .quote-text{font-size:.95rem;line-height:1.5;margin-bottom:.6rem;color:var(--text-primary);font-style:italic}
+    .quote-author{font-size:.82rem;opacity:.65;color:var(--text-secondary)}
+
+    /* --- EDITORIAL STATS --- */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:2rem}
+    .stats-card{
+      padding:1.5rem 1.1rem;
+      border-top:2px solid var(--accent-teal);
+      opacity:0;transform:translateY(20px);transition:all .5s ease;
+    }
+    .stat-number{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:clamp(2rem, 4vw, 3rem);
+      font-weight:800;
+      color:var(--text-secondary);
+      line-height:1;
+      margin-bottom:.5rem;
+    }
+    .stats-title{font-size:.85rem;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem;line-height:1.3}
+    .stats-desc{font-size:.85rem;line-height:1.45;color:var(--text-primary);opacity:.8}
+
+    /* --- HIGHLIGHT BOX (left border editorial style) --- */
+    .highlight-box{
+      border-left:2px solid rgba(var(--accent-soft-rgb),0.45);
+      padding:1rem 1.2rem 1rem 1.35rem;
+      /* it had margin-top only and no bottom, so whatever followed sat flush
+         against it. The block is a pause in the prose; it needs air after it. */
+      margin:1.5rem 0 1.9rem;
+      background:rgba(var(--deep-rgb),.3);
+      border-radius:0 10px 10px 0;
+      font-size:.95rem;
+      line-height:1.55;
+      color:var(--text-primary);
+    }
+    .highlight-box strong{
+      color:var(--text-secondary); display:block;
+      margin-bottom:.28rem; font-weight:700;
+    }
+
+    /* --- LAYOUTS --- */
+    .two-col{display:flex;gap:2.5rem;flex-wrap:wrap;align-items:flex-start;margin-top:1.5rem}
+    .two-col > *{flex:1;min-width:260px}
+
+    .challenge-col.left img,.challenge-skinny-image{
+      width:100%;border-radius:12px;display:block;
+      box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));
+      border:1px solid var(--glass-border);
+    }
+    .challenge-skinny-image{margin-top:1rem}
+
+    .big-image{text-align:center;margin-top:2rem}
+    .big-image img{max-width:100%;border-radius:12px;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));border:1px solid var(--glass-border)}
+
+    .overview-cover{
+      width:100%;border-radius:12px;
+      box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));
+      border:1px solid var(--glass-border);
+      margin-top:1.25rem;
+    }
+
+    /* --- CARDS (takeaways) --- */
+    .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin:0 auto}
+    .card{
+      border-top:2px solid var(--accent-teal);
+      padding:1.5rem;
+      background:rgba(var(--deep-rgb),.3);
+      border-radius:0 0 14px 14px;
+      transition:.25s;
+    }
+    .card:hover{background:rgba(var(--deep-rgb),.5)}
+    .card h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;opacity:.65;margin-bottom:.35rem;color:var(--accent-teal)}
+    .card h3{font-size:1.15rem;margin-bottom:.4rem;color:var(--text-secondary);font-family:'Montserrat Alternates',sans-serif;}
+    .card p{font-size:.95rem;line-height:1.45;color:var(--text-primary);opacity:.85}
+
+    /* --- MUST-HAVES --- */
+    .must-haves-container{
+      display:grid;
+      grid-template-columns:minmax(260px,0.85fr) 1.4fr;
+      gap:1.5rem 2rem;
+      align-items:start;
+      margin:2rem auto 0;
+    }
+    .must-haves-left{position:sticky;top:24px}
+    .must-haves-right{display:grid;grid-template-columns:1fr;gap:1rem}
+    .must-haves-card{
+      border-left:2px solid rgba(var(--accent-soft-rgb),0.3);
+      padding:1rem 1.1rem 1rem 1.25rem;
+      background:rgba(var(--deep-rgb),.25);
+      border-radius:0 10px 10px 0;
+    }
+    .must-haves-card h4{font-size:.88rem;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem}
+    .must-haves-card p{font-size:.9rem;line-height:1.5;color:var(--text-primary);opacity:.85}
+
+    /* --- DESIGN PROCESS --- */
+    .process-subsection{margin-bottom:2.5rem}
+    .process-dense-row{display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;margin-top:1.5rem}
+    .process-dense-left,.process-dense-right{flex:1;min-width:240px}
+
+    .mini-images{display:flex;justify-content:center;align-items:center;gap:clamp(14px,2vw,24px);margin:1.25rem auto;max-width:min(500px,95%)}
+    .mini-images img{display:block;border-radius:12px;height:auto;max-width:100%;width:70%;box-shadow:0 8px 24px rgba(var(--sh-rgb), calc(.18 * var(--sh-k)));border:1px solid var(--glass-border)}
+    .mini-images img:nth-child(2){width:56%}
+
+    /* video embeds */
+    .video-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin:1.5rem auto 0;border-radius:12px;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)))}
+    .video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px}
+
+    /* ideation images */
+    .ideation-images{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.75rem}
+    .ideation-images img{width:48%;border-radius:12px;box-shadow:0 8px 24px rgba(var(--sh-rgb), calc(.2 * var(--sh-k)));border:1px solid var(--glass-border)}
+
+    /* reflection blocks */
+    .reflection{margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--rule)}
+    .reflection h3{font-size:1.35rem;margin-bottom:.75rem;color:var(--text-secondary);font-family:'Montserrat Alternates',sans-serif}
+    .reflection p{font-size:1rem;line-height:1.6;color:var(--text-primary);opacity:.88;margin-bottom:.75rem}
+
+    /* works cited */
+    /* ── crooked cards ────────────────────────────────────────────────
+       Ported from the Trove case study: a wrapping flex row of cards, each
+       sitting at a slightly different angle and offset, untilting on hover.
+       Built on MyAuntie's own tokens rather than Trove's, so they follow this
+       page's rose palette and its light-mode block for free. */
+    .steps{
+      display:flex; flex-wrap:wrap; gap:clamp(10px,1.4vw,18px);
+      margin:clamp(24px,3.2vh,36px) 0 clamp(14px,2vh,22px); align-items:flex-start;
+    }
+    .step-card{
+      flex:1 1 205px; min-width:190px;
+      background:var(--inner-card); border:1px solid var(--glass-border);
+      border-radius:16px; padding:1rem 1rem 1.05rem;
+      box-shadow:0 10px 30px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+    }
+    .step-card:nth-child(1){transform:rotate(-2.6deg) translateY(2px)}
+    .step-card:nth-child(2){transform:rotate(2.1deg) translateY(17px)}
+    .step-card:nth-child(3){transform:rotate(-1.8deg) translateY(6px)}
+    .step-card:nth-child(4){transform:rotate(2.7deg) translateY(21px)}
+    .step-card:nth-child(5){transform:rotate(-1.4deg) translateY(10px)}
+    .step-card:hover{
+      transform:rotate(0deg) translateY(-5px);
+      box-shadow:0 18px 44px rgba(var(--sh-rgb), calc(.32 * var(--sh-k)));
+    }
+    .step-card .n{
+      font-family:'DotempDemo',monospace; font-size:0.78rem; letter-spacing:.1em;
+      color:var(--accent-teal); display:block; margin-bottom:.32rem;
+    }
+    .step-card h4{
+      font-size:.94rem; font-weight:700; color:var(--text-primary);
+      margin-bottom:.35rem; line-height:1.25;
+    }
+    .step-card p{
+      font-size:.82rem; line-height:1.55; color:var(--text-primary);
+      opacity:.82; margin:0;
+    }
+    /* No frame around the art. The tinted box read as a second card inside the
+       card; the aspect ratio stays so a row of them keeps a common baseline. */
+    .step-card .step-art{
+      margin-top:.6rem;
+      aspect-ratio:4 / 3; display:flex; align-items:center; justify-content:center;
+      padding:.4rem 0 0;
+    }
+    .step-card .step-art img{max-width:88%; max-height:88%; width:auto; height:auto; display:block}
+
+    /* the quote and stat rows reuse the same crooked row */
+    .quote-grid, .stats-grid{
+      display:flex; flex-wrap:wrap; --g:clamp(10px,1.4vw,18px); gap:var(--g);
+      margin:clamp(22px,3vh,34px) 0 clamp(14px,2vh,22px); align-items:flex-start;
+    }
+    /* five quotes, deliberately two on the first row and three on the second.
+       Left to wrap on their own they came out four and one, with the stray
+       fifth stretching the full width. */
+    .quote-grid .quote-card{flex:0 1 auto}
+    .quote-grid .quote-card:nth-child(-n+2){flex-basis:calc(50% - var(--g) / 2)}
+    .quote-grid .quote-card:nth-child(n+3){flex-basis:calc(33.333% - var(--g) * 2 / 3)}
+    .quote-card, .stats-card{
+      flex:1 1 235px; min-width:210px;
+      background:var(--inner-card); border:1px solid var(--glass-border);
+      border-radius:16px; padding:1.05rem 1.1rem;
+      box-shadow:0 10px 30px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+    }
+    /* Skrimp's angles, which are stronger than Trove's and read better on a
+       dark page. Five distinct ones so a row of four or five looks
+       hand-placed rather than like a repeating zigzag. */
+    .quote-card:nth-child(5n+1), .stats-card:nth-child(5n+1){transform:rotate(-2.6deg) translateY(2px)}
+    .quote-card:nth-child(5n+2), .stats-card:nth-child(5n+2){transform:rotate(2.1deg) translateY(17px)}
+    .quote-card:nth-child(5n+3), .stats-card:nth-child(5n+3){transform:rotate(-1.8deg) translateY(6px)}
+    .quote-card:nth-child(5n+4), .stats-card:nth-child(5n+4){transform:rotate(2.7deg) translateY(21px)}
+    .quote-card:nth-child(5n+5), .stats-card:nth-child(5n+5){transform:rotate(-1.4deg) translateY(10px)}
+    .quote-card:hover, .stats-card:hover{
+      transform:rotate(0deg) translateY(-5px);
+      box-shadow:0 18px 44px rgba(var(--sh-rgb), calc(.32 * var(--sh-k)));
+    }
+    .quote-text{font-size:.92rem; line-height:1.6; color:var(--text-primary); margin:0 0 .6rem}
+    .quote-author{font-size:0.84rem; color:var(--text-secondary); opacity:.85}
+    .stats-title{font-size:.88rem; font-weight:700; color:var(--text-primary); margin:.2rem 0 .3rem}
+    .stats-card .stat-number{
+      font-family:'DotempDemo',monospace; font-size:1.5rem; color:var(--accent-teal);
+      display:block; line-height:1;
+    }
+    .stats-desc{font-size:.8rem; line-height:1.55; color:var(--text-primary); opacity:.8; margin:0}
+
+    /* a plain wrapping image row, for the pages that have plenty of artwork */
+    .img-grid{
+      display:flex; flex-wrap:wrap; gap:clamp(12px,1.6vw,20px);
+      margin:clamp(20px,2.8vh,32px) 0 .4rem; align-items:flex-start;
+    }
+    .img-tile{flex:1 1 260px; min-width:220px; margin:0}
+    /* a full-length phone screenshot is three times taller than a slide, so it
+       takes a narrower column rather than dragging the whole row out of shape */
+    .img-tile--tall{flex:0 1 320px; min-width:220px}
+    .img-tile img{
+      width:100%; height:auto; display:block; border-radius:14px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 12px 34px rgba(var(--sh-rgb), calc(.26 * var(--sh-k)));
+    }
+    .img-tile figcaption{
+      font-size:0.84rem; color:var(--text-secondary); opacity:.8;
+      margin-top:.45rem; text-align:center;
+    }
+    .img-wide{margin:clamp(20px,2.8vh,32px) 0 .4rem}
+    .img-wide img{
+      width:100%; height:auto; display:block; border-radius:16px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 14px 40px rgba(var(--sh-rgb), calc(.28 * var(--sh-k)));
+    }
+    .img-wide figcaption{
+      font-size:0.84rem; color:var(--text-secondary); opacity:.8;
+      margin-top:.5rem; text-align:center;
+    }
+    /* The flow diagram is line art, not a screenshot, so it gets no frame.
+       This has to sit AFTER .img-wide img: the two selectors have equal
+       specificity, so source order is the only thing deciding it. */
+    .img-flow img{ border:none; box-shadow:none; background:none }
+
+    /* the three intents, as pills */
+    .chip-row{display:flex; flex-wrap:wrap; gap:.5rem; margin:1rem 0 1.3rem}
+    .chip{
+      font-size:0.84rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+      padding:.42rem .8rem; border-radius:999px;
+      color:var(--accent-teal); background:var(--glass-highlight-1);
+      border:1px solid var(--glass-border);
+    }
+    @media(prefers-reduced-motion:reduce){
+      .step-card,.quote-card,.stats-card{transform:none !important}
+    }
+    @media(max-width:560px){
+      .step-card,.quote-card,.stats-card{flex:1 1 100%; transform:none !important}
+      .step-card:hover,.quote-card:hover,.stats-card:hover{transform:translateY(-3px) !important}
+    }
+
+    .works-cited{margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--rule)}
+    .works-cited h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-teal);margin-bottom:1rem}
+    .works-cited p{font-size:.82rem;line-height:1.55;color:var(--text-primary);opacity:.6;margin-bottom:.6rem}
+
+
+    /* ══ VERTICAL RHYTHM ═══════════════════════════════════════════════
+       One scale for every block in the flow. Before this each component
+       carried its own ad hoc margins and the gaps between neighbours ran
+       from -12px to +51px, including several outright collisions.
+
+       The crooked card rows are the subtle one: their cards are pushed
+       down by up to 21px with translateY, which happens AFTER layout and
+       so sits outside the container's own box. Without that added back as
+       bottom margin the next block lands on top of the lowest card. */
+    .section-content > *{ margin-top:0 }
+    .lede{ margin:0 0 1.25rem }
+
+    .steps, .quote-grid, .stats-grid, .img-grid, .img-wide, .mini-images,
+    .video-embed, .showcase, .mood-ladder, .tot-matrix-wrap, .big-image,
+    .vid-crop, .ideation-images, .process-dense-row, .role-cols, .cards,
+    .must-haves-grid, .outcome-strip, .quote-grid{
+      margin:2rem 0 1.7rem;
+    }
+    .steps, .quote-grid, .stats-grid{ margin-bottom:2.9rem }   /* + the tilt drop */
+    .steps:has(+ .cap){ margin-bottom:1.4rem }
+
+    /* a caption belongs to the thing above it, not to the paragraph below */
+    .cap, .img-grid figcaption, .img-wide figcaption{ margin-top:.55rem; margin-bottom:0 }
+    .video-embed + .cap, .mini-images + .cap, .img-wide + .cap,
+    .showcase + .cap{ margin-top:.75rem }
+    .cap + p, figcaption + p{ margin-top:1.6rem }
+
+    .highlight-box{ margin:1.9rem 0 2rem }
+    .chip-row{ margin:2rem 0 1.7rem }
+
+    /* A caption has to hug the thing it captions. Without this the media's own
+       bottom margin (27px) collapses against the caption's top margin and wins,
+       so the label floats halfway to the next paragraph. */
+    .video-embed:has(+ .cap), .mini-images:has(+ .cap),
+    .img-wide:has(+ .cap), .showcase:has(+ .cap){ margin-bottom:0 }
+    .video-embed + .cap, .mini-images + .cap,
+    .img-wide + .cap, .showcase + .cap{ margin-top:.7rem }
+    .works-cited{ margin-top:2.8rem }
+
+    /* a heading always gets clear air above it */
+    .section-heading{ margin-top:0 }
+    .section-content > p + .section-heading{ margin-top:2.4rem }
+
+    /* the skip control needs room before the story starts */
+    .skip-link{ margin:1.2rem 0 clamp(30px,4.5vh,52px) }
+
+    /* four cards in a row were nearly touching */
+    .steps, .quote-grid, .stats-grid, .img-grid{ gap:clamp(14px,1.9vw,26px) }
+
+    /* --- REVEALS --- */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease-out,transform .5s ease-out}
+    .active{opacity:1 !important;transform:translateY(0) !important}
+    /* .active above sets transform:translateY(0) !important, which flattens
+       any tilted card that also carries `reveal` — the crooked cards were
+       straightening themselves the instant they scrolled in. Skrimp hits the
+       same wall and answers it the same way: restate the tilt at equal weight. */
+    .step-card.active:nth-child(1),.quote-card.active:nth-child(5n+1),.stats-card.active:nth-child(5n+1){transform:rotate(-2.6deg) translateY(2px) !important}
+    .step-card.active:nth-child(2),.quote-card.active:nth-child(5n+2),.stats-card.active:nth-child(5n+2){transform:rotate(2.1deg) translateY(17px) !important}
+    .step-card.active:nth-child(3),.quote-card.active:nth-child(5n+3),.stats-card.active:nth-child(5n+3){transform:rotate(-1.8deg) translateY(6px) !important}
+    .step-card.active:nth-child(4),.quote-card.active:nth-child(5n+4),.stats-card.active:nth-child(5n+4){transform:rotate(2.7deg) translateY(21px) !important}
+    .step-card.active:nth-child(5),.quote-card.active:nth-child(5n+5),.stats-card.active:nth-child(5n+5){transform:rotate(-1.4deg) translateY(10px) !important}
+    .step-card.active:hover,.quote-card.active:hover,.stats-card.active:hover{
+      transform:rotate(0deg) translateY(-5px) !important;
+    }
+
+    /* --- RESPONSIVE --- */
+    @media(max-width:900px){
+      .intro-right{max-width:100%;align-items:flex-start}
+      .outcome-strip{grid-template-columns:repeat(2,1fr)}
+      .outcome-item:nth-child(2){border-right:0}
+      .outcome-item:nth-child(3){border-top:1px solid var(--rule)}
+      .outcome-item:nth-child(4){border-top:1px solid var(--rule)}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      .must-haves-container{grid-template-columns:1fr}
+      .must-haves-left{position:static}
+    }
+    @media(max-width:768px){
+      .intro{flex-direction:column;align-items:flex-start;padding:1.5rem}
+      .intro-left{padding-right:0}
+      .intro-right{max-width:100%}
+      .outcome-strip{grid-template-columns:1fr 1fr}
+      .quote-grid{grid-template-columns:1fr}
+      .stats-grid{grid-template-columns:1fr 1fr}
+      .cards{grid-template-columns:1fr}
+      .two-col{flex-direction:column}
+      .must-haves-right{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){
+      .outcome-strip{grid-template-columns:1fr}
+      .outcome-item{border-right:0;border-bottom:1px solid var(--rule)}
+      .outcome-item:last-child{border-bottom:0}
+      .stats-grid{grid-template-columns:1fr}
+    }
+      /* ── PANE MODE ─────────────────────────────────────────────
+       This page is read inside the portfolio's right-hand pane,
+       which now supplies both the paper and the tinted sky. So it
+       stops painting a floating card on a sky of its own — the
+       container is just a reading column — and it paints the paper
+       itself so it still stands up when opened standalone. */
+    html,body{background:var(--paper)}
+    /* in the pane the shell paints the paper — translucent, so the one sky
+       reads through the reading surface the way it does on the home page.
+       Standalone there is no sky behind us, so we keep painting it ourselves. */
+    html[data-embedded],html[data-embedded] body{background:transparent}
+    .hero{padding:0}
+    .hero-container{
+      /* the PANE paints the paper edge to edge; this is only the reading
+         column, centred in it — so the margins each side are paper, never
+         a second sky like the old floating card had */
+      width:100%; max-width:1180px; margin-inline:auto;
+      border:none; border-radius:0;
+      background:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+      box-shadow:none;
+      padding:clamp(30px,4.5vh,60px) clamp(22px,4vw,60px) clamp(60px,9vh,110px);
+    }
+    .hero-container::before,.hero-container::after{display:none}
+    /* nothing breaks the gutter: media is bounded by the column, not the pane */
+    .hero-container img,
+    .hero-container video,
+    .hero-container iframe,
+    .hero-container canvas{max-width:100%}
+    .hero-container img{height:auto}
+    /* a flex row of percentage-width images can still sum past its own box
+       (two at 70% each), so let the row wrap and the items shrink */
+    .hero-container [class$="-images"],
+    .hero-container .mini-images{flex-wrap:wrap}
+    .hero-container [class$="-images"] > img,
+    .hero-container .mini-images > img{min-width:0;flex-shrink:1}
+    /* flex and grid children only stay inside the column if allowed to shrink */
+    .intro-left,.intro-right,.section-content,.two-col > *{min-width:0}
+    /* the press panel was the bottom half of the hero card — that card is
+       gone, so it stops floating and takes the same measure as everything else */
+    .press-wrapper{
+      width:100%; max-width:1180px; margin-inline:auto;
+      padding:clamp(18px,2.4vw,40px) clamp(22px,4vw,60px);
+      background:none; border:none; border-radius:0; box-shadow:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+    }
+    .press-wrapper::before,.press-wrapper::after{display:none}
+
+    /* ---- BANNER + META HEADER ---- */
+    .case-banner{
+      width:100%; border-radius:18px; overflow:hidden;
+      border:1px solid var(--glass-border);
+      box-shadow:0 10px 34px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      margin-bottom:clamp(30px,5vh,60px);
+      background:var(--inner-card);
+    }
+    .case-banner img{display:block;width:100%;height:auto}
+    .meta-grid{
+      display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:1.6rem 2rem; margin-bottom:clamp(34px,6vh,72px);
+    }
+    .meta-col h4{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); margin-bottom:.8rem;
+    }
+    .meta-col p{font-size:.93rem;line-height:1.6;color:var(--text-primary)}
+    .overview-label{
+      font-family:'Montserrat Alternates',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); display:block; margin-bottom:.9rem;
+    }
+    .overview-head{
+      font-size:clamp(1.5rem,3.1vw,2.35rem); font-weight:700; line-height:1.22;
+      color:var(--text-primary); margin-bottom:1.1rem; letter-spacing:-.01em;
+    }
+    .overview-body p{font-size:1.02rem;line-height:1.7;max-width:74ch;margin-bottom:.9rem}
+    .overview-body p:last-child{margin-bottom:0}
+    /* the banner carries the wordmark, so the heading is for screen readers */
+    .sr-only{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+    }
+    @media(max-width:900px){ .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media(max-width:560px){ .meta-grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+
+  <!-- cursor -->
+  <div class="custom-cursor" id="cursor"></div>
+
+  <!-- nav include -->
+  <header class="hero" id="hero">
+    <div class="hero-container">
+
+      <!-- BANNER -->
+      <h1 class="sr-only">My Auntie</h1>
+      <figure class="case-banner reveal">
+        <img src="auntie-banner.webp" alt="My Auntie case study banner" width="2400" height="737" fetchpriority="high">
+      </figure>
+
+      <!-- META -->
+      <div class="meta-grid reveal">
+        <div class="meta-col">
+          <h4>Project Type</h4>
+          <p>Hackathon build. An AI companion for postpartum parents, and the TechNova 2025 winner.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Role</h4>
+          <p>Product Lead across AI, UX and telephony, in a team of four.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Timeline</h4>
+          <p>36 hours, concept to working telephony live on stage.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Skills &amp; Tools</h4>
+          <p>Deep listening interviews, safety design, conversation design, Twilio for SMS and voice, Gemini for intent and safety, OpenAI Realtime TTS, Node and Express on TypeScript, MongoDB Atlas, and Snowflake.</p>
+        </div>
+      </div>
+
+      <!-- OUTCOME STRIP (outcomes first) -->
+      <div class="outcome-strip reveal">
+        <div class="outcome-item">
+          <span class="outcome-num">🏆 Winner</span>
+          <span class="outcome-label">TechNova 2025, judged on empathy, reliability and receipts</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">36hrs</span>
+          <span class="outcome-label">concept to working telephony, live on stage</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">SMS + Voice</span>
+          <span class="outcome-label">two channels, one Auntie, and judges used both on stage</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">&lt;5s</span>
+          <span class="outcome-label">SMS round trip, which is what 4% battery at 3 a.m. needs</span>
+        </div>
+      </div>
+
+      <!-- SKIP -->
+      <div class="skip-link reveal">
+        <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+      </div>
+
+      <section id="three-am">
+        <div class="section-content reveal">
+          <h2 class="section-heading">It is three in the morning and the phone is at four percent.</h2>
+          <p class="lede">Every product built for new parents assumes a spare hand and a spare mind. At 3 a.m. there is neither.</p>
+          <figure class="img-wide reveal">
+            <img src="auntiegraph.png" alt="Problem slide: 15% of mothers experience postpartum depression and 85% never get treatment, with a chart of prevalence against treatment access from 2020 to 2024" loading="lazy">
+            <figcaption>Prevalence goes up, treatment access goes down. The two lines have been heading in opposite directions for five years.</figcaption>
+          </figure>
+          <figure class="img-wide reveal">
+            <img src="auntieproblem.png" alt="Problem slide: how might we capture the comfort of calling your auntie, kind, awake and practical, while eliminating the risk of dated or unsafe advice" loading="lazy">
+            <figcaption>The question we started from, and the only framing that survived the interviews.</figcaption>
+          </figure>
+          <p>Postpartum depression and anxiety reach roughly one in seven mothers. About half of those cases are never detected, because the people living inside them are too tired, too ashamed, or too busy being told they should feel lucky. The window is also longer than anyone plans for. Around 7.2% are still symptomatic nine to ten months out, and more than half of those had no symptoms at all earlier on.</p>
+          <p>So the need was never the question. The delivery was. Every serious attempt at this problem is an app, and an app asks a parent to download something, invent a password, answer twenty questions about her mood, and then come back daily to log how she is doing. That is homework. Handing homework to somebody running on four broken hours of sleep is not support. It is one more thing to fail at.</p>
+          <div class="highlight-box"><strong>The reframe</strong>Do not build another mental health app. Build the thing a frightened parent already has open at 3 a.m., which is a phone.</div>
+          <p>That idea took about nine minutes. The other thirty five hours and fifty one minutes went on finding out what it costs.</p>
+        </div>
+      </section>
+
+      <section id="listening">
+        <div class="section-content reveal">
+          <h2 class="section-heading">We asked five mothers and then shut up.</h2>
+          <p class="lede">No surveys. A survey tells you what somebody is willing to put in a form.</p>
+          <p>We ran Indi Young style listening sessions, which is a polite way of saying we asked one question and then got out of the way for an hour. Five mothers: a first timer with an infant, a mother of twins, one juggling a toddler and a newborn, one still expecting, and one whose children are grown and who had the clearest memory of the whole thing.</p>
+          <p>The sentence that built the product arrived in the second session. She said she did not want to be onboarded. She wanted to be held together.</p>
+          <div class="quote-grid reveal">
+            <div class="quote-card reveal"><p class="quote-text">&ldquo;When I&rsquo;m exhausted, even opening an app feels like a test.&rdquo;</p><div class="quote-author">Mother of one toddler and one infant</div></div>
+            <div class="quote-card reveal"><p class="quote-text">&ldquo;I need someone to tell me what&rsquo;s normal, and what&rsquo;s not.&rdquo;</p><div class="quote-author">First time mother with an infant</div></div>
+            <div class="quote-card reveal"><p class="quote-text">&ldquo;If it&rsquo;s serious, I want the handoff to be gentle, not scary.&rdquo;</p><div class="quote-author">Expectant mother, due soon</div></div>
+            <div class="quote-card reveal"><p class="quote-text">&ldquo;Please remember I had a C-section so I don&rsquo;t have to retell it.&rdquo;</p><div class="quote-author">First time mother of twins</div></div>
+            <div class="quote-card reveal"><p class="quote-text">&ldquo;I was on a help line for hours and they did their best but weren&rsquo;t really for that kind of thing.&rdquo;</p><div class="quote-author">Mother of three, children older</div></div>
+          </div>
+          <div class="highlight-box"><strong>What the interviews actually changed</strong>We had planned a symptom tracker. Every single mother described tracking as a chore she would abandon by week two. It was cut before we wrote a line of it.</div>
+          <p>Then the numbers, so nobody in the room could accuse us of designing off vibes.</p>
+          <div class="stats-grid reveal">
+            <div class="stats-card reveal"><span class="stat-number">1 in 7</span><div class="stats-title">New mothers experience postpartum depression</div><p class="stats-desc">Up to half go undiagnosed. Stigma, no screening, or symptoms put down to something else.</p></div>
+            <div class="stats-card reveal"><span class="stat-number">~50%</span><div class="stats-title">Of postpartum cases go undetected</div><p class="stats-desc">Many mothers never tell a provider at all. Stigma and lack of awareness do most of that work.</p></div>
+            <div class="stats-card reveal"><span class="stat-number">7.2%</span><div class="stats-title">Still symptomatic at nine to ten months</div><p class="stats-desc">Over half of those had no symptoms earlier. The window is long, and it is uneven.</p></div>
+            <div class="stats-card reveal"><span class="stat-number">2010 to 2021</span><div class="stats-title">Diagnosis rates rose across the decade</div><p class="stats-desc">Better awareness, same gaps. The need is not shrinking, it is just better counted.</p></div>
+          </div>
+          <figure class="img-wide reveal">
+            <img src="auntiesearch.png" alt="Competitive scan of postpartum support tools, grouped by how much each one asks of the parent before it helps" loading="lazy">
+            <figcaption>Everything in the category asks first and helps second. That gap was the opening.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="demo">
+        <div class="section-content reveal">
+          <h2 class="section-heading">A judge picked up the phone and she answered.</h2>
+          <p class="lede">Skip to the end of the weekend for a second, because everything after this makes more sense once you have heard her.</p>
+          <p>The demo was not a video. It was a phone number on a slide, and we asked the room to dial it.</p>
+          <p>She answered in under five seconds. Comforted first, then two local lactation lines, then a follow up text so the guidance outlived the panic. Behind her on the screen we left the receipts running: the classifier's output, the row landing in the database, the query pulling it back out. Here is the thing itself, before any of the explaining.</p>
+          <div class="video-embed reveal">
+            <iframe
+              id="yt-auntie-text"
+              src="https://www.youtube.com/embed/kARMZuwfmMA?rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+              title="Auntie SMS demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
+          </div>
+          <p class="cap">The text line. One caring line, one action, one thing to watch, with region aware resources attached.</p>
+          <p>Thirty six hours earlier none of it existed. The rest of this is how a weekend got from there to here, and what we refused to build along the way.</p>
+        </div>
+      </section>
+
+      <section id="channel">
+        <div class="section-content reveal">
+          <h2 class="section-heading">The channel was the product.</h2>
+          <p class="lede">Distribution is not a marketing problem you get to solve after the build. Here it was the build.</p>
+          <p>SMS shipped first because SMS is the most boring and most reliable thing in the world. It works at four percent battery, on a cracked screen, in a hospital corridor with one bar, and it never needs updating. Voice came second, once texting was steady, because a parent holding a baby has no hands.</p>
+          <div class="img-grid reveal">
+            <figure class="img-tile img-tile--tall"><img src="../auntiephone.png" alt="Auntie's SMS thread: a caring line, one action, and what to watch for" loading="lazy"><figcaption>The whole interface. No account, no tabs, nowhere to get lost.</figcaption></figure>
+            <figure class="img-tile"><img src="auntiesolution.png" alt="Solution diagram: one Auntie persona across SMS and voice, with escalation routes" loading="lazy"><figcaption>One persona, two surfaces, no costume change between them.</figcaption></figure>
+          </div>
+          <div class="video-embed reveal">
+            <iframe
+              id="yt-auntie-call"
+              src="https://www.youtube.com/embed/BUi3fAiD7To?rel=0&modestbranding=1&playsinline=1"
+              title="Auntie voice demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
+          </div>
+          <p class="cap">The voice line. Same persona sized for audio, and it texts you afterwards so nothing is lost.</p>
+          <p>Same Auntie on both. That sounds obvious and it is the part most multi channel products get wrong: they let the voice assistant become a brighter, more corporate person than the chat. We wrote one persona and sized her per channel. Texts get one breath. Calls get warmth, real pauses, and permission to trail off. After any call she texts you the key steps, because nobody at 3 a.m. remembers what a kind voice just said.</p>
+        </div>
+      </section>
+
+      <section id="breath">
+        <div class="section-content reveal">
+          <h2 class="section-heading">One breath, one step, one thing to watch.</h2>
+          <p class="lede">Our first drafts were paragraphs. A tired parent skims a paragraph and misses the only sentence that mattered.</p>
+          <p>So we made a rule, and then we made the rule testable. If a message took two breaths to read out loud, it got cut. Reading them aloud was not a flourish, it was the test, and it killed more copy than anything else we did.</p>
+          <div class="steps reveal">
+            <div class="step-card">
+              <span class="n">01</span>
+              <h4>Say the kind thing first</h4>
+              <p>You are not alone. That line buys the next twelve seconds of her attention, and nothing else works without it.</p>
+              <div class="step-art"><img src="svg/kind-first.svg" alt="A message with a heart in it" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">02</span>
+              <h4>Give exactly one action</h4>
+              <p>Not three options with trade-offs. One. Skin to skin. Call this number. Go now.</p>
+              <div class="step-art"><img src="svg/one-action.svg" alt="Two options struck out and one chosen" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">03</span>
+              <h4>Name what to watch</h4>
+              <p>One specific thing that would change the answer, so she knows when to stop waiting and act.</p>
+              <div class="step-art"><img src="svg/watch.svg" alt="An open eye" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">04</span>
+              <h4>Then read it out loud</h4>
+              <p>Two breaths meant too long. This is the only rule that reliably caught our own cleverness.</p>
+              <div class="step-art"><img src="svg/read-aloud.svg" alt="A mouth speaking, with sound arcs" loading="lazy"></div>
+            </div>
+          </div>
+          <div class="highlight-box"><strong>The escalation rewrite</strong>Our first red flag script said <em>seek medical attention</em>. Clinically correct, emotionally useless. It became: <em>Love, with a baby this young that can be serious. Let&rsquo;s head to the nearest emergency department now, I&rsquo;m sending the address. You&rsquo;re not alone.</em> The mothers we had interviewed confirmed it read as safe without reading as frightening.</div>
+          <p>The voice had the same problem in a different key. OpenAI&rsquo;s realtime text to speech is warm out of the box and also, in certain voices, deeply uncanny. We auditioned until Auntie sounded like somebody&rsquo;s actual aunt rather than a hold message.</p>
+        </div>
+      </section>
+
+      <section id="triage">
+        <div class="section-content reveal">
+          <h2 class="section-heading">The one part that was never allowed to improvise.</h2>
+          <p class="lede">A warm companion that guesses about a newborn&rsquo;s fever is not a warm companion. It is a liability with a nice voice.</p>
+          <p>So the model never answers. It classifies. Gemini reads the message and returns a structure: an intent, a topic, a region, a draft reply, and any red flags it spotted. The intent can only ever be one of three things.</p>
+          <div class="chip-row"><span class="chip">Comfort</span><span class="chip">Resource</span><span class="chip">Escalate</span></div>
+          <figure class="img-wide img-flow reveal">
+            <img src="svg/flow.svg" alt="Flow: a text or a call arrives, is classified into intent, topic and region, routes to comfort, resource or escalate, and always ends in a follow up text" loading="lazy">
+            <figcaption>Text in or call in, one classifier, three possible ends, and a follow up text whichever way it goes.</figcaption>
+          </figure>
+          <p>From there it is deterministic code. Topic plus region goes to Snowflake and comes back with two or three vetted resources you can actually phone. The evidence is short pre written cards drawn from the WHO, the CDC, the American College of Obstetricians and Gynecologists and Postpartum Support International, fed in rather than recalled. Auntie never freestyles medical advice because she structurally cannot.</p>
+          <div class="highlight-box"><strong>Contracts are what let four people ship like one mind</strong>The classifier service returns <span class="px">{ intent, topic, region, reply_text, red_flags }</span>. The phone and text service asks the resource database for the local lines and the profile store for the small bit of context. Nobody had to read anybody else&rsquo;s code, and nothing had to be rewritten at hour thirty.</div>
+          <figure class="mini-images reveal">
+            <img src="auntiestack.png" alt="Architecture: Twilio telephony, Gemini intent and safety, Snowflake resources, MongoDB Atlas session context, orchestrated in TypeScript" loading="lazy">
+          </figure>
+          <p class="cap">Four services, four owners, one written contract between each pair.</p>
+          <p>Memory is the other thing we kept deliberately small. Four fields: delivery type, feeding, weeks postpartum, region, tied to a hashed number and short lived. Enough that a mother who had a caesarean never has to say so twice. Not enough to feel watched.</p>
+          <figure class="mini-images reveal">
+            <img src="auntieinfo.png" alt="Information architecture for Auntie's evidence cards and region aware resource lookup" loading="lazy">
+          </figure>
+          <p class="cap">Evidence as pre written cards, so the answer is retrieved and never invented.</p>
+          <p>What we cut to get there: WhatsApp, every dashboard, and semantic embeddings over the whole corpus. A short list of topic tags and a small lookup answered faster and were far easier to reason about at hour thirty with four underslept people.</p>
+        </div>
+      </section>
+
+      <section class="takeaways" id="takeaways">
+        <div class="section-content reveal">
+          <h2 class="section-heading">What I would carry into the next one.</h2>
+          <p class="lede">A hackathon is a cheap way to find out which of your instincts are real.</p>
+          <div class="steps reveal">
+            <div class="step-card">
+              <span class="n">01</span>
+              <h4>Ship the channel, not the chore</h4>
+              <p>Phone and SMS beat any elegant onboarding when attention is the scarce resource. Distribution was the design decision, not a launch task.</p>
+              <div class="step-art"><img src="svg/channel.svg" alt="A phone with signal beside a form struck through" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">02</span>
+              <h4>Warmth is a feature with a spec</h4>
+              <p>One breath, one step, one thing to watch. Written down it stops being a vibe and starts being something a draft can fail.</p>
+              <div class="step-art"><img src="svg/warm-spec.svg" alt="A warm message with measurement ticks beneath it" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">03</span>
+              <h4>Safety is a contract, not a disclaimer</h4>
+              <p>Structured intents and deterministic lookups mean the model cannot improvise the dangerous part. A design choice long before an engineering one.</p>
+              <div class="step-art"><img src="svg/contract.svg" alt="A signed document with a medical seal" loading="lazy"></div>
+            </div>
+            <div class="step-card">
+              <span class="n">04</span>
+              <h4>Personalise light, and say so</h4>
+              <p>Four fields, hashed, short lived. Remembering the caesarean matters. Remembering everything is surveillance with a friendly voice.</p>
+              <div class="step-art"><img src="svg/four-fields.svg" alt="Four remembered fields behind a padlock" loading="lazy"></div>
+            </div>
+          </div>
+          <p>The thing I did not expect was how much of it was writing. Not copywriting, writing: the taxonomy, the red flag lexicon, the escalation script, the four fields we were willing to keep. By Sunday the repository held less code than I assumed it would and more decisions than I thought a weekend could hold.</p>
+          <p>And the instinct that turned out to be real is the one I keep building on. The load was always going to exist. The only question is whether the system carries it or the person does.</p>
+          <div class="works-cited reveal">
+            <h3>Works Cited</h3>
+            <p>Carlson, K., Mughal, S., Azhar, Y., &amp; Siddiqui, W. (2025, January 22). <em>Perinatal depression.</em> StatPearls, NCBI Bookshelf. https://www.ncbi.nlm.nih.gov/books/NBK519070/</p>
+            <p>Centers for Disease Control and Prevention. (2024, May 15). <em>Symptoms of depression among women.</em> Reproductive Health. https://www.cdc.gov/reproductive-health/depression/index.html</p>
+            <p>World Health Organization. (n.d.). <em>Maternal mental health.</em> Mental Health, Brain Health and Substance Use. https://www.who.int/teams/mental-health-and-substance-use/promotion-prevention/maternal-mental-health</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </header>
+
+  <!-- footer mount -->
+  <div id="contact"></div>
+
+  <!-- YouTube API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    let textPlayer;
+    function onYouTubeIframeAPIReady() {
+      textPlayer = new YT.Player('yt-auntie-text', {
+        events: {
+          onReady: (e) => e.target.setPlaybackRate(1.25),
+          onStateChange: (e) => {
+            if (e.data === YT.PlayerState.PLAYING) e.target.setPlaybackRate(1.25);
+          },
+        },
+      });
+    }
+  </script>
+
+  <!-- footer loader -->
+  <script>
+    (async () => {
+      const res = await fetch('/footer.html');
+      if (!res.ok) return console.warn('Footer fetch failed:', res.status);
+      const html = await res.text();
+      const doc  = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('style, link[rel="stylesheet"]').forEach(n =>
+        document.head.appendChild(n.cloneNode(true))
+      );
+      const footer = doc.querySelector('footer');
+      const mount  = document.getElementById('contact');
+      if (footer && mount) {
+        footer.id = 'contact';
+        mount.replaceWith(footer);
+        const hydrate = () => (window.lucide && window.lucide.createIcons());
+        if (document.readyState === 'complete') hydrate();
+        else window.addEventListener('load', hydrate, { once:true });
+      }
+    })();
+  </script>
+
+  <!-- interactions -->
+  <script type="module">
+    // cursor
+    const cursor=document.getElementById('cursor');let mouseX=0,mouseY=0,rafId;
+    const hoverSel='a,button,.card,.quote-card,.stats-card,.must-haves-card,img';
+    function update(){cursor.style.left=mouseX+'px';cursor.style.top=mouseY+'px'}
+    addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;if(!rafId){rafId=requestAnimationFrame(()=>{update();rafId=null;});}});
+    addEventListener('mousedown',()=>cursor.classList.add('clicking'));
+    addEventListener('mouseup',()=>cursor.classList.remove('clicking'));
+    addEventListener('mouseover',e=>{if(e.target.closest(hoverSel))cursor.classList.add('hovering')});
+    addEventListener('mouseout',e=>{if(e.target.closest(hoverSel))cursor.classList.remove('hovering')});
+    addEventListener('mouseleave',()=>{cursor.style.opacity='0'});
+    addEventListener('mouseenter',()=>{cursor.style.opacity='1'});
+
+    // reveal (skip .section-heading — handled by scramble observer below)
+    /* A block taller than (viewport / threshold) can never reach that ratio,
+       so a long section used to sit at opacity 0 for ever. Menzo's migration
+       jam was 3778px against a 775px window: a ceiling of 0.205 against a
+       0.2 bar. The extra thresholds keep the callback firing while you
+       scroll, and a block too tall to qualify on its own ratio qualifies on
+       how much of the screen it fills instead. */
+    const io=new IntersectionObserver((es,o)=>{
+      es.forEach(en=>{
+        if(!en.isIntersecting) return;
+        if(en.intersectionRatio>=.2 || en.intersectionRect.height>=innerHeight*.25){en.target.classList.add('active');o.unobserve(en.target);}
+      });
+    },{threshold:[0,.05,.1,.15,.2]});
+    document.querySelectorAll('.reveal:not(.section-heading)').forEach(el=>io.observe(el));
+
+    /* Safety net. The reveal is decoration, so nothing on the page is allowed
+       to stay invisible because an observer did not fire: no scroll events
+       reach this document while it is embedded in the portfolio pane, so this
+       polls instead, and retires itself the moment everything is shown. */
+    (function(){
+      const SEL = '.reveal:not(.section-heading)';
+      let timer = 0, queued = false;
+      const sweep = () => {
+        queued = false;
+        document.querySelectorAll(SEL + ':not(.active)').forEach(el => {
+          const r = el.getBoundingClientRect();
+          /* In view, or already scrolled past. A fast scroll, a jump from the
+             contents, or a restored scroll position can carry a block from
+             below the fold to above it without the observer ever seeing it
+             intersect — and it would then sit at opacity 0 for the rest of
+             the visit, which also stops its video from ever playing. */
+          if (r.top < innerHeight * 0.92) el.classList.add('active');
+        });
+        if (!document.querySelector(SEL + ':not(.active)')) {
+          clearInterval(timer);
+          removeEventListener('scroll', onScroll);
+        }
+      };
+      /* scroll drives it so it keeps up, and the interval is the backstop;
+         both retire together the moment nothing is left hidden */
+      const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(sweep); } };
+      addEventListener('scroll', onScroll, { passive: true });
+      timer = setInterval(sweep, 250);
+      sweep();
+    })();
+
+
+    // Section heading: scramble-in + font mixing (DotempDemo ×3 / Didot ×2)
+    (function(){
+      const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
+      const RUNS    = [3, 2];
+      function rand(){ return CHARSET[Math.floor(Math.random()*CHARSET.length)]; }
+
+      function scramble(el, text, dur, onDone){
+        const len = text.length;
+        const revealed = new Array(len).fill(false);
+        const t0 = performance.now();
+        (function frame(now){
+          const p = Math.min(1,(now-t0)/dur);
+          const upto = Math.floor(p*len*1.15);
+          for(let i=0;i<upto;i++) if(!revealed[i]&&Math.random()<0.4) revealed[i]=true;
+          let out='';
+          for(let i=0;i<len;i++){
+            const c=text[i];
+            if(c===' '){ out+='\u00a0'; continue; }
+            out+=revealed[i]?c:rand();
+          }
+          el.textContent=out;
+          if(p<1||revealed.some(r=>!r)) requestAnimationFrame(frame);
+          else onDone();
+        })(performance.now());
+      }
+
+      function fontMix(el, text){
+        let html='', runIdx=0, runCount=0, usePx=true;
+        for(let i=0;i<text.length;i++){
+          const cp = text.codePointAt(i);
+          // skip emoji / non-ASCII — use String.fromCodePoint so surrogate pairs
+          // are emitted as one complete character, not just the high surrogate
+          if(cp > 127){
+            html += String.fromCodePoint(cp);
+            if(cp > 0xFFFF) i++; // advance past the low surrogate
+            continue;
+          }
+          const c = text[i];
+          if(c===' '){ html+=' '; continue; }
+          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
+          if(++runCount>=RUNS[runIdx%2]){ usePx=!usePx; runIdx++; runCount=0; }
+        }
+        el.innerHTML=html;
+      }
+
+      const hio=new IntersectionObserver((entries,obs)=>{
+        entries.forEach(en=>{
+          if(!en.isIntersecting) return;
+          obs.unobserve(en.target);
+          const el=en.target;
+          const text=el.textContent.trim();
+          // bypass CSS reveal — the scramble IS the reveal
+          el.style.opacity='1'; el.style.transform='none';
+          el.classList.add('h-scrambling');
+          scramble(el, text, 900, ()=>{
+            el.classList.remove('h-scrambling');
+            fontMix(el, text);
+            el.classList.add('h-settled');
+          });
+        });
+      },{threshold:0.25});
+
+      document.querySelectorAll('.section-heading').forEach(h=>hio.observe(h));
+
+      // Outcome numbers — font-mix on load (no scramble, they're metrics not headings)
+      setTimeout(()=>{
+        document.querySelectorAll('.outcome-num').forEach(el=>{
+          fontMix(el, el.textContent.trim());
+        });
+      }, 100);
+
+      // Hero h1 — scramble immediately on load (visible without scrolling)
+      const h1 = document.querySelector('.intro-left h1');
+      if(h1){
+        const h1Text = h1.textContent.trim();
+        h1.style.opacity = '1'; h1.style.transform = 'none';
+        setTimeout(()=>{
+          h1.classList.add('h-scrambling');
+          scramble(h1, h1Text, 900, ()=>{
+            h1.classList.remove('h-scrambling');
+            fontMix(h1, h1Text);
+            h1.classList.add('h-settled');
+          });
+        }, 350);
+      }
+    })();
+  </script>
+
+  <!-- QUICK LINKS WIDGET -->
+  <style>
+    html{scroll-behavior:smooth}
+    /* top:110px used to sit under the nav pill; with the nav gone it landed
+       on the copy, so the jump list moves out of the reading column */
+    #ql-widget{position:fixed;right:1.4rem;bottom:1.4rem;top:auto;z-index:900;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:.4rem}
+    /* the portfolio rail carries the contents when embedded, so the
+       floating widget would just be a second copy of the same list */
+    html[data-embedded] #ql-widget{display:none!important}
+    #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(var(--chrome-rgb),.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
+    #ql-panel.open{max-height:min(520px, calc(100dvh - 9rem));overflow-y:auto;opacity:1;padding:.45rem}
+    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:clamp(.66rem,1.6vh,.78rem);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:clamp(.2rem,.8vh,.4rem) .7rem;border-radius:6px;transition:background .18s,color .18s}
+    #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:0.75rem;opacity:.45;margin-right:.25rem}
+    #ql-panel a:hover{background:var(--glass-highlight-1);color:var(--text-secondary)}
+    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(var(--chrome-rgb),.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
+    #ql-toggle:hover{background:var(--glass-highlight-1);border-color:var(--rule)}
+    #ql-icon{font-size:1rem;line-height:1}
+    @media(max-width:768px){#ql-widget{right:1rem;top:auto;bottom:1.5rem;left:auto;transform:none;flex-direction:column-reverse;align-items:flex-end}#ql-panel{min-width:min(180px,80vw)}}
+  </style>
+  <div id="ql-widget">
+    <button id="ql-toggle" aria-label="Toggle section links" aria-expanded="false">
+      <span id="ql-icon">≡</span>
+      <span>Sections</span>
+    </button>
+    <div id="ql-panel"></div>
+  </div>
+  <script>
+    (function(){
+      const panel=document.getElementById('ql-panel');
+      const toggle=document.getElementById('ql-toggle');
+      const icon=document.getElementById('ql-icon');
+      let open=false;
+      function close(){open=false;panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');icon.textContent='≡';}
+      function mkLink(href,num,label,clickFn){
+        const a=document.createElement('a');
+        a.href=href;
+        a.innerHTML=`<span class="ql-num">${String(num).padStart(2,'0')}</span>${label}`;
+        a.addEventListener('click',clickFn||close);
+        return a;
+      }
+      panel.appendChild(mkLink('#',0,'Overview',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});close();}));
+      const ITEMS=[{id:'',label:'Overview',num:0}];
+      let n=1;
+      /* this page has no section eyebrows to read labels off, so they
+         live here */
+      const LABELS={
+        'three-am':'Three in the morning','listening':'Five mothers',
+        'demo':'The call','channel':'The channel was the product',
+        'breath':'One breath at a time','triage':'The safety triage',
+        'takeaways':'Takeaways'
+      };
+      document.querySelectorAll('section[id]').forEach(sec=>{
+        const label=LABELS[sec.id];
+        if(!label)return;
+        const num=n++;
+        ITEMS.push({id:sec.id,label:label,num:num});
+        panel.appendChild(mkLink('#'+sec.id,num,label));
+      });
+      window.__caseToc=ITEMS;   /* the standalone rail reads the same list */
+      toggle.addEventListener('click',e=>{e.stopPropagation();open=!open;panel.classList.toggle('open',open);toggle.setAttribute('aria-expanded',open);icon.textContent=open?'×':'≡';});
+      document.addEventListener('click',e=>{if(open&&!document.getElementById('ql-widget').contains(e.target))close();});
+
+      /* embedded, the portfolio rail carries these instead of the widget:
+         hand them up, answer a request, take scroll orders, and keep the
+         rail's highlight on whatever the reader is actually looking at */
+      if(window.parent!==window){
+        const post=m=>{try{window.parent.postMessage(m,'*');}catch(e){}};
+        const sendToc=()=>post({type:'caseToc',items:ITEMS});
+        /* the browser drops programmatic smooth scrolls inside this pane,
+           so the glide is ours. scroll-behavior goes to auto for the
+           duration or every frame tries to animate on top of us. */
+        const scroller=()=>document.scrollingElement||document.documentElement;
+        const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+        let anim=0;
+        const stopGlide=()=>{
+          cancelAnimationFrame(anim);
+          scroller().style.scrollBehavior='';
+        };
+        const glide=to=>{
+          const se=scroller();
+          const from=se.scrollTop;
+          const dist=Math.max(0,Math.min(to,se.scrollHeight-innerHeight))-from;
+          if(!dist)return;
+          stopGlide();
+          se.style.scrollBehavior='auto';
+          const t0=performance.now();
+          const dur=Math.min(900,Math.max(320,Math.abs(dist)*0.45));
+          const step=now=>{
+            const t=Math.min(1,(now-t0)/dur);
+            se.scrollTop=from+dist*ease(t);
+            if(t<1)anim=requestAnimationFrame(step);
+            else se.style.scrollBehavior='';
+          };
+          anim=requestAnimationFrame(step);
+        };
+        addEventListener('wheel',stopGlide,{passive:true});
+        addEventListener('touchstart',stopGlide,{passive:true});
+        sendToc();
+        addEventListener('message',ev=>{
+          const d=ev.data;
+          if(!d||typeof d!=='object')return;
+          if(d.type==='caseTocRequest')sendToc();
+          else if(d.type==='caseScrollTo'){
+            const el=d.id?document.getElementById(d.id):null;
+            glide(el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
+          }
+        });
+        /* tell the rail which section the reader is in */
+        let last=null,ticking=false;
+        const spy=()=>{
+          ticking=false;
+          const line=innerHeight*0.32;
+          let id='';
+          for(const it of ITEMS){
+            if(!it.id)continue;
+            const el=document.getElementById(it.id);
+            if(el&&el.getBoundingClientRect().top<=line)id=it.id;
+          }
+          if(id!==last){last=id;post({type:'caseSection',id:id});}
+        };
+        addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(spy);}},{passive:true});
+        spy();
+      }
+    })();
+  </script>
+
+  <!-- theme: the portfolio shell posts its theme in, and standalone we read
+       it ourselves, so this page is never stuck in the wrong one -->
+  <script>
+    (function(){
+      function set(t){ document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+      // light is the default now; a saved choice still wins
+      var t; try { t = localStorage.getItem('theme'); } catch(e) {}
+      set(t || 'light');
+      addEventListener('message', function(e){
+        if(e && e.data && e.data.type === 'theme') set(e.data.value);
+      });
+    })();
+  </script>
+
+  <!-- cursor: the shell draws the one cursor and already listens for these,
+       so embedded we hide ours and feed it. Standalone, ours stays. -->
+  <script>
+    (function(){
+      if (window.parent === window) return;
+      document.documentElement.setAttribute('data-embedded', '');
+      var ring = document.getElementById('cursor');
+      if (ring) ring.style.display = 'none';
+      var HOVER = 'a,button,input,select,textarea,summary,[role="button"],[onclick],' +
+                  '.skip-button,.card,.role-card,.quote-card,.stats-card,.must-haves-card,' +
+                  '.glass-card,.chip,.img-tile,.spec-row,.metric,img';
+      function post(m){ try { window.parent.postMessage(m, '*'); } catch (e) {} }
+      // posted straight from the event: rAF inside a pane the browser is
+      // throttling can stall, and that shows up as a cursor that lags or sticks
+      var lx = -1, ly = -1;
+      addEventListener('mousemove', function(e){
+        if (e.clientX === lx && e.clientY === ly) return;
+        lx = e.clientX; ly = e.clientY;
+        post({type:'iframeMouse', x:lx, y:ly});
+      });
+      addEventListener('mousedown',  function(){ post({type:'iframeDown'}); });
+      addEventListener('mouseup',    function(){ post({type:'iframeUp'}); });
+      addEventListener('mouseleave', function(){ post({type:'iframeLeave'}); });
+      addEventListener('mouseover', function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:true}); });
+      addEventListener('mouseout',  function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:false}); });
+    })();
+  </script>
+</body>
+</html>

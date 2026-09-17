@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Résumé — Henriëtta van Niekerk</title>
+<meta name="description" content="Résumé for Henriëtta van Niekerk, design engineer. Founder of Skrimp, CTO of Path to Menzoberranzan.">
+<link rel="canonical" href="https://henliz.github.io/resume/">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Résumé — Henriëtta van Niekerk">
+<meta property="og:description" content="Design engineer. Founder of Skrimp, CTO of Path to Menzoberranzan.">
+<meta property="og:url" content="https://henliz.github.io/resume/">
+<link rel="icon" type="image/png" href="/HenLogo.png">
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;display:flex;flex-direction:column;background:#dbe7ec;
+       font-family:'Montserrat',system-ui,-apple-system,sans-serif}
+  /* same bar as every other page, so there is always a way home */
+  .site-bar{flex:none;display:flex;align-items:center;gap:.75rem;
+    padding:.6rem clamp(.8rem,3vw,1.6rem);
+    background:rgba(255,255,255,.82);backdrop-filter:blur(12px) saturate(150%);
+    -webkit-backdrop-filter:blur(12px) saturate(150%);
+    border-bottom:1px solid rgba(18,24,31,.12);font-size:.86rem}
+  .site-bar img{width:26px;height:26px;object-fit:contain;display:block}
+  .site-bar a{color:#135F5A;text-decoration:none;font-weight:600}
+  .site-bar a:hover{text-decoration:underline}
+  .site-bar .who{color:rgba(18,24,31,.72);font-weight:500}
+  .site-bar nav{margin-left:auto;display:flex;gap:.9rem;flex-wrap:wrap;align-items:center}
+  :root[data-embedded] .site-bar{display:none}
+  @media (max-width:700px){ .site-bar nav a:not(.dl){display:none} }
+  /* the PDF is the page */
+  .viewer{flex:1 1 auto;min-height:0;display:block}
+  .viewer object,.viewer embed,.viewer iframe{width:100%;height:100%;border:0;display:block}
+  .fallback{padding:clamp(1.5rem,5vw,3rem);max-width:60ch;margin:0 auto;
+            color:rgba(18,24,31,.8);line-height:1.6}
+  .fallback a{color:#135F5A}
+</style>
+</head>
+<body>
+
+<!-- Chrome's PDF viewer paints reliably in an iframe; inside <object> it kept
+     rendering the thumbnail rail with a blank main pane. Browsers that cannot
+     show a PDF inline (most on mobile) offer their own download prompt, and the
+     bar's Download link is always there as the way out. -->
+<div class="viewer">
+  <iframe src="/Henrietta_van_Niekerk_Resume_2026.pdf#zoom=page-fit"
+          title="Résumé of Henriëtta van Niekerk"></iframe>
+</div>
+
+<noscript></noscript>
+
+<script>if(window.parent!==window)document.documentElement.setAttribute('data-embedded','');</script>
+</body>
+</html>
