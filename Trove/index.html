@@ -1405,16 +1405,28 @@
        polls instead, and retires itself the moment everything is shown. */
     (function(){
       const SEL = '.reveal';
-      let ticks = 0;
+      let timer = 0, queued = false;
       const sweep = () => {
-        const left = document.querySelectorAll(SEL + ':not(.active)');
-        left.forEach(el => {
+        queued = false;
+        document.querySelectorAll(SEL + ':not(.active)').forEach(el => {
           const r = el.getBoundingClientRect();
-          if (r.top < innerHeight * 0.92 && r.bottom > 0) el.classList.add('active');
+          /* In view, or already scrolled past. A fast scroll, a jump from the
+             contents, or a restored scroll position can carry a block from
+             below the fold to above it without the observer ever seeing it
+             intersect — and it would then sit at opacity 0 for the rest of
+             the visit, which also stops its video from ever playing. */
+          if (r.top < innerHeight * 0.92) el.classList.add('active');
         });
-        if (!left.length || ++ticks > 300) clearInterval(timer);
+        if (!document.querySelector(SEL + ':not(.active)')) {
+          clearInterval(timer);
+          removeEventListener('scroll', onScroll);
+        }
       };
-      const timer = setInterval(sweep, 200);
+      /* scroll drives it so it keeps up, and the interval is the backstop;
+         both retire together the moment nothing is left hidden */
+      const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(sweep); } };
+      addEventListener('scroll', onScroll, { passive: true });
+      timer = setInterval(sweep, 250);
       sweep();
     })();
 
@@ -1430,8 +1442,8 @@
        floating widget would just be a second copy of the same list */
     html[data-embedded] #ql-widget{display:none!important}
     #ql-panel{display:flex;flex-direction:column;gap:.1rem;background:rgba(var(--paper-soft-rgb),.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--edge);border-radius:14px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:200px;box-shadow:var(--sh-md)}
-    #ql-panel.open{max-height:600px;opacity:1;padding:.45rem}
-    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;padding:.42rem .7rem;border-radius:8px;transition:background .18s,color .18s}
+    #ql-panel.open{max-height:min(520px, calc(100dvh - 9rem));overflow-y:auto;opacity:1;padding:.45rem}
+    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:clamp(.66rem,1.6vh,.78rem);font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;padding:clamp(.2rem,.8vh,.42rem) .7rem;border-radius:8px;transition:background .18s,color .18s}
     #ql-panel a .ql-num{display:inline-block;min-width:1.7em;font-family:'DotempDemo',monospace;font-size:0.78rem;color:var(--accent-ink);margin-right:.25rem}
     #ql-panel a:hover{background:var(--apricot-wash);color:var(--accent-deep)}
     #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(var(--paper-soft-rgb),.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--edge);border-radius:999px;padding:.48rem 1.05rem;color:var(--ink);font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s;box-shadow:var(--sh-sm)}
@@ -1545,9 +1557,9 @@
   <script>
     (function(){
       function set(t){ document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+      // light is the default now; a saved choice still wins
       var t; try { t = localStorage.getItem('theme'); } catch(e) {}
-      if(!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      set(t);
+      set(t || 'light');
       addEventListener('message', function(e){
         if(e && e.data && e.data.type === 'theme') set(e.data.value);
       });

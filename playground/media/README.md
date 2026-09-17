@@ -27,9 +27,17 @@ Just keep the filename.
 
 ## already here
 
-- `htn.png` — Hack the North mark, from hackthenorth.com
+Logos
+- `htn-logo.webp` — the Hack the North mark for Hen's year (2024)
 - `figma.svg` — Figma logo, from Wikimedia Commons
-- `htn-mark.svg` — the monochrome HTN pinned-tab mark, spare
+- `htn.png`, `htn-mark.svg` — the current HTN marks, unused; spare
+
+Photos (all converted to webp and sized for a desk tile)
+- `startup-canada-team.webp`, `startup-canada-solo.webp` — Startup Canada Tour
+- `htn-team.webp` — the four of us under the Hack the North sign
+- `htn-accepted.webp` — the acceptance email
+- `aporia-collage.webp` — the FigBuild scrapbook
+- `aporia-team.webp` — The Figma Breakers poster
 
 ## a rule this desk follows
 

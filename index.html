@@ -7,10 +7,10 @@
       // runs before paint so a light-mode reload never flashes dark
       (function () {
         try {
-          var t = localStorage.getItem('theme');
-          if (!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          // light is the default now; a saved choice still wins
+          var t = localStorage.getItem('theme') || 'light';
           document.documentElement.setAttribute('data-theme', t);
-        } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+        } catch (e) { document.documentElement.setAttribute('data-theme', 'light'); }
       })();
     </script>
     <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
@@ -722,10 +722,12 @@
     font-size:.88rem;line-height:1.5;color:rgba(var(--ink-rgb),.66);
     margin-top:.34rem;font-weight:500;
   }
-  .tile-tags{display:flex;flex-wrap:wrap;gap:.38rem;margin-top:.62rem}
+  /* one line, always: they shrink before they wrap */
+  .tile-tags{display:flex;flex-wrap:nowrap;gap:.34rem;margin-top:.62rem;min-width:0}
   .tile-tags span{
-    font-size:0.78rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;
-    padding:.34rem .66rem;border-radius:7px;
+    font-size:clamp(.62rem,.62vw,.76rem);letter-spacing:.05em;text-transform:uppercase;font-weight:600;
+    padding:.32rem clamp(.36rem,.52vw,.62rem);border-radius:7px;
+    white-space:nowrap;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
     color:rgba(var(--ink-rgb),.79);
     background:rgba(var(--sa),.10);
     border:1px solid rgba(var(--sa),.22);
@@ -1577,9 +1579,14 @@
             border-radius: 6px;
             font-family: 'Montserrat', sans-serif;
             font-style: normal;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             font-weight: 400;
-            white-space: nowrap;
+            /* the labels are handles now, so they are long — let them wrap
+               inside the rail rather than overflow it */
+            white-space: normal;
+            max-width: 13rem;
+            width: max-content;
+            text-align: center;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s ease, transform 0.2s ease;
@@ -1727,13 +1734,16 @@
             transition: fill 0.2s ease;
         }
         .social-btn:hover svg.bi-discord { fill: var(--muted); }
+        .conspire-socials .social-tooltip,
         .social-tooltip {
             position: absolute;
             bottom: calc(100% + 7px);
             left: 50%;
             transform: translateX(-50%) translateY(4px);
-            background: rgba(5, 9, 15, 0.97);
-            color: rgba(240, 242, 240, 0.7);
+            background: rgba(var(--rail-tint-rgb), 0.94);
+            color: var(--rail-accent);
+            backdrop-filter: blur(10px) saturate(150%);
+            -webkit-backdrop-filter: blur(10px) saturate(150%);
             padding: 0.35rem 0.7rem;
             border-radius: 5px;
             font-family: 'Montserrat', sans-serif;
@@ -1743,12 +1753,28 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.18s ease, transform 0.18s ease;
-            border: 1px solid rgba(var(--muted-rgb),0.15);
+            border: 1px solid rgba(var(--rail-accent-rgb), 0.34);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.18);
             z-index: 50;
         }
         .social-btn:hover .social-tooltip {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
+        }
+        /* "/in/henriettavanniekerk" is 184px wide and centring it on the first
+           icon pushed it 36px past the rail, where overflow-x clipped it. The
+           outer two anchor to their own edge and stay inside. */
+        .conspire-socials .social-btn:first-child .social-tooltip {
+            left: 0; right: auto; transform: translateX(-0.5rem) translateY(4px);
+        }
+        .conspire-socials .social-btn:first-child:hover .social-tooltip {
+            transform: translateX(-0.5rem) translateY(0);
+        }
+        .conspire-socials .social-btn:last-child .social-tooltip {
+            left: auto; right: 0; transform: translateX(0.5rem) translateY(4px);
+        }
+        .conspire-socials .social-btn:last-child:hover .social-tooltip {
+            transform: translateX(0.5rem) translateY(0);
         }
 
         /* ─── Orbit dots (now circling the logo) ────────── */
@@ -1880,8 +1906,11 @@
             z-index: 900;
             display: flex;
             flex-direction: column;
-            gap: 1.15rem;
-            padding: 1.6rem 1.5rem 1.4rem;
+            /* every vertical measure in the rail is viewport-relative, so the
+               whole thing shrinks to fit rather than scrolling. overflow stays
+               auto purely as a floor: it should never actually engage. */
+            gap: clamp(0.45rem, 1.5vh, 1.15rem);
+            padding: clamp(0.85rem, 2.2vh, 1.6rem) 1.5rem clamp(0.75rem, 1.8vh, 1.4rem);
             overflow-y: auto;
             overflow-x: hidden;
             overscroll-behavior: contain;
@@ -1932,7 +1961,10 @@
         .rail-logo {
             position: relative;
             display: block;
-            width: 40px; height: 40px;
+            margin-left: 0;
+            /* a shade under the surname's cap height so it sits with the type
+               rather than towering over it */
+            width: clamp(31px, 5vh, 40px); height: clamp(31px, 5vh, 40px);
             flex-shrink: 0;
             align-self: flex-start;
         }
@@ -1958,6 +1990,23 @@
             gap: 0.6rem;
             flex-shrink: 0;
         }
+        /* The mark rides out beside the surname. "Henriëtta" is the widest
+           thing in the rail and "van Niekerk" is much shorter, so that slack
+           already exists — putting the mark in it costs no name size and adds
+           no new air, and the name keeps one left edge with the body copy.
+           Above the name it had empty space to its right; beside the first
+           name it forced the whole name smaller. This is the version that
+           pays for nothing. */
+        .name-row {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.4rem, 1.2vh, 0.66rem);
+            /* the surname's own line box sits high against a square mark, so
+               drop it a touch to share a centre line with it */
+            margin-top: clamp(0.06rem, 0.4vh, 0.18rem);
+            margin-bottom: clamp(0.1rem, 0.5vh, 0.26rem);
+        }
+        .name-row .rail-logo { margin-bottom: 0; }
         .rail-back {
             display: none;
             align-items: center;
@@ -1987,6 +2036,17 @@
         }
         .rail-back:hover .rail-back-arrow { transform: translateX(-2px); }
         :root[data-pane-open]:not([data-rail-plain]) .rail-back { display: inline-flex; }
+        /* the mark normally rides the surname, and the intro hides in case
+           mode — so case mode gets its own, left of the way out, tinted by the
+           open study's --logo-filter like every other rail accent */
+        .rail-logo--case { display: none; }
+        :root[data-pane-open]:not([data-rail-plain]) .rail-logo--case {
+            display: block;
+            /* it reads as the mark here, not a favicon — sized against the
+               back button's own height rather than the surname's */
+            width: clamp(36px, 5.8vh, 46px); height: clamp(36px, 5.8vh, 46px);
+            margin: 0;
+        }
 
         /* ── rail: case mode (name + contents) ───────────── */
         /* the hero intro steps aside so the study you are reading owns
@@ -1998,9 +2058,12 @@
         .rail-case[hidden],
         .rail-toc[hidden],
         :root:not([data-pane-open]) .rail-case { display: none; }
+        /* the kicker and the study's name were sitting right under the mark
+           and the way out; give the block its own air */
+        .rail-case { margin-top: clamp(0.5rem, 1.9vh, 1.1rem); }
         .rail-case-kicker {
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.84rem;
+            font-size: clamp(0.7rem, 1.7vh, 0.84rem);
             font-weight: 600;
             letter-spacing: 0.22em;
             text-transform: uppercase;
@@ -2010,7 +2073,7 @@
         .rail-case-name {
             font-family: 'DotempDemo', monospace;
             font-weight: 400;
-            font-size: 2.35rem;
+            font-size: clamp(1.3rem, 3.9vh, 2.35rem);
             line-height: 1.08;
             letter-spacing: 0.01em;
             color: var(--rail-accent);
@@ -2021,9 +2084,9 @@
         .rail-toc {
             display: flex;
             flex-direction: column;
-            gap: 0.12rem;
-            margin-top: 1.3rem;
-            padding-top: 1.2rem;
+            gap: clamp(0rem, 0.35vh, 0.12rem);
+            margin-top: clamp(0.5rem, 2vh, 1.3rem);
+            padding-top: clamp(0.5rem, 1.9vh, 1.2rem);
             border-top: 1px solid rgba(var(--rail-accent-rgb), 0.22);
         }
         .rail-toc a {
@@ -2031,12 +2094,12 @@
             align-items: baseline;
             gap: 0.62rem;
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.18rem;
+            font-size: clamp(0.84rem, 2.2vh, 1.18rem);
             font-weight: 500;
-            line-height: 1.3;
+            line-height: 1.28;
             color: rgba(240, 242, 240, 0.7);
             text-decoration: none;
-            padding: 0.46rem 0 0.46rem 0.8rem;
+            padding: clamp(0.14rem, 0.72vh, 0.46rem) 0 clamp(0.14rem, 0.72vh, 0.46rem) 0.8rem;
             border-left: 2px solid transparent;
             transition: color 0.2s ease, border-color 0.2s ease,
                         padding-left 0.2s ease;
@@ -2205,9 +2268,19 @@
         .sidebar .orbit-dot:nth-child(4) { animation-name: orbitDotSm; }
 
         /* ── rail: name ──────────────────────────────────── */
-        .sidebar .display-name { margin-bottom: 0.65rem; line-height: 0.94; }
-        .sidebar .name-first { font-size: 2.7rem; letter-spacing: -0.02em; }
-        .sidebar .name-last  { font-size: 1.5rem; letter-spacing: 0.05em; }
+        .sidebar .display-name { margin-bottom: clamp(0.3rem, 0.9vh, 0.65rem); line-height: 0.94; }
+        /* Didot italic carries a left side bearing, so the H's ink sits about
+           0.105em inside its box while "van Niekerk" overhangs its own by
+           0.029em, and the logo PNG has 3.4% transparent padding. Measured all
+           three and pulled each back to the same optical edge. */
+        .sidebar .name-first {
+            font-size: clamp(1.62rem, 5.4vh, 3.15rem);
+            letter-spacing: -0.025em; margin-left: -0.03em;
+        }
+        .sidebar .name-last  {
+            font-size: clamp(1.02rem, 3vh, 1.72rem);
+            letter-spacing: 0.05em; margin-left: -0.02em;
+        }
 
         /* ── rail: eyebrow, stacked ──────────────────────── */
         .sidebar .eyebrow {
@@ -2222,24 +2295,24 @@
         /* the serious line — what she actually does */
         .rail-pitch {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.02rem;
+            font-size: clamp(0.8rem, 2.05vh, 1.02rem);
             font-weight: 500;
-            line-height: 1.4;
+            line-height: 1.38;
             color: rgba(240, 242, 240, 0.88);
-            margin: 0 0 0.75rem;
+            margin: 0 0 clamp(0.35rem, 1.1vh, 0.75rem);
         }
         .tagline-lead { font-style: italic; }
 
         /* ── rail: typewriter tagline ────────────────────── */
         .sidebar .tagline {
-            font-size: 0.98rem;
+            font-size: clamp(0.78rem, 1.95vh, 0.98rem);
             width: 100%;
             max-width: 100%;
             margin-bottom: 0;
-            line-height: 1.4;
+            line-height: 1.38;
             /* holds the tallest phrase so the nav below doesn't
                jump around while the typewriter runs */
-            min-height: 5.2em;
+            min-height: 4.4em;
         }
         .sidebar .tagline-tooltip {
             white-space: normal;
@@ -2250,14 +2323,14 @@
 
         /* ── rail: nav ───────────────────────────────────── */
         .rail-intro { display: flex; flex-direction: column; }
-        .sb-group { display: flex; flex-direction: column; gap: 0.1rem; }
+        .sb-group { display: flex; flex-direction: column; gap: clamp(0rem, 0.35vh, 0.1rem); }
         .sb-link {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.12rem;
+            font-size: clamp(0.86rem, 2.2vh, 1.12rem);
             font-weight: 400;
             color: rgba(240, 242, 240, 0.58);
             text-decoration: none;
-            padding: 0.3rem 0 0.3rem 0.7rem;
+            padding: clamp(0.12rem, 0.6vh, 0.3rem) 0 clamp(0.12rem, 0.6vh, 0.3rem) 0.7rem;
             border-left: 1px solid transparent;
             transition: color 0.2s ease, border-color 0.2s ease, padding-left 0.2s ease;
             background: none;
@@ -2640,7 +2713,14 @@
     :root[data-theme="light"] .social-btn:hover svg[data-lucide] { stroke: var(--accent); }
     :root[data-theme="light"] .social-btn svg.bi-discord { fill: rgba(18,24,31,0.5); }
     :root[data-theme="light"] .social-btn:hover svg.bi-discord { fill: var(--accent); }
-    :root[data-theme="light"] .social-tooltip { background: rgba(255,255,255,0.98); color: var(--ink-soft); border-color: var(--line); }
+    /* both themes now read from --rail-tint / --rail-accent, so the light
+       override only needs to keep the chip legible on a pale rail */
+    :root[data-theme="light"] .conspire-socials .social-tooltip {
+        background: rgba(255,255,255,0.96);
+        color: var(--rail-accent);
+        border-color: rgba(var(--rail-accent-rgb), 0.34);
+        box-shadow: 0 6px 18px rgba(18,24,31,0.12);
+    }
     :root[data-theme="light"] .btn-cta-secondary {
         color: var(--ink-soft); background: rgba(255,255,255,0.5); border-color: rgba(18,24,31,0.16); box-shadow: none;
     }
@@ -3216,8 +3296,8 @@
 
             <!-- logo mark, plus the way out of a case study -->
             <div class="rail-head">
-                <a class="rail-logo" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk — home">
-                    <img src="./HenLogo.png" alt="Henriëtta van Niekerk">
+                <a class="rail-logo rail-logo--case" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk — home">
+                    <img src="./HenLogo.png" alt="">
                 </a>
                 <button class="rail-back" id="railBack" type="button">
                     <span class="rail-back-arrow">&larr;</span> back home
@@ -3235,7 +3315,12 @@
             <div class="rail-intro">
                 <h1 class="display-name">
                     <span class="name-first">H<span class="px">en</span><span class="name-ls">ri</span>ë<span class="px">tt</span><span class="name-ls">a</span></span>
-                    <span class="name-last">v<span class="px">an</span> Nie<span class="px">ke</span>rk</span>
+                    <span class="name-row">
+                        <span class="name-last">v<span class="px">an</span> Nie<span class="px">ke</span>rk</span>
+                        <a class="rail-logo" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk — home">
+                            <img src="./HenLogo.png" alt="">
+                        </a>
+                    </span>
                 </h1>
 
                 <p class="rail-pitch">is a design engineer who builds systems that carry the load instead of the person</p>
@@ -3271,21 +3356,27 @@
                         <div class="social-row conspire-socials">
                     <div class="social-btn" onclick="window.open('https://www.linkedin.com/in/henriettavanniekerk', '_blank')">
                         <i data-lucide="linkedin"></i>
-                        <span class="social-tooltip">LinkedIn</span>
+                        <span class="social-tooltip">/in/henriettavanniekerk</span>
                     </div>
                     <div class="social-btn" onclick="window.open('https://github.com/henliz', '_blank')">
                         <i data-lucide="github"></i>
-                        <span class="social-tooltip">GitHub</span>
+                        <span class="social-tooltip">github.com/henliz</span>
                     </div>
                     <div class="social-btn" onclick="window.open('https://discord.gg/ptm', '_blank')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-discord" viewBox="0 0 16 16">
                             <path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"/>
                         </svg>
-                        <span class="social-tooltip">Discord</span>
+                        <span class="social-tooltip">discord.gg/ptm</span>
+                    </div>
+                    <div class="social-btn" onclick="window.open('https://x.com/nothenliz', '_blank')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                        <span class="social-tooltip">x.com/nothenliz</span>
                     </div>
                     <div class="social-btn" onclick="window.open('mailto:henrietta@skrimp.ai', '_blank')">
                         <i data-lucide="mail"></i>
-                        <span class="social-tooltip">Email</span>
+                        <span class="social-tooltip">henrietta@skrimp.ai</span>
                     </div>
                         </div>
                     </div>
@@ -4289,7 +4380,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         name:'Trove', category:'Product Design Engineering / AI',
         tagline:'Turning behavioural data into a personality read people actually recognise',
         stat:'0 \u2192 10,250 users and 61.9K page views in six months',
-        tags:['Behavioral AI','Consumer Product','Web + iOS'],
+        tags:['Design engineer','LLM runtime','Web + iOS'],
         href:'Trove/index.html',
         // the meadow + the tots are DOM (see the .tf block); the phone itself is
         // the real iphone.glb with the session mapped onto its screen as a video
@@ -4307,7 +4398,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         tagline:'Planning a week of dinners around live prices and whatever\u2019s already in the fridge',
         video:{ kind:'file', src:'Skrimp/skrimp-smartload-demo.mp4' },
         stat:'$5K/yr potential savings per family \u2014 free, always',
-        tags:['Foodtech','Meal Planning','Mobile + Web'],
+        tags:['Solo founder','Live flyer data','Mobile + web'],
         href:'Skrimp/index.html',
         // the aisle is the place; the laptop running the plan is the subject.
         // the plate used to BE the subject, which is why the tile read "food"
@@ -4344,7 +4435,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         tagline:'Running a volunteer studio on an undocumented engine',
         video:{ kind:'yt', id:'1oBlmSvi1So' },
         stat:'140+ contributors, 1,700 Patreon members, 0 docs from Larian',
-        tags:['Games','RPG Expansion','PC'],
+        tags:['CTO','Build tooling','PC'],
         href:'Menzo/index.html',
         domScene:'underdark',
         theme:{ accent:'160, 120, 220', accent2:'192, 132, 252', scene:'menzo' },
@@ -4356,7 +4447,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         tagline:'Postpartum support that arrives as a text, not another app to download',
         video:{ kind:'yt', id:'kARMZuwfmMA', start:8 },
         stat:'\ud83c\udfc6 TechNova 2025 \u2014 concept to live telephony in 36 hours',
-        tags:['Hackathon','Conversational AI','Voice + SMS'],
+        tags:['36-hour build','Telephony','No app'],
         href:'MyAuntie/index.html',
         domScene:'nursery', award:'Winner',
         theme:{ accent:'196, 96, 122', accent2:'255, 179, 208', scene:'auntie' },
@@ -4383,7 +4474,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         tagline:'Reading \u201cOvercomplicated Screen Transitions\u201d as a design constraint, not decoration',
         video:{ kind:'yt', id:'ou-piZ1dt4U' },
         stat:'\ud83c\udfc6 1st of 88 at Comfy Jam: Winter 2026, and 2nd on the limitation',
-        tags:['Game Jam','Puzzle Adventure','Browser'],
+        tags:['Game jam win','Godot','Browser'],
         href:'equinox/index.html', award:'Winner',
         playHref:'https://emstergrace.itch.io/equinox',
         parallax:true, noDrag:true,
@@ -5286,10 +5377,11 @@ const CASES = {
   menzo:      { name: 'Path to Menzoberranzan', href: 'Menzo/index.html',    scene: 'menzo'    },
   myauntie:   { name: 'MyAuntie',               href: 'MyAuntie/index.html', scene: 'myauntie' },
   equinox:    { name: 'Equinox',                href: 'equinox/index.html',  scene: 'equinox'  },
-  about:      { name: 'About',                  href: 'about.html'          },
-  // the playground is Hen's own page rather than a study, so the rail
-  // stays exactly as it is on the home page — no back button, no
-  // contents, the usual nav
+  // About and the playground are Hen's own pages rather than studies, so the
+  // rail stays exactly as it is on the home page: no back button, no
+  // contents, the usual nav. Without plainRail a pane gets case-study mode,
+  // which on a page with no table of contents just reads as a missing nav.
+  about:      { name: 'About',                  href: 'about.html',      plainRail: true },
   playground: { name: 'Playground',             href: 'playground.html', plainRail: true },
 };
 // reverse lookup so the bento tiles (plain <a href>) can be intercepted

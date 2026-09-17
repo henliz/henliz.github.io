@@ -311,7 +311,13 @@
     .body-img-caption { font-size:0.84rem; opacity:.55; margin-top:.3rem; }
 
     /* ---- EQX COVER VIDEO ---- */
-    .eqx-video-wrap { position:relative; width:100%; aspect-ratio:16/9; border-radius:4px; box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.5 * var(--sh-k))); border:1px solid var(--glass-border); overflow:hidden; }
+    .eqx-video-wrap { position:relative; width:100%; aspect-ratio:16/9; border-radius:4px; box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.5 * var(--sh-k))); border:1px solid var(--glass-border); overflow:hidden; background:#0b0d14; }
+    /* The page's own banner sits over the player until the video actually
+       starts, then dissolves. If YouTube is slow, blocked, or the visitor is
+       on a connection that will not carry it, this is what they see instead
+       of a black rectangle. */
+    .eqx-poster { position:absolute; inset:0; z-index:5; background:#0b0d14 url('equinox-banner.webp') center/cover no-repeat; transition:opacity .7s ease; pointer-events:none; }
+    .eqx-poster.gone { opacity:0; }
     .eqx-video-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; pointer-events:none; }
     .eqx-mute-btn { position:absolute; bottom:12px; right:12px; background:rgba(var(--sh-rgb), calc(.55 * var(--sh-k))); border:1px solid rgba(var(--accent-rgb),.45); border-radius:8px; color:var(--text-primary); cursor:none; padding:6px 10px; font-size:15px; display:flex; align-items:center; gap:5px; backdrop-filter:blur(8px); transition:background .2s; z-index:10; }
     .eqx-mute-btn:hover { background:rgba(var(--sh-rgb), calc(.82 * var(--sh-k))); }
@@ -747,6 +753,7 @@
 
           <div class="eqx-video-wrap reveal">
             <div id="eqx-yt-player"></div>
+            <div class="eqx-poster" id="eqx-poster"></div>
             <button class="eqx-mute-btn" id="eqx-mute-btn" aria-label="Unmute">&#128263;</button>
           </div>
           <p class="cap">The full showcase, with sound. Every clip below is cut out of these same three minutes.</p>
@@ -1136,16 +1143,28 @@
        polls instead, and retires itself the moment everything is shown. */
     (function(){
       const SEL = '.reveal';
-      let ticks = 0;
+      let timer = 0, queued = false;
       const sweep = () => {
-        const left = document.querySelectorAll(SEL + ':not(.active)');
-        left.forEach(el => {
+        queued = false;
+        document.querySelectorAll(SEL + ':not(.active)').forEach(el => {
           const r = el.getBoundingClientRect();
-          if (r.top < innerHeight * 0.92 && r.bottom > 0) el.classList.add('active');
+          /* In view, or already scrolled past. A fast scroll, a jump from the
+             contents, or a restored scroll position can carry a block from
+             below the fold to above it without the observer ever seeing it
+             intersect — and it would then sit at opacity 0 for the rest of
+             the visit, which also stops its video from ever playing. */
+          if (r.top < innerHeight * 0.92) el.classList.add('active');
         });
-        if (!left.length || ++ticks > 300) clearInterval(timer);
+        if (!document.querySelector(SEL + ':not(.active)')) {
+          clearInterval(timer);
+          removeEventListener('scroll', onScroll);
+        }
       };
-      const timer = setInterval(sweep, 200);
+      /* scroll drives it so it keeps up, and the interval is the backstop;
+         both retire together the moment nothing is left hidden */
+      const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(sweep); } };
+      addEventListener('scroll', onScroll, { passive: true });
+      timer = setInterval(sweep, 250);
       sweep();
     })();
 
@@ -1154,15 +1173,49 @@
   <!-- EQX cover video -->
   <script>
     var eqxPlayer, eqxMuted = true;
+    /* The showcase opens on the main menu and then a text card; the game
+       itself starts at 0:13. `start` skips that on the first pass, but a
+       YouTube loop restarts at 0 regardless — which is why the menu kept
+       coming back around. So every wrap gets sent forward too. */
+    var EQX_START = 14;
+    function eqxSkipIntro(p) {
+      try { if (p.getCurrentTime() < EQX_START - 0.5) p.seekTo(EQX_START, true); } catch (err) {}
+    }
+    /* The player is built at load, while this block is still below the fold
+       and at opacity 0. Chrome refuses autoplay to a player it cannot see,
+       and YouTube never retries — which is how the tile ended up sitting
+       there black. So playback waits until the block is genuinely on
+       screen, and is asked for then. */
+    var eqxReady = false, eqxSeen = false;
+    function eqxMaybePlay() {
+      if (!eqxReady || !eqxSeen || !eqxPlayer) return;
+      try { eqxPlayer.mute(); eqxPlayer.playVideo(); } catch (err) {}
+    }
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting && en.intersectionRatio > 0.25) { eqxSeen = true; eqxMaybePlay(); }
+      });
+    }, { threshold: [0, 0.25, 0.6] }).observe(document.querySelector('.eqx-video-wrap'));
+
     function onYouTubeIframeAPIReady() {
       eqxPlayer = new YT.Player('eqx-yt-player', {
         videoId: 'ou-piZ1dt4U',
-        // the title card runs to 0:14. the showcase opens on the tower instead.
-        playerVars: { autoplay:1, loop:1, controls:0, mute:1, playlist:'ou-piZ1dt4U', start:14, rel:0, modestbranding:1, playsinline:1, disablekb:1 },
+        playerVars: { autoplay:1, loop:1, controls:0, mute:1, playlist:'ou-piZ1dt4U', start:EQX_START, rel:0, modestbranding:1, playsinline:1, disablekb:1 },
         events: {
-          onReady: function(e) { e.target.mute(); e.target.playVideo(); }
+          onReady: function(e) { e.target.mute(); eqxReady = true; eqxMaybePlay(); },
+          onStateChange: function(e) {
+            if (e.data === YT.PlayerState.PLAYING) {
+              eqxSkipIntro(e.target);
+              var poster = document.getElementById('eqx-poster');
+              if (poster) poster.classList.add('gone');
+            }
+            // a playlist loop can wrap without ever reporting ENDED, so the
+            // interval below is the one that actually catches most of them
+            if (e.data === YT.PlayerState.ENDED) { e.target.seekTo(EQX_START, true); e.target.playVideo(); }
+          }
         }
       });
+      setInterval(function () { if (eqxPlayer) eqxSkipIntro(eqxPlayer); }, 1000);
     }
     document.getElementById('eqx-mute-btn').addEventListener('click', function() {
       if (!eqxPlayer) return;
@@ -1196,8 +1249,8 @@
        floating widget would just be a second copy of the same list */
     html[data-embedded] #ql-widget{display:none!important}
     #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(var(--deep-rgb),.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
-    #ql-panel.open{max-height:520px;opacity:1;padding:.45rem}
-    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:.4rem .7rem;border-radius:6px;transition:background .18s,color .18s}
+    #ql-panel.open{max-height:min(520px, calc(100dvh - 9rem));overflow-y:auto;opacity:1;padding:.45rem}
+    #ql-panel a{display:block;font-family:'Montserrat Alternates',sans-serif;font-size:clamp(.66rem,1.6vh,.78rem);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:clamp(.2rem,.8vh,.4rem) .7rem;border-radius:6px;transition:background .18s,color .18s}
     #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:0.75rem;opacity:.45;margin-right:.25rem}
     #ql-panel a:hover{background:var(--glass-highlight-1);color:var(--text-secondary)}
     #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(var(--deep-rgb),.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Montserrat Alternates',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
@@ -1311,9 +1364,9 @@
   <script>
     (function(){
       function set(t){ document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+      // light is the default now; a saved choice still wins
       var t; try { t = localStorage.getItem('theme'); } catch(e) {}
-      if(!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      set(t);
+      set(t || 'light');
       addEventListener('message', function(e){
         if(e && e.data && e.data.type === 'theme') set(e.data.value);
       });
