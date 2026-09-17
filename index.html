@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
+      // 404.html bounced a clean URL here (GitHub Pages can't rewrite). Put it
+      // back before anything renders, so the address bar never shows the hop.
+      (function () {
+        try {
+          var r = sessionStorage.getItem('route:pending');
+          if (r) { sessionStorage.removeItem('route:pending'); history.replaceState(null, '', r); }
+        } catch (e) {}
+      })();
       // runs before paint so a light-mode reload never flashes dark
       (function () {
         try {
@@ -84,7 +92,18 @@
             pointer-events: none;
             z-index: 10000;
             backdrop-filter: blur(6px);
-            transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, transform 0.08s ease-out;
+            /* everything that changes between states has to be in here, or
+               the bits that are missing hard-swap while the rest eases and the
+               whole thing reads as a snap. radius, border, shadow and the ink
+               were all missing. */
+            transition: width 0.34s cubic-bezier(.22, 1, .36, 1),
+                        height 0.34s cubic-bezier(.22, 1, .36, 1),
+                        border-radius 0.34s cubic-bezier(.22, 1, .36, 1),
+                        background 0.26s ease,
+                        border-color 0.26s ease,
+                        box-shadow 0.26s ease,
+                        color 0.2s ease,
+                        transform 0.08s ease-out;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 10px rgba(var(--rail-accent-rgb), 0.25);
             display: none;
@@ -109,40 +128,57 @@
         }
 
         /* ── "open me!" ───────────────────────────────────────────
-           Over a case study the ring unfurls into a pill with the
-           open-in-a-window glyph and a little waving label in it, so the
-           tile says out loud that it is a door. Width and radius are real
-           numbers rather than auto, because auto does not animate. */
-        .cur-pill {
-            position: absolute; left: 50%; top: 50%;
-            transform: translate(-50%, -50%) scale(0.5);
-            display: flex; align-items: center; gap: 5px;
-            white-space: nowrap; opacity: 0;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 10.5px; font-weight: 700;
-            letter-spacing: 0.06em; text-transform: lowercase;
-            color: rgb(var(--rail-accent-rgb));
-            transition: opacity 0.18s ease 0.05s, transform 0.28s cubic-bezier(.2,1.3,.4,1) 0.03s;
-        }
-        :root[data-theme="dark"] .cur-pill { color: #eafcfa; }
-        .cur-ico { width: 13px; height: 13px; flex: none; }
+           Over a case study the ring grows into ONE circle, still the site's
+           blue, with the label centred inside it over two lines and the
+           open-in-a-window glyph after the end of the sentence.
+
+           The circle keeps the accent. Legibility is handled by the INK,
+           which flips with the theme because the accent does:
+             light theme, accent #135F5A (deep teal)   -> white ink, 7.6:1
+             dark theme,  accent #66FCF1 (bright mint)  -> near-black, 14.4:1
+           Both clear AA and AAA, and neither depends on what the case study
+           behind it is coloured, because the fill is 93% opaque. The white
+           hairline is what stops the circle vanishing into the Underdark. */
+        :root                     { --cur-ink: #ffffff; }
+        :root[data-theme="light"] { --cur-ink: #ffffff; }
+        :root[data-theme="dark"]  { --cur-ink: #08201e; }
 
         .custom-cursor.opening {
-            width: 116px; height: 34px;
-            border-radius: 17px;
-            background: rgba(var(--rail-accent-rgb), 0.24);
-            border-color: rgba(var(--rail-accent-rgb), 0.95);
-            box-shadow: 0 6px 20px rgba(var(--rail-accent-rgb), 0.35);
-        }
-        .custom-cursor.opening .cur-pill {
-            opacity: 1; transform: translate(-50%, -50%) scale(1);
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: rgba(var(--rail-accent-rgb), 0.93);
+            border-color: rgba(var(--rail-accent-rgb), 1);
+            color: var(--cur-ink);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32),
+                        0 0 0 1.5px rgba(255, 255, 255, 0.3);
         }
         .custom-cursor.opening.clicking {
-            transform: translate(-50%, -50%) scale(0.94);
+            transform: translate(-50%, -50%) scale(0.95);
         }
 
+        .cur-inner {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 1px;
+            pointer-events: none;
+            opacity: 0; transform: scale(0.6);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10px; font-weight: 700; line-height: 1.25;
+            letter-spacing: 0.05em; text-transform: lowercase;
+            /* no delay on the way out, so the text clears before the circle
+               shrinks instead of trailing behind it */
+            transition: opacity 0.12s ease, transform 0.18s ease;
+        }
+        .custom-cursor.opening .cur-inner {
+            opacity: 1; transform: scale(1);
+            transition: opacity 0.2s ease 0.09s,
+                        transform 0.34s cubic-bezier(.2, 1.25, .4, 1) 0.07s;
+        }
+        .cur-line { display: flex; align-items: center; gap: 4px; }
+        .cur-ico { width: 11px; height: 11px; flex: none; margin-bottom: 1px; }
+
         /* each letter takes its turn, which is the whole charm of it */
-        .cur-txt i {
+        .cur-line i {
             display: inline-block; font-style: normal;
             animation: curWave 1.15s ease-in-out infinite;
             animation-delay: calc(var(--i) * 0.055s);
@@ -152,8 +188,8 @@
             28%           { transform: translateY(-3.5px) }
         }
         @media (prefers-reduced-motion: reduce) {
-            .cur-txt i { animation: none }
-            .cur-pill { transition-duration: 0.01s }
+            .cur-line i { animation: none }
+            .cur-inner { transition-duration: 0.01s }
         }
 
         #app {
@@ -3313,14 +3349,7 @@
     <div id="app">
         <!-- Custom Glassmorphism Cursor -->
         <div class="custom-cursor" id="cursor">
-          <span class="cur-pill" aria-hidden="true">
-            <svg class="cur-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 4h6v6"/><path d="M20 4 11 13"/>
-              <path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/>
-            </svg>
-            <span class="cur-txt" id="curTxt"></span>
-          </span>
+          <span class="cur-inner" id="curTxt" aria-hidden="true"></span>
         </div>
 
         <nav class="navbar">
@@ -3405,9 +3434,9 @@
                 <a class="sb-link" href="#projects"     data-scroll="#projects">my work</a>
                 <a class="sb-link" href="#northstar"    data-scroll="#northstar">north star</a>
                 <a class="sb-link" href="#endorsements" data-scroll="#endorsements">endorsements</a>
-                <a class="sb-link" href="#/about"       data-pane="about">about</a>
-                <a class="sb-link" href="#" onclick="event.preventDefault(); openResumePopup()">resume</a>
-                <a class="sb-link" href="#/playground"  data-pane="playground">playground</a>
+                <a class="sb-link" href="about"       data-pane="about">about</a>
+                <a class="sb-link" href="resume" onclick="event.preventDefault(); go('resume')">resume</a>
+                <a class="sb-link" href="playground"  data-pane="playground">playground</a>
             </nav>
 
             <div class="sb-foot">
@@ -3953,31 +3982,69 @@
             /* ── the "open me!" state ─────────────────────────────
                Delegated, because the tiles are built after this runs, and
                keyed off the same href lookup the router uses so it can only
-               ever light up on something that really does open. */
+               ever light up on something that really does open.
+
+               It waits for the block to actually change before it shows.
+               `is-video` is the signal the tile itself uses for "my art has
+               swapped": added straight away on the drawn tiles, and only once
+               the media has really painted on the video ones. So the cursor
+               follows the tile rather than guessing, and you never get the
+               label sitting over a block that has not turned over yet. */
             (function openMe(){
-              const txt = document.getElementById('curTxt');
-              if (txt) [...'open me!'].forEach((ch, i) => {
-                const el = document.createElement('i');
-                el.textContent = ch === ' ' ? '\u00a0' : ch;
-                el.style.setProperty('--i', i);
-                txt.appendChild(el);
-              });
-              const tileOf = t => {
+              const label = document.getElementById('curTxt');
+              if (label){
+                const ICO = '<svg class="cur-ico" viewBox="0 0 24 24" fill="none"'
+                  + ' stroke="currentColor" stroke-width="2.3" stroke-linecap="round"'
+                  + ' stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 11 13"/>'
+                  + '<path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>';
+                let n = 0;
+                /* two lines so the circle can stay small, and one running index
+                   so the wave carries across the break instead of restarting */
+                [['open', false], ['me!', true]].forEach(([word, tail]) => {
+                  const line = document.createElement('span');
+                  line.className = 'cur-line';
+                  [...word].forEach(ch => {
+                    const i = document.createElement('i');
+                    i.textContent = ch;
+                    i.style.setProperty('--i', n++);
+                    line.appendChild(i);
+                  });
+                  if (tail) line.insertAdjacentHTML('beforeend', ICO);
+                  label.appendChild(line);
+                });
+              }
+
+              const caseCellOf = t => {
                 const a = t.closest && t.closest('#grid a[href]');
                 if (!a) return null;
-                return CASE_BY_HREF[(a.getAttribute('href') || '').toLowerCase()] ? a : null;
+                if (!CASE_BY_HREF[(a.getAttribute('href') || '').toLowerCase()]) return null;
+                return a.closest('.cell');
               };
-              let on = null;
+
+              let cell = null, watch = null;
+              const sync = () => cursor.classList.toggle(
+                'opening', !!cell && cell.classList.contains('is-video'));
+
+              const leave = () => {
+                if (watch) { watch.disconnect(); watch = null; }
+                cell = null;
+                cursor.classList.remove('opening');
+              };
+
               document.addEventListener('mouseover', e => {
-                const a = tileOf(e.target);
-                if (a === on) return;
-                on = a;
-                cursor.classList.toggle('opening', !!a);
+                const next = caseCellOf(e.target);
+                if (next === cell) return;
+                if (watch) { watch.disconnect(); watch = null; }
+                cell = next;
+                if (!cell) { cursor.classList.remove('opening'); return; }
+                /* the swap can land a beat later, so watch for it */
+                watch = new MutationObserver(sync);
+                watch.observe(cell, { attributes: true, attributeFilter: ['class'] });
+                sync();
               });
-              /* leaving the window entirely still has to put it away */
-              document.addEventListener('mouseleave', () => {
-                on = null; cursor.classList.remove('opening');
-              });
+              document.addEventListener('mouseleave', leave);
+              /* and if the pane opens over the top, the grid is gone */
+              addEventListener('hashchange', leave);
             })();
 
             // Relay cursor position/state from iframes via postMessage.
@@ -4473,7 +4540,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         tagline:'Turning behavioural data into a personality read people actually recognise',
         stat:'0 \u2192 10,250 users and 61.9K page views in six months',
         tags:['Design engineer','LLM runtime','Web + iOS'],
-        href:'Trove/index.html',
+        href:'Trove/',
         // the meadow + the tots are DOM (see the .tf block); the phone itself is
         // the real iphone.glb with the session mapped onto its screen as a video
         // texture, the same overlay trick MyAuntie's screenshot uses
@@ -4491,7 +4558,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         video:{ kind:'file', src:'Skrimp/skrimp-smartload-demo.mp4' },
         stat:'$5K/yr potential savings per family \u2014 free, always',
         tags:['Solo founder','Live flyer data','Mobile + web'],
-        href:'Skrimp/index.html',
+        href:'Skrimp/',
         // the aisle is the place; the laptop running the plan is the subject.
         // the plate used to BE the subject, which is why the tile read "food"
         // instead of "software" — it is set dressing on the worktop now.
@@ -4528,7 +4595,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         video:{ kind:'yt', id:'1oBlmSvi1So' },
         stat:'140+ contributors, 1,700 Patreon members, 0 docs from Larian',
         tags:['CTO','Build tooling','PC'],
-        href:'Menzo/index.html',
+        href:'Menzo/',
         domScene:'underdark',
         theme:{ accent:'160, 120, 220', accent2:'192, 132, 252', scene:'menzo' },
         model:'./models/steamdeck.glb', scale:0.30*1.5, baseEuler:[0,-10,0],
@@ -4540,7 +4607,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         video:{ kind:'yt', id:'kARMZuwfmMA', start:8 },
         stat:'\ud83c\udfc6 TechNova 2025 \u2014 concept to live telephony in 36 hours',
         tags:['36-hour build','Telephony','No app'],
-        href:'MyAuntie/index.html',
+        href:'MyAuntie/',
         domScene:'nursery', award:'Winner',
         theme:{ accent:'196, 96, 122', accent2:'255, 179, 208', scene:'auntie' },
         // The default drift sways the pivot +/-0.30 rad, which is +/-17 degrees —
@@ -4567,7 +4634,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         video:{ kind:'yt', id:'ou-piZ1dt4U' },
         stat:'\ud83c\udfc6 1st of 88 at Comfy Jam: Winter 2026, and 2nd on the limitation',
         tags:['Game jam win','Godot','Browser'],
-        href:'equinox/index.html', award:'Winner',
+        href:'equinox/', award:'Winner',
         playHref:'https://emstergrace.itch.io/equinox',
         cover:'equinox/equinox-banner.webp', noDrag:true,
         theme:{ accent:'200, 135, 74', accent2:'232, 192, 96', scene:'equinox' },
@@ -5494,21 +5561,24 @@ window.postMessage({type:'modelsReady'},'*');
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: 'Trove/index.html',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: 'Skrimp/index.html',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: 'Menzo/index.html',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: 'MyAuntie/index.html', scene: 'myauntie' },
-  equinox:    { name: 'Equinox',                href: 'equinox/index.html',  scene: 'equinox'  },
+  trove:      { name: 'Trove',                  href: 'Trove/',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: 'Skrimp/',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: 'Menzo/',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: 'MyAuntie/', scene: 'myauntie' },
+  equinox:    { name: 'Equinox',                href: 'equinox/',  scene: 'equinox'  },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
   // which on a page with no table of contents just reads as a missing nav.
   about:      { name: 'About',                  href: 'about.html',      plainRail: true },
   playground: { name: 'Playground',             href: 'playground.html', plainRail: true },
+  // /resume is the popup rather than a pane, but it still deserves a URL
+  resume:     { popup: true },
 };
 // reverse lookup so the bento tiles (plain <a href>) can be intercepted
 const CASE_BY_HREF = Object.fromEntries(
-  Object.entries(CASES).map(([slug, c]) => [c.href.toLowerCase(), slug])
+  // the resume entry is a popup, not a page, so it has no href to map back
+  Object.entries(CASES).filter(([, c]) => c.href).map(([slug, c]) => [c.href.toLowerCase(), slug])
 );
 
 (function () {
@@ -5618,7 +5688,11 @@ const CASE_BY_HREF = Object.fromEntries(
     if (!c || current === slug) return;
     clearTimeout(closeTimer);
     current = slug;
-    frame.src = c.href;
+    // replace, don't assign: `frame.src = …` pushes onto the joint session
+    // history, which made the back button undo an iframe load instead of
+    // leaving the case study
+    if (frame.contentWindow) frame.contentWindow.location.replace(c.href);
+    else frame.src = c.href;
     document.title = c.name + " — Henrietta van Niekerk";
     // the sky and the paper take this case's colours for as long as it's open
     if (c.scene) root.setAttribute('data-case', c.scene);
@@ -5656,14 +5730,29 @@ const CASE_BY_HREF = Object.fromEntries(
     // land back exactly where the work page was left
     if (window.scroller) window.scroller.scrollTop = restoreY;
     // drop the iframe only after the fade, so it doesn't blank mid-transition
-    closeTimer = setTimeout(() => { if (!current) frame.src = 'about:blank'; }, 420);
-    if (location.hash.startsWith('#/')) {
-      history.replaceState(null, '', location.pathname + location.search);
+    closeTimer = setTimeout(() => { if (!current && frame.contentWindow) frame.contentWindow.location.replace('about:blank'); }, 420);
+    // back to the shell's own URL, whichever form we arrived in
+    const home = location.pathname.replace(/[^/]*$/, '');
+    if (location.hash.startsWith('#/') || location.pathname !== home) {
+      history.pushState(null, '', home + location.search);
     }
   };
 
+  // routes are real paths now, not hashes: /myauntie, /about, /playground.
+  // GitHub Pages has no rewrites, so 404.html stashes the path and bounces to
+  // the shell, which puts it back with replaceState — the URL the visitor
+  // sees and shares is always the clean one.
+  function slugFromPath() {
+    const p = location.pathname.replace(/\/+$/, '').split('/').pop() || '';
+    return p.toLowerCase();
+  }
   function route() {
-    const m = location.hash.match(/^#\/([a-z0-9-]+)$/i);
+    const slug = slugFromPath();
+    if (CASES[slug] && CASES[slug].popup) {      // /resume opens the overlay
+      if (typeof openResumePopup === 'function') openResumePopup();
+      return;
+    }
+    const m = CASES[slug] ? [null, slug] : location.hash.match(/^#\/([a-z0-9-]+)$/i);
     if (m && CASES[m[1].toLowerCase()]) openCase(m[1].toLowerCase());
     else if (current) {
       // hash left the case route (back button) — tear down without touching it
@@ -5679,11 +5768,19 @@ const CASE_BY_HREF = Object.fromEntries(
       renderToc(null);
       window.lenis?.start();
       if (window.scroller) window.scroller.scrollTop = restoreY;
-      closeTimer = setTimeout(() => { if (!current) frame.src = 'about:blank'; }, 420);
+      closeTimer = setTimeout(() => { if (!current && frame.contentWindow) frame.contentWindow.location.replace('about:blank'); }, 420);
     }
   }
   window.addEventListener('hashchange', route);
+  window.addEventListener('popstate', route);
   route();
+
+  // one place that changes the URL, so back/forward stay honest
+  function go(slug) {
+    const base = location.pathname.replace(/[^/]*$/, '');   // strip any leaf
+    history.pushState(null, '', base + slug);
+    route();
+  }
 
   // bento tiles open the pane instead of navigating away
   document.addEventListener('click', e => {
@@ -5693,7 +5790,7 @@ const CASE_BY_HREF = Object.fromEntries(
     if (!slug) return;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // let new-tab through
     e.preventDefault();
-    location.hash = '#/' + slug;
+    go(slug);
   });
 
   // esc closes the case study
@@ -5720,7 +5817,7 @@ const CASE_BY_HREF = Object.fromEntries(
     a.addEventListener('click', e => {
       if (e.metaKey || e.ctrlKey || e.shiftKey) return; // let new-tab through
       e.preventDefault();
-      location.hash = '#/' + a.dataset.pane;
+      go(a.dataset.pane);
     });
   });
   document.querySelectorAll('.sb-link').forEach(a => {

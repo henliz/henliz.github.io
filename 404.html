@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Henrietta van Niekerk</title>
+<meta name="robots" content="noindex">
+<script>
+  /* GitHub Pages has no server-side rewrites: a request for /myauntie finds no
+     such file and lands here. Stash the path the visitor actually asked for,
+     then hand over to the shell, which puts it back with replaceState — so the
+     URL they see and share stays /myauntie, never a hash and never a query. */
+  (function () {
+    try {
+      sessionStorage.setItem('route:pending', location.pathname + location.search + location.hash);
+    } catch (e) {}
+    location.replace('/');
+  })();
+</script>
+</head>
+<body></body>
+</html>
