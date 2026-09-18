@@ -939,6 +939,33 @@ figure{
 .phone{ border-radius:44px !important; }
 .phone-screen{ border-radius:34px !important; }
 .showcase-stage .phone img, .showcase-stage .phone video{ border-radius:32px !important; }
+
+/* ── the case title ───────────────────────────────────────────────────────
+   a centred claim above the banner, in the pixel blend, set larger than the
+   section headings so the top of the page opens on a statement rather than
+   an image. balance is right here where it was wrong on the body headings:
+   centred type wants even line lengths, left-aligned type wants a full
+   first line. */
+.case-title{
+  display:block;
+  margin:clamp(6px,1.4vh,18px) auto clamp(40px,5.6vh,72px) !important;
+  max-width:min(940px,100%);
+  text-align:center;
+  font-size:clamp(1.85rem,4.3vw,3.2rem);
+  line-height:1.16;
+  letter-spacing:-.02em;
+  font-weight:400;
+  text-wrap:balance;
+  /* the accent ink the section headings use, NOT --text-primary, which is
+     the near-black body colour and made these read as a different page */
+  color:var(--text-secondary);
+  /* .sr-only used to clip this. make sure nothing of that survives */
+  position:static; width:auto; height:auto; overflow:visible; clip:auto;
+  white-space:normal;
+}
+@media (max-width:760px){
+  .case-title{ font-size:clamp(1.75rem,7.4vw,2.4rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
+}
 </style>
 </head>
 <body>
@@ -948,7 +975,7 @@ figure{
     <div class="hero-container">
 
       <!-- BANNER -->
-      <h1 class="sr-only">Path to Menzoberranzan</h1>
+      <h1 class="case-title reveal">An unofficial Baldur&rsquo;s Gate 3 expansion built by 140 volunteers and funded by 1,700 patrons, with me as CTO.</h1>
       <figure class="case-banner reveal">
         <img src="menzo-banner.webp" alt="Path to Menzoberranzan banner: a character standing in a bioluminescent Underdark forest, beside the wordmark and a row of in-game props." width="2400" height="737" fetchpriority="high">
       </figure>
@@ -1002,16 +1029,6 @@ figure{
       <div class="confidentiality-notice reveal">
         <span class="notice-label">⚠ Confidentiality Notice</span>
         <p>Path to Menzoberranzan is an active production. Technical architecture, custom toolchain specifications, in-engine system implementations and unreleased content are not discussed here. They live under NDA for good reason. What follows covers publicly announced project scope, publicly available press and screenshots, and the leadership decisions I can speak to without compromising the work of 140+ contributors who trust this project to stay quiet. There is a great deal more I am proud of and cannot yet say.</p>
-      </div>
-
-      <!-- OVERVIEW BLOCK -->
-      <div class="overview-block reveal">
-        <span class="overview-label">Overview</span>
-        <h2 class="overview-head">Studio scale, zero budget, one city that deserves to exist.</h2>
-        <div class="overview-body">
-          <p>A volunteer-built expansion for Baldur's Gate 3, run at studio scale with none of the studio.</p>
-          <p>Two roles at once, CTO and Technical Director, across 140+ contributors who had never shipped together.</p>
-        </div>
       </div>
 
       <!-- THE CITY -->
@@ -1580,7 +1597,7 @@ size 48221184
 
       // outcome numbers — font mix on load
       setTimeout(()=>{
-        document.querySelectorAll('.outcome-num').forEach(el=>{
+        document.querySelectorAll('.case-title,.outcome-num').forEach(el=>{
           fontMix(el, el.textContent.trim());
         });
       }, 100);

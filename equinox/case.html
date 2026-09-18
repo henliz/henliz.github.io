@@ -40,20 +40,20 @@
     .di { font-family: 'Didot', 'Cormorant Garamond', serif !important; font-style: italic !important; font-weight: 700; }
 
     :root {
-      --accent-rgb: 200,135,74;
-      --accent-soft-rgb: 220,170,80;
-      --accent-deep-rgb: 180,110,60;
+      --accent-rgb: 184,84,75;
+      --accent-soft-rgb: 212,128,114;
+      --accent-deep-rgb: 138,52,56;
       --deep-rgb: 14,8,2;
       --chrome-rgb: 10,5,1;
       --lift-rgb: 255,255,255;
-      --ink-rgb: 245,238,221;
+      --ink-rgb: 245,231,228;
       --sh-rgb: 0,0,0;
       --sh-k: 1;
       --paper: #110810;
       --text-primary: #f5eedd;
-      --text-secondary: #d4a86a;
-      --accent: #c8874a;
-      --accent-bright: #e0a060;
+      --text-secondary: #d08578;
+      --accent: #b8544b;
+      --accent-bright: #d4736a;
       --glass-deep-1: #4b1520;
       --glass-deep-2: #2b0b13;
       --glass-border: rgba(var(--accent-rgb),0.22);
@@ -70,28 +70,28 @@
        washes go pale, and every accent drops to a value that
        clears WCAG AA on the light surface it lands on. */
     :root[data-theme="light"] {
-      --text-primary: #1C1209;
-      --text-secondary: #855314;
-      --accent: #96591D;
-      --accent-bright: #A8641C;
+      --text-primary: #1C0D0F;
+      --text-secondary: #7a2b32;
+      --accent: #8c3239;
+      --accent-bright: #a03b40;
       --glass-deep-1: rgba(255,255,255,0.95);
       --glass-deep-2: rgba(253,247,238,0.97);
-      --glass-border: rgba(150,89,29,0.28);
-      --glass-highlight-1: rgba(150,89,29,.07);
-      --glass-highlight-2: rgba(120,60,40,.07);
+      --glass-border: rgba(140,50,57,0.28);
+      --glass-highlight-1: rgba(140,50,57,.07);
+      --glass-highlight-2: rgba(100,35,42,.07);
       --glass-bg: rgba(255,255,255,0.76);
       --inner-card: rgba(255,255,255,0.82);
-      --rule: rgba(150,89,29,0.24);
-      --accent-rgb: 150,89,29;
-      --accent-soft-rgb: 133,83,20;
-      --accent-deep-rgb: 120,60,40;
-      --deep-rgb: 248,236,218;
+      --rule: rgba(140,50,57,0.24);
+      --accent-rgb: 140,50,57;
+      --accent-soft-rgb: 122,43,50;
+      --accent-deep-rgb: 100,35,42;
+      --deep-rgb: 250,235,232;
       --chrome-rgb: 255,255,255;
-      --lift-rgb: 150,89,29;
-      --ink-rgb: 28,18,9;
-      --sh-rgb: 70,48,24;
+      --lift-rgb: 140,50,57;
+      --ink-rgb: 28,13,15;
+      --sh-rgb: 70,26,30;
       --sh-k: .34;
-      --paper: #FBF5EA;
+      --paper: #FBF2EE;
     }
     :root[data-theme="light"] .intro-left h1 {
       background-image:linear-gradient(45deg,#96591D,#A8641C,#855314,#7A4A18,#96591D);
@@ -861,6 +861,33 @@ figure{
 .phone{ border-radius:44px !important; }
 .phone-screen{ border-radius:34px !important; }
 .showcase-stage .phone img, .showcase-stage .phone video{ border-radius:32px !important; }
+
+/* ── the case title ───────────────────────────────────────────────────────
+   a centred claim above the banner, in the pixel blend, set larger than the
+   section headings so the top of the page opens on a statement rather than
+   an image. balance is right here where it was wrong on the body headings:
+   centred type wants even line lengths, left-aligned type wants a full
+   first line. */
+.case-title{
+  display:block;
+  margin:clamp(6px,1.4vh,18px) auto clamp(40px,5.6vh,72px) !important;
+  max-width:min(940px,100%);
+  text-align:center;
+  font-size:clamp(1.85rem,4.3vw,3.2rem);
+  line-height:1.16;
+  letter-spacing:-.02em;
+  font-weight:400;
+  text-wrap:balance;
+  /* the accent ink the section headings use, NOT --text-primary, which is
+     the near-black body colour and made these read as a different page */
+  color:var(--text-secondary);
+  /* .sr-only used to clip this. make sure nothing of that survives */
+  position:static; width:auto; height:auto; overflow:visible; clip:auto;
+  white-space:normal;
+}
+@media (max-width:760px){
+  .case-title{ font-size:clamp(1.75rem,7.4vw,2.4rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
+}
 </style>
 </head>
 <body>
@@ -870,7 +897,7 @@ figure{
     <div class="hero-container">
 
       <!-- BANNER -->
-      <h1 class="sr-only">Equinox</h1>
+      <h1 class="case-title reveal">A cozy first-person puzzle game that won Comfy Jam out of 88 entries, with every payoff in it built by me.</h1>
       <figure class="case-banner reveal">
         <img src="equinox-banner.webp" alt="Equinox: the wizard&rsquo;s tower on a snowbound path at night, beacon lit, with the Equinox title." width="2400" height="737" fetchpriority="high">
       </figure>
@@ -924,7 +951,7 @@ figure{
       <section id="won">
         <div class="section-content reveal">
           <h2 class="section-heading">A wizard&rsquo;s tower locked in winter, eighteen days to bring spring back, and first place out of eighty eight.</h2>
-          <p class="lede">A cozy first-person puzzle game built by fourteen people for the Comfy Jam: Winter 2026. I built the payoffs: the transitions between floors, the journal that unlocks as you finish a puzzle, the moment a minigame completes, and the menus around all of it.</p>
+          <p class="lede">Fourteen people, eighteen days, four of us writing code. I owned every moment the game answers the player, which turned out to be one job and not four.</p>
 
           <div class="board-wrap reveal">
             <table class="board">
@@ -969,9 +996,9 @@ figure{
       <section id="where">
         <div class="section-content reveal">
           <h2 class="section-heading">It was my first game jam, and the first time I had used Godot for anything real.</h2>
-          <p class="lede">Another programmer on the team built the player movement and stood the 3D pipeline up inside the first forty eight hours, which is the only reason a beginner was useful by day three.</p>
+          <p class="lede">First time in Godot, and shipping systems the rest of the team leaned on by day three.</p>
 
-          <p>Getting the substrate solid in the first two days is the highest leverage thing anybody can do on a jam team, and I have thought about it a lot since, because I now do a version of that job on a much larger volunteer project.</p>
+          <p>Another programmer stood the 3D pipeline and player movement up inside the first forty eight hours, which is what let the rest of us move fast. Getting the substrate solid in the first two days is the highest leverage thing anybody can do on a jam team, and I have thought about it a lot since, because I now do a version of that job on a project ten times the size.</p>
 
           <div class="highlight-box reveal">
             <strong>What I got instead</strong>
@@ -1280,7 +1307,7 @@ figure{
 
       // sub-headings + stat numbers — font mix on load, no animation
       setTimeout(()=>{
-        document.querySelectorAll('.stat-number,.sub-heading').forEach(el=>{
+        document.querySelectorAll('.case-title,.stat-number,.sub-heading').forEach(el=>{
           fontMix(el,el.textContent.trim());
         });
       },100);

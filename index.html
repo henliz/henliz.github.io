@@ -171,7 +171,7 @@
             pointer-events: none;
             opacity: 0; transform: scale(0.6);
             font-family: 'Satoshi', sans-serif;
-            font-size: 10px; font-weight: 700; line-height: 1.25;
+            font-size: 13px; font-weight: 700; line-height: 1.22;
             letter-spacing: 0.02em; text-transform: lowercase;
             /* no delay on the way out, so the text clears before the circle
                shrinks instead of trailing behind it */
@@ -182,8 +182,8 @@
             transition: opacity 0.22s ease 0.12s,
                         transform 0.4s cubic-bezier(.2, 1.25, .4, 1) 0.1s;
         }
-        .cur-line { display: flex; align-items: center; gap: 4px; }
-        .cur-ico { width: 11px; height: 11px; flex: none; margin-bottom: 1px; }
+        .cur-line { display: flex; align-items: center; gap: 5px; }
+        .cur-ico { width: 14px; height: 14px; flex: none; margin-bottom: 1px; }
 
         /* Each LINE takes its turn, not each letter. Per-letter animation
            needs display:inline-block on every character, which gives each one
@@ -1254,79 +1254,6 @@
 
 
 /* === Work Intro Overlay === */
-.work-intro-overlay {
-  /* the section is content-height now, so this sits over the header band
-     rather than the whole grid */
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: clamp(150px, 24vh, 250px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 5;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(ellipse at 50% 45%, rgba(8,12,18,0.58) 0%, transparent 66%);
-  transition: opacity 0.12s;
-}
-.work-intro-inner {
-  text-align: center;
-  padding: 0 2rem;
-}
-.work-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(3.5rem, 7vw, 6.5rem);
-  font-weight: 500;
-  color: var(--ink);
-  letter-spacing: 0.03em;
-  line-height: 1.05;
-  margin-bottom: 0.6rem;
-  white-space: nowrap;
-  font-style: normal;
-}
-.work-sub {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: clamp(0.88rem, 1.2vw, 1.05rem);
-  color: rgba(var(--muted-rgb),0.65);
-  letter-spacing: 0.02em;
-}
-/* CA pulses during scramble */
-@keyframes workCaScramble {
-  0%   { text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(var(--rail-accent-rgb), 0.55); }
-  18%  { text-shadow: 5px 0 rgba(255,30,60,0.8), -5px 0 rgba(var(--rail-accent-rgb), 0.8); clip-path: inset(0 0 88% 0); }
-  19%  { clip-path: inset(0 0 0 0); }
-  40%  { text-shadow: 1px 0 rgba(255,30,60,0.3), -1px 0 rgba(var(--rail-accent-rgb), 0.3); }
-  57%  { text-shadow: 6px 0 rgba(255,30,60,0.85), -6px 0 rgba(var(--rail-accent-rgb), 0.85); clip-path: inset(72% 0 0 0); }
-  58%  { clip-path: inset(0 0 0 0); }
-  80%  { text-shadow: 2px 0 rgba(255,30,60,0.4), -2px 0 rgba(var(--rail-accent-rgb), 0.4); }
-  100% { text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(var(--rail-accent-rgb), 0.55); }
-}
-/* Gentle residual CA after text settles */
-@keyframes workCaSettle {
-  0%, 100% { text-shadow: 1.5px 0 rgba(255,30,60,0.22), -1.5px 0 rgba(var(--rail-accent-rgb), 0.22); }
-  50%       { text-shadow: 2.5px 0 rgba(255,30,60,0.32), -2.5px 0 rgba(var(--rail-accent-rgb), 0.32); }
-}
-/* Glitch-out escalates then collapses */
-@keyframes workGlitchOut {
-  0%   { opacity: 1; transform: none; clip-path: inset(0 0 0 0); text-shadow: 2px 0 rgba(255,30,60,0.3), -2px 0 rgba(var(--rail-accent-rgb), 0.3); }
-  12%  { transform: translateX(-7px) skewX(-1deg); text-shadow: 9px 0 rgba(255,30,60,0.9), -9px 0 rgba(var(--rail-accent-rgb), 0.9); clip-path: inset(0 0 82% 0); }
-  13%  { transform: translateX(7px); clip-path: inset(78% 0 0 0); }
-  14%  { transform: none; clip-path: inset(0 0 0 0); }
-  25%  { opacity: 0.85; transform: scaleX(1.015); text-shadow: 14px 0 rgba(255,30,60,1), -14px 0 rgba(102,252,241,1); }
-  30%  { transform: scaleX(0.985) translateX(-4px); clip-path: inset(35% 0 45% 0); }
-  31%  { clip-path: inset(0 0 0 0); }
-  45%  { opacity: 0.55; transform: translateX(5px) skewX(0.5deg); text-shadow: 6px 0 rgba(255,30,60,0.6), -6px 0 rgba(var(--rail-accent-rgb), 0.6); }
-  55%  { opacity: 0.3; transform: none; clip-path: inset(0 0 60% 0); }
-  56%  { clip-path: inset(50% 0 0 0); }
-  57%  { clip-path: inset(0 0 0 0); }
-  75%  { opacity: 0.15; transform: translateX(-3px) scale(0.98); }
-  100% { opacity: 0; transform: scale(0.96) translateX(2px); clip-path: inset(0 0 0 0); }
-}
-.work-title.scrambling { animation: workCaScramble 0.7s ease-in-out infinite; }
-.work-title.settled    { animation: workCaSettle 2.5s ease-in-out infinite; }
-.work-intro-inner.glitch-out .work-title { animation: workGlitchOut 0.65s cubic-bezier(0.4,0,1,1) forwards; }
-.work-intro-inner.glitch-out .work-sub   { animation: workGlitchOut 0.65s cubic-bezier(0.4,0,1,1) 0.05s forwards; }
 
 
 
@@ -1860,6 +1787,12 @@
                 rgba(var(--rail-tint-rgb), 0.83) 55%,
                 rgba(var(--rail-tint-rgb), 0.80) 100%);
             --panel-blur: blur(14px) saturate(150%);
+            /* Every line of body text in the rail reads at one size: the
+               pitch, the typewriter line, the nav, the contents and the
+               contact button. They had drifted to five slightly different
+               clamps, which is exactly the sort of difference you feel
+               without being able to name. */
+            --rail-text: clamp(0.86rem, 2.15vh, 1.1rem);
             --gap: 22px;            /* outer margin — lets the sky show */
             --rail-w: clamp(296px, 20.5vw, 344px);
             --rail-gutter: 16px;
@@ -2070,7 +2003,7 @@
             align-items: baseline;
             gap: 0.62rem;
             font-family: 'Satoshi', sans-serif;
-            font-size: clamp(0.84rem, 2.2vh, 1.18rem);
+            font-size: var(--rail-text);
             font-weight: 500;
             line-height: 1.28;
             color: rgba(240, 242, 240, 0.7);
@@ -2172,12 +2105,12 @@
             --logo-filter: hue-rotate(135deg) saturate(1.4);
         }
         :root[data-case="equinox"] {
-            --rail-accent: #F0C27A;
-            --rail-accent-rgb: 240, 194, 122;
-            --muted: #EEDCC2;
-            --muted-rgb: 238, 220, 194;
+            --rail-accent: #E08C80;
+            --rail-accent-rgb: 224, 140, 128;
+            --muted: #EFD6D0;
+            --muted-rgb: 239, 214, 208;
             --rail-tint-rgb: 17, 8, 16;
-            --logo-filter: hue-rotate(186deg) saturate(1.7) brightness(1.02);
+            --logo-filter: hue-rotate(162deg) saturate(1.5) brightness(1.02);
         }
 
         /* ── per-case shell palettes (dark) ───────────────── */
@@ -2232,13 +2165,13 @@
         :root[data-case="equinox"] {
             --case-paper: #110810;
             --case-paper-rgb: 17, 8, 16;
-            --case-edge: rgba(200, 135, 74, 0.22);
+            --case-edge: rgba(184, 84, 75, 0.22);
         }
         :root[data-case="equinox"] .rail-sky {
-            filter: hue-rotate(186deg) saturate(1.9) brightness(.62) contrast(1.12);
+            filter: hue-rotate(162deg) saturate(1.5) brightness(.6) contrast(1.15);
         }
         :root[data-case="equinox"] .sky-tint {
-            background: linear-gradient(160deg, rgba(200,135,74,.17) 0%, rgba(224,160,96,.08) 45%, rgba(24,10,16,.34) 100%);
+            background: linear-gradient(160deg, rgba(184,84,75,.18) 0%, rgba(212,115,106,.09) 45%, rgba(24,8,14,.36) 100%);
         }
 
         .sidebar .orbit-container { inset: -16px; }
@@ -2270,7 +2203,7 @@
         /* the serious line — what she actually does */
         .rail-pitch {
             font-family: 'Satoshi', sans-serif;
-            font-size: clamp(0.8rem, 2.05vh, 1.02rem);
+            font-size: var(--rail-text);
             font-weight: 500;
             line-height: 1.38;
             color: rgba(240, 242, 240, 0.88);
@@ -2280,7 +2213,7 @@
 
         /* ── rail: typewriter tagline ────────────────────── */
         .sidebar .tagline {
-            font-size: clamp(0.78rem, 1.95vh, 0.98rem);
+            font-size: var(--rail-text);
             width: 100%;
             max-width: 100%;
             margin-bottom: 0;
@@ -2314,7 +2247,7 @@
         }
         .sb-link {
             font-family: 'Satoshi', sans-serif;
-            font-size: clamp(0.86rem, 2.2vh, 1.12rem);
+            font-size: var(--rail-text);
             font-weight: 400;
             color: rgba(240, 242, 240, 0.58);
             text-decoration: none;
@@ -2351,7 +2284,7 @@
         .sidebar .social-btn { width: 31px; height: 31px; }
         .sidebar .btn-cta-secondary {
             padding: 0.72rem 1.1rem;
-            font-size: 0.84rem;
+            font-size: var(--rail-text);
             width: 100%;
         }
 
@@ -2603,14 +2536,14 @@
         --logo-filter: hue-rotate(135deg) saturate(1.4);
     }
     :root[data-theme="light"][data-case="equinox"] {
-        --rail-accent: #96591D;
-        --rail-accent-rgb: 150, 89, 29;
-        --muted: #2A1C0E;
-        --muted-rgb: 38, 26, 12;
-        --rail-tint-rgb: 251, 245, 234;
-        --accent: #96591D;
-        --accent-dim: rgba(150, 89, 29, 0.72);
-        --logo-filter: hue-rotate(186deg) saturate(1.7) brightness(1.02);
+        --rail-accent: #8C3239;
+        --rail-accent-rgb: 140, 50, 57;
+        --muted: #2A1116;
+        --muted-rgb: 42, 17, 22;
+        --rail-tint-rgb: 251, 242, 238;
+        --accent: #8C3239;
+        --accent-dim: rgba(140, 50, 57, 0.72);
+        --logo-filter: hue-rotate(162deg) saturate(1.5) brightness(1.02);
     }
 
     /* ── per-case shell palettes (light) ───────────────────
@@ -2665,15 +2598,15 @@
     }
 
     :root[data-theme="light"][data-case="equinox"] {
-        --case-paper: #FBF5EA;
-        --case-paper-rgb: 251, 245, 234;
-        --case-edge: rgba(140,84,32,0.20);
+        --case-paper: #FBF2EE;
+        --case-paper-rgb: 251, 242, 238;
+        --case-edge: rgba(140,50,57,0.20);
     }
     :root[data-theme="light"][data-case="equinox"] .rail-sky {
-        filter: hue-rotate(186deg) saturate(1.35) brightness(1.2) contrast(.9);
+        filter: hue-rotate(163deg) saturate(1) brightness(1.1) contrast(.95);
     }
     :root[data-theme="light"][data-case="equinox"] .sky-tint {
-        background: linear-gradient(160deg, rgba(240,205,150,.27) 0%, rgba(224,160,96,.16) 45%, rgba(150,89,29,.20) 100%);
+        background: linear-gradient(160deg, rgba(236,186,180,.27) 0%, rgba(212,115,106,.16) 45%, rgba(140,50,57,.20) 100%);
     }
 
     /* ── rail ── */
@@ -2777,11 +2710,6 @@
     :root[data-theme="light"] .cell:hover .tile-tags span { color: rgba(18,24,31,0.85); }
     :root[data-theme="light"] .hint { color: var(--ink-faint); }
     :root[data-theme="light"] .bento-head p { color: var(--ink-faint); }
-    :root[data-theme="light"] .work-title { color: var(--ink); }
-    :root[data-theme="light"] .work-sub { color: var(--ink-soft); }
-    :root[data-theme="light"] .work-intro-overlay {
-        background: radial-gradient(ellipse at 50% 45%, rgba(246,249,250,0.72) 0%, transparent 66%);
-    }
 
     /* ── north star ── */
     :root[data-theme="light"] .ns-headline,
@@ -3475,19 +3403,13 @@
         <div class="content-inner">
         <!-- Full-width models section -->
         <div class="models-section" id="projects">
-            <div id="work-intro" class="work-intro-overlay">
-                <div class="work-intro-inner">
-                    <h2 class="work-title" id="workTitleEl"></h2>
-                    <p class="work-sub" id="workSubEl"></p>
-                </div>
-            </div>
             <canvas id="gl"></canvas>
 <div id="wrap">
     <div class="bento-grid" id="grid">
       <!-- Real HTML so crawlers, AI fetchers and no-JS readers get the work.
            The tile builder clears this and renders the interactive grid. -->
       <ul class="grid-fallback">
-        <li><a href="/trove/"><strong>Trove</strong> — Turning behavioural data into a personality read people actually recognise. 0 to 10,250 users and 61.9K page views in six months.</a></li>
+        <li><a href="/trove/"><strong>Trove</strong> — Turning behavioural data into a personality read people actually recognise. 0 to 10,250 users and 61.9K page views in five months.</a></li>
         <li><a href="/skrimp/"><strong>Skrimp</strong> — Planning a week of dinners around live prices and whatever's already in the fridge. $5K/yr potential savings per family, free always.</a></li>
         <li><a href="/menzo/"><strong>Path to Menzoberranzan</strong> — Running a volunteer studio on an undocumented engine. 140+ contributors, 1,700 Patreon members.</a></li>
         <li><a href="/myauntie/"><strong>MyAuntie</strong> — Postpartum support that arrives as a text, not another app to download. TechNova 2025 winner.</a></li>
@@ -4263,82 +4185,6 @@
 
 
     <script>
-    /* === Work intro: scramble + glitch-in/out === */
-    (function () {
-      const CHARSET   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
-      const TITLE_PLAIN = 'My Work';
-      const TITLE_HTML  = 'My <span class="px">Wo</span>rk';
-      const SUB_PLAIN   = 'interactive experiences & creative digital projects';
-
-      const overlay = document.getElementById('work-intro');
-      const inner   = overlay.querySelector('.work-intro-inner');
-      const titleEl = document.getElementById('workTitleEl');
-      const subEl   = document.getElementById('workSubEl');
-      let triggered = false;
-
-      function randChar() { return CHARSET[Math.floor(Math.random() * CHARSET.length)]; }
-
-      function scramble(el, finalText, duration, onDone) {
-        const len      = finalText.length;
-        const revealed = new Array(len).fill(false);
-        const t0       = performance.now();
-        function frame(now) {
-          const progress  = Math.min(1, (now - t0) / duration);
-          const revealUpto = Math.floor(progress * len * 1.15);
-          for (let i = 0; i < revealUpto; i++) {
-            if (!revealed[i] && Math.random() < 0.4) revealed[i] = true;
-          }
-          let out = '';
-          for (let i = 0; i < len; i++) {
-            const ch = finalText[i];
-            if (ch === ' ') { out += '\u00a0'; continue; }
-            out += revealed[i] ? ch : randChar();
-          }
-          el.textContent = out;
-          if (progress < 1 || revealed.some(r => !r)) {
-            requestAnimationFrame(frame);
-          } else {
-            onDone();
-          }
-        }
-        requestAnimationFrame(frame);
-      }
-
-      function triggerIntro() {
-        if (triggered) return;
-        triggered = true;
-        overlay.style.opacity = '1';
-
-        // Scramble title with CA animation
-        titleEl.classList.add('scrambling');
-        scramble(titleEl, TITLE_PLAIN, 950, () => {
-          titleEl.innerHTML = TITLE_HTML;
-          titleEl.classList.remove('scrambling');
-          titleEl.classList.add('settled');
-        });
-
-        // Scramble subline 300ms later
-        setTimeout(() => {
-          scramble(subEl, SUB_PLAIN, 1100, () => {
-            subEl.textContent = SUB_PLAIN;
-          });
-        }, 300);
-
-        // Glitch out after ~4.2s
-        setTimeout(() => {
-          titleEl.classList.remove('settled');
-          inner.classList.add('glitch-out');
-          setTimeout(() => { overlay.style.display = 'none'; }, 700);
-        }, 4200);
-      }
-
-      const obs = new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting && e.intersectionRatio >= 0.3) triggerIntro(); });
-      }, { threshold: 0.3 });
-
-      const modelsSection = document.querySelector('.models-section');
-      if (modelsSection) obs.observe(modelsSection);
-    })();
     </script>
 
     <script>
@@ -4536,7 +4382,7 @@ const eul = (x,y,z)=>new THREE.Euler(
       {
         name:'Trove', category:'Product Design Engineering / AI',
         tagline:'Turning behavioural data into a personality read people actually recognise',
-        stat:'0 \u2192 10,250 users, 61.9K views, six months',
+        stat:'0 \u2192 10,250 users, 61.9K views, five months',
         tags:['Design engineer','LLM runtime','Web + iOS'],
         href:'/trove/',
         // the meadow + the tots are DOM (see the .tf block); the phone itself is
@@ -4631,7 +4477,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         tagline:'Reading \u201cOvercomplicated Screen Transitions\u201d as a design constraint, not decoration',
         video:{ kind:'yt', id:'ou-piZ1dt4U' },
         stat:'1st of 88 at Comfy Jam, 2nd on the limitation',
-        tags:['Godot','Browser'],
+        tags:['Godot','Mac + Windows'],
         href:'/equinox/', award:'Winner',
         playHref:'https://emstergrace.itch.io/equinox',
         cover:'equinox/equinox-banner.webp', noDrag:true,

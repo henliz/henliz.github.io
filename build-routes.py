@@ -30,7 +30,7 @@ SHELL = (ROOT / 'index.html').read_text()
 
 ROUTES = {
  'trove':   ("Trove — Henriëtta van Niekerk",
-   "Turning behavioural data into a personality read people actually recognise. Trove grew 0 to 10,250 users and 61.9K page views in six months. Design engineering case study by Henriëtta van Niekerk."),
+   "Turning behavioural data into a personality read people actually recognise. Trove grew 0 to 10,250 users and 61.9K page views in five months. Design engineering case study by Henriëtta van Niekerk."),
  'skrimp':  ("Skrimp — Henriëtta van Niekerk",
    "Planning a week of dinners around live grocery prices and whatever is already in the fridge. Skrimp compares live flyer data across 15+ Canadian retailers and saves families $50-$100 a week, free always."),
  'menzo':   ("Path to Menzoberranzan — Henriëtta van Niekerk",

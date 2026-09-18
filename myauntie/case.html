@@ -986,6 +986,33 @@ figure{
 .phone{ border-radius:44px !important; }
 .phone-screen{ border-radius:34px !important; }
 .showcase-stage .phone img, .showcase-stage .phone video{ border-radius:32px !important; }
+
+/* ── the case title ───────────────────────────────────────────────────────
+   a centred claim above the banner, in the pixel blend, set larger than the
+   section headings so the top of the page opens on a statement rather than
+   an image. balance is right here where it was wrong on the body headings:
+   centred type wants even line lengths, left-aligned type wants a full
+   first line. */
+.case-title{
+  display:block;
+  margin:clamp(6px,1.4vh,18px) auto clamp(40px,5.6vh,72px) !important;
+  max-width:min(940px,100%);
+  text-align:center;
+  font-size:clamp(1.85rem,4.3vw,3.2rem);
+  line-height:1.16;
+  letter-spacing:-.02em;
+  font-weight:400;
+  text-wrap:balance;
+  /* the accent ink the section headings use, NOT --text-primary, which is
+     the near-black body colour and made these read as a different page */
+  color:var(--text-secondary);
+  /* .sr-only used to clip this. make sure nothing of that survives */
+  position:static; width:auto; height:auto; overflow:visible; clip:auto;
+  white-space:normal;
+}
+@media (max-width:760px){
+  .case-title{ font-size:clamp(1.75rem,7.4vw,2.4rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
+}
 </style>
 </head>
 <body>
@@ -998,7 +1025,7 @@ figure{
     <div class="hero-container">
 
       <!-- BANNER -->
-      <h1 class="sr-only">My Auntie</h1>
+      <h1 class="case-title reveal">An SMS and voice companion for new parents, built in 36 hours and won at TechNova 2025.</h1>
       <figure class="case-banner reveal">
         <img src="auntie-banner.webp" alt="My Auntie case study banner" width="2400" height="737" fetchpriority="high">
       </figure>
@@ -1052,16 +1079,16 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">It is three in the morning and the phone is at four percent.</h2>
           <p class="lede">Every product built for new parents assumes a spare hand and a spare mind. At 3 a.m. there is neither.</p>
+          <p>Postpartum depression and anxiety reach roughly one in seven mothers. About half of those cases are never detected, because the people living inside them are too tired, too ashamed, or too busy being told they should feel lucky. The window is also longer than anyone plans for. Around 7.2% are still symptomatic nine to ten months out, and more than half of those had no symptoms at all earlier on.</p>
           <figure class="img-wide reveal">
             <img src="auntiegraph.png" alt="Problem slide: 15% of mothers experience postpartum depression and 85% never get treatment, with a chart of prevalence against treatment access from 2020 to 2024" loading="lazy">
             <figcaption>Prevalence goes up, treatment access goes down. The two lines have been heading in opposite directions for five years.</figcaption>
           </figure>
+          <p>So the need was never the question. The delivery was. Every serious attempt at this problem is an app, and an app asks a parent to download something, invent a password, answer twenty questions about her mood, and then come back daily to log how she is doing. That is homework. Handing homework to somebody running on four broken hours of sleep is not support. It is one more thing to fail at.</p>
           <figure class="img-wide reveal">
             <img src="auntieproblem.png" alt="Problem slide: how might we capture the comfort of calling your auntie, kind, awake and practical, while eliminating the risk of dated or unsafe advice" loading="lazy">
             <figcaption>The question we started from, and the only framing that survived the interviews.</figcaption>
           </figure>
-          <p>Postpartum depression and anxiety reach roughly one in seven mothers. About half of those cases are never detected, because the people living inside them are too tired, too ashamed, or too busy being told they should feel lucky. The window is also longer than anyone plans for. Around 7.2% are still symptomatic nine to ten months out, and more than half of those had no symptoms at all earlier on.</p>
-          <p>So the need was never the question. The delivery was. Every serious attempt at this problem is an app, and an app asks a parent to download something, invent a password, answer twenty questions about her mood, and then come back daily to log how she is doing. That is homework. Handing homework to somebody running on four broken hours of sleep is not support. It is one more thing to fail at.</p>
           <div class="highlight-box"><strong>The reframe</strong>Do not build another mental health app. Build the thing a frightened parent already has open at 3 a.m., which is a phone.</div>
           <p>That idea took about nine minutes. The other thirty five hours and fifty one minutes went on finding out what it costs.</p>
         </div>
@@ -1121,10 +1148,34 @@ figure{
           <h2 class="section-heading">The channel was the product.</h2>
           <p class="lede">Distribution is not a marketing problem you get to solve after the build. Here it was the build.</p>
           <p>SMS shipped first because SMS is the most boring and most reliable thing in the world. It works at four percent battery, on a cracked screen, in a hospital corridor with one bar, and it never needs updating. Voice came second, once texting was steady, because a parent holding a baby has no hands.</p>
-          <div class="img-grid reveal">
-            <figure class="img-tile img-tile--tall"><img src="../auntiephone.png" alt="Auntie's SMS thread: a caring line, one action, and what to watch for" loading="lazy"><figcaption>The whole interface. No account, no tabs, nowhere to get lost.</figcaption></figure>
-            <figure class="img-tile"><img src="auntiesolution.png" alt="Solution diagram: one Auntie persona across SMS and voice, with escalation routes" loading="lazy"><figcaption>One persona, two surfaces, no costume change between them.</figcaption></figure>
+          <figure class="img-wide reveal">
+            <img src="auntiesolution.png" alt="Solution diagram: one Auntie persona across SMS and voice, with escalation routes" loading="lazy">
+            <figcaption>One persona, two surfaces, no costume change between them.</figcaption>
+          </figure>
+          <div class="video-embed reveal">
+            <iframe
+              id="yt-auntie-call"
+              src="https://www.youtube.com/embed/BUi3fAiD7To?rel=0&modestbranding=1&playsinline=1"
+              title="Auntie voice demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
           </div>
+          <p class="cap">The voice line. Same persona sized for audio, and it texts you afterwards so nothing is lost.</p>
+          <p>Thirty six hours earlier none of it existed. The rest of this is how a weekend got from there to here, and what we refused to build along the way.</p>
+        </div>
+      </section>
+
+      <section id="channel">
+        <div class="section-content reveal">
+          <h2 class="section-heading">The channel was the product.</h2>
+          <p class="lede">Distribution is not a marketing problem you get to solve after the build. Here it was the build.</p>
+          <p>SMS shipped first because SMS is the most boring and most reliable thing in the world. It works at four percent battery, on a cracked screen, in a hospital corridor with one bar, and it never needs updating. Voice came second, once texting was steady, because a parent holding a baby has no hands.</p>
+          <figure class="img-wide reveal">
+            <img src="auntiesolution.png" alt="Solution diagram: one Auntie persona across SMS and voice, with escalation routes" loading="lazy">
+            <figcaption>One persona, two surfaces, no costume change between them.</figcaption>
+          </figure>
           <div class="video-embed reveal">
             <iframe
               id="yt-auntie-call"
@@ -1413,7 +1464,7 @@ figure{
 
       // Outcome numbers — font-mix on load (no scramble, they're metrics not headings)
       setTimeout(()=>{
-        document.querySelectorAll('.outcome-num').forEach(el=>{
+        document.querySelectorAll('.case-title,.outcome-num').forEach(el=>{
           fontMix(el, el.textContent.trim());
         });
       }, 100);

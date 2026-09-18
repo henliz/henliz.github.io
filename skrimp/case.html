@@ -1067,6 +1067,33 @@ figure{
 .phone{ border-radius:44px !important; }
 .phone-screen{ border-radius:34px !important; }
 .showcase-stage .phone img, .showcase-stage .phone video{ border-radius:32px !important; }
+
+/* ── the case title ───────────────────────────────────────────────────────
+   a centred claim above the banner, in the pixel blend, set larger than the
+   section headings so the top of the page opens on a statement rather than
+   an image. balance is right here where it was wrong on the body headings:
+   centred type wants even line lengths, left-aligned type wants a full
+   first line. */
+.case-title{
+  display:block;
+  margin:clamp(6px,1.4vh,18px) auto clamp(40px,5.6vh,72px) !important;
+  max-width:min(940px,100%);
+  text-align:center;
+  font-size:clamp(1.85rem,4.3vw,3.2rem);
+  line-height:1.16;
+  letter-spacing:-.02em;
+  font-weight:400;
+  text-wrap:balance;
+  /* the accent ink the section headings use, NOT --text-primary, which is
+     the near-black body colour and made these read as a different page */
+  color:var(--text-secondary);
+  /* .sr-only used to clip this. make sure nothing of that survives */
+  position:static; width:auto; height:auto; overflow:visible; clip:auto;
+  white-space:normal;
+}
+@media (max-width:760px){
+  .case-title{ font-size:clamp(1.75rem,7.4vw,2.4rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
+}
 </style>
 </head>
 <body>
@@ -1076,7 +1103,7 @@ figure{
     <div class="hero-container">
 
       <!-- BANNER -->
-      <h1 class="sr-only">Skrimp</h1>
+      <h1 class="case-title reveal">A funded startup built to save families $5,000 a year, live across 15+ Canadian chains.</h1>
       <figure class="case-banner reveal">
         <img src="skrimp-banner.webp"
              alt="Skrimp, the web app's Save more on every grocery run landing page, the mobile meal plan and pantry-check screens, recipe cards, and the Skrimp chef mascot and wordmark."
@@ -1679,7 +1706,7 @@ figure{
 
       // stat numbers + sub-headings — font mix on load (no animation)
       setTimeout(()=>{
-        document.querySelectorAll('.stat-number,.sub-heading').forEach(el=>{
+        document.querySelectorAll('.case-title,.stat-number,.sub-heading').forEach(el=>{
           fontMix(el,el.textContent.trim());
         });
       },100);
