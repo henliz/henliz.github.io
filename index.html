@@ -4193,6 +4193,25 @@
        ============================================================ */
     const scroller = document.getElementById('contentCard');
     window.scroller = scroller;
+
+    /* Pin the WebGL canvas to the card's VISIBLE box.
+       #contentCard has a backdrop-filter, which makes it the containing block
+       for position:fixed descendants, so the canvas inside it is fixed to the
+       card's scrolled content and slides out of view as you scroll. Countering
+       by exactly the scroll offset puts it back. Done on scroll as well as in
+       the render loop so it can never lag a frame behind the tiles it is
+       supposed to be drawing into. */
+    (function pinCanvas(){
+      const gl = document.getElementById('gl');
+      if (!gl) return;
+      const pin = () => {
+        const want = 'translateY(' + scroller.scrollTop + 'px)';
+        if (gl.style.transform !== want) gl.style.transform = want;
+      };
+      scroller.addEventListener('scroll', pin, { passive: true });
+      addEventListener('resize', pin);
+      pin();
+    })();
     window.lenis = new Lenis({
       wrapper: scroller,
       content: scroller.querySelector('.content-inner'),
@@ -4369,6 +4388,7 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/libs/meshopt_decoder.module.js';
 
 const eul = (x,y,z)=>new THREE.Euler(
   THREE.MathUtils.degToRad(x), THREE.MathUtils.degToRad(y), THREE.MathUtils.degToRad(z));
@@ -4399,7 +4419,7 @@ const eul = (x,y,z)=>new THREE.Euler(
       {
         name:'Skrimp AI', category:'Product Design / AI',
         tagline:'Planning a week of dinners around live prices and whatever\u2019s already in the fridge',
-        video:{ kind:'file', src:'skrimp/skrimp-smartload-demo.mp4' },
+        video:{ kind:'file', src:'skrimp/media/skrimp-smartload-demo.mp4' },
         stat:'$5K/yr saved per family, free always',
         tags:['Solo founder','Live flyer data','Mobile + web'],
         href:'/skrimp/',
@@ -4504,8 +4524,21 @@ const SLOTS = {
    scissor + viewport to a tile's rect and render that tile's own scene.
    Tiles that scroll out of view are skipped entirely.                    */
 const canvas = document.getElementById('gl');
-const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+/* What the device can comfortably do. A phone at devicePixelRatio 3 was
+   being asked for nine times the pixels of a 1x screen, with MSAA on top,
+   across two full-size renderers — which is most of why the site crawled on
+   anything that is not a recent laptop. These tiles are a few hundred pixels
+   across; 1.5x is indistinguishable and a third of the work. */
+window.__gfx = (function () {
+  const cores = navigator.hardwareConcurrency || 4;
+  const mem   = navigator.deviceMemory || 4;
+  const weak  = cores <= 4 || mem <= 4;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return { weak, still, dpr: Math.min(devicePixelRatio, weak ? 1 : 1.5), aa: !weak };
+})();
+
+const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias: window.__gfx.aa});
+renderer.setPixelRatio(window.__gfx.dpr);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setScissorTest(true);
 
@@ -4544,7 +4577,11 @@ function glowTex(accent){
   return new THREE.CanvasTexture(c);
 }
 
-const loader = new GLTFLoader();
+/* The tile models are meshopt-compressed: 11.6 MB of GLB became 1.0 MB,
+   and their textures dropped from multi-megabyte PNGs to 1024px WebP,
+   which is what the GPU actually has to hold. The decoder is a small
+   WASM module and decodes far faster than Draco. */
+const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 const texLoader = new THREE.TextureLoader();
 const grid = document.getElementById('grid');
 // the static list below is the no-JS view of exactly these projects; the
@@ -4905,9 +4942,21 @@ stations.forEach((cfg,i) => {
     // an IntersectionObserver proved unreliable here, and a player that isn't
     // already running is a player showing YouTube's chrome.
     if (kind === 'yt') {
-      const boot = () => setTimeout(prime, 1200);   // let the 3D grid boot first
-      if (document.readyState === 'complete') boot();
-      else addEventListener('load', boot, { once: true });
+      /* Priming used to happen for every tile 1.2s after load, so a visit to
+         the home page booted three YouTube players at once — three lots of
+         player JS and three video streams, most of them for tiles the reader
+         never scrolls to. Each one now waits until its own tile is within a
+         screen of the viewport. The first paint has none of them. */
+      let booted = false;
+      const boot = () => {
+        if (booted) return;
+        booted = true;
+        setTimeout(prime, 400);
+      };
+      const bootWatch = new IntersectionObserver(es => {
+        if (es.some(e => e.isIntersecting)) { boot(); bootWatch.disconnect(); }
+      }, { rootMargin: '600px' });
+      bootWatch.observe(tile);
 
       /* Visibility — never hover — drives the play state. Pausing is what
          surfaces the control overlay, so it only ever happens off screen.
@@ -5053,9 +5102,9 @@ stations.forEach((cfg,i) => {
   } else if (cfg.parallax) {
     // Equinox: three stacked billboards, nudged by pointer instead of camera azimuth
     view.layers = [];
-    [ {url:'./equinox/bg.png',    z:-0.12, strength:0.5},
-      {url:'./equinox/tower.png', z: 0,    strength:0.1},
-      {url:'./equinox/fg.png',    z: 0.12, strength:0.5} ].forEach(def => {
+    [ {url:'./equinox/bg.webp',    z:-0.12, strength:0.5},
+      {url:'./equinox/tower.webp', z: 0,    strength:0.1},
+      {url:'./equinox/fg.webp',    z: 0.12, strength:0.5} ].forEach(def => {
       texLoader.load(def.url, tex => {
         tex.colorSpace = THREE.SRGBColorSpace;
         const mesh = new THREE.Mesh(
@@ -5277,10 +5326,56 @@ function applyFogTheme(mode) {
 addEventListener('themechange', e => applyFogTheme(e.detail));
 if (document.documentElement.getAttribute('data-theme') === 'light') applyFogTheme('light');
 
+/* scratch objects: the loop used to allocate a Quaternion and an Euler for
+   every view on every frame, which is a lot of garbage for a page that is
+   meant to sit quietly in the background */
+const _e = new THREE.Euler();
+
+/* The loop ran forever, on every frame, for the whole visit — even with the
+   grid scrolled far out of view or the tab in the background. It now idles
+   when there is nothing to draw and wakes on scroll, and a reader who asked
+   for reduced motion gets the models drawn once and left alone. */
+let _raf = 0, _idle = false;
+function anyVisible(){
+  const H = renderer.domElement.clientHeight;
+  for (const v of views){
+    const r = v.el.getBoundingClientRect();
+    if (r.width && r.bottom > -200 && r.top < H + 200) return true;
+  }
+  return false;
+}
+function wake(){
+  /* no document.hidden guard: the browser already throttles rAF to nothing in
+     a background tab, and refusing to start here meant a page opened in a
+     background tab never began drawing at all */
+  if (_raf) return;
+  _idle = false;
+  clock.getDelta();            // drop the gap so nothing lurches on resume
+  _raf = requestAnimationFrame(tick);
+}
+function sleep(){ cancelAnimationFrame(_raf); _raf = 0; }
+document.addEventListener('visibilitychange', () => document.hidden ? sleep() : wake());
+
 function tick(){
-  requestAnimationFrame(tick);
+  _raf = requestAnimationFrame(tick);
+  renderFrame();
+}
+function renderFrame(){
   resize();
   updateClip();
+  if (!anyVisible()){
+    // nothing on screen: hand the frames back until something scrolls in.
+    // (never from the reduced-motion path — that one must not start a loop)
+    if (!_idle && !window.__gfx.still){
+      _idle = true; sleep();
+      setTimeout(function poll(){
+        if (_raf) return;
+        if (anyVisible()) wake(); else setTimeout(poll, 250);
+      }, 250);
+    }
+    return;
+  }
+  _idle = false;
   const dt = Math.min(clock.getDelta(), .05);
   const t = clock.getElapsedTime();
   const H = renderer.domElement.clientHeight;
@@ -5298,9 +5393,8 @@ function tick(){
     const amp  = v.driftAmp * (1 + v.driftEase * 0.5);
     const yaw  = Math.sin(t * v.driftRate + v.phase) * amp;
     const tilt = Math.sin(t * v.driftRate * 0.7 + v.phase * 1.3) * amp * 0.28;
-    v.pivot.quaternion.copy(
-      new THREE.Quaternion().setFromEuler(new THREE.Euler(tilt, yaw, 0))
-    ).premultiply(v.dragQuat);
+    _e.set(tilt, yaw, 0);
+    v.pivot.quaternion.setFromEuler(_e).premultiply(v.dragQuat);
     // a slow bob so nothing is ever perfectly still
     v.pivot.position.y = (v.framed ? 0 : (LIFT[v.cfg.name] || 0)) - (v.artAnchorY || 0)
                        + Math.sin(t * .6 + v.cfg.name.length) * (v.artAnchorY ? .02 : .08);
@@ -5321,6 +5415,19 @@ function tick(){
 
     // the caption lives outside the box, so the model gets the whole tile.
     // rects are viewport-relative; the canvas covers the card, so shift.
+    /* #contentCard carries a backdrop-filter, which makes it the containing
+       block for position:fixed descendants. The canvas is inside it, so
+       "fixed" pins it to the card's SCROLLED CONTENT rather than to its
+       visible box, and it slides away as you scroll: at scrollTop 520 its
+       top sat at -497 instead of 23. Everything below the first row then
+       fell outside the canvas and got clipped to a sliver, which is why the
+       Underdark and the nursery lost their models. Push it back by exactly
+       the scroll offset and the rect maths below is correct again. */
+    const sc = window.scroller;
+    if (sc){
+      const want = 'translateY(' + sc.scrollTop + 'px)';
+      if (canvas.style.transform !== want) canvas.style.transform = want;
+    }
     const cRect = canvas.getBoundingClientRect();
     const artLeft = r.left - cRect.left, artW = r.width;
     const artTop  = r.top  - cRect.top,  artH = r.height;
@@ -5363,7 +5470,21 @@ function tick(){
     v.camera.clearViewOffset();
   }
 }
-tick();
+if (window.__gfx.still){
+  /* reduced motion: the models are drawn, not animated. A frame on load, a
+     frame after the textures settle, and one per scroll so they stay put in
+     their tiles — no continuous loop at all. */
+  const draw = () => renderFrame();
+  setTimeout(draw, 600);
+  setTimeout(draw, 2000);
+  window.scroller?.addEventListener('scroll', () => requestAnimationFrame(draw), { passive:true });
+  addEventListener('resize', () => requestAnimationFrame(draw));
+} else {
+  wake();
+  // scrolling a sleeping grid back into view starts it again
+  window.scroller?.addEventListener('scroll', wake, { passive: true });
+  addEventListener('scroll', wake, { passive: true });
+}
 
 // the loading overlay waits on this; posting to ourselves keeps its listener
 // unchanged now that there is no iframe to hear from
@@ -5771,6 +5892,7 @@ window.addEventListener('load', () => {
 <script type="module">
 import * as THREE from "three";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/libs/meshopt_decoder.module.js";
 
 (function () {
   const canvas = document.getElementById('railSky');
@@ -5784,26 +5906,51 @@ import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/
   const camera = new THREE.PerspectiveCamera(75, w() / h(), 0.1, 1000);
   camera.position.set(0, 0, 12);
 
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const gfx = window.__gfx || { dpr: Math.min(devicePixelRatio, 1.5), aa: true, still: false };
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: gfx.aa });
+  renderer.setPixelRatio(gfx.dpr);
   renderer.setSize(w(), h(), false);
 
   scene.add(new THREE.AmbientLight(0xffffff, 3));
 
   let skyMesh = null;
-  new GLTFLoader().load('./models/skyblue.glb', gltf => {
+  new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('./models/skyblue.glb', gltf => {
     skyMesh = gltf.scene;
     skyMesh.scale.set(5, 5, 5);
     skyMesh.traverse(child => {
       if (!child.isMesh) return;
-      if (gltf.parser?.json?.textures) {
-        gltf.parser.loadTexture(0).then(tex => {
-          child.material.map = tex;
-          child.material.color.setHex(0xffffff);
-          child.material.transparent = false;
-          child.material.opacity = 1;
-          child.material.needsUpdate = true;
-        });
+      const m = child.material;
+      /* The sky's art arrives on the material already, as its emissive map.
+         This used to reach past that and pull texture 0 out of the parser by
+         hand, which breaks the moment the texture is stored behind an
+         extension — as it is now the file is WebP. Take what the material
+         has; only go digging if it has nothing. */
+      const tex = m && (m.map || m.emissiveMap);
+      if (tex) {
+        m.map = tex;
+        m.color?.setHex(0xffffff);
+        m.transparent = false;
+        m.opacity = 1;
+        m.needsUpdate = true;
+        return;
+      }
+      if (gltf.parser?.json?.textures?.length) {
+        /* The sky is an unlit material and its art is an emissive texture,
+           which three drops on load because MeshBasicMaterial has no emissive
+           slot — so it has to be fetched and assigned by hand. Go through
+           getDependency, not loadTexture: getDependency asks the texture
+           extensions, and this file's image now lives behind EXT_texture_webp,
+           which loadTexture cannot see. */
+        Promise.resolve()
+          .then(() => gltf.parser.getDependency('texture', 0))
+          .then(t => {
+            m.map = t;
+            m.color?.setHex(0xffffff);
+            m.transparent = false;
+            m.opacity = 1;
+            m.needsUpdate = true;
+          })
+          .catch(() => { child.material = new THREE.MeshBasicMaterial({ color: 0x87CEEB }); });
       } else {
         child.material = new THREE.MeshBasicMaterial({ color: 0x87CEEB });
       }
@@ -5820,15 +5967,29 @@ import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/
   });
 
   const clock = new THREE.Clock();
-  (function animate() {
-    requestAnimationFrame(animate);
+  /* A full-viewport sky redrawn every frame for the whole visit. It only has
+     to move while somebody is looking at it, and if the reader asked for
+     reduced motion it only has to be drawn once. */
+  let skyRaf = 0;
+  function animate() {
+    skyRaf = requestAnimationFrame(animate);
     const t = clock.getElapsedTime();
     if (skyMesh) {
       skyMesh.rotation.y = t * 0.02;
       skyMesh.rotation.x = Math.sin(t * 0.03) * 0.1;
     }
     renderer.render(scene, camera);
-  })();
+  }
+  function startSky() { if (!skyRaf) animate(); }
+  function stopSky()  { cancelAnimationFrame(skyRaf); skyRaf = 0; }
+  document.addEventListener('visibilitychange', () => document.hidden ? stopSky() : startSky());
+  if (gfx.still) {
+    // one frame, then hold it
+    requestAnimationFrame(() => renderer.render(scene, camera));
+    setTimeout(() => renderer.render(scene, camera), 1200);
+  } else {
+    startSky();
+  }
 
   window.addEventListener('resize', () => {
     if (w() < 2) return;
