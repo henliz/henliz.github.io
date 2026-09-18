@@ -16,12 +16,25 @@
     <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <title>Equinox — Henriëtta van Niekerk</title>
-    <meta name="description" content="Henriëtta van Niekerk is a design engineer who builds systems that carry the load instead of the person. Founder of Skrimp, CTO of Path to Menzoberranzan. Case studies in behavioural AI, foodtech, game technical direction and conversational AI.">
-    <link rel="canonical" href="https://henliz.github.io/">
+    <meta name="description" content="Reading Overcomplicated Screen Transitions as a design constraint, not decoration. First of 88 at Comfy Jam Winter 2026.">
+    <link rel="canonical" href="https://henliz.github.io/equinox/">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Equinox — Henriëtta van Niekerk">
+    <meta property="og:description" content="Reading Overcomplicated Screen Transitions as a design constraint, not decoration. First of 88 at Comfy Jam Winter 2026.">
+    <meta property="og:url" content="https://henliz.github.io/equinox/">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/HenLogo.png">
     <link rel="shortcut icon" type="image/png" href="/HenLogo.png">
     <style>
+/* Satoshi, self-hosted. Replaces Montserrat and Montserrat Alternates:
+   squared bowls and tight apertures agree with DotempDemo's staircase where
+   Montserrat's circles fought it, especially mid-word where the two interleave. */
+@font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-300.woff2') format('woff2');font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-900.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap}
+
     /* ── type scale ────────────────────────────────────────────────
        One fluid root so every rem on the page grows with the screen
        instead of sitting at a fixed 16px. The floor and ceiling are
@@ -29,7 +42,7 @@
        default font size keeps that increase (WCAG 1.4.4). */
     html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
 
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Inter:opsz,wght@14..32,200;14..32,300;14..32,400;14..32,500;14..32,600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap');
 
@@ -59,7 +72,7 @@
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             background: #0f1419;
             color: white;
             overflow-x: hidden;
@@ -157,7 +170,7 @@
             align-items: center; justify-content: center; gap: 1px;
             pointer-events: none;
             opacity: 0; transform: scale(0.6);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 10px; font-weight: 700; line-height: 1.25;
             letter-spacing: 0.02em; text-transform: lowercase;
             /* no delay on the way out, so the text clears before the circle
@@ -651,7 +664,7 @@
     display:grid;place-items:center;
   }
   .tile-video--soon span{
-    font-family:'Montserrat',sans-serif;
+    font-family:'Satoshi',sans-serif;
     font-size:0.78rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;
     color:rgba(var(--ink-rgb),.82);
     padding:.6rem 1.1rem;border-radius:999px;
@@ -721,121 +734,7 @@
   .cell[data-scene="auntie"] .tile{background:rgba(26,10,17,.42)}
   /* Equinox — autumn amber */
   .cell[data-scene="equinox"] .tile{background:rgba(26,18,8,.42)}
-  /* ── award ribbon ────────────────────────────────────────────────────
-     Trove's CardBadge (explore-shelves.tsx) ported as-is and scaled by
-     --aw-k: square clip box pinned 4k past the corner with overflow:hidden,
-     stripe at fixed offsets inside it rotated 45deg, and dark fold tabs as
-     CHILDREN of the stripe so they rotate with it. Every number is that
-     component's number times k.
-
-     The stripe's two trimmed ends are NOT equidistant from its midpoint (the
-     clip lands at -46.7k and +60.8k), so flex-centred text sits off centre.
-     That is corrected by nudging the LABEL along the stripe by half the
-     difference, which leaves the ribbon's geometry untouched. Re-deriving the
-     geometry to fix it instead is what wrecked the layout.
-
-     Lives inside .cell, so it scrolls with the page and can't paint over the
-     sidebar. The shared WebGL canvas covers every tile, so updateClip cuts
-     this stripe out of the canvas clip, derived from the same numbers. */
-  .cell{ --aw-k:1.45; --aw-dark:#6e1322 }
-  .award{
-    position:absolute;z-index:7;pointer-events:none;overflow:hidden;
-    top:calc(-4px * var(--aw-k));right:calc(-4px * var(--aw-k));
-    width:calc(96px * var(--aw-k));height:calc(96px * var(--aw-k));
-  }
-  .award .band{
-    position:absolute;
-    top:calc(22px * var(--aw-k));right:calc(-32px * var(--aw-k));
-    width:calc(150px * var(--aw-k));height:calc(22px * var(--aw-k));
-    transform:rotate(45deg);
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Montserrat',sans-serif;font-weight:700;
-    font-size:calc(10px * var(--aw-k));letter-spacing:.16em;text-transform:uppercase;
-    color:#fff;text-shadow:0 1px 1px rgba(52,4,14,.5);
-    background:
-      /* the travelling sheen. Stops spread across a third of a 300%-wide box,
-         so the highlight is nearly as wide as the ribbon and reads as light
-         moving over satin. Tight stops are what made it a printed stripe. */
-      linear-gradient(100deg, rgba(255,255,255,0) 34%,
-                              rgba(255,255,255,.20) 50%,
-                              rgba(255,255,255,0) 66%),
-      /* the body: bright along the top edge falling to a dark bottom edge, so
-         the band reads as rolled rather than as a flat fill */
-      linear-gradient(180deg, #d04459 0%, #ba3047 18%, #a62639 46%,
-                              #8e1c2e 74%, #711423 100%);
-    background-size:300% 100%, 100% 100%;
-    box-shadow:0 3px 8px rgba(0,0,0,.22);
-    animation:awardShine 9s linear infinite;
-  }
-  /* half the difference between the two trim distances: (60.8 - 46.7) / 2 */
-  .award .band b{ font-weight:inherit;transform:translateX(calc(7.05px * var(--aw-k))) }
-  @keyframes awardShine{
-    from{background-position:130% 0, 0 0} to{background-position:-130% 0, 0 0}
-  }
-  .award .fold{
-    position:absolute;width:0;height:0;
-    bottom:calc(-5px * var(--aw-k));
-    border-top:calc(5px * var(--aw-k)) solid var(--aw-dark);
-  }
-  .award .fold-l{ left:0;  border-left:calc(5px * var(--aw-k)) solid transparent }
-  .award .fold-r{ right:0; border-right:calc(5px * var(--aw-k)) solid transparent }
-  @media (max-width: 700px){ .cell{ --aw-k:1.1 } }
-  @media (prefers-reduced-motion: reduce){ .award .band{animation:none} }
-
-  /* ---- caption, outside the box ---- */
-  .tile-cap{
-    display:block;padding:0 .15rem;min-width:0;
-    text-decoration:none;color:inherit;
-  }
-  .tile-cap:visited,.tile:visited{color:inherit}
-  .tile-name{
-    font-family:'Montserrat',sans-serif;font-weight:600;
-    font-size:clamp(.92rem,1.35vw,1.14rem);line-height:1.42;letter-spacing:.002em;
-  }
-  .tile-desc{
-    font-size:0.84rem;line-height:1.5;color:rgba(var(--ink-rgb),.76);margin-top:.22rem;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  }
-  /* the number that earns the click */
-  .tile-stat{
-    font-size:.88rem;line-height:1.5;color:rgba(var(--ink-rgb),.66);
-    margin-top:.34rem;font-weight:500;
-  }
-  /* one line, always: they shrink before they wrap */
-  .tile-tags{display:flex;flex-wrap:nowrap;gap:.34rem;margin-top:.62rem;min-width:0}
-  .tile-tags span{
-    font-size:clamp(.62rem,.62vw,.76rem);letter-spacing:.05em;text-transform:uppercase;font-weight:600;
-    padding:.32rem clamp(.36rem,.52vw,.62rem);border-radius:7px;
-    white-space:nowrap;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
-    color:rgba(var(--ink-rgb),.79);
-    background:rgba(var(--sa),.10);
-    border:1px solid rgba(var(--sa),.22);
-    transition:background .3s ease,border-color .3s ease,color .3s ease;
-  }
-  .cell:hover .tile-tags span{
-    color:rgba(var(--ink-rgb),.8);
-    background:rgba(var(--sa),.17);
-    border-color:rgba(var(--sa),.34);
-  }
-  .cell{--sa:102,252,241}
-  .cell:hover .tile-name{color:rgb(var(--sa))}
-  .tile-name{transition:color .4s ease}
-
-  .hint{
-    max-width:1180px;margin:clamp(12px,2vh,20px) auto 0;text-align:center;
-    font-size:0.75rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(var(--muted-rgb),.66);
-  }
-
-  @media(max-width:900px){
-    /* one per row — half-width tiles got too short once the box took a
-       fixed aspect ratio */
-    .bento-grid{grid-template-columns:repeat(2,1fr)}
-    .t-trove,.t-skrimp,.t-menzo,.t-auntie,.t-equinox{grid-column:span 2}
-    .t-equinox .tile{aspect-ratio:5 / 3;min-height:0}
-  }
-  @media(prefers-reduced-motion:reduce){ .tile{transition:none} }
-
-/* ── end bento ───────────────────────────────────────────────────────── */
+  /* ── end bento ───────────────────────────────────────────────────────── */
 
         .about-content {
             text-align: center;
@@ -1090,7 +989,7 @@
       margin-bottom: 0.5rem;
     }
     .scene-overlay-msg {
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Satoshi', sans-serif;
       color: var(--muted);
       font-size: 1rem;
       opacity: 0.9;
@@ -1127,7 +1026,7 @@
       color: rgba(var(--muted-rgb),.74);
       white-space: nowrap;
       font-weight: 500;
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
     }
     .pe-body {
       display: grid;
@@ -1170,7 +1069,7 @@
       display: flex; align-items: center; justify-content: center;
       background: rgba(var(--muted-rgb),0.1);
       border: 1.5px solid rgba(var(--muted-rgb),0.3);
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-weight: 600;
       font-size: 0.82rem;
       color: var(--muted);
@@ -1178,14 +1077,14 @@
     }
     .pe-attrib { display: flex; flex-direction: column; gap: 0.15rem; }
     .pe-name {
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-weight: 600;
       font-size: 0.8rem;
       color: var(--ink);
       letter-spacing: 0.03em;
     }
     .pe-role {
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-weight: 300;
       font-size: 0.78rem;
       color: rgba(var(--muted-rgb),.78);
@@ -1201,7 +1100,7 @@
     .pe-quote::before { content: ‘\201C’; }
     .pe-quote::after  { content: ‘\201D’; }
     .pe-source {
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-size: 0.78rem;
       font-weight: 500;
       letter-spacing: 0.1em;
@@ -1238,7 +1137,7 @@
     }
     .pe-press-text { display: flex; flex-direction: column; gap: 0.18rem; }
     .pe-press-outlet {
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.15em;
@@ -1246,7 +1145,7 @@
       color: rgba(var(--muted-rgb),0.65);
     }
     .pe-press-headline {
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-size: 0.8rem;
       font-weight: 400;
       color: rgba(var(--ink-rgb),0.8);
@@ -1471,11 +1370,11 @@
     .ns-matrix-table tbody td { padding: 0.85rem 1rem; vertical-align: top; color: rgba(var(--ink-rgb),0.78); font-weight: 300; line-height: 1.5; }
     .ns-matrix-table tbody td:first-child { font-family: 'Bodoni Moda', serif; font-style: italic; color: var(--ink); font-weight: 400; font-size: 0.9rem; white-space: nowrap; padding-right: 1.5rem; }
 
-    .ns-chaos-tag { display: inline-block; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; font-family: 'Montserrat', sans-serif; padding: 0.18rem 0.55rem; border-radius: 3px; margin: 0.1rem 0.15rem 0.1rem 0; }
+    .ns-chaos-tag { display: inline-block; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; font-family: 'Satoshi', sans-serif; padding: 0.18rem 0.55rem; border-radius: 3px; margin: 0.1rem 0.15rem 0.1rem 0; }
     .ns-tag-coord { background: rgba(42,157,143,0.18); color: rgba(var(--rail-accent-rgb), 0.75); border: 1px solid rgba(42,157,143,0.25); }
     .ns-tag-const { background: rgba(69,123,157,0.18); color: rgba(var(--muted-rgb),0.75); border: 1px solid rgba(69,123,157,0.25); }
     .ns-tag-user  { background: rgba(231,111,81,0.12);  color: rgba(255,185,160,0.75); border: 1px solid rgba(231,111,81,0.2); }
-    .ns-outcome-pill { display: inline-block; font-size: 0.78rem; letter-spacing: 0.08em; font-weight: 600; font-family: 'Montserrat', sans-serif; padding: 0.18rem 0.6rem; border-radius: 20px; background: rgba(42,157,143,0.12); border: 1px solid rgba(42,157,143,0.3); color: #2a9d8f; white-space: nowrap; }
+    .ns-outcome-pill { display: inline-block; font-size: 0.78rem; letter-spacing: 0.08em; font-weight: 600; font-family: 'Satoshi', sans-serif; padding: 0.18rem 0.6rem; border-radius: 20px; background: rgba(42,157,143,0.12); border: 1px solid rgba(42,157,143,0.3); color: #2a9d8f; white-space: nowrap; }
 
     .ns-chaos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 5rem; }
     .ns-chaos-card { background: rgba(var(--muted-rgb),0.03); border: 1px solid rgba(var(--muted-rgb),0.18); border-radius: 6px; padding: 1.75rem 1.5rem; position: relative; }
@@ -1537,7 +1436,7 @@
             display: flex;
             align-items: center;
             gap: 0.6rem;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-style: normal;
             font-weight: 500;
             font-size: 0.84rem;
@@ -1597,7 +1496,7 @@
 
         /* Gilmore Girls easter egg tagline — editorial italic pull quote */
         .tagline {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-style: normal;
             font-size: clamp(0.88rem, 1.15vw, 1.05rem);
             font-weight: 400;
@@ -1642,7 +1541,7 @@
             color: rgba(240, 242, 240, 0.75);
             padding: 0.45rem 0.85rem;
             border-radius: 6px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-style: normal;
             font-size: 0.72rem;
             font-weight: 400;
@@ -1691,7 +1590,7 @@
 
         /* Primary CTA — pill, white fill */
         .btn-cta-primary {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 0.78rem;
             font-weight: 500;
             letter-spacing: 0.10em;
@@ -1712,11 +1611,11 @@
 
         /* Secondary CTA — liquid glass pill */
         .btn-cta-secondary {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.78rem;
-            font-weight: 400;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
+            font-family: 'Satoshi', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            text-transform: none;
             color: rgba(240, 242, 240, 0.60);
             background: rgba(12, 18, 28, 0.40);
             backdrop-filter: url(#hero-glass-sm) blur(3px);
@@ -1739,7 +1638,7 @@
 
         /* North star CTA — same liquid glass, light-blue tint */
         .btn-cta-northstar {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 0.78rem;
             font-weight: 400;
             letter-spacing: 0.08em;
@@ -1786,19 +1685,23 @@
             transform: translateY(-2px);
         }
         .social-btn i { display: flex; align-items: center; justify-content: center; }
+        /* Two kinds of icon live in here: Lucide's are drawn with a stroke,
+           every brand mark we paste in is a solid path. Matching on how an
+           icon paints rather than on its name means a new one picks up the
+           colour rules by existing — naming each mark is how the X ended up
+           following neither theme. */
+        .social-btn svg { width: 15px; height: 15px; }
         .social-btn svg[data-lucide] {
-            width: 15px; height: 15px;
             stroke: rgba(255,255,255,0.42);
             transition: stroke 0.2s ease;
         }
         .social-btn:hover svg[data-lucide] { stroke: var(--muted); }
-        .social-btn svg.bi-discord {
-            width: 15px; height: 15px;
+        .social-btn svg:not([data-lucide]) {
             fill: rgba(255,255,255,0.42);
             stroke: none;
             transition: fill 0.2s ease;
         }
-        .social-btn:hover svg.bi-discord { fill: var(--muted); }
+        .social-btn:hover svg:not([data-lucide]) { fill: var(--muted); }
         .conspire-socials .social-tooltip,
         .social-tooltip {
             position: absolute;
@@ -1811,7 +1714,7 @@
             -webkit-backdrop-filter: blur(10px) saturate(150%);
             padding: 0.35rem 0.7rem;
             border-radius: 5px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 0.78rem;
             font-weight: 400;
             white-space: nowrap;
@@ -1899,7 +1802,7 @@
         .modal-close {
             position: absolute;
             top: 14px; right: 18px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 22px; line-height: 1;
             color: rgba(240, 242, 240, 0.55);
             cursor: pointer;
@@ -1922,7 +1825,7 @@
         }
         .modal-caption {
             margin-top: 1rem;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-style: normal;
             font-size: 0.92rem;
             font-weight: 400;
@@ -1994,7 +1897,7 @@
             border: 1px solid rgba(var(--muted-rgb),0.14);
             border-right: none;
             box-shadow: 0 18px 50px rgba(0,0,0,0.55);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
         }
         .sidebar::-webkit-scrollbar { width: 5px; }
         .sidebar::-webkit-scrollbar-thumb {
@@ -2082,9 +1985,9 @@
             display: none;
             align-items: center;
             gap: 0.38rem;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 0.92rem;
-            font-weight: 600;
+            font-weight: 400;
             letter-spacing: 0.01em;
             /* the way out is always in the case's own colour, never grey */
             color: var(--rail-accent);
@@ -2133,7 +2036,7 @@
            and the way out; give the block its own air */
         .rail-case { margin-top: clamp(0.5rem, 1.9vh, 1.1rem); }
         .rail-case-kicker {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: clamp(0.7rem, 1.7vh, 0.84rem);
             font-weight: 600;
             letter-spacing: 0.22em;
@@ -2166,7 +2069,7 @@
             display: flex;
             align-items: baseline;
             gap: 0.62rem;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: clamp(0.84rem, 2.2vh, 1.18rem);
             font-weight: 500;
             line-height: 1.28;
@@ -2366,7 +2269,7 @@
 
         /* the serious line — what she actually does */
         .rail-pitch {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: clamp(0.8rem, 2.05vh, 1.02rem);
             font-weight: 500;
             line-height: 1.38;
@@ -2410,7 +2313,7 @@
             border-top: 1px solid rgba(var(--muted-rgb),0.12);
         }
         .sb-link {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: clamp(0.86rem, 2.2vh, 1.12rem);
             font-weight: 400;
             color: rgba(240, 242, 240, 0.58);
@@ -2794,8 +2697,8 @@
     :root[data-theme="light"] .social-btn:hover { background: rgba(22,117,111,0.10); border-color: var(--accent-dim); }
     :root[data-theme="light"] .social-btn svg[data-lucide] { stroke: rgba(18,24,31,0.5); }
     :root[data-theme="light"] .social-btn:hover svg[data-lucide] { stroke: var(--accent); }
-    :root[data-theme="light"] .social-btn svg.bi-discord { fill: rgba(18,24,31,0.5); }
-    :root[data-theme="light"] .social-btn:hover svg.bi-discord { fill: var(--accent); }
+    :root[data-theme="light"] .social-btn svg:not([data-lucide]) { fill: rgba(18,24,31,0.5); }
+    :root[data-theme="light"] .social-btn:hover svg:not([data-lucide]) { fill: var(--accent); }
     /* both themes now read from --rail-tint / --rail-accent, so the light
        override only needs to keep the chip legible on a pale rail */
     :root[data-theme="light"] .conspire-socials .social-tooltip {
@@ -3280,8 +3183,179 @@
         .ct-motes { display: none; }
     }
     </style>
+
+<style>
+/* ── the elevation pass: the project grid ────────────────────────────────
+   The rail earned its calm by giving one thing at a time room. The grid was
+   doing the opposite: a bordered box, then four stacked pieces of information
+   at .34-.6rem apart, then three filled chips. Five competing elements per
+   tile and no quiet beat between them. */
+
+.tile{ border:none !important; }
+.cell:hover .tile{ border-color:transparent !important; }
+.cell[data-scene] .tile::before{ animation:none !important; }
+.cell:hover .tile{ transform:translateY(-4px); box-shadow:0 26px 64px rgba(20,40,60,.18) !important; }
+
+
+/* The title carries the tile, so it gets the weight. Not the pixel face:
+   DotempDemo is an accent, and a ten-word tagline set entirely in it stops
+   being legible and starts reading as a game menu. */
+.tile-name{
+  font-size:clamp(1.06rem,1.58vw,1.34rem) !important;
+  line-height:1.3 !important;
+  font-weight:700 !important;
+  letter-spacing:-.018em !important;
+}
+.tile-stat{
+  margin-top:.62rem !important; font-weight:400 !important; font-size:.85rem !important;
+  /* one line, always: a two-line subline knocks the tiles out of alignment */
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.tile-stat .px{ font-family:'DotempDemo',monospace; font-size:.92em; }
+
+/* small, grey, and only colouring on hover */
+.tile-tags{
+  margin-top:1.15rem !important;
+  display:flex !important; flex-wrap:wrap;
+  column-gap:.5rem !important; row-gap:.42rem !important;
+  align-items:center;
+}
+.tile-tags > span{
+  font-size:.6rem !important;
+  font-weight:600 !important;
+  letter-spacing:.11em !important;
+  text-transform:uppercase !important;
+  padding:.34rem .62rem !important;
+  border-radius:5px !important;
+  border:none !important;
+  background:rgba(var(--ink-rgb),.075) !important;
+  color:rgba(var(--ink-rgb),.52) !important;
+  transition:background .3s ease, color .3s ease;
+}
+.cell:hover .tile-tags span{
+  background:rgba(var(--sa),.16) !important;
+  color:rgba(var(--ink-rgb),.78) !important;
+}
+/* The award used to carry the project's accent to mark itself out. The
+   trophy does that job now, so the chip sits in the same colour as every
+   other tag and the row reads as one set. The glyph is just part of the
+   label: `.tile-tags span` is a descendant match, so any element nested
+   inside a tag would be painted as a second tag. */
+
+/* more air between the rows, and more before the title starts — the calm the
+   rail has should not stop at the boundary between the two columns */
+.bento-grid{ row-gap:clamp(86px,10.5vh,140px) !important; }
+.cell{ gap:clamp(1.3rem,2.1vh,1.8rem) !important; }
+/* the caption is a link; stripping the ribbon block took its reset with it,
+   which is why the homepage came back underlined */
+.tile-cap{
+  display:block; padding:0 !important; min-width:0;
+  text-decoration:none; color:inherit;
+}
+.tile-cap:visited, .tile:visited{ color:inherit; }
+.tile-cap:hover{ text-decoration:none; }
+
+.bento-grid{
+  column-gap:clamp(30px,3.6vw,60px) !important;
+  padding-top:clamp(28px,4vh,56px) !important;
+}
+
+/* ── corners, sharpened ──────────────────────────────────────────────────
+   Roughly halved. A soft radius reads friendly; a tight one reads considered.
+   Pills stay pills, and the phone mockups keep their real device radius —
+   that one describes an object rather than styling a box. */
+.tile{ border-radius:10px !important; }
+.sidebar{ border-radius:12px 0 0 12px !important; }
+.content-card{ border-radius:0 12px 12px 0 !important; }
+.case-pane{ border-radius:0 12px 12px 0 !important; }
+#gl{ border-radius:0 12px 12px 0 !important; }
+.tile-video, .tile-scrim{ border-radius:inherit !important; }
+</style>
 </head>
 <body>
+<div id="http-readable" style="display:none">
+<h1>Equinox</h1>
+<h4>Project Type</h4>
+<p>Game jam. A cozy first-person puzzle game, and the Comfy Jam: Winter 2026 winner.</p>
+<h4>Role</h4>
+<p>Gameplay and UI programmer. Transitions, journal, minigame completion, pause and menus. My first game jam.</p>
+<h4>Timeline</h4>
+<p>18 days in January 2026, with a team of fourteen.</p>
+<h4>Skills &amp; Tools</h4>
+<p>Godot 4.5 and GDScript, scene transition systems, signal-based state, implementing UI from high-fidelity art, Git LFS for a binary-heavy repo, and pair programming on a deadline.</p>
+<h2>A wizard’s tower locked in winter, eighteen days to bring spring back, and first place out of eighty eight.</h2>
+<p>A cozy first-person puzzle game built by fourteen people for the Comfy Jam: Winter 2026. I built the payoffs: the transitions between floors, the journal that unlocks as you finish a puzzle, the moment a minigame completes, and the menus around all of it.</p>
+<p>Comfy Jam: Winter 2026, hosted by Macrow. 88 entries, 1,350 ratings. Every category, including the one we came fifteenth in.</p>
+<p>We won it on how the game lands rather than on what it asks. First in Visuals. First in Audio. Second in the Limitation, which was the one rule every single entry had to compete on. Third in Gameplay, and fifteenth in Theme. Equinox did not win on its mechanics, and it certainly did not win on being wintry. It won on how it feels to be inside, and on doing the thing the jam actually asked for.</p>
+<p>The full showcase, with sound. Every clip below is cut out of these same three minutes.</p>
+<h3>The game</h3>
+<p>You are not the hero. You are the person the hero hired. The wizard’s tower is meant to burn a light that ends winter and brings spring, and it has been dark long enough that the town below is frightened. They hire you, an adventurer at the tail end of a bad run, to go up there and find out why.</p>
+<p>Four floors. Nine artefacts. No fail states, no timer, no combat, nothing at all to lose. You clean centuries of neglect off things, put fractured things back together, and read the wizard’s notes as the journal hands them to you, until it becomes clear what he did. At the top there is a beacon with three concentric rings and nine seasonal inscriptions, and it is not going to hint at the answer.</p>
+<p>Fourteen people built it in eighteen days. Four of us wrote code, and 281 commits later it was on itch.</p>
+<h2>It was my first game jam, and the first time I had used Godot for anything real.</h2>
+<p>Another programmer on the team built the player movement and stood the 3D pipeline up inside the first forty eight hours, which is the only reason a beginner was useful by day three.</p>
+<p>Getting the substrate solid in the first two days is the highest leverage thing anybody can do on a jam team, and I have thought about it a lot since, because I now do a version of that job on a much larger volunteer project.</p>
+<h2>Winter was the theme. “Overcomplicated Screen Transitions” was the rule.</h2>
+<p>It is the one category every entry had to compete in, and we came second in it on the way to winning the jam outright.</p>
+<p>The jam carried one required limitation: every scene, level or room change had to be an elaborate transition. Most teams read that as a visual dare, so make a nicer wipe. We read it as a brief about pacing. In a game with no fail states and no timer, transitions are the only punctuation you have. They are the difference between four rooms and four chapters.</p>
+<p>I built the floor transitions. They live in portal.gd and the transition canvas.</p>
+<h4>Going up</h4>
+<p>The stairs are a portal. Finishing a floor’s artefacts unlocks it, and the transition covers the load while the floor name lands in the middle of the screen. It is the only moment the game tells you where you are.</p>
+<h4>The opening</h4>
+<p>The intro got reworked in one sitting: 109 lines added and 249 deleted. What shipped is shorter than what came before it and better for it, because a cozy game should not open by lecturing you.</p>
+<h4>The credits</h4>
+<p>Opening credits over the tower, so the game reads as a thing that was made, by people, on purpose, before it asks you for anything at all.</p>
+<p>Leaving a finished floor. The stairs are a portal, the climb covers the load, and the floor name lands in the middle of the screen before the library appears.</p>
+<p>Where a player starts. Our artists drew the screen; turning it into one that actually works was my first job on the project.</p>
+<h2>Three of the four floors end the same way, and I built the end.</h2>
+<p>Find something the wizard broke. Put it back together. Get the dirt off it. The tower gives you a page of his diary in return.</p>
+<p>That loop has to survive being done nine times. It is the reason anybody stays in the tower past the first floor, and it is the reason a game with nothing to lose still has somewhere to go.</p>
+<h3>First you put it back together</h3>
+<p>A bust of the wizard is in pieces on the workbench. The repair minigame floats the fragments in front of you and you drag each one home. No timer, no failure, and R puts every piece back where it started, because a cozy game cannot afford a move you regret.</p>
+<p>The bust, reassembled a fragment at a time.</p>
+<h3>Then you get the dirt off it</h3>
+<p>Cleaning is the interaction the whole game rests on. A shader keeps a mask over the artefact, your cursor is a soft brush that lifts dirt with falloff so it feels organic rather than geometric, and the system rasterizes the mesh UVs first so progress only counts over geometry you can actually see. At 95% it calls it done, and that last five percent is deliberate: nobody should have to hunt a single stubborn pixel behind an ear.</p>
+<p>The bust again, whole now and still filthy. Watch the end: it turns itself to show you, and the minigame closes without being asked.</p>
+<h3>And one that is neither</h3>
+<p>The library has a star globe instead. You turn it until the constellations match what the wizard’s notes told you, which is a different verb for the same promise: the game will tell you plainly when you are right, and it will never punish you for being wrong on the way there.</p>
+<p>The star globe on the library floor. Q and E, and no clock.</p>
+<h3>And the one at the top</h3>
+<p>The beacon at the top is the last of them and the only one that asks something real of you. Three concentric rings, nine seasonal inscriptions, and a rotation the game refuses to hint at beyond the logic of the rings themselves. It has spent four floors quietly teaching you how to read it, and it is the last thing on this page.</p>
+<h3>Who wrote which part</h3>
+<p>I built cleaning and repair with another programmer on the team, on calls that ran five hours at a stretch, and came into the beacon the same way near the end. One of us drove and the other navigated, and we swapped whenever the person typing started making the same mistake twice. I would do it that way again on purpose: you get somebody’s reasoning out loud while they are still having it, which is the fastest I have ever learned a codebase, and it left two people carrying the whole model instead of one.</p>
+<p>What I own outright is where those minigames end. The artefact turns when it is done. The progress bar. The minigame closing itself instead of sitting there waiting to be dismissed. The handoff into the journal. Cleaning something should feel like finishing, and finishing is a separate design problem from the mechanic.</p>
+<h2>The wizard’s story arrives because you earned it, not because a cutscene decided it was time.</h2>
+<p>Pages start locked. A page unlocks when you finish a puzzle. That is the whole narrative delivery system.</p>
+<p>I built the journal: the locked pages, the overlays, the layout, and the wiring that opens a page when an artefact is finished. The chain runs from the cleanable item through the game state manager into the journal UI, which means the story responds to progress rather than to sequence. Finish a floor’s puzzles in any order you like and the entries still arrive in the right one.</p>
+<p>Three files, one rule: the story responds to progress, never to sequence.</p>
+<p>It matters because of what kind of game this is. There is nothing to lose in Equinox, so curiosity has to do the work that fear does everywhere else. The journal is that engine. You clean a thing, you learn a thing, and the reason to climb the next set of stairs is that you want to know what he did next.</p>
+<p>The same clean, picked up two seconds later. The journal opens itself to the page you just earned.</p>
+<h2>Before any art arrived, I wrote the file that stopped fourteen people corrupting each other’s work.</h2>
+<p>Godot, 3D models, textures, audio, and a repo on its way to 190 MB. On day one, a .gitattributes .</p>
+<p>Binary files do not merge. Two people touching the same model or the same scene file produce a conflict git cannot resolve, and on a jam clock that costs an afternoon nobody has to spare. Git LFS fixes it by keeping the large files outside the repository proper, but only if the tracking rules exist before the assets land.</p>
+<p>Committed 10 January, the first day of the jam, before a single asset existed.</p>
+<p>The last block is the part people miss. Most gamedev templates cover models, images and audio. Godot has its own binary formats on top of those, and .scn , .res , .material , .anim , .mesh and .lmbake will bloat a repository and conflict just as badly if nobody tracks them. It is the least glamorous thing on this page and it is the one I would do again first.</p>
+<h2>What my first jam taught me that a solo project could not.</h2>
+<h4>01</h4>
+<h3>The payoff is a job</h3>
+<p>Every moment a game confirms you did something right is a design problem of its own, and on most teams nobody owns it. I did, and it is what the scoreboard turned out to be measuring.</p>
+<h4>02</h4>
+<h3>Build the floor before anyone needs to stand on it</h3>
+<p>Somebody built the movement and the model pipeline inside forty eight hours so that a first timer could be useful on day three. That is most of the reason fourteen people shipped anything.</p>
+<h4>03</h4>
+<h3>The graph records the driver, not the call</h3>
+<p>Pair programming over Discord is how a lot of jam code gets written, and the commit lands under whoever was typing. Worth knowing when you read anybody’s contribution graph, mine included.</p>
+<h4>04</h4>
+<h3>The constraint was the brief</h3>
+<p>“Overcomplicated Screen Transitions” sounds like a gag. It was the only category every entry competed in, and treating it as a pacing problem rather than a visual one is why we placed second in it.</p>
+<h3>The top of the tower</h3>
+<p>Solve the beacon and the tower does the rest. The rings come down, the light catches properly for the first time, and the winter breaks over the valley while the credits roll. Eighteen days, fourteen people, and this is the minute all of it was for.</p>
+<p>Unedited, all the way through: an inscription going home, the flame catching, the rings coming down, and the first sunrise the valley has seen in a very long time.</p>
+<p>Making a game is collaborative in a way making a product is not, quite. Everyone’s contribution is load-bearing in a different direction. The artist builds the world, the composer tells you how to feel about it, the voice actor gives the wizard a voice, and the programmers make it run. I came in knowing almost nothing about any of it and left owning the part where the game says well done.</p>
+<p>→ Play Equinox on itch.io</p>
+</div>
+<script>document.getElementById("http-readable").remove();</script>
+
     <!--
         Liquid glass SVG displacement filter.
         backdrop-filter: url(#navbar-lg) geometrically warps background pixels
@@ -3414,7 +3488,7 @@
                     </span>
                 </h1>
 
-                <p class="rail-pitch">is an award-winning design engineer who blends systems thinking with a love for visual craft to build things that hold up under pressure</p>
+                <p class="rail-pitch">is an award-winning design engineer blending systems thinking with a love for visual craft, to build things that survive under pressure</p>
 
                 <!-- "and alsooo <fact>" — typewriter, with the Gilmore Girls easter egg -->
                 <div class="tagline" id="taglineMerged" onclick="handleTaglineClick()">
@@ -3899,7 +3973,12 @@
 
     <script>
         (async () => {
-          const res = await fetch('footer.html');
+          // absolute, and checked: from /about/ the relative form resolved to
+          // /about/footer.html, which 404s — and the 404 page's own markup and
+          // <style> were then injected into the live page, which is what turned
+          // body into centred Montserrat on every route
+          const res = await fetch('/footer.html');
+          if (!res.ok) return;
           const html = await res.text();
           const doc = new DOMParser().parseFromString(html, 'text/html');
 
@@ -4540,7 +4619,7 @@ const eul = (x,y,z)=>new THREE.Euler(
       {
         name:'Trove', category:'Product Design Engineering / AI',
         tagline:'Turning behavioural data into a personality read people actually recognise',
-        stat:'0 \u2192 10,250 users and 61.9K page views in six months',
+        stat:'0 \u2192 10,250 users, 61.9K views, six months',
         tags:['Design engineer','LLM runtime','Web + iOS'],
         href:'/trove/',
         // the meadow + the tots are DOM (see the .tf block); the phone itself is
@@ -4558,7 +4637,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         name:'Skrimp AI', category:'Product Design / AI',
         tagline:'Planning a week of dinners around live prices and whatever\u2019s already in the fridge',
         video:{ kind:'file', src:'/skrimp/skrimp-smartload-demo.mp4' },
-        stat:'$5K/yr potential savings per family \u2014 free, always',
+        stat:'$5K/yr saved per family, free always',
         tags:['Solo founder','Live flyer data','Mobile + web'],
         href:'/skrimp/',
         // the aisle is the place; the laptop running the plan is the subject.
@@ -4595,7 +4674,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         name:'Path to Menzoberranzan', category:'Technical Direction / Game',
         tagline:'Running a volunteer studio on an undocumented engine',
         video:{ kind:'yt', id:'1oBlmSvi1So' },
-        stat:'140+ contributors, 1,700 Patreon members, 0 docs from Larian',
+        stat:'140+ contributors, 1,700 Patrons, 0 docs',
         tags:['CTO','Build tooling','PC'],
         href:'/menzo/',
         domScene:'underdark',
@@ -4607,8 +4686,8 @@ const eul = (x,y,z)=>new THREE.Euler(
         name:'MyAuntie', category:'UX Design / AI',
         tagline:'Postpartum support that arrives as a text, not another app to download',
         video:{ kind:'yt', id:'kARMZuwfmMA', start:8 },
-        stat:'\ud83c\udfc6 TechNova 2025 \u2014 concept to live telephony in 36 hours',
-        tags:['36-hour build','Telephony','No app'],
+        stat:'TechNova 2025, concept to live in 36 hours',
+        tags:['36-hour build','Telephony'],
         href:'/myauntie/',
         domScene:'nursery', award:'Winner',
         theme:{ accent:'196, 96, 122', accent2:'255, 179, 208', scene:'auntie' },
@@ -4634,8 +4713,8 @@ const eul = (x,y,z)=>new THREE.Euler(
         name:'Equinox', category:'Game Design / Godot',
         tagline:'Reading \u201cOvercomplicated Screen Transitions\u201d as a design constraint, not decoration',
         video:{ kind:'yt', id:'ou-piZ1dt4U' },
-        stat:'\ud83c\udfc6 1st of 88 at Comfy Jam: Winter 2026, and 2nd on the limitation',
-        tags:['Game jam win','Godot','Browser'],
+        stat:'1st of 88 at Comfy Jam, 2nd on the limitation',
+        tags:['Godot','Browser'],
         href:'/equinox/', award:'Winner',
         playHref:'https://emstergrace.itch.io/equinox',
         cover:'/equinox/equinox-banner.webp', noDrag:true,
@@ -4927,12 +5006,11 @@ stations.forEach((cfg,i) => {
        ${mascotHtml}
        ${videoHtml}
      </a>
-     ${cfg.award ? `<div class="award" aria-hidden="true"><div class="band"><b>${cfg.award}</b>` +
-        `<span class="fold fold-l"></span><span class="fold fold-r"></span></div></div>` : ''}
      <a class="tile-cap" href="${cfg.href}">
        <div class="tile-name">${cfg.tagline}</div>
        <p class="tile-stat">${cfg.stat}</p>
-       <div class="tile-tags">${(cfg.tags || []).map(t => `<span>${t}</span>`).join('')}</div>
+       <div class="tile-tags">${(cfg.award ? [`<span class="is-award">\u{1F3C6} ${cfg.award}</span>`] : [])
+         .concat((cfg.tags || []).map(t => `<span>${t}</span>`)).join('')}</div>
      </a>`;
   grid.appendChild(cell);
 
@@ -5376,16 +5454,6 @@ function roundedRectPath(x,y,w,h,r){
 // Mirrors the .award CSS: Trove's CardBadge geometry times k.
 const AW_K = 1.45, AW_BOX = 96, AW_OFF = 4, AW_W = 150, AW_TOP = 22, AW_H = 22,
       AW_RIGHT = 32, AW_BLEED = 2;
-function awardHolePath(x,y,w,h){
-  const k = AW_K, R = x + w;
-  // stripe centre, as an offset from the tile's top-right corner
-  const dxc = (AW_OFF - (AW_BOX - (AW_BOX + AW_RIGHT - AW_W/2))) * k;   // leftward
-  const dyc = (AW_TOP + AW_H/2 - AW_OFF) * k;                          // downward
-  const m = dyc - dxc;                       // where the centreline crosses both edges
-  const e = (AW_H*k/2) * Math.SQRT2;         // half-thickness, in crossing units
-  const a = m - e - AW_BLEED, b = m + e + AW_BLEED;
-  return `M${R-a},${y}L${R},${y+a}L${R},${y+b}L${R-b},${y}z`;
-}
 
 function updateClip(){
   const parts = [];
@@ -5397,7 +5465,6 @@ function updateClip(){
     const x = r.left - c.left, y = r.top - c.top;
     const rad = parseFloat(getComputedStyle(v.el).borderRadius) || 18;
     parts.push(roundedRectPath(x, y, r.width, r.height, rad));
-    if (v.cfg.award) parts.push(awardHolePath(x, y, r.width, r.height));
     keyBits += `${Math.round(x)},${Math.round(y)},${Math.round(r.width)},${Math.round(r.height)};`;
   }
   if (keyBits === clipKey) return;

@@ -16,12 +16,25 @@
     <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <title>Trove — Henriëtta van Niekerk</title>
-    <meta name="description" content="Henriëtta van Niekerk is a design engineer who builds systems that carry the load instead of the person. Founder of Skrimp, CTO of Path to Menzoberranzan. Case studies in behavioural AI, foodtech, game technical direction and conversational AI.">
-    <link rel="canonical" href="https://henliz.github.io/">
+    <meta name="description" content="Turning behavioural data into a personality read people actually recognise. Trove grew 0 to 10,250 users and 61.9K page views in six months. Design engineering case study by Henriëtta van Niekerk.">
+    <link rel="canonical" href="https://henliz.github.io/trove/">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Trove — Henriëtta van Niekerk">
+    <meta property="og:description" content="Turning behavioural data into a personality read people actually recognise. Trove grew 0 to 10,250 users and 61.9K page views in six months. Design engineering case study by Henriëtta van Niekerk.">
+    <meta property="og:url" content="https://henliz.github.io/trove/">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/HenLogo.png">
     <link rel="shortcut icon" type="image/png" href="/HenLogo.png">
     <style>
+/* Satoshi, self-hosted. Replaces Montserrat and Montserrat Alternates:
+   squared bowls and tight apertures agree with DotempDemo's staircase where
+   Montserrat's circles fought it, especially mid-word where the two interleave. */
+@font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-300.woff2') format('woff2');font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-900.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap}
+
     /* ── type scale ────────────────────────────────────────────────
        One fluid root so every rem on the page grows with the screen
        instead of sitting at a fixed 16px. The floor and ceiling are
@@ -29,7 +42,7 @@
        default font size keeps that increase (WCAG 1.4.4). */
     html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
 
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Inter:opsz,wght@14..32,200;14..32,300;14..32,400;14..32,500;14..32,600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap');
 
@@ -59,7 +72,7 @@
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             background: #0f1419;
             color: white;
             overflow-x: hidden;
@@ -157,7 +170,7 @@
             align-items: center; justify-content: center; gap: 1px;
             pointer-events: none;
             opacity: 0; transform: scale(0.6);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 10px; font-weight: 700; line-height: 1.25;
             letter-spacing: 0.02em; text-transform: lowercase;
             /* no delay on the way out, so the text clears before the circle
@@ -651,7 +664,7 @@
     display:grid;place-items:center;
   }
   .tile-video--soon span{
-    font-family:'Montserrat',sans-serif;
+    font-family:'Satoshi',sans-serif;
     font-size:0.78rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;
     color:rgba(var(--ink-rgb),.82);
     padding:.6rem 1.1rem;border-radius:999px;
@@ -721,121 +734,7 @@
   .cell[data-scene="auntie"] .tile{background:rgba(26,10,17,.42)}
   /* Equinox — autumn amber */
   .cell[data-scene="equinox"] .tile{background:rgba(26,18,8,.42)}
-  /* ── award ribbon ────────────────────────────────────────────────────
-     Trove's CardBadge (explore-shelves.tsx) ported as-is and scaled by
-     --aw-k: square clip box pinned 4k past the corner with overflow:hidden,
-     stripe at fixed offsets inside it rotated 45deg, and dark fold tabs as
-     CHILDREN of the stripe so they rotate with it. Every number is that
-     component's number times k.
-
-     The stripe's two trimmed ends are NOT equidistant from its midpoint (the
-     clip lands at -46.7k and +60.8k), so flex-centred text sits off centre.
-     That is corrected by nudging the LABEL along the stripe by half the
-     difference, which leaves the ribbon's geometry untouched. Re-deriving the
-     geometry to fix it instead is what wrecked the layout.
-
-     Lives inside .cell, so it scrolls with the page and can't paint over the
-     sidebar. The shared WebGL canvas covers every tile, so updateClip cuts
-     this stripe out of the canvas clip, derived from the same numbers. */
-  .cell{ --aw-k:1.45; --aw-dark:#6e1322 }
-  .award{
-    position:absolute;z-index:7;pointer-events:none;overflow:hidden;
-    top:calc(-4px * var(--aw-k));right:calc(-4px * var(--aw-k));
-    width:calc(96px * var(--aw-k));height:calc(96px * var(--aw-k));
-  }
-  .award .band{
-    position:absolute;
-    top:calc(22px * var(--aw-k));right:calc(-32px * var(--aw-k));
-    width:calc(150px * var(--aw-k));height:calc(22px * var(--aw-k));
-    transform:rotate(45deg);
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Montserrat',sans-serif;font-weight:700;
-    font-size:calc(10px * var(--aw-k));letter-spacing:.16em;text-transform:uppercase;
-    color:#fff;text-shadow:0 1px 1px rgba(52,4,14,.5);
-    background:
-      /* the travelling sheen. Stops spread across a third of a 300%-wide box,
-         so the highlight is nearly as wide as the ribbon and reads as light
-         moving over satin. Tight stops are what made it a printed stripe. */
-      linear-gradient(100deg, rgba(255,255,255,0) 34%,
-                              rgba(255,255,255,.20) 50%,
-                              rgba(255,255,255,0) 66%),
-      /* the body: bright along the top edge falling to a dark bottom edge, so
-         the band reads as rolled rather than as a flat fill */
-      linear-gradient(180deg, #d04459 0%, #ba3047 18%, #a62639 46%,
-                              #8e1c2e 74%, #711423 100%);
-    background-size:300% 100%, 100% 100%;
-    box-shadow:0 3px 8px rgba(0,0,0,.22);
-    animation:awardShine 9s linear infinite;
-  }
-  /* half the difference between the two trim distances: (60.8 - 46.7) / 2 */
-  .award .band b{ font-weight:inherit;transform:translateX(calc(7.05px * var(--aw-k))) }
-  @keyframes awardShine{
-    from{background-position:130% 0, 0 0} to{background-position:-130% 0, 0 0}
-  }
-  .award .fold{
-    position:absolute;width:0;height:0;
-    bottom:calc(-5px * var(--aw-k));
-    border-top:calc(5px * var(--aw-k)) solid var(--aw-dark);
-  }
-  .award .fold-l{ left:0;  border-left:calc(5px * var(--aw-k)) solid transparent }
-  .award .fold-r{ right:0; border-right:calc(5px * var(--aw-k)) solid transparent }
-  @media (max-width: 700px){ .cell{ --aw-k:1.1 } }
-  @media (prefers-reduced-motion: reduce){ .award .band{animation:none} }
-
-  /* ---- caption, outside the box ---- */
-  .tile-cap{
-    display:block;padding:0 .15rem;min-width:0;
-    text-decoration:none;color:inherit;
-  }
-  .tile-cap:visited,.tile:visited{color:inherit}
-  .tile-name{
-    font-family:'Montserrat',sans-serif;font-weight:600;
-    font-size:clamp(.92rem,1.35vw,1.14rem);line-height:1.42;letter-spacing:.002em;
-  }
-  .tile-desc{
-    font-size:0.84rem;line-height:1.5;color:rgba(var(--ink-rgb),.76);margin-top:.22rem;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  }
-  /* the number that earns the click */
-  .tile-stat{
-    font-size:.88rem;line-height:1.5;color:rgba(var(--ink-rgb),.66);
-    margin-top:.34rem;font-weight:500;
-  }
-  /* one line, always: they shrink before they wrap */
-  .tile-tags{display:flex;flex-wrap:nowrap;gap:.34rem;margin-top:.62rem;min-width:0}
-  .tile-tags span{
-    font-size:clamp(.62rem,.62vw,.76rem);letter-spacing:.05em;text-transform:uppercase;font-weight:600;
-    padding:.32rem clamp(.36rem,.52vw,.62rem);border-radius:7px;
-    white-space:nowrap;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
-    color:rgba(var(--ink-rgb),.79);
-    background:rgba(var(--sa),.10);
-    border:1px solid rgba(var(--sa),.22);
-    transition:background .3s ease,border-color .3s ease,color .3s ease;
-  }
-  .cell:hover .tile-tags span{
-    color:rgba(var(--ink-rgb),.8);
-    background:rgba(var(--sa),.17);
-    border-color:rgba(var(--sa),.34);
-  }
-  .cell{--sa:102,252,241}
-  .cell:hover .tile-name{color:rgb(var(--sa))}
-  .tile-name{transition:color .4s ease}
-
-  .hint{
-    max-width:1180px;margin:clamp(12px,2vh,20px) auto 0;text-align:center;
-    font-size:0.75rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(var(--muted-rgb),.66);
-  }
-
-  @media(max-width:900px){
-    /* one per row — half-width tiles got too short once the box took a
-       fixed aspect ratio */
-    .bento-grid{grid-template-columns:repeat(2,1fr)}
-    .t-trove,.t-skrimp,.t-menzo,.t-auntie,.t-equinox{grid-column:span 2}
-    .t-equinox .tile{aspect-ratio:5 / 3;min-height:0}
-  }
-  @media(prefers-reduced-motion:reduce){ .tile{transition:none} }
-
-/* ── end bento ───────────────────────────────────────────────────────── */
+  /* ── end bento ───────────────────────────────────────────────────────── */
 
         .about-content {
             text-align: center;
@@ -1090,7 +989,7 @@
       margin-bottom: 0.5rem;
     }
     .scene-overlay-msg {
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Satoshi', sans-serif;
       color: var(--muted);
       font-size: 1rem;
       opacity: 0.9;
@@ -1127,7 +1026,7 @@
       color: rgba(var(--muted-rgb),.74);
       white-space: nowrap;
       font-weight: 500;
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
     }
     .pe-body {
       display: grid;
@@ -1170,7 +1069,7 @@
       display: flex; align-items: center; justify-content: center;
       background: rgba(var(--muted-rgb),0.1);
       border: 1.5px solid rgba(var(--muted-rgb),0.3);
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-weight: 600;
       font-size: 0.82rem;
       color: var(--muted);
@@ -1178,14 +1077,14 @@
     }
     .pe-attrib { display: flex; flex-direction: column; gap: 0.15rem; }
     .pe-name {
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-weight: 600;
       font-size: 0.8rem;
       color: var(--ink);
       letter-spacing: 0.03em;
     }
     .pe-role {
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-weight: 300;
       font-size: 0.78rem;
       color: rgba(var(--muted-rgb),.78);
@@ -1201,7 +1100,7 @@
     .pe-quote::before { content: ‘\201C’; }
     .pe-quote::after  { content: ‘\201D’; }
     .pe-source {
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-size: 0.78rem;
       font-weight: 500;
       letter-spacing: 0.1em;
@@ -1238,7 +1137,7 @@
     }
     .pe-press-text { display: flex; flex-direction: column; gap: 0.18rem; }
     .pe-press-outlet {
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.15em;
@@ -1246,7 +1145,7 @@
       color: rgba(var(--muted-rgb),0.65);
     }
     .pe-press-headline {
-      font-family: ‘Montserrat’, sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-size: 0.8rem;
       font-weight: 400;
       color: rgba(var(--ink-rgb),0.8);
@@ -1471,11 +1370,11 @@
     .ns-matrix-table tbody td { padding: 0.85rem 1rem; vertical-align: top; color: rgba(var(--ink-rgb),0.78); font-weight: 300; line-height: 1.5; }
     .ns-matrix-table tbody td:first-child { font-family: 'Bodoni Moda', serif; font-style: italic; color: var(--ink); font-weight: 400; font-size: 0.9rem; white-space: nowrap; padding-right: 1.5rem; }
 
-    .ns-chaos-tag { display: inline-block; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; font-family: 'Montserrat', sans-serif; padding: 0.18rem 0.55rem; border-radius: 3px; margin: 0.1rem 0.15rem 0.1rem 0; }
+    .ns-chaos-tag { display: inline-block; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; font-family: 'Satoshi', sans-serif; padding: 0.18rem 0.55rem; border-radius: 3px; margin: 0.1rem 0.15rem 0.1rem 0; }
     .ns-tag-coord { background: rgba(42,157,143,0.18); color: rgba(var(--rail-accent-rgb), 0.75); border: 1px solid rgba(42,157,143,0.25); }
     .ns-tag-const { background: rgba(69,123,157,0.18); color: rgba(var(--muted-rgb),0.75); border: 1px solid rgba(69,123,157,0.25); }
     .ns-tag-user  { background: rgba(231,111,81,0.12);  color: rgba(255,185,160,0.75); border: 1px solid rgba(231,111,81,0.2); }
-    .ns-outcome-pill { display: inline-block; font-size: 0.78rem; letter-spacing: 0.08em; font-weight: 600; font-family: 'Montserrat', sans-serif; padding: 0.18rem 0.6rem; border-radius: 20px; background: rgba(42,157,143,0.12); border: 1px solid rgba(42,157,143,0.3); color: #2a9d8f; white-space: nowrap; }
+    .ns-outcome-pill { display: inline-block; font-size: 0.78rem; letter-spacing: 0.08em; font-weight: 600; font-family: 'Satoshi', sans-serif; padding: 0.18rem 0.6rem; border-radius: 20px; background: rgba(42,157,143,0.12); border: 1px solid rgba(42,157,143,0.3); color: #2a9d8f; white-space: nowrap; }
 
     .ns-chaos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 5rem; }
     .ns-chaos-card { background: rgba(var(--muted-rgb),0.03); border: 1px solid rgba(var(--muted-rgb),0.18); border-radius: 6px; padding: 1.75rem 1.5rem; position: relative; }
@@ -1537,7 +1436,7 @@
             display: flex;
             align-items: center;
             gap: 0.6rem;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-style: normal;
             font-weight: 500;
             font-size: 0.84rem;
@@ -1597,7 +1496,7 @@
 
         /* Gilmore Girls easter egg tagline — editorial italic pull quote */
         .tagline {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-style: normal;
             font-size: clamp(0.88rem, 1.15vw, 1.05rem);
             font-weight: 400;
@@ -1642,7 +1541,7 @@
             color: rgba(240, 242, 240, 0.75);
             padding: 0.45rem 0.85rem;
             border-radius: 6px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-style: normal;
             font-size: 0.72rem;
             font-weight: 400;
@@ -1691,7 +1590,7 @@
 
         /* Primary CTA — pill, white fill */
         .btn-cta-primary {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 0.78rem;
             font-weight: 500;
             letter-spacing: 0.10em;
@@ -1712,11 +1611,11 @@
 
         /* Secondary CTA — liquid glass pill */
         .btn-cta-secondary {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.78rem;
-            font-weight: 400;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
+            font-family: 'Satoshi', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            text-transform: none;
             color: rgba(240, 242, 240, 0.60);
             background: rgba(12, 18, 28, 0.40);
             backdrop-filter: url(#hero-glass-sm) blur(3px);
@@ -1739,7 +1638,7 @@
 
         /* North star CTA — same liquid glass, light-blue tint */
         .btn-cta-northstar {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 0.78rem;
             font-weight: 400;
             letter-spacing: 0.08em;
@@ -1786,19 +1685,23 @@
             transform: translateY(-2px);
         }
         .social-btn i { display: flex; align-items: center; justify-content: center; }
+        /* Two kinds of icon live in here: Lucide's are drawn with a stroke,
+           every brand mark we paste in is a solid path. Matching on how an
+           icon paints rather than on its name means a new one picks up the
+           colour rules by existing — naming each mark is how the X ended up
+           following neither theme. */
+        .social-btn svg { width: 15px; height: 15px; }
         .social-btn svg[data-lucide] {
-            width: 15px; height: 15px;
             stroke: rgba(255,255,255,0.42);
             transition: stroke 0.2s ease;
         }
         .social-btn:hover svg[data-lucide] { stroke: var(--muted); }
-        .social-btn svg.bi-discord {
-            width: 15px; height: 15px;
+        .social-btn svg:not([data-lucide]) {
             fill: rgba(255,255,255,0.42);
             stroke: none;
             transition: fill 0.2s ease;
         }
-        .social-btn:hover svg.bi-discord { fill: var(--muted); }
+        .social-btn:hover svg:not([data-lucide]) { fill: var(--muted); }
         .conspire-socials .social-tooltip,
         .social-tooltip {
             position: absolute;
@@ -1811,7 +1714,7 @@
             -webkit-backdrop-filter: blur(10px) saturate(150%);
             padding: 0.35rem 0.7rem;
             border-radius: 5px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 0.78rem;
             font-weight: 400;
             white-space: nowrap;
@@ -1899,7 +1802,7 @@
         .modal-close {
             position: absolute;
             top: 14px; right: 18px;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 22px; line-height: 1;
             color: rgba(240, 242, 240, 0.55);
             cursor: pointer;
@@ -1922,7 +1825,7 @@
         }
         .modal-caption {
             margin-top: 1rem;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-style: normal;
             font-size: 0.92rem;
             font-weight: 400;
@@ -1994,7 +1897,7 @@
             border: 1px solid rgba(var(--muted-rgb),0.14);
             border-right: none;
             box-shadow: 0 18px 50px rgba(0,0,0,0.55);
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
         }
         .sidebar::-webkit-scrollbar { width: 5px; }
         .sidebar::-webkit-scrollbar-thumb {
@@ -2082,9 +1985,9 @@
             display: none;
             align-items: center;
             gap: 0.38rem;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: 0.92rem;
-            font-weight: 600;
+            font-weight: 400;
             letter-spacing: 0.01em;
             /* the way out is always in the case's own colour, never grey */
             color: var(--rail-accent);
@@ -2133,7 +2036,7 @@
            and the way out; give the block its own air */
         .rail-case { margin-top: clamp(0.5rem, 1.9vh, 1.1rem); }
         .rail-case-kicker {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: clamp(0.7rem, 1.7vh, 0.84rem);
             font-weight: 600;
             letter-spacing: 0.22em;
@@ -2166,7 +2069,7 @@
             display: flex;
             align-items: baseline;
             gap: 0.62rem;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: clamp(0.84rem, 2.2vh, 1.18rem);
             font-weight: 500;
             line-height: 1.28;
@@ -2366,7 +2269,7 @@
 
         /* the serious line — what she actually does */
         .rail-pitch {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: clamp(0.8rem, 2.05vh, 1.02rem);
             font-weight: 500;
             line-height: 1.38;
@@ -2410,7 +2313,7 @@
             border-top: 1px solid rgba(var(--muted-rgb),0.12);
         }
         .sb-link {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             font-size: clamp(0.86rem, 2.2vh, 1.12rem);
             font-weight: 400;
             color: rgba(240, 242, 240, 0.58);
@@ -2794,8 +2697,8 @@
     :root[data-theme="light"] .social-btn:hover { background: rgba(22,117,111,0.10); border-color: var(--accent-dim); }
     :root[data-theme="light"] .social-btn svg[data-lucide] { stroke: rgba(18,24,31,0.5); }
     :root[data-theme="light"] .social-btn:hover svg[data-lucide] { stroke: var(--accent); }
-    :root[data-theme="light"] .social-btn svg.bi-discord { fill: rgba(18,24,31,0.5); }
-    :root[data-theme="light"] .social-btn:hover svg.bi-discord { fill: var(--accent); }
+    :root[data-theme="light"] .social-btn svg:not([data-lucide]) { fill: rgba(18,24,31,0.5); }
+    :root[data-theme="light"] .social-btn:hover svg:not([data-lucide]) { fill: var(--accent); }
     /* both themes now read from --rail-tint / --rail-accent, so the light
        override only needs to keep the chip legible on a pale rail */
     :root[data-theme="light"] .conspire-socials .social-tooltip {
@@ -3280,8 +3183,175 @@
         .ct-motes { display: none; }
     }
     </style>
+
+<style>
+/* ── the elevation pass: the project grid ────────────────────────────────
+   The rail earned its calm by giving one thing at a time room. The grid was
+   doing the opposite: a bordered box, then four stacked pieces of information
+   at .34-.6rem apart, then three filled chips. Five competing elements per
+   tile and no quiet beat between them. */
+
+.tile{ border:none !important; }
+.cell:hover .tile{ border-color:transparent !important; }
+.cell[data-scene] .tile::before{ animation:none !important; }
+.cell:hover .tile{ transform:translateY(-4px); box-shadow:0 26px 64px rgba(20,40,60,.18) !important; }
+
+
+/* The title carries the tile, so it gets the weight. Not the pixel face:
+   DotempDemo is an accent, and a ten-word tagline set entirely in it stops
+   being legible and starts reading as a game menu. */
+.tile-name{
+  font-size:clamp(1.06rem,1.58vw,1.34rem) !important;
+  line-height:1.3 !important;
+  font-weight:700 !important;
+  letter-spacing:-.018em !important;
+}
+.tile-stat{
+  margin-top:.62rem !important; font-weight:400 !important; font-size:.85rem !important;
+  /* one line, always: a two-line subline knocks the tiles out of alignment */
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.tile-stat .px{ font-family:'DotempDemo',monospace; font-size:.92em; }
+
+/* small, grey, and only colouring on hover */
+.tile-tags{
+  margin-top:1.15rem !important;
+  display:flex !important; flex-wrap:wrap;
+  column-gap:.5rem !important; row-gap:.42rem !important;
+  align-items:center;
+}
+.tile-tags > span{
+  font-size:.6rem !important;
+  font-weight:600 !important;
+  letter-spacing:.11em !important;
+  text-transform:uppercase !important;
+  padding:.34rem .62rem !important;
+  border-radius:5px !important;
+  border:none !important;
+  background:rgba(var(--ink-rgb),.075) !important;
+  color:rgba(var(--ink-rgb),.52) !important;
+  transition:background .3s ease, color .3s ease;
+}
+.cell:hover .tile-tags span{
+  background:rgba(var(--sa),.16) !important;
+  color:rgba(var(--ink-rgb),.78) !important;
+}
+/* The award used to carry the project's accent to mark itself out. The
+   trophy does that job now, so the chip sits in the same colour as every
+   other tag and the row reads as one set. The glyph is just part of the
+   label: `.tile-tags span` is a descendant match, so any element nested
+   inside a tag would be painted as a second tag. */
+
+/* more air between the rows, and more before the title starts — the calm the
+   rail has should not stop at the boundary between the two columns */
+.bento-grid{ row-gap:clamp(86px,10.5vh,140px) !important; }
+.cell{ gap:clamp(1.3rem,2.1vh,1.8rem) !important; }
+/* the caption is a link; stripping the ribbon block took its reset with it,
+   which is why the homepage came back underlined */
+.tile-cap{
+  display:block; padding:0 !important; min-width:0;
+  text-decoration:none; color:inherit;
+}
+.tile-cap:visited, .tile:visited{ color:inherit; }
+.tile-cap:hover{ text-decoration:none; }
+
+.bento-grid{
+  column-gap:clamp(30px,3.6vw,60px) !important;
+  padding-top:clamp(28px,4vh,56px) !important;
+}
+
+/* ── corners, sharpened ──────────────────────────────────────────────────
+   Roughly halved. A soft radius reads friendly; a tight one reads considered.
+   Pills stay pills, and the phone mockups keep their real device radius —
+   that one describes an object rather than styling a box. */
+.tile{ border-radius:10px !important; }
+.sidebar{ border-radius:12px 0 0 12px !important; }
+.content-card{ border-radius:0 12px 12px 0 !important; }
+.case-pane{ border-radius:0 12px 12px 0 !important; }
+#gl{ border-radius:0 12px 12px 0 !important; }
+.tile-video, .tile-scrim{ border-radius:inherit !important; }
+</style>
 </head>
 <body>
+<div id="http-readable" style="display:none">
+<h1>Trove</h1>
+<h4>Project Type</h4>
+<p>Contract, full time. A consumer social product on web and iOS, shipped to daily users.</p>
+<h4>Role</h4>
+<p>Founding product design engineer, full stack.</p>
+<h4>Timeline</h4>
+<p>April to August 2026, inclusive.</p>
+<h4>Skills &amp; Tools</h4>
+<p>Convex schema, indexes and migrations, React, TanStack, TypeScript, LLM authoring and eval pipelines, illustration, layout and motion.</p>
+<p>Sourced summer 2026 from analytics</p>
+<p>Trove is a live product and I worked on it under contract. Nothing here covers the authoring system’s prompts, the scoring weights, unreleased roadmap, commercial terms or any non-public user data. What follows is the design reasoning, the research, the craft decisions and the outcome numbers achieved while I was there, which is everything I can show without handing somebody a copy of the thing.</p>
+<h2>You are not what you fill out on a questionnaire. So the product is not allowed to ask you anything.</h2>
+<p>Refuse to ask a single question and the only evidence left is what somebody does.</p>
+<p>You are not your LinkedIn bio and you are not your Hinge profile, and nearly every system built to understand you opens by asking you to be one of those things. Trove drops you into a short story with no clean answer and reads what you actually do.</p>
+<p>Lovely on a homepage. Unreasonable in a codebase. I joined as hire number one on this iteration with the idea proven exactly once, as a Valentine’s drop in February, and eighteen weeks to build the machine underneath it. Eight routes. Sixteen components. A profile that existed as a mockup. No writers’ room and no animators.</p>
+<p>A whole first session: everything before the game, the game itself at four times speed, and the personality read that follows. It opens by telling you it starts with what you do, offers a self-description step where every field has an “I don’t know yet”, and asks you to make an account only after it has already told you something about yourself.</p>
+<p>Which means a real dilemma, every day, forever. Trove writes its stories, which it calls tangles, with language models and has another one judge them. The judge I inherited scored ten qualities, then threw nearly all of that away to answer one question: good enough to publish, yes or no. A story that merely clears not broken contains no dilemma, and a fake dilemma reveals nothing about the person playing it. Nothing could go up , only through, which means the promise quietly stops being true and you are running a quiz with nicer typography.</p>
+<p>So I built a score out of what we were already throwing away, weighted toward a story’s weakest moment and whether two people playing it actually ended up somewhere different.</p>
+<p>The pipeline that produces one is the most complicated thing I worked on. A premise and a category go in. What comes out has already been played start to finish by a cast of invented players inside the real product, every playthrough read back, and fixed automatically a limited number of times before a person sees a word of it. Most come out playable on the first pass.</p>
+<h4>A premise goes in</h4>
+<p>One line of intent and a category. That is the entire human input at this end.</p>
+<h4>It gets played, for real</h4>
+<p>A cast of invented players plays it start to finish inside the real product, not a rehearsal of it.</p>
+<h4>Every playthrough is read back</h4>
+<p>Every playthrough gets read back. The weakest moment decides the story’s fate, because it is the part a writer can actually fix.</p>
+<h4>A person still says yes</h4>
+<p>Passing means it works. It does not mean it is good, so nothing reaches a player unsigned.</p>
+<p>Two and three loop on a cap: a revised draft is played again before it can move forward. Then somebody makes choices nobody asked them to explain, those choices become a read, the read moves their trait scores, and the profile sharpens every seventh day you play.</p>
+<p>The same instinct killed a feature. “Stories that do not repeat themselves” was on the roadmap and all of us believed it, so I measured first: 139 tangles , 950 pairs of real player prose, one genuine duplicate . The best thing I shipped that quarter is a thing I removed.</p>
+<h2>Personality is a living system. An unfolding story, one that shifts depending on who is in the room.</h2>
+<p>One play tells you about a Tuesday. You need somebody who keeps choosing to come back.</p>
+<p>That is the line that turns a quiz into a product, and it cost the most. Seven cards, one a day, sealed in a pack you have to rip. The explore page, where the daily games live, bends toward you as you play: what it puts in front of you is shaped by your patterns, and it holds on to the story you walked away from.</p>
+<p>The pack rip and the home screen. Both exist so that opening Trove on day nine feels different from opening it on day one.</p>
+<p>Then something to accumulate. Every tangle needs a play card, and in April that meant hand-assembling one per card, which does not survive a daily cadence for a week. So the card builds itself: it reads what the story is about and picks the art, which sky suits a tense late-night scene, which of the mascots fits a story about being the outsider.</p>
+<p>Ask a language model for pixel coordinates and it returns numbers that land on the card’s existing furniture about half the time, confidently, silently. Nobody gets an alert. You just get an ugly card, forever.</p>
+<p>An unplayed card shows blurred slots, one sticker for each topic its results will touch on. Play it and they fill in with the ones you earned.</p>
+<p>The same card after a play, stickers filled in and the read sitting underneath it. A collection is only evidence of an unfolding story if the things in it were earned.</p>
+<h2>What you unlock is a record of what you did, worn instead of written.</h2>
+<p>Most companions are built to be pleased to see you. His face reports.</p>
+<p>Trove tot greets you, reacts to a read, sleeps when you have been away and wears what you unlock. Fourteen poses times twenty-eight accessories is 392 drawings nobody was going to make, so he is composited at runtime from one pose sprite with accessory art on top.</p>
+<p>There is exactly one right answer per slot per pose, and I tried to derive it. I measured his yarn ball, which cannot be measured consistently across poses. Two attempts later I had written a foot detector that confidently found his mouth. Every one failed silently, because a hat two percent off a head does not throw. It just looks faintly cursed, on one pose, forever.</p>
+<p>Every cell is composited live by the real placeFit() from the codebase, running on the real anchors over the real art. →  Scroll sideways for the other nine poses.</p>
+<p>Four outfits across all fourteen poses. Fifty six combinations, none of them drawn.</p>
+<p>Every product with a mascot has worked out that a creature who misses you is worth a few points of retention. That is part of it. It is not the end of it. What you unlock, you unlocked by playing something, and what you played is the only thing Trove knows about you, so you can look at him and learn something about your own month without a sentence being asserted at you.</p>
+<p>He runs on one rule. Pose is the clock, face is the care. He changes body through the day so there is a reason to look again, and changes face only when your care changes, so he can never look like he is having a lovely afternoon while he has been ignored for a week.</p>
+<p>Read across, not down. Look after him and he has four different kinds of happy available to him. Ignore him for a fortnight and he has two faces left, both of them bad. The point is not that neglect makes him sad, it is that it takes his range away, and nobody has to be told that for it to land.</p>
+<h2>The patterns worth knowing about yourself are the ones you cannot see from the inside.</h2>
+<p>Anything specific enough to be revealing is specific enough to be wrong.</p>
+<p>It does not stop at the read. The same evidence moves the traits underneath it, which is how one play becomes a profile instead of a receipt. Which is also why the profile could not be a dashboard. A dashboard says here is your data , and data is only ever what you already put in. This had to say here is you , a much ruder sentence that has to earn itself. So it became a spatial diorama: your player pass, the journal your read lives in, the postcards you have sent and the floor they all sit on, sharing one plane, with exactly one in focus while the rest sit parked around it.</p>
+<p>The read itself. Every sentence in it is derived from something you did, not something you declared.</p>
+<p>Clip wanted: the profile diorama A slow scroll through the profile so elements fly to centre and park again. This is the thing I spent the most time on and it is the one part of the page that cannot be shown as a still.</p>
+<p>Where the reads accumulate, and the one thing on this page that genuinely cannot be shown as a still.</p>
+<p>Then the move I am proudest of. Having just told you who you are, it asks whether it got you right. You pick a face, you write a sentence, and it holds your note against the choices you actually made.</p>
+<p>Everything before this is a product talking. This is a product listening, and it is the only reason the sentence before it is allowed to be so confident.</p>
+<h2>And then it had to survive contact with people.</h2>
+<p>Nothing crashed. That was the problem.</p>
+<p>Three faults cost us real players that quarter and not one raised an error, because each was a system reporting success while quietly failing.</p>
+<p>A result came back correct in every detail except its shape, which meant the safety net never caught it, and everything after that recorded a success. Three surfaces went dark and it looked exactly like a slow network. The share card got heavier every press, quietly, while working.</p>
+<h2>Ten thousand people let a piece of software tell them something about themselves.</h2>
+<p>A questionnaire cannot be argued with. It only hands back what you put in.</p>
+<p>Then they sent it to their friends, which is the part I did not see coming and should have. The patterns you cannot see from the inside are exactly the ones everyone around you has always been able to see. Trove makes them sayable, and puts two of you side by side in the same scene.</p>
+<p>A comparison: same tangle, two people, and an argument worth having over dinner.</p>
+<p>Seven surfaces by August. The iOS app is a thin shell around the web app, built by a teammate in a fortnight, which is the compliment: by July the thing underneath was coherent enough that going native was a wrapper instead of a rewrite.</p>
+<p>At an event we hosted, someone recognised themselves in most of their read and argued with the part that did not fit, for about five minutes, to my face.</p>
+<h2>Four things I would carry into the next one.</h2>
+<h4>You cannot ask someone who they are</h4>
+<li>The question changes the answer. Every system in Trove exists so that nobody has to answer one.</li>
+<h4>Automate the labour, never the attention</h4>
+<li>The writers’ room and the animator both became systems. Whether a hat sits right, or a story is good rather than merely unbroken, stayed expensive on purpose.</li>
+<h4>A person is not a result</h4>
+<li>A read that never moves is a horoscope and a read that always moves is noise. Seven days of play was the honest speed for a living system.</li>
+<h4>It has to be willing to be wrong out loud</h4>
+<li>The disclaimer on the score, the reflection step, the wait before re-reading. Every one of them makes the product claim less, and claiming less is what got it believed.</li>
+<p>I spent eighteen weeks building a machine to find the human edge in other people, and it turns out the way you do that is to make something honest enough to be argued with. Nobody argues with a horoscope. They argued with this.</p>
+<p>→ Play Trove at play.trove.is</p>
+</div>
+<script>document.getElementById("http-readable").remove();</script>
+
     <!--
         Liquid glass SVG displacement filter.
         backdrop-filter: url(#navbar-lg) geometrically warps background pixels
@@ -3414,7 +3484,7 @@
                     </span>
                 </h1>
 
-                <p class="rail-pitch">is an award-winning design engineer who blends systems thinking with a love for visual craft to build things that hold up under pressure</p>
+                <p class="rail-pitch">is an award-winning design engineer blending systems thinking with a love for visual craft, to build things that survive under pressure</p>
 
                 <!-- "and alsooo <fact>" — typewriter, with the Gilmore Girls easter egg -->
                 <div class="tagline" id="taglineMerged" onclick="handleTaglineClick()">
@@ -3899,7 +3969,12 @@
 
     <script>
         (async () => {
-          const res = await fetch('footer.html');
+          // absolute, and checked: from /about/ the relative form resolved to
+          // /about/footer.html, which 404s — and the 404 page's own markup and
+          // <style> were then injected into the live page, which is what turned
+          // body into centred Montserrat on every route
+          const res = await fetch('/footer.html');
+          if (!res.ok) return;
           const html = await res.text();
           const doc = new DOMParser().parseFromString(html, 'text/html');
 
@@ -4540,7 +4615,7 @@ const eul = (x,y,z)=>new THREE.Euler(
       {
         name:'Trove', category:'Product Design Engineering / AI',
         tagline:'Turning behavioural data into a personality read people actually recognise',
-        stat:'0 \u2192 10,250 users and 61.9K page views in six months',
+        stat:'0 \u2192 10,250 users, 61.9K views, six months',
         tags:['Design engineer','LLM runtime','Web + iOS'],
         href:'/trove/',
         // the meadow + the tots are DOM (see the .tf block); the phone itself is
@@ -4558,7 +4633,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         name:'Skrimp AI', category:'Product Design / AI',
         tagline:'Planning a week of dinners around live prices and whatever\u2019s already in the fridge',
         video:{ kind:'file', src:'/skrimp/skrimp-smartload-demo.mp4' },
-        stat:'$5K/yr potential savings per family \u2014 free, always',
+        stat:'$5K/yr saved per family, free always',
         tags:['Solo founder','Live flyer data','Mobile + web'],
         href:'/skrimp/',
         // the aisle is the place; the laptop running the plan is the subject.
@@ -4595,7 +4670,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         name:'Path to Menzoberranzan', category:'Technical Direction / Game',
         tagline:'Running a volunteer studio on an undocumented engine',
         video:{ kind:'yt', id:'1oBlmSvi1So' },
-        stat:'140+ contributors, 1,700 Patreon members, 0 docs from Larian',
+        stat:'140+ contributors, 1,700 Patrons, 0 docs',
         tags:['CTO','Build tooling','PC'],
         href:'/menzo/',
         domScene:'underdark',
@@ -4607,8 +4682,8 @@ const eul = (x,y,z)=>new THREE.Euler(
         name:'MyAuntie', category:'UX Design / AI',
         tagline:'Postpartum support that arrives as a text, not another app to download',
         video:{ kind:'yt', id:'kARMZuwfmMA', start:8 },
-        stat:'\ud83c\udfc6 TechNova 2025 \u2014 concept to live telephony in 36 hours',
-        tags:['36-hour build','Telephony','No app'],
+        stat:'TechNova 2025, concept to live in 36 hours',
+        tags:['36-hour build','Telephony'],
         href:'/myauntie/',
         domScene:'nursery', award:'Winner',
         theme:{ accent:'196, 96, 122', accent2:'255, 179, 208', scene:'auntie' },
@@ -4634,8 +4709,8 @@ const eul = (x,y,z)=>new THREE.Euler(
         name:'Equinox', category:'Game Design / Godot',
         tagline:'Reading \u201cOvercomplicated Screen Transitions\u201d as a design constraint, not decoration',
         video:{ kind:'yt', id:'ou-piZ1dt4U' },
-        stat:'\ud83c\udfc6 1st of 88 at Comfy Jam: Winter 2026, and 2nd on the limitation',
-        tags:['Game jam win','Godot','Browser'],
+        stat:'1st of 88 at Comfy Jam, 2nd on the limitation',
+        tags:['Godot','Browser'],
         href:'/equinox/', award:'Winner',
         playHref:'https://emstergrace.itch.io/equinox',
         cover:'/equinox/equinox-banner.webp', noDrag:true,
@@ -4927,12 +5002,11 @@ stations.forEach((cfg,i) => {
        ${mascotHtml}
        ${videoHtml}
      </a>
-     ${cfg.award ? `<div class="award" aria-hidden="true"><div class="band"><b>${cfg.award}</b>` +
-        `<span class="fold fold-l"></span><span class="fold fold-r"></span></div></div>` : ''}
      <a class="tile-cap" href="${cfg.href}">
        <div class="tile-name">${cfg.tagline}</div>
        <p class="tile-stat">${cfg.stat}</p>
-       <div class="tile-tags">${(cfg.tags || []).map(t => `<span>${t}</span>`).join('')}</div>
+       <div class="tile-tags">${(cfg.award ? [`<span class="is-award">\u{1F3C6} ${cfg.award}</span>`] : [])
+         .concat((cfg.tags || []).map(t => `<span>${t}</span>`)).join('')}</div>
      </a>`;
   grid.appendChild(cell);
 
@@ -5376,16 +5450,6 @@ function roundedRectPath(x,y,w,h,r){
 // Mirrors the .award CSS: Trove's CardBadge geometry times k.
 const AW_K = 1.45, AW_BOX = 96, AW_OFF = 4, AW_W = 150, AW_TOP = 22, AW_H = 22,
       AW_RIGHT = 32, AW_BLEED = 2;
-function awardHolePath(x,y,w,h){
-  const k = AW_K, R = x + w;
-  // stripe centre, as an offset from the tile's top-right corner
-  const dxc = (AW_OFF - (AW_BOX - (AW_BOX + AW_RIGHT - AW_W/2))) * k;   // leftward
-  const dyc = (AW_TOP + AW_H/2 - AW_OFF) * k;                          // downward
-  const m = dyc - dxc;                       // where the centreline crosses both edges
-  const e = (AW_H*k/2) * Math.SQRT2;         // half-thickness, in crossing units
-  const a = m - e - AW_BLEED, b = m + e + AW_BLEED;
-  return `M${R-a},${y}L${R},${y+a}L${R},${y+b}L${R-b},${y}z`;
-}
 
 function updateClip(){
   const parts = [];
@@ -5397,7 +5461,6 @@ function updateClip(){
     const x = r.left - c.left, y = r.top - c.top;
     const rad = parseFloat(getComputedStyle(v.el).borderRadius) || 18;
     parts.push(roundedRectPath(x, y, r.width, r.height, rad));
-    if (v.cfg.award) parts.push(awardHolePath(x, y, r.width, r.height));
     keyBits += `${Math.round(x)},${Math.round(y)},${Math.round(r.width)},${Math.round(r.height)};`;
   }
   if (keyBits === clipKey) return;

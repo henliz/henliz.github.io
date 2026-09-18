@@ -23,7 +23,12 @@
   })();
 </script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+/* Satoshi, self-hosted — see index.html for why it replaced Montserrat. */
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
 
 @font-face{
   font-family:'DotempDemo';
@@ -61,7 +66,7 @@ html{ font-size:clamp(1rem,.94rem + .3vw,1.15rem) }
 *{ margin:0; padding:0; box-sizing:border-box }
 html,body{ height:100%; overflow:hidden }
 body{
-  font-family:'Montserrat',sans-serif; color:var(--ink);
+  font-family:'Satoshi',sans-serif; color:var(--ink);
   background:radial-gradient(120% 90% at 50% 0%, var(--paper-2), var(--paper) 72%);
   touch-action:none;
 }

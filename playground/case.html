@@ -23,6 +23,11 @@
       })();
     </script>
     <style>
+/* Satoshi, self-hosted — see index.html for why it replaced Montserrat. */
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+
     /* ── type scale ────────────────────────────────────────────────
        One fluid root so every rem on the page grows with the screen
        instead of sitting at a fixed 16px. The floor and ceiling are
@@ -30,7 +35,7 @@
        default font size keeps that increase (WCAG 1.4.4). */
     html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
 
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
 
     @font-face {
       font-family: 'DotempDemo';
@@ -78,7 +83,7 @@
 
     html, body { height: 100%; overflow: hidden; }
     body {
-      font-family: 'Montserrat', sans-serif;
+      font-family:'Satoshi', sans-serif;
       color: var(--ink);
       /* graph paper, two grids deep — the fine one is the draftsman's
          squares, the heavy one every fifth line */
@@ -271,7 +276,7 @@
     /* ── a labelled way in ────────────────────────────────────── */
     .pill {
       display: inline-flex; align-items: center; gap: 0.4rem;
-      font-family: 'Montserrat', sans-serif;
+      font-family:'Satoshi', sans-serif;
       font-size: 0.88rem; font-weight: 600;
       color: var(--accent);
       background: rgba(var(--accent-rgb), 0.12);
@@ -330,7 +335,7 @@
       text-transform: uppercase;
       line-height: 1.4;
       padding: 0.9rem;
-      font-family: 'Montserrat', sans-serif;
+      font-family:'Satoshi', sans-serif;
     }
     .slot code {
       display: block;
@@ -401,7 +406,7 @@
     .chrome.faded { opacity: 0.28; }
     .chrome.faded:hover { opacity: 1; }
     .chrome button {
-      font-family: 'Montserrat', sans-serif;
+      font-family:'Satoshi', sans-serif;
       font-size: 0.82rem; font-weight: 600;
       color: var(--accent);
       background: rgba(var(--accent-rgb), 0.12);
