@@ -5350,15 +5350,19 @@ function roundedRectPath(x,y,w,h,r){
 const AW_K = 1.45, AW_BOX = 96, AW_OFF = 4, AW_W = 150, AW_TOP = 22, AW_H = 22,
       AW_RIGHT = 32, AW_BLEED = 2;
 
-function updateClip(){
+/* Called once a frame. It used to take its own rect of the canvas and of
+   every tile, and ask getComputedStyle for each tile's border radius — a
+   style recalc per tile per frame, for a number that never changes. It now
+   reuses the rects the frame already read and caches the radius. */
+function updateClip(c){
   const parts = [];
   let keyBits = '';
-  const c = canvas.getBoundingClientRect();     // card origin
+  if (!c) c = canvas.getBoundingClientRect();   // card origin
   for (const v of views){
-    const r = v.el.getBoundingClientRect();
+    const r = v._r || (v._r = v.el.getBoundingClientRect());
     if (r.width === 0) continue;
     const x = r.left - c.left, y = r.top - c.top;
-    const rad = parseFloat(getComputedStyle(v.el).borderRadius) || 18;
+    const rad = v._rad || (v._rad = parseFloat(getComputedStyle(v.el).borderRadius) || 18);
     parts.push(roundedRectPath(x, y, r.width, r.height, rad));
     keyBits += `${Math.round(x)},${Math.round(y)},${Math.round(r.width)},${Math.round(r.height)};`;
   }
@@ -5389,6 +5393,7 @@ function resize(){
   const pr = renderer.getPixelRatio();
   if (canvas.width !== Math.round(w * pr) || canvas.height !== Math.round(h * pr)) {
     renderer.setSize(w, h, false);
+    for (const v of views) v._rad = 0;   // radius is fluid; re-measure once
   }
 }
 addEventListener('resize', () => { resize(); clipKey = ''; }); resize();
@@ -5445,7 +5450,6 @@ function tick(){
 }
 function renderFrame(){
   resize();
-  updateClip();
   if (!anyVisible()){
     // nothing on screen: hand the frames back until something scrolls in.
     // (never from the reduced-motion path — that one must not start a loop)
@@ -5463,8 +5467,21 @@ function renderFrame(){
   const t = clock.getElapsedTime();
   const H = renderer.domElement.clientHeight;
 
+  /* The canvas offset used to be written, and the canvas rect read, inside
+     the per-tile loop — a style write followed by a layout read, five times
+     a frame. That is a forced synchronous layout per tile per frame, and it
+     is what made scrolling stutter. Write once, then read once, then draw. */
+  const sc = window.scroller;
+  if (sc){
+    const want = 'translateY(' + sc.scrollTop + 'px)';
+    if (canvas.style.transform !== want) canvas.style.transform = want;
+  }
+  const cRect = canvas.getBoundingClientRect();
+  for (const v of views) v._r = v.el.getBoundingClientRect();
+  updateClip(cRect);
+
   for (const v of views){
-    const r = v.el.getBoundingClientRect();
+    const r = v._r;
     // skip anything scrolled off screen: no scissor, no draw
     if (r.bottom < 0 || r.top > H || r.width === 0) continue;
     // a demo clip is covering this tile — don't draw the model under it
@@ -5506,12 +5523,6 @@ function renderFrame(){
        fell outside the canvas and got clipped to a sliver, which is why the
        Underdark and the nursery lost their models. Push it back by exactly
        the scroll offset and the rect maths below is correct again. */
-    const sc = window.scroller;
-    if (sc){
-      const want = 'translateY(' + sc.scrollTop + 'px)';
-      if (canvas.style.transform !== want) canvas.style.transform = want;
-    }
-    const cRect = canvas.getBoundingClientRect();
     const artLeft = r.left - cRect.left, artW = r.width;
     const artTop  = r.top  - cRect.top,  artH = r.height;
     // clip the art box to the visible part of the scroller

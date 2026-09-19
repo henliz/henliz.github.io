@@ -1044,15 +1044,15 @@ figure{
           </div>
 
           <div class="video-embed reveal">
-            <video src="vid/transition.mp4" poster="vid/transition.jpg"
-                   autoplay muted loop playsinline preload="metadata"
+            <video data-src="vid/transition.mp4" poster="vid/transition.jpg"
+                   autoplay muted loop playsinline preload="none"
                    aria-label="Equinox: climbing to the next floor, and the floor title card"></video>
           </div>
           <p class="cap">Leaving a finished floor. The stairs are a portal, the climb covers the load, and the floor name lands in the middle of the screen before the library appears.</p>
 
           <div class="video-embed reveal">
-            <video src="vid/menu.mp4" poster="vid/menu.jpg"
-                   autoplay muted loop playsinline preload="metadata"
+            <video data-src="vid/menu.mp4" poster="vid/menu.jpg"
+                   autoplay muted loop playsinline preload="none"
                    aria-label="Equinox title screen with start and quit buttons"></video>
           </div>
           <p class="cap">Where a player starts. Our artists drew the screen; turning it into one that actually works was my first job on the project.</p>
@@ -1074,8 +1074,8 @@ figure{
           <p>A bust of the wizard is in pieces on the workbench. The repair minigame floats the fragments in front of you and you drag each one home. No timer, no failure, and <span class="px">R</span> puts every piece back where it started, because a cozy game cannot afford a move you regret.</p>
 
           <div class="video-embed reveal">
-            <video src="vid/repair.mp4" poster="vid/repair.jpg"
-                   autoplay muted loop playsinline preload="metadata"
+            <video data-src="vid/repair.mp4" poster="vid/repair.jpg"
+                   autoplay muted loop playsinline preload="none"
                    aria-label="Reassembling the fractured wizard bust from floating fragments"></video>
           </div>
           <p class="cap">The bust, reassembled a fragment at a time.</p>
@@ -1085,8 +1085,8 @@ figure{
           <p>Cleaning is the interaction the whole game rests on. A shader keeps a mask over the artefact, your cursor is a soft brush that lifts dirt with falloff so it feels organic rather than geometric, and the system rasterizes the mesh UVs first so progress only counts over geometry you can actually see. At <span class="px">95%</span> it calls it done, and that last five percent is deliberate: nobody should have to hunt a single stubborn pixel behind an ear.</p>
 
           <div class="video-embed reveal">
-            <video src="vid/clean.mp4" poster="vid/clean.jpg"
-                   autoplay muted loop playsinline preload="metadata"
+            <video data-src="vid/clean.mp4" poster="vid/clean.jpg"
+                   autoplay muted loop playsinline preload="none"
                    aria-label="Cleaning the repaired wizard bust until it completes and rotates"></video>
           </div>
           <p class="cap">The bust again, whole now and still filthy. Watch the end: it turns itself to show you, and the minigame closes without being asked.</p>
@@ -1096,8 +1096,8 @@ figure{
           <p>The library has a star globe instead. You turn it until the constellations match what the wizard&rsquo;s notes told you, which is a different verb for the same promise: the game will tell you plainly when you are right, and it will never punish you for being wrong on the way there.</p>
 
           <div class="video-embed reveal">
-            <video src="vid/globe.mp4" poster="vid/globe.jpg"
-                   autoplay muted loop playsinline preload="metadata"
+            <video data-src="vid/globe.mp4" poster="vid/globe.jpg"
+                   autoplay muted loop playsinline preload="none"
                    aria-label="Rotating the celestial globe to align the constellations"></video>
           </div>
           <p class="cap">The star globe on the library floor. Q and E, and no clock.</p>
@@ -1143,8 +1143,8 @@ figure{
           <p>It matters because of what kind of game this is. There is nothing to lose in Equinox, so curiosity has to do the work that fear does everywhere else. The journal is that engine. You clean a thing, you learn a thing, and the reason to climb the next set of stairs is that you want to know what he did next.</p>
 
           <div class="video-embed reveal">
-            <video src="vid/journal.mp4" poster="vid/journal.jpg"
-                   autoplay muted loop playsinline preload="metadata"
+            <video data-src="vid/journal.mp4" poster="vid/journal.jpg"
+                   autoplay muted loop playsinline preload="none"
                    aria-label="The Equinox journal opening to a newly unlocked page"></video>
           </div>
           <p class="cap">The same clean, picked up two seconds later. The journal opens itself to the page you just earned.</p>
@@ -1221,8 +1221,8 @@ figure{
             <h3>The top of the tower</h3>
             <p>Solve the beacon and the tower does the rest. The rings come down, the light catches properly for the first time, and the winter breaks over the valley while the credits roll. Eighteen days, fourteen people, and this is the minute all of it was for.</p>
           <div class="video-embed reveal">
-            <video src="vid/beacon.mp4" poster="vid/beacon.jpg"
-                   autoplay muted loop playsinline preload="metadata"
+            <video data-src="vid/beacon.mp4" poster="vid/beacon.jpg"
+                   autoplay muted loop playsinline preload="none"
                    aria-label="The full beacon puzzle, the rings aligning, and the sunrise that follows"></video>
           </div>
           <p class="cap">Unedited, all the way through: an inscription going home, the flame catching, the rings coming down, and the first sunrise the valley has seen in a very long time.</p>
@@ -1624,6 +1624,60 @@ figure{
       addEventListener('mouseover', function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:true}); });
       addEventListener('mouseout',  function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:false}); });
     })();
+  </script>
+
+  <!-- ═══ video: only what is on screen holds a decoder ═══════════════
+       Every clip on this page used to carry src + autoplay + preload, so
+       opening it started every one of them at once. Windows caps how many
+       hardware video decoders a tab may hold, and past that limit clips
+       stall on the first frame or never start — which is the "loads forever
+       or just doesn't play" everyone hits and nobody can reproduce on a Mac.
+       Each clip now takes its src when it comes near, plays while it is on
+       screen, and pauses when it leaves. Two or three decoders live at once
+       instead of nine, and nothing about how it looks changes. -->
+  <script>
+  (function () {
+    const vids = [...document.querySelectorAll('video[data-src]')];
+    if (!vids.length) return;
+
+    const attach = v => {
+      if (v.src) return;
+      // preload is 'none' in the markup so nothing loads before we ask;
+      // lift it here so a clip coming into range buffers before it is needed
+      v.preload = 'auto';
+      v.src = v.dataset.src;
+      v.load();
+    };
+    // give the decoder back when a clip is well out of the way
+    const release = v => {
+      if (!v.src) return;
+      v.pause();
+      v.removeAttribute('src');
+      v.load();
+    };
+
+    // near: hold the file. on screen: play it.
+    const near = new IntersectionObserver(es => es.forEach(e => {
+      e.isIntersecting ? attach(e.target) : release(e.target);
+    }), { rootMargin: '400px' });
+
+    const shown = new IntersectionObserver(es => es.forEach(e => {
+      const v = e.target;
+      if (e.isIntersecting && e.intersectionRatio > 0.15) {
+        attach(v);
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
+    }), { threshold: [0, 0.15, 0.5] });
+
+    vids.forEach(v => { near.observe(v); shown.observe(v); });
+
+    // a backgrounded tab should not be decoding anything
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) vids.forEach(v => v.pause());
+    });
+  })();
   </script>
 </body>
 </html>

@@ -1121,17 +1121,17 @@ figure{
             <div class="showcase-stage trio">
               <div class="phone">
                 <div class="phone-screen">
-                  <video src="vid/ob-start.mp4" poster="vid/ob-start-poster.jpg" muted loop playsinline preload="metadata" aria-label="Opening Trove for the first time: the landing page, the pitch, and the optional self-description step before the game starts"></video>
+                  <video data-src="vid/ob-start.mp4" poster="vid/ob-start-poster.jpg" muted loop playsinline preload="none" aria-label="Opening Trove for the first time: the landing page, the pitch, and the optional self-description step before the game starts"></video>
                 </div>
               </div>
               <div class="phone">
                 <div class="phone-screen">
-                  <video src="vid/ob-play.mp4" poster="vid/ob-play-poster.jpg" muted loop playsinline preload="metadata" aria-label="The whole first story at four times speed: prose, choices, and answering a character in your own words"></video>
+                  <video data-src="vid/ob-play.mp4" poster="vid/ob-play-poster.jpg" muted loop playsinline preload="none" aria-label="The whole first story at four times speed: prose, choices, and answering a character in your own words"></video>
                 </div>
               </div>
               <div class="phone">
                 <div class="phone-screen">
-                  <video src="vid/ob-read.mp4" poster="vid/ob-read-poster.jpg" muted loop playsinline preload="metadata" aria-label="The story ending, then the first read written from those choices, then the sign-in prompt"></video>
+                  <video data-src="vid/ob-read.mp4" poster="vid/ob-read-poster.jpg" muted loop playsinline preload="none" aria-label="The story ending, then the first read written from those choices, then the sign-in prompt"></video>
                 </div>
               </div>
             </div>
@@ -1181,12 +1181,12 @@ figure{
           <div class="showcase-stage">
           <div class="phone">
           <div class="phone-screen">
-          <video src="vid/pack.mp4" poster="vid/pack-poster.jpg" muted loop playsinline preload="metadata" aria-label="A sealed pack being ripped open, the week&rsquo;s seven cards fanning out, and the days after today still locked"></video>
+          <video data-src="vid/pack.mp4" poster="vid/pack-poster.jpg" muted loop playsinline preload="none" aria-label="A sealed pack being ripped open, the week&rsquo;s seven cards fanning out, and the days after today still locked"></video>
           </div>
           </div>
           <div class="phone">
           <div class="phone-screen">
-          <video src="vid/explore.mp4" poster="vid/explore-poster.jpg" muted loop playsinline preload="metadata" aria-label="Explore: search, filter chips, today&rsquo;s pick, Trove Mysteries, and the continue rail"></video>
+          <video data-src="vid/explore.mp4" poster="vid/explore-poster.jpg" muted loop playsinline preload="none" aria-label="Explore: search, filter chips, today&rsquo;s pick, Trove Mysteries, and the continue rail"></video>
           </div>
           </div>
           </div>
@@ -1200,7 +1200,7 @@ figure{
           <div class="showcase-stage solo">
           <div class="phone">
           <div class="phone-screen">
-          <video src="vid/history.mp4" poster="vid/history-poster.jpg" muted loop playsinline preload="metadata" aria-label="A played tangle in history: the card, the stickers earned, the read, and the share row"></video>
+          <video data-src="vid/history.mp4" poster="vid/history-poster.jpg" muted loop playsinline preload="none" aria-label="A played tangle in history: the card, the stickers earned, the read, and the share row"></video>
           </div>
           </div>
           </div>
@@ -1239,7 +1239,7 @@ figure{
           <div class="showcase-stage solo">
           <div class="phone">
           <div class="phone-screen">
-          <video src="vid/results-read.mp4" poster="vid/results-read-poster.jpg" muted loop playsinline preload="metadata" aria-label="The results flow handing back the read"></video>
+          <video data-src="vid/results-read.mp4" poster="vid/results-read-poster.jpg" muted loop playsinline preload="none" aria-label="The results flow handing back the read"></video>
           </div>
           </div>
           </div>
@@ -1261,7 +1261,7 @@ figure{
           <div class="showcase-stage solo">
           <div class="phone">
           <div class="phone-screen">
-          <video src="vid/results-reflect.mp4" poster="vid/results-reflect-poster.jpg" muted loop playsinline preload="metadata" aria-label="The reflection step: picking a face, writing a note, and the closing thought"></video>
+          <video data-src="vid/results-reflect.mp4" poster="vid/results-reflect-poster.jpg" muted loop playsinline preload="none" aria-label="The reflection step: picking a face, writing a note, and the closing thought"></video>
           </div>
           </div>
           </div>
@@ -1292,7 +1292,7 @@ figure{
           <div class="showcase-stage solo">
           <div class="phone">
           <div class="phone-screen">
-          <video src="vid/compare.mp4" poster="vid/compare-poster.jpg" muted loop playsinline preload="metadata" aria-label="A comparison generating: four people who played the same tangle, read side by side, with what each of them did differently"></video>
+          <video data-src="vid/compare.mp4" poster="vid/compare-poster.jpg" muted loop playsinline preload="none" aria-label="A comparison generating: four people who played the same tangle, read side by side, with what each of them did differently"></video>
           </div>
           </div>
           </div>
@@ -1838,6 +1838,60 @@ figure{
       }, { threshold: 0.25 });
       vids.forEach(function(v){ io.observe(v); });
     })();
+  </script>
+
+  <!-- ═══ video: only what is on screen holds a decoder ═══════════════
+       Every clip on this page used to carry src + autoplay + preload, so
+       opening it started every one of them at once. Windows caps how many
+       hardware video decoders a tab may hold, and past that limit clips
+       stall on the first frame or never start — which is the "loads forever
+       or just doesn't play" everyone hits and nobody can reproduce on a Mac.
+       Each clip now takes its src when it comes near, plays while it is on
+       screen, and pauses when it leaves. Two or three decoders live at once
+       instead of nine, and nothing about how it looks changes. -->
+  <script>
+  (function () {
+    const vids = [...document.querySelectorAll('video[data-src]')];
+    if (!vids.length) return;
+
+    const attach = v => {
+      if (v.src) return;
+      // preload is 'none' in the markup so nothing loads before we ask;
+      // lift it here so a clip coming into range buffers before it is needed
+      v.preload = 'auto';
+      v.src = v.dataset.src;
+      v.load();
+    };
+    // give the decoder back when a clip is well out of the way
+    const release = v => {
+      if (!v.src) return;
+      v.pause();
+      v.removeAttribute('src');
+      v.load();
+    };
+
+    // near: hold the file. on screen: play it.
+    const near = new IntersectionObserver(es => es.forEach(e => {
+      e.isIntersecting ? attach(e.target) : release(e.target);
+    }), { rootMargin: '400px' });
+
+    const shown = new IntersectionObserver(es => es.forEach(e => {
+      const v = e.target;
+      if (e.isIntersecting && e.intersectionRatio > 0.15) {
+        attach(v);
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
+    }), { threshold: [0, 0.15, 0.5] });
+
+    vids.forEach(v => { near.observe(v); shown.observe(v); });
+
+    // a backgrounded tab should not be decoding anything
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) vids.forEach(v => v.pause());
+    });
+  })();
   </script>
 </body>
 </html>

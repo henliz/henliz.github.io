@@ -1323,7 +1323,7 @@ figure{
               <p>Families under financial pressure have less margin for everything, including data risk. Skrimp collects what's needed for utility, explains why, and makes deletion a single action. This was a constraint before it was a principle.</p>
             </div>
           </div>
-          <div class="vid-crop"><video src="media/skrimp-browse-recipes.mp4" autoplay muted loop playsinline></video></div>
+          <div class="vid-crop"><video data-src="media/skrimp-browse-recipes.mp4" autoplay muted loop playsinline preload="none"></video></div>
         </div>
       </section>
 
@@ -1368,7 +1368,7 @@ figure{
 
           <p>What a family sees is the opposite of all that. Every plan shows its working: which items are on sale, at which store, for what they cost this week. Not a black box, a receipt they can interrogate. Layout changes, missing products and store quirks get absorbed upstream and never reach them.</p>
 
-          <div class="vid-crop"><video src="media/skrimp-browse-flyers.mp4" autoplay muted loop playsinline></video></div>
+          <div class="vid-crop"><video data-src="media/skrimp-browse-flyers.mp4" autoplay muted loop playsinline preload="none"></video></div>
 
           <p>The most valuable thing testing surfaced was not a screen. Meal planning is not solo. One person plans, and their partner arrives at the store holding a list and none of the reasoning behind it. Household sharing was never a later sprint, it was the thing the product was missing. Adding it did not upgrade Skrimp, it finished it.</p>
 
@@ -1409,7 +1409,7 @@ figure{
 
           <p>What survived is not a meal kit, a subscription box, or another app that claims to care about your budget. It is connective tissue. Deals inform the plan, the plan generates the list, the list loads the cart, and the whole chain runs inside the minute.</p>
 
-          <div class="vid-crop"><video src="media/skrimp-smartload-demo.mp4" autoplay muted loop playsinline></video></div>
+          <div class="vid-crop"><video data-src="media/skrimp-smartload-demo.mp4" autoplay muted loop playsinline preload="none"></video></div>
 
           <div class="showcase reveal">
             <div class="showcase-stage solo">
@@ -1420,7 +1420,7 @@ figure{
             <p class="cap">A reel: the plan, start to finish.</p>
           </div>
         
-            <div class="vid-crop"><video src="media/grocery-list-skrimp.mp4" autoplay muted loop playsinline></video></div>
+            <div class="vid-crop"><video data-src="media/grocery-list-skrimp.mp4" autoplay muted loop playsinline preload="none"></video></div>
         </div>
       </section>
 
@@ -1991,5 +1991,59 @@ figure{
   </script>
   <script src="https://www.youtube.com/iframe_api"></script>
 
+
+  <!-- ═══ video: only what is on screen holds a decoder ═══════════════
+       Every clip on this page used to carry src + autoplay + preload, so
+       opening it started every one of them at once. Windows caps how many
+       hardware video decoders a tab may hold, and past that limit clips
+       stall on the first frame or never start — which is the "loads forever
+       or just doesn't play" everyone hits and nobody can reproduce on a Mac.
+       Each clip now takes its src when it comes near, plays while it is on
+       screen, and pauses when it leaves. Two or three decoders live at once
+       instead of nine, and nothing about how it looks changes. -->
+  <script>
+  (function () {
+    const vids = [...document.querySelectorAll('video[data-src]')];
+    if (!vids.length) return;
+
+    const attach = v => {
+      if (v.src) return;
+      // preload is 'none' in the markup so nothing loads before we ask;
+      // lift it here so a clip coming into range buffers before it is needed
+      v.preload = 'auto';
+      v.src = v.dataset.src;
+      v.load();
+    };
+    // give the decoder back when a clip is well out of the way
+    const release = v => {
+      if (!v.src) return;
+      v.pause();
+      v.removeAttribute('src');
+      v.load();
+    };
+
+    // near: hold the file. on screen: play it.
+    const near = new IntersectionObserver(es => es.forEach(e => {
+      e.isIntersecting ? attach(e.target) : release(e.target);
+    }), { rootMargin: '400px' });
+
+    const shown = new IntersectionObserver(es => es.forEach(e => {
+      const v = e.target;
+      if (e.isIntersecting && e.intersectionRatio > 0.15) {
+        attach(v);
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
+    }), { threshold: [0, 0.15, 0.5] });
+
+    vids.forEach(v => { near.observe(v); shown.observe(v); });
+
+    // a backgrounded tab should not be decoding anything
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) vids.forEach(v => v.pause());
+    });
+  })();
+  </script>
 </body>
 </html>

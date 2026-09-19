@@ -196,7 +196,6 @@ a{ color:inherit }
 
   <div class="chrome">
     <span id="hint">drag to look around &middot; click a <b>+</b></span>
-    <button type="button" id="back">step ba<span class="px">ck</span></button>
   </div>
 
   <div id="boot"><span>warming the room&hellip;</span></div>
@@ -251,7 +250,10 @@ scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 const TL = new THREE.TextureLoader();
 function surf(name, { repeat=[1,1], color, rough=1, metal=0, normal=0.7 } = {}){
   const grab = (suffix, srgb) => {
-    const t = TL.load(`tex/${name}-${suffix}.jpg`);
+    /* absolute. this file is served from /about/, so a relative tex/
+       path resolves to /about/tex/ and every surface silently falls back
+       to flat white, which is what it had been doing. */
+    const t = TL.load(`/tex/${name}-${suffix}.jpg`);
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
     t.repeat.set(repeat[0], repeat[1]);
     if (srgb) t.colorSpace = THREE.SRGBColorSpace;
@@ -290,6 +292,10 @@ function buildMaterials(){
   MAT.ink     = new THREE.MeshStandardMaterial({ color:0x1f3b3a, roughness:0.5 });
   MAT.rubber  = new THREE.MeshStandardMaterial({ color:0x23282b, roughness:0.62 });
   MAT.sky     = new THREE.MeshBasicMaterial({ color:0xdcece8 });
+  /* the shelf and the speaker. walnut is a shade colder and darker than the
+     desk oak so the two woods read as two pieces of furniture, not one. */
+  MAT.walnut  = surf('wood', { repeat:[1.1, 0.9], color:0x9a7a5c, rough:0.52, normal:0.8 });
+  MAT.grille  = surf('linen', { repeat:[0.7, 0.7], color:0x6c7679, rough:0.97, normal:0.9 });
 }
 
 /* ── helpers ──────────────────────────────────────────────────── */
@@ -408,6 +414,125 @@ function buildChair(){
   });
 }
 
+/* ── the shelf on the wall behind the desk ────────────────────────
+   Hung low, 420mm over the desk, which is where a working shelf
+   actually goes: high enough to clear an open laptop lid, low enough
+   that you can reach a book without standing up. It sits in the top
+   third of the seated view, so the wall above the desk stops being
+   empty plaster.
+
+   Everything here is built from the same primitives and the same
+   material set as the desk. There is a Kenney furniture kit sitting
+   in models/room and it would have been quicker, but it is flat
+   low-poly and this scene is PBR oak and limewash. Two art styles in
+   one frame reads as a mistake, so the shelf is hand-built too. */
+const SHELF_Y = 1.16, SHELF_X = DESK_X - 0.16, SHELF_W = 1.00, SHELF_D = 0.20;
+const SHELF_Z = SHELF_D/2 + 0.006;
+function buildShelf(){
+  const plank = box(SHELF_W, 0.034, SHELF_D, MAT.walnut, SHELF_X, SHELF_Y, SHELF_Z);
+  plank.geometry.computeVertexNormals();
+
+  /* two brackets, inset from the ends the way a shelf is actually hung */
+  [-1, 1].forEach(sx => {
+    const bx = SHELF_X + sx * (SHELF_W/2 - 0.14);
+    box(0.016, 0.115, 0.014, MAT.steel, bx, SHELF_Y - 0.075, 0.012);          /* wall plate */
+    box(0.016, 0.014, SHELF_D - 0.05, MAT.steel, bx, SHELF_Y - 0.026, SHELF_Z - 0.012); /* arm */
+    const brace = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.135, 12), MAT.steel);
+    brace.position.set(bx, SHELF_Y - 0.078, 0.062);
+    brace.rotation.x = 0.72; brace.castShadow = true; ROOM.add(brace);
+  });
+
+  /* the books. Spines in the room's own palette so the shelf reads as
+     part of the scene rather than a colour chart, and no two the same
+     height, because a shelf of matched books is a prop. */
+  const SPINES = [0x2f6f68, 0xb8705a, 0xe8e0cf, 0x1f3b3a, 0x8fbdb2,
+                  0xc7a24a, 0xa35a4a, 0xdcd3c2, 0x3f5d6b, 0x6f8f7a];
+  const spineMat = SPINES.map(c =>
+    new THREE.MeshStandardMaterial({ color:c, roughness:0.82 }));
+  const pageMat = new THREE.MeshStandardMaterial({ color:0xe9e2d2, roughness:0.95 });
+
+  const runStart = SHELF_X - SHELF_W/2 + 0.055;
+  const runEnd   = SHELF_X + SHELF_W/2 - 0.38;   /* the last stretch is left for the postcard and the flat stack */
+  let x = runStart, i = 0;
+  const shelfTop = SHELF_Y + 0.017;
+  while (x < runEnd){
+    const w = 0.019 + (i % 4) * 0.007;            /* 19 to 40mm spines */
+    const h = 0.145 + ((i * 7) % 5) * 0.011;      /* 145 to 189mm tall */
+    const d = 0.125 + ((i * 3) % 3) * 0.012;
+    /* the last two before the gap lean into it, which is what happens
+       when a book gets pulled out and never put back properly */
+    const lean = (x + w > runEnd - 0.09) ? 0.20 : 0;
+    const bk = box(w, h, d, spineMat[i % spineMat.length],
+                   x + w/2, shelfTop + h/2, SHELF_Z - 0.012);
+    if (lean){
+      bk.rotation.z = -lean;
+      bk.position.y = shelfTop + Math.cos(lean) * h/2;
+      bk.position.x += Math.sin(lean) * h/2;
+    }
+    /* a sliver of page block, so a spine is not just a coloured slab */
+    box(0.002, h - 0.012, d - 0.01, pageMat, x + w + 0.0015, shelfTop + h/2, SHELF_Z - 0.012)
+      .castShadow = false;
+    x += w + 0.003; i++;
+  }
+
+  /* three lying flat at the right end, doubling as a plinth */
+  let sy = shelfTop;
+  [[0.155, 0.021, 0x3f5d6b], [0.148, 0.018, 0xb8705a], [0.138, 0.016, 0xe8e0cf]]
+    .forEach(([w, t, c], k) => {
+      box(w, t, 0.115, new THREE.MeshStandardMaterial({ color:c, roughness:0.8 }),
+          SHELF_X + SHELF_W/2 - 0.135, sy + t/2, SHELF_Z - 0.014, 0.06 - k * 0.04);
+      sy += t;
+    });
+
+  /* a small framed photo standing on the stack, leaning on the wall */
+  const fr = box(0.115, 0.145, 0.012, MAT.trim, SHELF_X + SHELF_W/2 - 0.14, sy + 0.073, 0.052, 0.05);
+  fr.rotation.x = -0.10;
+  const ph = new THREE.Mesh(new THREE.PlaneGeometry(0.092, 0.12),
+    new THREE.MeshStandardMaterial({ color:0xc2d6d0, roughness:0.85 }));
+  ph.position.set(SHELF_X + SHELF_W/2 - 0.138, sy + 0.073, 0.059);
+  ph.rotation.set(-0.10, 0, 0.05); ROOM.add(ph);
+
+  /* a postcard propped in the gap the leaning books left.
+     This is where "say hello" lives now. It used to hang on the window,
+     which worked when you could stand back and see the whole room and
+     stopped working the moment the only camera is the seated one: the
+     window is at your left shoulder, about 100 degrees off the way you
+     are facing, so the pin was never once on screen. Contact details
+     you cannot reach are worse than no contact details. */
+  const CARD_X = SHELF_X + SHELF_W/2 - 0.295;
+  const card = box(0.098, 0.128, 0.005, MAT.paper, CARD_X, shelfTop + 0.062, 0.055, 0.04);
+  card.rotation.x = -0.16;
+  /* a stamp and two ruled lines, enough that it reads as post and not as
+     a blank rectangle */
+  const stamp = new THREE.Mesh(new THREE.PlaneGeometry(0.024, 0.03),
+    new THREE.MeshStandardMaterial({ color:0xb8705a, roughness:0.85 }));
+  stamp.position.set(CARD_X + 0.03, shelfTop + 0.103, 0.0605);
+  stamp.rotation.set(-0.16, 0, 0.04); ROOM.add(stamp);
+  [0.045, 0.028].forEach(dy => {
+    const rule = new THREE.Mesh(new THREE.PlaneGeometry(0.052, 0.0022), MAT.ink);
+    rule.position.set(CARD_X - 0.014, shelfTop + dy, 0.0605);
+    rule.rotation.set(-0.16, 0, 0.04); ROOM.add(rule);
+  });
+  P.hello = new THREE.Vector3(CARD_X, shelfTop + 0.07, 0.075);
+
+  /* a trailing plant on the left end. The leaves hang over the edge,
+     which is the detail that stops a shelf looking like a diagram. */
+  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.033, 0.062, 30), MAT.terra);
+  pot.position.set(SHELF_X - SHELF_W/2 + 0.012, shelfTop + 0.031, SHELF_Z + 0.008);
+  pot.castShadow = true; ROOM.add(pot);
+  for (let k = 0; k < 9; k++){
+    const a = k * 2.3, drop = 0.05 + (k % 3) * 0.055;
+    const v = new THREE.Mesh(new THREE.SphereGeometry(0.02, 12, 9), MAT.leaf);
+    v.scale.set(0.5, drop / 0.02 * 0.42, 0.5);
+    v.position.set(
+      SHELF_X - SHELF_W/2 + 0.012 + Math.sin(a) * 0.045,
+      shelfTop + 0.062 - drop * 0.32,
+      SHELF_Z + 0.008 + Math.cos(a) * 0.03);
+    v.rotation.set(Math.cos(a) * 0.9, 0, -Math.sin(a) * 0.9);
+    v.castShadow = true; ROOM.add(v);
+  }
+}
+
 /* ── what is on the desk ──────────────────────────────────────────
    Zoned the way a desk that works is zoned. Primary reach is the
    laptop, dead centre at arm's length. Secondary is the mug and the
@@ -489,15 +614,28 @@ function buildDeskThings(){
   });
   P.phones = new THREE.Vector3(DESK_X + 0.62, 1.24, 0.09);
 
-  /* two prints over the desk, hung at eye level from the chair and offset
-     from each other rather than centred like a hotel */
-  [[DESK_X - 0.28, 1.42, 0.3, 0.38, 0xb8cdc6],
-   [DESK_X + 0.02, 1.3,  0.22, 0.28, 0xdcd3c2]].forEach(([x,y,w,h,c]) => {
-    box(w + 0.03, h + 0.03, 0.018, MAT.trim, x, y, 0.02);
-    const art = new THREE.Mesh(new THREE.PlaneGeometry(w, h),
-      new THREE.MeshStandardMaterial({ color:c, roughness:0.9 }));
-    art.position.set(x, y, 0.031); ROOM.add(art);
-  });
+  /* a little speaker on the back left corner, angled in at the chair the
+     way you would actually point one. The two prints that used to hang
+     here came down: the shelf is the wall now, and a shelf plus framed
+     art plus headphones on one small wall is a junk drawer. */
+  const SX = DESK_X - 0.70, SZ = DESK_Z - 0.26, SPK_H = 0.104;
+  const bodyY = DESK_Y + 0.019 + SPK_H/2;
+  const body = box(0.104, SPK_H, 0.082, MAT.walnut, SX, bodyY, SZ, 0.38);
+  body.geometry.computeVertexNormals();
+  /* the grille is inset on the front face, not painted across the whole
+     box, so the cabinet still reads as a wooden thing */
+  const grille = box(0.082, SPK_H - 0.024, 0.004, MAT.grille, 0, 0, 0.0425);
+  ROOM.remove(grille); body.add(grille);
+  grille.position.set(0, 0.004, 0.0425);
+  /* one brass volume knob, top right, catching the window light */
+  const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.006, 20), MAT.brass);
+  knob.rotation.x = Math.PI/2; knob.position.set(0.032, -0.036, 0.044);
+  knob.castShadow = true; body.add(knob);
+  /* and a cable, because nothing on a desk is wireless when you need it */
+  const cable = new THREE.Mesh(
+    new THREE.TorusGeometry(0.035, 0.0025, 8, 30, Math.PI * 0.9), MAT.rubber);
+  cable.position.set(SX + 0.02, DESK_Y + 0.021, SZ + 0.06);
+  cable.rotation.set(Math.PI/2, 0, 0.6); ROOM.add(cable);
 }
 
 /* ── lighting ─────────────────────────────────────────────────────
@@ -581,14 +719,25 @@ function loadLaptop(){
   }, undefined, () => { P.laptop = new THREE.Vector3(DESK_X, DESK_Y + 0.14, DESK_Z - 0.09); res(null); }));
 }
 
-const MINE_MAC = './models/macbook.glb';
+const MINE_MAC = '/models/macbook.glb';   /* same reason as the textures */
 
-/* ── the two places the camera stands ─────────────────────────────
-   WIDE is the three-quarter view you land on. SEATED is eye height in
-   the chair, 1.19m up and 620mm back from the desk edge, which is
-   where your head actually is when you sit at a desk. */
+/* ── where the camera sits ────────────────────────────────────────
+   SEATED is the whole page now. You are in the chair from the first
+   frame, looking at the desk, and that is the point: this is a place
+   you are sitting in, not a diorama you are looking at.
+
+   It is pulled back 180mm and raised 30mm from where it used to sit,
+   with a wider lens, and that is not taste. The old framing put the
+   top of the picture at roughly 1.26m, which was fine when the wall
+   was empty and fatal once there is a shelf on it at 1.16m. This
+   frame runs from about 0.62m to 1.49m at the wall, so the front
+   edge of the desk and the top of the books are both inside it.
+
+   WIDE is no longer a stage you can visit. It survives as the mark
+   the opening glide starts from, so the room registers as a room
+   for a beat before you are sitting at the desk in it. */
 const WIDE   = { pos:[2.48, 1.66, 3.05], look:[1.05, 0.76, 0.52], fov:46 };
-const SEATED = { pos:[DESK_X - 0.05, 1.25, CHAIR_Z + 0.16], look:[DESK_X - 0.12, DESK_Y + 0.08, DESK_Z - 0.1], fov:58 };
+const SEATED = { pos:[DESK_X + 0.08, 1.28, CHAIR_Z + 0.34], look:[DESK_X + 0.04, 0.95, DESK_Z - 0.02], fov:62 };
 
 /* the things you can click, and where they live */
 const SPOTS = [
@@ -626,7 +775,7 @@ const SPOTS = [
       <li>Founding between lectures, which is exactly as tidy as it sounds</li></ul>
       <p>I build systems that keep working when the world is messy. That is the throughline.</p>` },
 
-  { id:'window', label:'say hello', at:() => new THREE.Vector3(0.1, SILL_Y + 0.5, WIN_Z), stage:'seated',
+  { id:'hello', label:'say hello', at:() => P.hello, stage:'seated',
     eyebrow:'Where to find me',
     title:'Looking for where I can do the most interesting work.',
     html:`<p>Technically rigorous, a little bit magic. If that sounds like something you are building, I would like to hear about it.</p>
@@ -635,20 +784,23 @@ const SPOTS = [
       <li><a class="link" href="https://github.com/henliz" target="_blank" rel="noopener">github.com/henliz</a></li></ul>
       <p class="meta">Ontario, Canada. Currently 4A at the University of Waterloo.<br>Surfaces from ambientCG (CC0).</p>` },
 
-  { id:'sit', label:'sit down', at:() => new THREE.Vector3(DESK_X, DESK_Y + 0.16, DESK_Z + 0.26), stage:'wide', sit:true },
 ];
 
 /* ── state ────────────────────────────────────────────────────── */
 const panel     = document.getElementById('panel');
 const panelBody = document.getElementById('panelBody');
 const hint      = document.getElementById('hint');
-const backBtn   = document.getElementById('back');
 const pinLayer  = document.getElementById('pins');
 
-let stage = 'wide', openSpot = null;
+let stage = 'seated', openSpot = null;
 const camPos = new THREE.Vector3(...WIDE.pos), camLook = new THREE.Vector3(...WIDE.look);
 let toPos = camPos.clone(), toLook = camLook.clone(), toFov = WIDE.fov;
 let yaw = 0, yawTo = 0, pitch = 0, pitchTo = 0;
+/* the normal camera ease. the intro drops it to a crawl for one glide
+   and puts it back, so arriving in the chair takes about a second and a
+   half instead of the third of a second everything else moves in. */
+const EASE = 0.07;
+let camEase = EASE, seated = false;
 
 function setStage(next){
   stage = next;
@@ -657,10 +809,7 @@ function setStage(next){
   toLook = new THREE.Vector3(...s.look);
   toFov = s.fov;
   yawTo = 0; pitchTo = 0;
-  hint.textContent = next === 'seated'
-    ? 'click the laptop, the notebook, the mug · drag to look'
-    : 'click to sit down';
-  backBtn.classList.toggle('show', next === 'seated');
+  hint.textContent = 'click the laptop, the notebook, the mug · drag to look';
   closePanel();
 }
 function openPanel(spot){
@@ -683,11 +832,10 @@ const pins = SPOTS.map(spot => {
   pinLayer.appendChild(el);
   return { spot, el };
 });
-backBtn.addEventListener('click', () => setStage('wide'));
 document.getElementById('panelClose').addEventListener('click', closePanel);
 addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  if (openSpot) closePanel(); else if (stage === 'seated') setStage('wide');
+  if (openSpot) closePanel();
 });
 
 /* ── drag to look ─────────────────────────────────────────────── */
@@ -700,9 +848,10 @@ canvas.addEventListener('pointermove', e => {
   if (!dragging) return;
   const dx = e.clientX - px, dy = e.clientY - py;
   px = e.clientX; py = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
-  /* seated you can glance around the desk; standing back you can swing
-     round the room a bit further */
-  const span = stage === 'seated' ? 0.5 : 0.7;
+  /* a glance around the desk, not a free camera. wide enough to take in
+     the shelf and the speaker on the corner, tight enough that you can
+     never end up looking at bare wall. */
+  const span = 0.62;
   yawTo   = THREE.MathUtils.clamp(yawTo   - dx * 0.0035, -span, span);
   pitchTo = THREE.MathUtils.clamp(pitchTo + dy * 0.0022, -0.3, 0.34);
 });
@@ -710,10 +859,7 @@ const endDrag = e => {
   if (!dragging) return;
   dragging = false;
   try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
-  if (moved < 6){
-    if (openSpot) closePanel();
-    else if (stage === 'wide') setStage('seated');
-  }
+  if (moved < 6 && openSpot) closePanel();
 };
 canvas.addEventListener('pointerup', endDrag);
 canvas.addEventListener('pointercancel', endDrag);
@@ -730,9 +876,9 @@ const v = new THREE.Vector3();
 function step(){
   yaw   += (yawTo   - yaw)   * 0.08;
   pitch += (pitchTo - pitch) * 0.08;
-  camPos.lerp(toPos, 0.07);
-  camLook.lerp(toLook, 0.08);
-  camera.fov += (toFov - camera.fov) * 0.08;
+  camPos.lerp(toPos, camEase);
+  camLook.lerp(toLook, camEase * 1.14);
+  camera.fov += (toFov - camera.fov) * camEase * 1.14;
   camera.updateProjectionMatrix();
 
   v.copy(camPos).sub(camLook);
@@ -746,7 +892,9 @@ function step(){
   camera.lookAt(camLook);
 
   for (const { spot, el } of pins){
-    const here = spot.stage === stage && !openSpot;
+    /* pins stay down through the glide. arriving in the chair to find
+       five markers already floating there reads as a menu, not a room. */
+    const here = seated && spot.stage === stage && !openSpot;
     const at = here ? spot.at() : null;
     if (!at){ el.style.display = 'none'; continue; }
     v.copy(at).project(camera);
@@ -767,17 +915,35 @@ buildWindow();
 buildDesk();
 buildChair();
 buildDeskThings();
+buildShelf();
 paintTheme();
 new MutationObserver(paintTheme).observe(document.documentElement,
   { attributes:true, attributeFilter:['data-theme'] });
 resize();
-setStage('wide');
+
+/* park on the wide mark while the laptop loads, then glide into the
+   chair once there is something to arrive at. Doing it the other way
+   round plays the whole move behind the boot overlay, where nobody
+   sees it. */
+toPos.set(...WIDE.pos); toLook.set(...WIDE.look); toFov = WIDE.fov;
 camPos.copy(toPos); camLook.copy(toLook); camera.fov = toFov;
+
+let started = false;
+function sitDown(){
+  if (started) return;
+  started = true;
+  camEase = 0.024;
+  setStage('seated');
+  setTimeout(() => { camEase = EASE; seated = true; }, 1700);
+}
 loadLaptop().then(() => {
   document.getElementById('boot').classList.add('gone');
   step();
+  setTimeout(sitDown, 260);
 });
-setTimeout(() => document.getElementById('boot').classList.add('gone'), 6000);
+/* if the model never turns up, sit down anyway rather than stare at a
+   loading card */
+setTimeout(() => { document.getElementById('boot').classList.add('gone'); sitDown(); }, 6000);
 frame();
 window.__room = { step, scene, camera, renderer, setStage, SPOTS, openPanel };
 </script>

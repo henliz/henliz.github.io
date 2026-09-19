@@ -779,7 +779,7 @@ function build(it, i) {
       probe.preload = 'metadata';
       probe.addEventListener('loadeddata', () => swap(
         `<video src="${MEDIA + it.file}" autoplay muted loop playsinline
-                preload="metadata" disablepictureinpicture></video>`), { once: true });
+                preload="none" disablepictureinpicture></video>`), { once: true });
       probe.src = MEDIA + it.file;
     } else {
       const probe = new Image();
@@ -996,5 +996,6 @@ addEventListener('load', hydrate);
   addEventListener('mouseout',  e => { if (e.target.closest(HOVER)) post({ type: 'iframeHover', on: false }); });
 })();
 </script>
+
 </body>
 </html>
