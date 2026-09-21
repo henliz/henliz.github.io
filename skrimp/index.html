@@ -4620,7 +4620,10 @@ const eul = (x,y,z)=>new THREE.Euler(
       {
         name:'Equinox', category:'Game Design / Godot',
         tagline:'Reading \u201cOvercomplicated Screen Transitions\u201d as a design constraint, not decoration',
-        video:{ kind:'yt', id:'ou-piZ1dt4U' },
+        // straight into the game. The showcase opens on a title card and the
+        // main menu, which is a jarring thing for a tile to loop on. The yt
+        // player seeks here on load AND on every hand-rolled loop.
+        video:{ kind:'yt', id:'ou-piZ1dt4U', start: 20 },
         stat:'1st of 88 at Comfy Jam, 2nd on the limitation',
         tags:['Godot','Mac + Windows'],
         href:'/equinox/', award:'Winner',
@@ -4875,10 +4878,14 @@ stations.forEach((cfg,i) => {
   // real session, tots in front of it. Hover trades the field for a
   // creamsicle stage and two more clips. Everything here is CSS + <video>;
   // this is the one tile with no WebGL scene behind it.
-  const phone = (src, poster, preload) =>
+  // start is where the clip should begin, in seconds. Native loop always
+  // restarts at zero, so a clip with an in-point drops `loop` and is looped
+  // by hand below — otherwise every second pass plays the bit we skipped.
+  const phone = (src, poster, preload, start = 0) =>
     `<div class="tf-phone"><div class="tf-screen">
        <video src="/trove/vid/${src}" poster="/trove/vid/${poster}"
-              muted loop playsinline preload="${preload}"></video>
+              muted ${start ? '' : 'loop'} playsinline preload="${preload}"
+              data-start="${start}"></video>
      </div></div>`;
   // Each station that wants one gets a room instead of a gradient: flat SVG
   // and CSS, layered back to front, with the GLB standing in it. The shared
@@ -4900,7 +4907,7 @@ stations.forEach((cfg,i) => {
       <div class="tf-cream"></div>
       <div class="tf-pair">
         ${phone('explore.mp4','explore-poster.jpg','none')}
-        ${phone('results-read.mp4','results-read-poster.jpg','none')}
+        ${phone('results-read.mp4','results-read-poster.jpg','none', 5)}
       </div>`,
     counter: () => `
       <div class="ct-room"></div>
@@ -5350,13 +5357,25 @@ stations.forEach((cfg,i) => {
       }), {threshold: 0.15}).observe(el);
     }
     if (pair.length && !reduce && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const at = v => +v.dataset.start || 0;
+      /* preload is none, so currentTime is not settable until metadata
+         lands — hence the guard and the loadedmetadata pass */
+      const home = v => { try { v.currentTime = at(v); } catch (e) {} };
+      pair.forEach(v => {
+        if (!at(v)) return;
+        v.addEventListener('loadedmetadata', () => home(v));
+        v.addEventListener('ended', () => { home(v); v.play().catch(() => {}); });
+      });
       el.addEventListener('mouseenter', () => {
         cell.classList.add('is-video');
-        pair.forEach(v => v.play().catch(() => {}));
+        pair.forEach(v => {
+          if (v.readyState && v.currentTime < at(v)) home(v);
+          v.play().catch(() => {});
+        });
       });
       el.addEventListener('mouseleave', () => {
         cell.classList.remove('is-video');
-        pair.forEach(v => { v.pause(); v.currentTime = 0; });
+        pair.forEach(v => { v.pause(); home(v); });
       });
     }
   }

@@ -240,17 +240,85 @@ a{ color:inherit }
 /* safari chrome */
 #mac .tabs{ display:flex; gap:3px; margin-left:6px; overflow:hidden; flex:1 }
 #mac .tab{
-  font-size:10px; padding:4px 10px; border-radius:6px; background:rgba(0,0,0,.07);
+  font-size:10px; padding:4px 11px; border-radius:6px; background:rgba(0,0,0,.055);
   color:#42424a; white-space:nowrap; max-width:170px; overflow:hidden; text-overflow:ellipsis;
+  cursor:pointer; border:0; font-family:inherit; transition:background .16s;
 }
+#mac .tab:hover{ background:rgba(0,0,0,.1) }
 #mac .tab.on{ background:#fff; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.14) }
+
+/* ── GitHub, rebuilt ──────────────────────────────────────────────
+   Neither site can be iframed: LinkedIn answers x-frame-options
+   sameorigin and GitHub answers deny. So both tabs are rebuilds. The
+   difference is that GitHub has a public, CORS-open REST API, so this
+   one is filled from live data and the numbers are really hers. */
+#mac .gh{ background:#0d1117; color:#e6edf3; display:flex; overflow:hidden }
+#mac .gh .col{ flex:0 0 190px; padding:14px 14px 0; border-right:1px solid #21262d; overflow-y:auto }
+#mac .gh .ava{
+  width:112px; height:112px; border-radius:50%; display:block; margin-bottom:10px;
+  border:1px solid #30363d; background:#161b22; object-fit:cover;
+}
+#mac .gh .nm{ font-size:15px; font-weight:700; line-height:1.2 }
+#mac .gh .lg{ font-size:13px; font-weight:300; color:#9198a1; margin-bottom:8px }
+#mac .gh .bio{ font-size:10.5px; line-height:1.55; color:#e6edf3; margin-bottom:10px }
+#mac .gh .fw{ font-size:10px; color:#9198a1; display:flex; gap:10px; margin-bottom:12px }
+#mac .gh .fw b{ color:#e6edf3; font-weight:600 }
+#mac .gh .btn{
+  display:block; text-align:center; font-size:10.5px; font-weight:600;
+  background:#21262d; border:1px solid #363b42; border-radius:6px;
+  padding:4px 0; color:#e6edf3; text-decoration:none; margin-bottom:12px;
+}
+#mac .gh .btn:hover{ background:#292f36 }
+#mac .gh .main{ flex:1; padding:14px 16px; overflow-y:auto }
+#mac .gh h4{
+  font-size:11px; font-weight:400; color:#e6edf3; margin:0 0 8px;
+  padding-bottom:5px; border-bottom:1px solid #21262d;
+}
+#mac .gh .repo{
+  border:1px solid #30363d; border-radius:6px; padding:8px 10px; margin-bottom:8px;
+  background:#0d1117;
+}
+#mac .gh .repo a{ color:#4493f8; font-size:11px; font-weight:600; text-decoration:none }
+#mac .gh .repo p{ font-size:9.5px; color:#9198a1; margin:3px 0 6px; line-height:1.5 }
+#mac .gh .meta{ display:flex; align-items:center; gap:11px; font-size:9px; color:#9198a1 }
+#mac .gh .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:4px }
+#mac .gh .act{ font-size:10px; color:#9198a1; line-height:1.7; padding-left:14px; position:relative }
+#mac .gh .act::before{
+  content:''; position:absolute; left:3px; top:7px; width:5px; height:5px;
+  border-radius:50%; background:#30363d;
+}
+#mac .gh .act b{ color:#e6edf3; font-weight:500 }
+#mac .gh .live{
+  font-size:8.5px; color:#3fb950; letter-spacing:.06em; text-transform:uppercase;
+  display:flex; align-items:center; gap:4px; margin-top:10px;
+}
+#mac .gh .live::before{
+  content:''; width:5px; height:5px; border-radius:50%; background:#3fb950;
+  animation:ghPulse 2s ease-in-out infinite;
+}
+@keyframes ghPulse{ 0%,100%{opacity:1} 50%{opacity:.3} }
 #mac .url{
-  flex:0 0 26px; display:flex; align-items:center; gap:9px; padding:0 10px;
+  flex:0 0 30px; display:flex; align-items:center; gap:10px; padding:0 10px;
   background:#f4f4f6; border-bottom:.5px solid #dedee2;
 }
-#mac .url em{ font-style:normal; font-size:9px; opacity:.4 }
-#mac .url span{ font-size:10px; background:#e6e6ea; border-radius:6px; padding:3px 12px; color:#4a4a52; flex:1; text-align:center }
+#mac .url em{ font-style:normal; font-size:11px; opacity:.32; letter-spacing:2px }
+/* the address field is a centred pill with the padlock in it, the way
+   Safari draws it, not a full-width input */
+#mac .url span{
+  font-size:10.5px; background:#e6e6ea; border-radius:7px; padding:4px 12px;
+  color:#3f3f46; margin:0 auto; display:inline-flex; align-items:center; gap:5px;
+  max-width:68%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+}
+#mac .url span::before{
+  content:''; width:7px; height:9px; flex:none; border-radius:1.5px;
+  background:#8a8a92;
+  box-shadow:0 -3px 0 -1px #8a8a92, 0 -4px 0 -1.5px #8a8a92;
+}
+#mac .url i.rt{ font-style:normal; font-size:11px; opacity:.34; letter-spacing:3px; margin-left:auto }
 #mac .bd{ flex:1; overflow:hidden; position:relative; display:flex }
+/* an author display: rule beats the UA sheet's [hidden], so the tab that is
+   not showing has to be told twice or both pages paint on top of each other */
+#mac .bd[hidden]{ display:none !important }
 #mac .bd.split > .pane{ flex:1; overflow-y:auto }
 
 /* sidebars, which is most of what a mac window actually is */
@@ -397,37 +465,23 @@ a{ color:inherit }
 #mac .dock .sep{ width:1px; height:34px; background:rgba(255,255,255,.3); margin:0 3px }
 
 /* ── the headphones' player ───────────────────────────────────── */
+/* off to the right, so it never covers the thing it belongs to. The
+   camera frames the radio slightly left of centre for exactly this. */
 #audio{
-  position:absolute; left:50%; bottom:clamp(76px,12vh,132px); transform:translate(-50%,14px);
-  width:min(420px,calc(100vw - 32px)); opacity:0; pointer-events:none; z-index:7;
+  position:absolute; right:clamp(16px,3vw,44px); top:50%; transform:translate(22px,-50%);
+  width:min(380px,calc(100vw - 32px)); opacity:0; pointer-events:none; z-index:7;
   background:var(--card); border:1px solid var(--edge); border-radius:18px;
   padding:clamp(16px,2vw,22px); box-shadow:var(--shadow);
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   transition:opacity .4s ease .2s, transform .5s cubic-bezier(.22,1,.36,1) .2s;
 }
-#audio.open{ opacity:1; transform:translate(-50%,0); pointer-events:auto }
+#audio.open{ opacity:1; transform:translate(0,-50%); pointer-events:auto }
 #audio .eyebrow{
   display:block; font-size:.66rem; letter-spacing:.2em; text-transform:uppercase;
   color:var(--accent); font-weight:700; margin-bottom:.7rem;
 }
 #audio iframe{ width:100%; height:152px; border:0; border-radius:12px; display:block }
 #audio .meta{ font-size:.76rem; opacity:.6; margin-top:.7rem; line-height:1.6 }
-
-/* the label that follows a book out of the shelf */
-#booktip{
-  position:absolute; transform:translate(-50%,-100%); pointer-events:none;
-  opacity:0; transition:opacity .2s ease; z-index:9;
-  background:rgba(22,30,34,.82); color:#fff; border:1px solid rgba(255,255,255,.2);
-  border-radius:10px; padding:.5rem .75rem; backdrop-filter:blur(12px);
-  text-align:center; white-space:nowrap;
-}
-#booktip.on{ opacity:1 }
-#booktip b{ display:block; font-size:.86rem; font-weight:700 }
-#booktip span{ display:block; font-size:.72rem; opacity:.7; margin-top:.1rem }
-#booktip em{
-  display:block; font-style:normal; font-size:.62rem; letter-spacing:.14em;
-  text-transform:uppercase; opacity:.62; margin-top:.35rem;
-}
 
 /* ── chrome ──────────────────────────────────────────────────── */
 /* the same pill the playground uses, so the two pages feel like one site */
@@ -613,13 +667,13 @@ a{ color:inherit }
       <div class="tt">
         <div class="lights"><s class="r"></s><s class="y"></s><s class="g"></s></div>
         <div class="tabs">
-          <span class="tab on">Henri&euml;tta van Niekerk | LinkedIn</span>
-          <span class="tab">henliz &middot; GitHub</span>
+          <button class="tab on" data-site="li">Henri&euml;tta van Niekerk | LinkedIn</button>
+          <button class="tab" data-site="gh">henliz &middot; GitHub</button>
           <span class="tab">+</span>
         </div>
       </div>
-      <div class="url"><em>&#9664; &#9654;</em><span>linkedin.com/in/henriettavanniekerk</span></div>
-      <div class="bd li">
+      <div class="url"><em>&#9664; &#9654;</em><span id="macUrl">linkedin.com/in/henriettavanniekerk</span><i class="rt">&#8853; &#10697;</i></div>
+      <div class="bd li" data-site="li">
         <!-- a rebuild, not an embed: LinkedIn answers frame-ancestors 'self'
              and GitHub answers 'none', so neither can be iframed anywhere. -->
         <div class="cover"></div>
@@ -631,6 +685,28 @@ a{ color:inherit }
           <p class="sub"><a href="https://henliz.github.io" target="_blank" rel="noopener">henliz.github.io &nearr;</a></p>
           <div class="btns"><b>Open to</b><i>Add section</i><i>More</i></div>
           <a class="out" href="https://www.linkedin.com/in/henriettavanniekerk" target="_blank" rel="noopener">Open the real profile &nearr;</a>
+        </div>
+      </div>
+
+      <!-- GitHub. Everything with an id here is filled from the live API on
+           open; the markup ships with her real numbers baked in so the page
+           is never blank and still reads correctly if the fetch fails. -->
+      <div class="bd gh" data-site="gh" hidden>
+        <div class="col">
+          <img class="ava" id="ghAva" alt=""
+               src="https://avatars.githubusercontent.com/u/169872004?v=4">
+          <div class="nm" id="ghName">Henrietta van Niekerk</div>
+          <div class="lg">henliz</div>
+          <div class="bio" id="ghBio">&#8902;&#65377;&#176;&#10025; NiTeFiSe &nbsp;|&nbsp; &#10077; Onward then, to glory or some such nonsense. &#10078;</div>
+          <div class="fw"><span><b id="ghFol">11</b> followers</span><span><b id="ghFwg">5</b> following</span></div>
+          <a class="btn" href="https://github.com/henliz" target="_blank" rel="noopener">Follow</a>
+          <div class="live" id="ghLive">live from the api</div>
+        </div>
+        <div class="main">
+          <h4><b id="ghRepoCount">14</b> public repositories</h4>
+          <div id="ghRepos"></div>
+          <h4 style="margin-top:12px">Recent activity</h4>
+          <div id="ghActivity"></div>
         </div>
       </div>
     </div>
@@ -1033,14 +1109,45 @@ function buildChair(){
    row is a thing you can lean into: hover a book and it slides out far
    enough to read. SHELF_BOOKS is the whole content of it, so changing
    what is on the shelf is changing one array. */
+const GOODREADS = 'https://www.goodreads.com/henliz';
+
+/* The shelf. Books, not case studies.
+
+   Only the ones with a note are clickable; the rest are spines, which
+   is what most of a shelf is. Add a book by adding a line: t title,
+   a author, c the cloth colour, note what you think of it, and img an
+   optional path to real cover art you own or shot yourself.
+
+   The Master and Margarita gets a drawn cover rather than a scan of
+   the Penguin Deluxe edition: that illustration belongs to the artist
+   who made it and is not ours to reproduce. Point img at your own
+   photograph of your own copy and it will use that instead. */
 const SHELF_BOOKS = [
-  { t:'Trove',                 a:'product design engineer', c:'#2f6f68', href:'/trove/' },
-  { t:'Skrimp AI',             a:'founder and CEO',         c:'#c8874a', href:'/skrimp/' },
-  { t:'Menzoberranzan',        a:'CTO, 140 volunteers',     c:'#5b4a8a', href:'/menzo/' },
-  { t:'MyAuntie',              a:'won TechNova 2025',       c:'#b0517f', href:'/myauntie/' },
-  { t:'Equinox',               a:'first of eighty eight',   c:'#8c3239', href:'/equinox/' },
-  { t:'The Master and Margarita', a:'Bulgakov',             c:'#3f5d6b' },
-  { t:'a novel of my own',     a:'slowly',                  c:'#7a7150' },
+  { t:'The Master and Margarita', a:'Mikhail Bulgakov', c:'#8f2f2a',
+    img:'/about/media/mm-cover.jpg', spine:'/about/media/mm-spine.jpg',
+    note:`<p>My beloved. A devil turns up in Moscow with a retinue that
+      includes an enormous talking cat, and the book is somehow, at the
+      same time, the funniest thing I have read and the one that takes
+      art most seriously.</p>
+      <p>Manuscripts don't burn. I think about that line more than is
+      reasonable for someone who mostly writes software.</p>` },
+  { t:'Dracula', a:'Bram Stoker', c:'#a11f24',
+    img:'/about/media/dracula-cover.jpg', spine:'/about/media/dracula-spine.jpg',
+    note:`<p>Adored it. An epistolary novel that is really a stack of
+      evidence: letters, diary entries, a ship's log, newspaper
+      clippings. The horror is in what the documents do not quite say
+      to each other.</p>
+      <p>Listen to them. The children of the night. What music they make.</p>` },
+  { t:'Words of Radiance', a:'Brandon Sanderson', c:'#2f6f68',
+    img:'/about/media/wor-cover.jpg', spine:'/about/media/wor-spine.jpg',
+    note:`<p>Book two of the Stormlight Archive, and the one where the
+      whole thing snaps into focus. A thousand pages of setup paying off
+      at once is its own kind of engineering.</p>
+      <p>Journey before destination.</p>` },
+  { t:'',  a:'', c:'#2f6f68' },
+  { t:'',  a:'', c:'#5b4a8a' },
+  { t:'',  a:'', c:'#b0517f' },
+  { t:'',  a:'', c:'#c8874a' },
 ];
 
 /* Prop it on the foot of the lamp: handle down on the desk, glass end
@@ -1049,18 +1156,147 @@ const SHELF_BOOKS = [
 function leanMagnifier(root){
   const m = root.getObjectByName('Magnifier');
   if (!m) return;
-  m.rotation.set(-1.02, 0.5, 0.12);
+  /* flipped end over end: it was lying handle-up, which is upside down
+     for a magnifier. And brought right to the front lip of the desk,
+     nearest the chair, where a thing you keep picking up actually
+     lives. */
+  m.rotation.set(-1.02 + Math.PI, 0.42, 0.10);
   m.updateMatrixWorld(true);
   const bb = new THREE.Box3().setFromObject(m);
   const c = bb.getCenter(new THREE.Vector3());
-  const tx = LAMP_AT.x + 0.13, tz = LAMP_AT.z + 0.05;
+  const S = DESK_SURF || { y: DESK_Y + 0.019, z1: DESK_Z + 0.34 };
+  const tx = DESK_X - 0.30, tz = S.z1 - 0.10;
   const here = m.parent.worldToLocal(c.clone());
   const want = m.parent.worldToLocal(
-    new THREE.Vector3(tx, c.y + ((DESK_Y + 0.019) - bb.min.y) + 0.006, tz));
+    new THREE.Vector3(tx, c.y + (S.y - bb.min.y) + 0.004, tz));
   m.position.add(want.sub(here));
+  m.updateMatrixWorld(true);
+  const fb = new THREE.Box3().setFromObject(m);
+  P.glass = new THREE.Vector3(tx, fb.max.y + 0.01, tz);
 }
 
-const BOOKS = [];          /* the meshes, for the raycaster to hover */
+/* Put a cover on a book that already exists.
+
+   The previous pass laid flat planes near the faces and it showed:
+   the art hovered rather than sat, and a flat rectangle over a
+   bevelled board never reads as printed on it.
+
+   These are projected decals. The plane is subdivided, and every one
+   of its vertices is cast at the book and moved to wherever it lands,
+   a fraction of a millimetre proud. The sheet takes the shape of the
+   thing underneath it, over the raised bands and into the recesses,
+   which is what makes it look printed instead of stuck on. Anything
+   that misses the mesh keeps its flat position, so an overhanging
+   edge just stays put.
+
+   Everything the model shipped with survives: its leather, its normal
+   and roughness and AO maps, and the bevels, which are geometry. */
+const DECAL_SEG = 24;
+
+/* Cast a grid of points at the book and keep where they land.
+
+   Everything is done in the book's own local space, which is the whole
+   point: the books are rotated on the shelf, and measuring their size
+   along rotated axes using a world bounding box gives the box's
+   diagonal rather than the book, which is what made the first set of
+   decals far too big. The only trip out to world space is the ray
+   itself, and the hit comes straight back. */
+function projectDecal(m, mesh, w, h, origin, right, up, normal, mat){
+  const g = new THREE.PlaneGeometry(w, h, DECAL_SEG, DECAL_SEG);
+  const pos = g.attributes.position;
+  const ray = new THREE.Raycaster();
+  const toWorld = m.matrixWorld;
+  const toLocal = new THREE.Matrix4().copy(toWorld).invert();
+  const nWorld = normal.clone().transformDirection(toWorld).normalize();
+  const p = new THREE.Vector3(), from = new THREE.Vector3();
+  const back = nWorld.clone().negate();
+  const stand = Math.max(w, h) * 2;
+
+  for (let i = 0; i < pos.count; i++){
+    p.copy(origin)
+     .addScaledVector(right, pos.getX(i))
+     .addScaledVector(up,    pos.getY(i));
+    const world = p.clone().applyMatrix4(toWorld);
+    from.copy(world).addScaledVector(nWorld, stand);
+    ray.set(from, back);
+    const hit = ray.intersectObject(mesh, true)[0];
+    let land;
+    if (hit){
+      land = hit.point.clone().addScaledVector(nWorld, 0.0004).applyMatrix4(toLocal);
+      /* A ray near the edge of a board can sail past it and strike the
+         spine instead, which is what dragged the artwork round the
+         sides. Allow the sheet to follow the relief and no further. */
+      const along = land.dot(normal);
+      const face = origin.dot(normal);
+      const lo = face - 0.04, hi = face + 0.06;
+      if (along < lo || along > hi) land.addScaledVector(normal, THREE.MathUtils.clamp(along, lo, hi) - along);
+    } else {
+      land = p.clone().addScaledVector(normal, 0.004);
+    }
+    pos.setXYZ(i, land.x, land.y, land.z);
+  }
+  g.computeVertexNormals();
+  const d = new THREE.Mesh(g, mat);
+  d.castShadow = false; d.receiveShadow = true;
+  return d;
+}
+
+function dressBook(m, b){
+  let mesh = null;
+  m.traverse(n => { if (n.isMesh && !mesh) mesh = n; });
+  if (!mesh) return;
+  m.updateMatrixWorld(true);
+
+  /* the book's exact extents in its own space */
+  const mn = new THREE.Vector3(1e9, 1e9, 1e9), mx = new THREE.Vector3(-1e9, -1e9, -1e9);
+  const v = new THREE.Vector3();
+  const inv = new THREE.Matrix4().copy(m.matrixWorld).invert();
+  m.traverse(n => {
+    if (!n.isMesh) return;
+    const pa = n.geometry.attributes.position;
+    const mm = new THREE.Matrix4().multiplyMatrices(inv, n.matrixWorld);
+    for (let i = 0; i < pa.count; i++){ v.fromBufferAttribute(pa, i).applyMatrix4(mm); mn.min(v); mx.max(v); }
+  });
+  const c = new THREE.Vector3().addVectors(mn, mx).multiplyScalar(0.5);
+  const sz = new THREE.Vector3().subVectors(mx, mn);
+  const X = new THREE.Vector3(1, 0, 0), Y = new THREE.Vector3(0, 1, 0), Z = new THREE.Vector3(0, 0, 1);
+
+  const TL = new THREE.TextureLoader();
+  const skin = src => {
+    const t = TL.load(src);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 8;
+    return new THREE.MeshStandardMaterial({
+      map:t, roughness:0.56, metalness:0, side:THREE.DoubleSide,
+      polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2 });
+  };
+
+  /* x is the cover width, y the thickness, z the height, so the boards
+     are the y faces and the spine is an x face. Both of each: only one
+     side is ever facing you and this way it does not matter which. */
+  /* right = up x normal. Flipping a sign instead, which is what the
+     last pass did, mirrors the artwork: every title came out reversed. */
+  const rightOf = (up, n) => new THREE.Vector3().crossVectors(up, n).normalize();
+
+  if (b.img){
+    const cov = skin(b.img);
+    [1, -1].forEach(sg => {
+      const n = Y.clone().multiplyScalar(sg);
+      const o = c.clone().setY(sg > 0 ? mx.y : mn.y);
+      m.add(projectDecal(m, mesh, sz.x * 0.99, sz.z * 0.99, o, rightOf(Z, n), Z, n, cov));
+    });
+  }
+  if (b.spine){
+    const sp = skin(b.spine);
+    [1, -1].forEach(sg => {
+      const n = X.clone().multiplyScalar(sg);
+      const o = c.clone().setX(sg > 0 ? mx.x : mn.x);
+      m.add(projectDecal(m, mesh, sz.y * 0.97, sz.z * 0.99, o, rightOf(Z, n), Z, n, sp));
+    });
+  }
+}
+
+const BOOKS = [];          /* the meshes the ray tests against */
 function buildBookshelf(root){
   const S = HUTCH_SURF;
   if (!S) return;
@@ -1071,7 +1307,7 @@ function buildBookshelf(root){
   const tpl = ['Book_1', 'Book_2', 'Book_3'].map(n => root.getObjectByName(n)).filter(Boolean);
   if (!tpl.length) return;
 
-  const x0 = S.x0 + 0.56, x1 = S.x1 - 0.50;
+  const x0 = S.x0 + 0.72, x1 = S.x1 - 0.46;   /* clear of the jars on the left */
   const z  = (S.z0 + S.z1) / 2 - 0.01;
 
   let x = x0;
@@ -1110,8 +1346,13 @@ function buildBookshelf(root){
     m.updateMatrixWorld(true);
 
     m.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
+    /* a book with art gets its own cover and spine painted over the
+       model's leather; the rest keep the leather they came with */
+    if (b.img) dressBook(m, b);
     m.userData.book = b;
     m.userData.homeZ = m.position.z;
+    m.userData.homeY = m.position.y;
+    m.userData.homeRY = m.rotation.y;
     m.userData.out = 0;
     BOOKS.push(m);
     x += sz.x + 0.006;
@@ -1384,11 +1625,15 @@ const PROPS = {
   Magnifier: [-0.40,  0.16,  0.00, 0.8,  'desk'],
 
   /* up on the back, out of the way of the work */
-  Bottle:    [-0.12,  0.02,  0.00, 1,    'hutch'],
-  Jar_1:     [-0.02,  0.05,  0.00, 1,    'hutch'],
-  Jar_2:     [-0.24,  0.04,  0.00, 1,    'hutch'],
-  Note_1:    [ 0.18,  0.00, -0.55, 1,    'hutch'],
-  Note_2:    [ 0.08, -0.06,  0.30, 1,    'hutch'],
+  /* the jars and the bottle used to stand in front of the book row.
+     One of them was close enough to catch the ray before the books
+     did, so clicking a title near it did nothing and felt broken.
+     They live to the left of the shelf now, clear of it. */
+  Bottle:    [-0.34,  0.03,  0.00, 1,    'hutch'],
+  Jar_1:     [-0.25,  0.06,  0.00, 1,    'hutch'],
+  Jar_2:     [-0.43,  0.04,  0.00, 1,    'hutch'],
+  Note_1:    [-0.50, -0.05, -0.55, 1,    'hutch'],
+  Note_2:    [-0.16, -0.07,  0.30, 1,    'hutch'],
   /* the model's banker's lamp is the same object as Maxence's, and at
      its shipped size it was 480mm wide. A third of the size, up on the
      hutch, it reads as an ornament instead of a second fixture. */
@@ -1807,6 +2052,17 @@ const SEATED = { pos:[DESK_X + 0.08, 1.26, CHAIR_Z + 0.66], look:[DESK_X + 0.04,
    it. Doing it off the seated position rather than a hand-placed camera
    per object means the move always reads as leaning in, never as cutting
    to a different room. */
+/* closeUp, but shifted sideways so a panel has room. side is metres to
+   the camera's right at the subject. */
+function offsetCloseUp(target, dist, fov, side){
+  const c = closeUp(target, dist, fov);
+  const fwd = new THREE.Vector3().subVectors(c.look, c.pos).normalize();
+  const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
+  c.pos.addScaledVector(right, side);
+  c.look.addScaledVector(right, side);
+  return c;
+}
+
 function closeUp(target, dist, fov){
   const from = new THREE.Vector3(...SEATED.pos);
   const dir = from.clone().sub(target).normalize();
@@ -1834,7 +2090,9 @@ const SPOTS = [
       <li>4A Interaction Design &amp; Business, University of Waterloo</li></ul>` },
 
   { id:'radio', label:'what I play', at:() => P.radio, stage:'seated',
-    cam:() => closeUp(P.radio, 0.34, 36), overlay:'audio',
+    /* framed left of centre so the player, which sits on the right,
+       has somewhere to be that is not on top of the radio */
+    cam:() => offsetCloseUp(P.radio, 0.40, 36, -0.10), overlay:'audio',
     eyebrow:'What I play',
     title:'Games are how I learned what a system feels like from the inside.',
     html:`<p>Baldur's Gate 3 and Disco Elysium are the two I keep going back to, and these days I am helping build a third. Path to Menzoberranzan is a 140 person volunteer studio making a full custom campaign in the Underdark, and I run its technical direction.</p>
@@ -1851,6 +2109,16 @@ const SPOTS = [
       <li>Illustration and layout, which is where the seeing went</li>
       <li>Founding between lectures, which is exactly as tidy as it sounds</li></ul>
       <p>I build systems that keep working when the world is messy. That is the throughline.</p>` },
+
+  { id:'glass', label:'analog horror', at:() => P.glass, stage:'seated',
+    cam:() => closeUp(P.glass, 0.26, 34),
+    eyebrow:'What I chase',
+    title:'I love analog horror and ARGs.',
+    html:`<p>The genre that hides a story in the gaps: a corrupted tape, a
+      page that should not exist, a number that answers. I build them too,
+      which is a different way of saying I cannot leave a puzzle alone.</p>
+      <p>I am on level 24 of <a class="link" href="https://ae27ff.com/about.php" target="_blank" rel="noopener">AE27FF</a>. Can you beat me? :^)</p>
+      <p class="meta"><a class="link" href="https://ae27ff.com/about.php" target="_blank" rel="noopener">ae27ff.com &nearr;</a></p>` },
 
   /* the shelf. No panel: you lean in and the books tell you themselves. */
   { id:'books', label:'what I read', at:() => P.books, stage:'seated',
@@ -1922,8 +2190,9 @@ function openPanel(spot){
     if (overlay === 'mac') macEl.classList.add('lit');
     hint.textContent = 'have a look around';
   } else if (spot.shelf){
-    /* the shelf has no panel. The books say what they are themselves. */
-    hint.textContent = 'hover a book';
+    pickedBook = null;
+    shelfPanel(null);
+    hint.textContent = 'click a book';
   } else {
     panelBody.innerHTML = `<span class="eyebrow">${spot.eyebrow}</span><h2>${spot.title}</h2>${spot.html}`;
     panel.classList.add('open');
@@ -1939,8 +2208,9 @@ function closePanel(){
   if (overlay){
     macEl.classList.remove('open'); macEl.classList.remove('lit');
     audioEl.classList.remove('open');
-    /* stop the music rather than leave it playing at an empty desk */
-    if (overlay === 'audio'){ const f = audioEl.querySelector('iframe'); if (f) f.src = f.src; }
+    /* the iframe is never touched on the way out. Reloading its src is
+       what used to kill the track the moment you sat back, and a radio
+       you have to stand next to is not a radio. */
     overlay = null;
   }
   hint.textContent = HINT;
@@ -2037,6 +2307,123 @@ const pins = SPOTS.map(spot => {
 document.getElementById('panelClose').addEventListener('click', closePanel);
 backBtn.addEventListener('click', e => { e.stopPropagation(); closePanel(); });
 addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+/* ── Safari's two tabs, and the live GitHub page ──────────────────
+   Neither site can be embedded. LinkedIn answers x-frame-options
+   sameorigin and GitHub answers deny, so an iframe is off the table for
+   both and each tab is a rebuild.
+
+   GitHub, though, has a public REST API with access-control-allow-origin
+   *, so its rebuild is filled with her real data: profile, repositories,
+   and the push events behind "recent activity". LinkedIn has no
+   equivalent public endpoint, so that tab stays hand-written.
+
+   Unauthenticated GitHub allows 60 requests an hour per IP, which a
+   popular page would burn through, so answers are cached for half an
+   hour and every field falls back to the markup's baked-in value if the
+   network says no. The page is never blank and never wrong-looking. */
+(function github(){
+  const TTL = 30 * 60 * 1000;
+  const KEY = 'gh:henliz';
+  const $ = id => macEl.querySelector('#' + id);
+
+  const ago = iso => {
+    const m = Math.floor((Date.now() - new Date(iso)) / 60000);
+    if (m < 60)   return m <= 1 ? 'just now' : m + ' minutes ago';
+    const h = Math.floor(m / 60);
+    if (h < 24)   return h + (h === 1 ? ' hour ago' : ' hours ago');
+    const d = Math.floor(h / 24);
+    if (d < 30)   return d + (d === 1 ? ' day ago' : ' days ago');
+    return new Date(iso).toLocaleDateString(undefined, { month:'short', day:'numeric' });
+  };
+  /* GitHub's own language colours, for the ones she actually writes in */
+  const HUE = { HTML:'#e34c26', JavaScript:'#f1e05a', TypeScript:'#3178c6',
+                Python:'#3572A5', GDScript:'#355570', CSS:'#663399',
+                Batchfile:'#C1F12E', Shell:'#89e051' };
+
+  function paint(d){
+    if (!d) return;
+    if (d.user){
+      const u = d.user;
+      if (u.name) $('ghName').textContent = u.name;
+      if (u.bio)  $('ghBio').textContent  = u.bio;
+      if (u.avatar_url) $('ghAva').src = u.avatar_url;
+      $('ghFol').textContent = u.followers;
+      $('ghFwg').textContent = u.following;
+      $('ghRepoCount').textContent = u.public_repos;
+    }
+    if (d.repos && d.repos.length){
+      $('ghRepos').innerHTML = d.repos.slice(0, 4).map(r => `
+        <div class="repo">
+          <a href="${r.html_url}" target="_blank" rel="noopener">${r.name}</a>
+          ${r.description ? `<p>${r.description.replace(/[<>]/g, '')}</p>` : '<p></p>'}
+          <div class="meta">
+            ${r.language ? `<span><i class="dot" style="background:${HUE[r.language] || '#8b949e'}"></i>${r.language}</span>` : ''}
+            ${r.stargazers_count ? `<span>&#9733; ${r.stargazers_count}</span>` : ''}
+            <span>updated ${ago(r.pushed_at)}</span>
+          </div>
+        </div>`).join('');
+    }
+    if (d.events && d.events.length){
+      /* one line per repo per day, so a day of twelve pushes reads as a day
+         of work rather than twelve identical rows */
+      const seen = new Set(), rows = [];
+      for (const e of d.events){
+        const day = e.created_at.slice(0, 10), k = e.repo.name + day;
+        if (seen.has(k)) continue;
+        seen.add(k);
+        const verb = e.type === 'PushEvent' ? 'Pushed to'
+                   : e.type === 'CreateEvent' ? 'Created'
+                   : e.type === 'WatchEvent' ? 'Starred' : 'Updated';
+        rows.push(`<div class="act">${verb} <b>${e.repo.name.split('/')[1]}</b> &middot; ${ago(e.created_at)}</div>`);
+        if (rows.length === 5) break;
+      }
+      $('ghActivity').innerHTML = rows.join('');
+    }
+    $('ghLive').textContent = d.at
+      ? 'live from the api \u00b7 ' + ago(new Date(d.at).toISOString())
+      : 'live from the api';
+  }
+
+  let started = false;
+  async function load(){
+    if (started) return; started = true;
+    try {
+      const cached = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (cached && Date.now() - cached.at < TTL){ paint(cached); return; }
+    } catch (e) {}
+    try {
+      const get = u => fetch(u, { headers:{ Accept:'application/vnd.github+json' } })
+                        .then(r => r.ok ? r.json() : null);
+      const [user, repos, events] = await Promise.all([
+        get('https://api.github.com/users/henliz'),
+        get('https://api.github.com/users/henliz/repos?sort=pushed&per_page=8'),
+        get('https://api.github.com/users/henliz/events/public?per_page=30'),
+      ]);
+      if (!user && !repos && !events) return;      /* offline: keep the markup */
+      const data = { user, repos, events, at: Date.now() };
+      paint(data);
+      try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+    } catch (e) { /* rate-limited or offline; the baked-in page stands */ }
+  }
+
+  /* the tabs */
+  const safari = macEl.querySelector('#w-safari');
+  const url    = macEl.querySelector('#macUrl');
+  const URLS   = { li:'linkedin.com/in/henriettavanniekerk', gh:'github.com/henliz' };
+  macEl.querySelectorAll('.tab[data-site]').forEach(tab => {
+    tab.addEventListener('click', e => {
+      e.stopPropagation();
+      const site = tab.dataset.site;
+      macEl.querySelectorAll('.tab[data-site]').forEach(t => t.classList.toggle('on', t === tab));
+      safari.querySelectorAll('.bd[data-site]').forEach(b => { b.hidden = b.dataset.site !== site; });
+      url.textContent = URLS[site];
+      if (site === 'gh') load();
+    });
+  });
+  /* and prefetch once the desktop is actually being looked at */
+  window.__ghLoad = load;
+})();
 
 /* ── the desktop's window manager ─────────────────────────────────
    Apps own windows. Opening one does not close another, the way it
@@ -2172,67 +2559,65 @@ addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
 })();
 
 /* ── the shelf, up close ──────────────────────────────────────────
-   Once you have leaned into the books, the pointer picks one out: a
-   raycast finds whichever spine is under the cursor and that book
-   slides toward you far enough to read its cover, with its title in a
-   label that follows it. Everything eases, so the row breathes rather
-   than snapping. */
+   Click a book and it comes off the shelf: slides out, turns to face
+   you, and says what it is. Click it again and it goes back.
+
+   This used to happen on hover, which was wrong. A book sliding out
+   because the pointer drifted across it is noise. Taking one down is
+   a thing you decide to do. */
 const rayc = new THREE.Raycaster();
 const ptr = new THREE.Vector2(-2, -2);
-let hoverBook = null;
-const bookTip = document.createElement('div');
-bookTip.id = 'booktip';
-document.getElementById('stage').appendChild(bookTip);
+let pickedBook = null;
 
 function shelfMode(){ return openSpot && openSpot.shelf; }
 
+function bookUnder(){
+  rayc.setFromCamera(ptr, camera);
+  const xs = rayc.intersectObjects(BOOKS, true);
+  let n = xs.length ? xs[0].object : null;
+  while (n && !n.userData.book) n = n.parent;
+  return n;
+}
+
+function shelfPanel(b){
+  const gr = `<p class="meta"><a class="link" href="${GOODREADS}" target="_blank" rel="noopener">check out what I&rsquo;m reading &nearr;</a></p>`;
+  panelBody.innerHTML = b
+    ? `<span class="eyebrow">${b.a || 'What I read'}</span><h2>${b.t}</h2>${b.note || ''}${gr}`
+    : `<span class="eyebrow">What I read</span><h2>Take one down.</h2>
+       <p>Click a book and it comes off the shelf.</p>${gr}`;
+  panel.classList.add('open');
+}
+
+let lastPick = 0;
 canvas.addEventListener('pointermove', e => {
   ptr.x = (e.clientX / innerWidth) * 2 - 1;
   ptr.y = -(e.clientY / innerHeight) * 2 + 1;
+  if (!shelfMode()) return;
+  /* the cursor hint is worth one raycast every 90ms, not one per
+     pointermove: the books carry projected decals now and testing all
+     of them on every mouse event is what made the shelf feel sticky */
+  const t = performance.now();
+  if (t - lastPick < 90) return;
+  lastPick = t;
+  const n = bookUnder();
+  canvas.style.cursor = (n && n.userData.book.note) ? 'pointer' : '';
 });
 canvas.addEventListener('pointerleave', () => { ptr.set(-2, -2); });
 
-canvas.addEventListener('click', () => {
-  /* a book you have pulled out and that belongs to a case study opens it */
-  if (!shelfMode() || !hoverBook) return;
-  const href = hoverBook.userData.book.href;
-  if (!href) return;
-  if (window.parent !== window) window.parent.postMessage({ type:'navigate', href }, '*');
-  else location.href = href;
-});
-
 function stepShelf(){
   if (!BOOKS.length) return;
-  let hit = null;
-  if (shelfMode()){
-    rayc.setFromCamera(ptr, camera);
-    const xs = rayc.intersectObjects(BOOKS, true);
-    if (xs.length){
-      /* the hit is a mesh inside a book; walk up to the book itself */
-      let n = xs[0].object;
-      while (n && !n.userData.book) n = n.parent;
-      hit = n || null;
-    }
-  }
-  hoverBook = hit;
+  if (!shelfMode() && pickedBook) pickedBook = null;
   for (const m of BOOKS){
-    const want = (m === hit) ? 1 : 0;
-    m.userData.out += (want - m.userData.out) * 0.18;
+    const want = (m === pickedBook) ? 1 : 0;
+    m.userData.out += (want - m.userData.out) * 0.14;
     const o = m.userData.out;
-    m.position.z = m.userData.homeZ + o * 0.085;
-  }
-  if (hit){
-    const b = hit.userData.book;
-    bookTip.innerHTML = `<b>${b.t}</b><span>${b.a}</span>` + (b.href ? '<em>open the case study</em>' : '');
-    const v = new THREE.Vector3().copy(hit.position);
-    v.y += 0.10; v.project(camera);
-    bookTip.style.left = ((v.x * 0.5 + 0.5) * innerWidth) + 'px';
-    bookTip.style.top  = ((-v.y * 0.5 + 0.5) * innerHeight) + 'px';
-    bookTip.classList.add('on');
-    canvas.style.cursor = b.href ? 'pointer' : 'default';
-  } else {
-    bookTip.classList.remove('on');
-    canvas.style.cursor = '';
+    if (o < 0.0015 && want === 0) continue;
+    /* a hand's width out and a quarter turn, which is enough to read
+       the cover. The first pass moved it far enough to leave the row. */
+    /* far enough out to clear its neighbours, which 85mm did not */
+    m.position.z = m.userData.homeZ + o * 0.165;
+    m.position.y = m.userData.homeY + o * 0.016;
+    m.rotation.y = m.userData.homeRY - o * 0.40;
   }
 }
 
@@ -2246,7 +2631,22 @@ function stepShelf(){
 
    The pins are their own DOM buttons, so anything that reaches the
    canvas is genuinely empty desk: close whatever is open. */
-canvas.addEventListener('click', () => { if (openSpot) closePanel(); });
+canvas.addEventListener('click', () => {
+  /* inside the shelf the canvas is not empty: it is books. Take one
+     down, or put the open one back, and only leave the shelf when the
+     click actually lands on nothing. */
+  if (shelfMode()){
+    const n = bookUnder();
+    const pick = (n && n.userData.book.note) ? n : null;
+    if (pick || pickedBook){
+      pickedBook = (pickedBook === pick) ? null : pick;
+      shelfPanel(pickedBook ? pickedBook.userData.book : null);
+      startRoom();
+      return;
+    }
+  }
+  if (openSpot) closePanel();
+});
 
 /* ── loop ─────────────────────────────────────────────────────── */
 function resize(){
