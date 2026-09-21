@@ -519,9 +519,15 @@
      clipped by its rounded right edge instead of bleeding into the gutter */
   /* canvas is a replaced element: insets alone leave it at its intrinsic
      300x150, so the size has to be stated outright */
-  #gl{position:fixed;inset:0;
-      width:100%;height:100%;
-      display:block;pointer-events:none;z-index:5;
+  /* Sits exactly over the content card, pinned to the viewport. The size is
+     spelled out rather than left to insets: a canvas is a replaced element,
+     so width:auto resolves to its drawing-buffer attribute, not to the box
+     its insets describe — which sized it to twice the card. */
+  #gl{position:fixed;
+      top:var(--gap); left:var(--sb-w);
+      width:calc(100vw - var(--sb-w) - var(--gap));
+      height:calc(100dvh - var(--gap) * 2);
+      display:block;pointer-events:none;z-index:2;
       border-radius:0 22px 22px 0}
 
   /* top padding clears the site's floating nav pill when this is iframed
@@ -902,30 +908,6 @@
         }
 
         @media screen and (max-width: 600px) {
-          #resume-popup {
-            width: 95% !important;
-            height: 85vh !important;
-            padding: 0.8rem !important;
-            border-radius: 10px !important;
-          }
-
-          #resume-popup embed {
-            height: 75vh !important;
-          }
-
-          #resume-popup button {
-            padding: 0.3rem 0.7rem !important;
-            font-size: 0.9rem !important;
-          }
-
-          #resume-popup p {
-            font-size: 1rem !important;
-          }
-
-          #resume-popup .contact-link {
-            display: block;
-            margin: 0.5rem 0;
-          }
         }
     /* === 3D scene loading overlay === */
     @keyframes overlayGradient {
@@ -2331,7 +2313,40 @@
         /* with a translucent pane, the work page behind it would read
            through — hide it while a case is open. visibility (not display)
            keeps its layout and the scroll position closeCase restores. */
-        :root[data-pane-open] .content-card { visibility: hidden; }
+        /* The canvas sits outside the card now, so hiding the card no longer
+           hides it: without this it kept painting models over the top of
+           About and every case study. */
+        :root[data-pane-open] .content-card,
+        :root[data-pane-open] #gl { visibility: hidden; }
+
+        /* ── while a pane is open, stop paying for glass you cannot see ──
+           Every backdrop-filter is its own compositing layer, and each one
+           makes the browser re-read and re-blur whatever sits behind it. The
+           page carries a lot of them — the rail, the card, all five tiles,
+           the contact pill. With a case study or About open, the card and its
+           tiles are hidden but their layers still exist and still cost, and
+           About is running a third WebGL renderer on top of that.
+
+           The symptom that comes out of this is the rail going blank: its
+           text keeps perfect layout and colour, the pixels just never get
+           rastered, which reads as flicker. So while a pane is open every
+           frosted layer behind it is switched off, and the rail itself stops
+           being glass and becomes near-solid. The sky behind it is already
+           held still by then, so there is almost nothing to see. */
+        :root[data-pane-open] .content-card *,
+        :root[data-pane-open] .tile,
+        :root[data-pane-open] .conspire-socials {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        :root[data-pane-open] .sidebar {
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            background: linear-gradient(115deg,
+                rgba(var(--rail-tint-rgb), 0.97) 0%,
+                rgba(var(--rail-tint-rgb), 0.96) 55%,
+                rgba(var(--rail-tint-rgb), 0.95) 100%);
+        }
         /* rail sits above the pane so it's never covered */
         .sidebar { z-index: 900; }
 
@@ -2363,8 +2378,9 @@
                 border-left: 1px solid rgba(var(--muted-rgb),0.08);
             }
             #gl {
-                inset: 0;
-                width: 100%;
+                top: var(--gap); left: var(--gap);
+                width: calc(100vw - var(--gap) * 2);
+                height: calc(100dvh - var(--gap) * 2);
                 border-radius: 22px;
             }
             .sidebar { width: min(330px, 86vw); }
@@ -3198,6 +3214,26 @@
 .case-pane{ border-radius:0 12px 12px 0 !important; }
 #gl{ border-radius:0 12px 12px 0 !important; }
 .tile-video, .tile-scrim{ border-radius:inherit !important; }
+
+/* ── phones: one tile per row ────────────────────────────────────────────
+   The four-up grid kept its columns all the way down, so on a phone each
+   case study was a postage stamp with a caption beside it. At the width
+   where the rail becomes a drawer the grid becomes a single column: five
+   rows, one study each, every tile the full width of the card. */
+@media (max-width: 920px) {
+  .bento-grid{
+    grid-template-columns: 1fr !important;
+    column-gap: 0 !important;
+    row-gap: clamp(44px, 6vh, 72px) !important;
+    padding-inline: clamp(14px, 4vw, 26px) !important;
+  }
+  .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox{
+    grid-column: 1 / -1 !important;
+  }
+  /* Equinox was the wide one across the bottom; at one column it is the
+     same shape as the rest */
+  .t-equinox .tile{ aspect-ratio: 5 / 3 !important; min-height: 0 !important; }
+}
 </style>
 </head>
 <body>
@@ -3272,7 +3308,7 @@
                 <img src="/HenLogo.png" alt="Henlogo">
             </a>
             <ul class="nav-links">
-                <li><a href="#" onclick="openResumePopup()">Re<span class="px">sum</span>e</a></li>
+                <li><a href="/resume/">Re<span class="px">sum</span>e</a></li>
                 <li><a href="#projects">W<span class="px">or</span>k</a></li>
                 <li><a href="/about/">A<span class="px">bo</span>ut</a></li>
             </ul>
@@ -3286,7 +3322,7 @@
         <div class="overlay" onclick="closeMobileMenu()"></div>
         <div class="mobile-menu">
             <ul>
-                <li><a href="#" onclick="openResumePopup(); closeMobileMenu()">Re<span class="px">sum</span>e</a></li>
+                <li><a href="/resume/" onclick="closeMobileMenu()">Re<span class="px">sum</span>e</a></li>
                 <li><a href="#projects" onclick="closeMobileMenu()">W<span class="px">or</span>k</a></li>
                 <li><a href="/about/" onclick="closeMobileMenu()">A<span class="px">bo</span>ut</a></li>
             </ul>
@@ -3350,7 +3386,7 @@
                 <a class="sb-link" href="#northstar"    data-scroll="#northstar">north star</a>
                 <a class="sb-link" href="#endorsements" data-scroll="#endorsements">endorsements</a>
                 <a class="sb-link" href="/about/"       data-pane="about">about</a>
-                <a class="sb-link" href="/resume/" onclick="event.preventDefault(); routeTo('resume')">resume</a>
+                <a class="sb-link" href="/resume/"      data-pane="resume">resume</a>
                 <a class="sb-link" href="/playground/"  data-pane="playground">playground</a>
             </nav>
 
@@ -3399,11 +3435,21 @@
             <iframe class="case-frame" id="caseFrame" title="Case study" src="about:blank"></iframe>
         </div>
 
+        <!-- The models canvas lives outside the scroller on purpose. Inside it,
+             #contentCard's backdrop-filter made itself the containing block for
+             a position:fixed child, so "fixed" pinned the canvas to the card's
+             scrolled CONTENT and it had to be counter-translated by scrollTop
+             on every frame to stay put. That counter-transform is written on
+             the main thread while the page scrolls on the compositor, so any
+             hitch showed up as the models sliding out of their tiles — the
+             bounce on phones. Out here it is genuinely fixed to the viewport,
+             sized to the card, and never moves. -->
+        <canvas id="gl"></canvas>
+
         <main class="content-card" id="contentCard">
         <div class="content-inner">
         <!-- Full-width models section -->
         <div class="models-section" id="projects">
-            <canvas id="gl"></canvas>
 <div id="wrap">
     <div class="bento-grid" id="grid">
       <!-- Real HTML so crawlers, AI fetchers and no-JS readers get the work.
@@ -4060,16 +4106,8 @@
                 closeMobileMenu();
             }
         });
-        function openResumePopup() {
-            document.getElementById('resume-popup').style.display = 'block';
-        }
-
-        function closeResumePopup() {
-            document.getElementById('resume-popup').style.display = 'none';
-            // the popup has its own URL, so closing it has to give that URL back
-            if (window.routeHome) window.routeHome();
-        }
-
+        
+        
     </script>
 
 
@@ -4146,41 +4184,7 @@
 
 
  <!-- Resume Popup -->
-<div id="resume-popup" style="
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #0f1419;
-    padding: 1rem;
-    border-radius: 12px;
-    z-index: 1100;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    max-width: 95%;
-    width: 90%;
-    height: 90vh;
-    overflow: hidden;
-    border: 1px solid rgba(168, 218, 220, 0.2);
-">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-        <p style="color: #f1faee; font-size: 1.2rem; margin: 0;">📄 My Resume</p>
-        <button onclick="closeResumePopup()" style="background: #457b9d; color: white; padding: 0.4rem 0.8rem; border: none; border-radius: 8px;">Close</button>
-    </div>
 
-    <!-- PDF Embed -->
-    <embed src="/Henrietta_van_Niekerk_Resume_2026.pdf" type="application/pdf" style="
-        width: 100%;
-        height: 100%;
-        border: none;
-        border-radius: 8px;
-    ">
-
-    <div style="margin-top: 1rem; text-align: center;">
-        <a href="/Henrietta_van_Niekerk_Resume_2026.pdf" download class="contact-link">Download PDF</a>
-        <a href="mailto:?subject=My Resume&body=Here is my resume: https://henliz.github.io//Henrietta_van_Niekerk_Resume_2026.pdf" class="contact-link">Send via Email</a>
-    </div>
-</div>
 
 
 
@@ -4194,24 +4198,12 @@
     const scroller = document.getElementById('contentCard');
     window.scroller = scroller;
 
-    /* Pin the WebGL canvas to the card's VISIBLE box.
-       #contentCard has a backdrop-filter, which makes it the containing block
-       for position:fixed descendants, so the canvas inside it is fixed to the
-       card's scrolled content and slides out of view as you scroll. Countering
-       by exactly the scroll offset puts it back. Done on scroll as well as in
-       the render loop so it can never lag a frame behind the tiles it is
-       supposed to be drawing into. */
-    (function pinCanvas(){
-      const gl = document.getElementById('gl');
-      if (!gl) return;
-      const pin = () => {
-        const want = 'translateY(' + scroller.scrollTop + 'px)';
-        if (gl.style.transform !== want) gl.style.transform = want;
-      };
-      scroller.addEventListener('scroll', pin, { passive: true });
-      addEventListener('resize', pin);
-      pin();
-    })();
+    /* The canvas used to be pinned here as well as in the render loop: it
+       lived inside #contentCard, whose backdrop-filter made it the containing
+       block for a position:fixed child, so "fixed" followed the card's
+       scrolled content and had to be pushed back by the scroll offset. It now
+       sits outside the scroller and is genuinely fixed to the viewport, so
+       nothing may move it — this was still shoving it down the page. */
     window.lenis = new Lenis({
       wrapper: scroller,
       content: scroller.querySelector('.content-inner'),
@@ -4625,9 +4617,14 @@ function addOverlay(model, url, sizeXY, posXYZ){
    decode a detached element for a while and then quietly stop. */
 function addScreenVideo(model, src, matName, videoAspect, host, fit, crop, punch){
   const v = document.createElement('video');
-  v.src = src; v.muted = true; v.loop = true; v.playsInline = true;
+  /* The clip that plays on a model's screen used to take its src here, with
+     preload auto, so both of them downloaded and opened a decoder the moment
+     the page loaded whether or not their tile was anywhere near the screen.
+     The src is held back; the tile's visibility observer attaches it. */
+  v.dataset.src = src;
+  v.muted = true; v.loop = true; v.playsInline = true;
   v.setAttribute('playsinline',''); v.setAttribute('muted','');
-  v.preload = 'auto'; v.className = 'tf-src';
+  v.preload = 'none'; v.className = 'tf-src';
   if (host) host.appendChild(v);
 
   let hit = false;
@@ -4666,6 +4663,12 @@ function addScreenVideo(model, src, matName, videoAspect, host, fit, crop, punch
 function paintScreen(v){
   const s = v && v.screenCanvas;
   if (!s || v.readyState < 2) return;
+  /* These clips run at 30fps and we draw at 60, so half of every upload was
+     the same frame again — and each one is a full 1024-wide RGBA texture
+     pushed to the GPU, per model, per frame. Paint only when the video has
+     actually moved on. */
+  if (v.currentTime === s.lastT) return;
+  s.lastT = v.currentTime;
   const {ctx, tex, CW, CH, fit, crop} = s;
   // crop is a rect in the source file's own pixels: the part worth showing
   const c = crop || {x: 0, y: 0, w: v.videoWidth, h: v.videoHeight};
@@ -5201,7 +5204,12 @@ stations.forEach((cfg,i) => {
       let onScreen = false;
       const sync = () => {
         const v = view.screenVideo; if (!v) return;
-        if (onScreen) v.play().catch(() => {}); else v.pause();
+        if (onScreen) {
+          if (!v.src && v.dataset.src) { v.preload = 'auto'; v.src = v.dataset.src; }
+          v.play().catch(() => {});
+        } else {
+          v.pause();
+        }
       };
       view.onScreenVideo = sync;
       new IntersectionObserver(entries => entries.forEach(e => {
@@ -5342,6 +5350,8 @@ const _e = new THREE.Euler();
    for reduced motion gets the models drawn once and left alone. */
 let _raf = 0, _idle = false;
 function anyVisible(){
+  // a pane covers the work grid entirely; drawing under it is wasted work
+  if (document.documentElement.hasAttribute('data-pane-open')) return false;
   const H = renderer.domElement.clientHeight;
   for (const v of views){
     const r = v.el.getBoundingClientRect();
@@ -5360,6 +5370,9 @@ function wake(){
 }
 function sleep(){ cancelAnimationFrame(_raf); _raf = 0; }
 document.addEventListener('visibilitychange', () => document.hidden ? sleep() : wake());
+/* a pane opening or closing changes whether there is anything to draw */
+new MutationObserver(() => wake()).observe(document.documentElement,
+  { attributes: true, attributeFilter: ['data-pane-open'] });
 
 function tick(){
   _raf = requestAnimationFrame(tick);
@@ -5371,7 +5384,13 @@ function renderFrame(){
     // nothing on screen: hand the frames back until something scrolls in.
     // (never from the reduced-motion path — that one must not start a loop)
     if (!_idle && !window.__gfx.still){
-      _idle = true; sleep();
+      /* Wipe before sleeping. The canvas is pinned to the viewport now, so a
+         frame left on it does not scroll away with the tiles it belongs to —
+         it just sits there over the background until something wakes the
+         loop, which is why models appeared to detach and blink back. */
+      _idle = true;
+      renderer.setScissorTest(false); renderer.clear(); renderer.setScissorTest(true);
+      sleep();
       setTimeout(function poll(){
         if (_raf) return;
         if (anyVisible()) wake(); else setTimeout(poll, 250);
@@ -5384,18 +5403,19 @@ function renderFrame(){
   const t = clock.getElapsedTime();
   const H = renderer.domElement.clientHeight;
 
-  /* The canvas offset used to be written, and the canvas rect read, inside
-     the per-tile loop — a style write followed by a layout read, five times
-     a frame. That is a forced synchronous layout per tile per frame, and it
-     is what made scrolling stutter. Write once, then read once, then draw. */
-  const sc = window.scroller;
-  if (sc){
-    const want = 'translateY(' + sc.scrollTop + 'px)';
-    if (canvas.style.transform !== want) canvas.style.transform = want;
-  }
+  /* One read pass. Nothing is written to the canvas before it, so this does
+     not force a layout the way the old write-then-read did. */
   const cRect = canvas.getBoundingClientRect();
   for (const v of views) v._r = v.el.getBoundingClientRect();
   updateClip(cRect);
+
+  /* Wipe the frame first. Each render only clears its own scissor box, and
+     now that the canvas is pinned to the viewport rather than scrolling with
+     the content, anything a tile painted last frame stays exactly where it
+     was — so a scroll smeared old models across the tiles below. */
+  renderer.setScissorTest(false);
+  renderer.clear();
+  renderer.setScissorTest(true);
 
   for (const v of views){
     const r = v._r;
@@ -5539,8 +5559,7 @@ const CASES = {
   // which on a page with no table of contents just reads as a missing nav.
   about:      { name: 'About',                  href: '/about/case.html',      plainRail: true },
   playground: { name: 'Playground',             href: '/playground/case.html', plainRail: true },
-  // /resume is the popup rather than a pane, but it still deserves a URL
-  resume:     { popup: true },
+  resume:     { name: 'Résumé',   href: '/resume/case.html',     plainRail: true },
 };
 // reverse lookup so the bento tiles (plain <a href>) can be intercepted
 // tiles link to the route (/trove/), the pane loads the content (/trove/case.html)
@@ -5721,13 +5740,6 @@ const CASE_BY_HREF = Object.fromEntries(
   }
   function route() {
     const slug = slugFromPath();
-    const resumeEl = document.getElementById('resume-popup');
-    if (CASES[slug] && CASES[slug].popup) {      // /resume opens the overlay
-      if (resumeEl) resumeEl.style.display = 'block';
-      return;
-    }
-    // any other route means the overlay should not be up
-    if (resumeEl && resumeEl.style.display === 'block') resumeEl.style.display = 'none';
     const m = CASES[slug] ? [null, slug] : location.hash.match(/^#\/([a-z0-9-]+)$/i);
     if (m && CASES[m[1].toLowerCase()]) openCase(m[1].toLowerCase());
     else if (current) {
@@ -5994,6 +6006,17 @@ import { MeshoptDecoder } from "https://cdn.jsdelivr.net/npm/three@0.152.0/examp
   function startSky() { if (!skyRaf) animate(); }
   function stopSky()  { cancelAnimationFrame(skyRaf); skyRaf = 0; }
   document.addEventListener('visibilitychange', () => document.hidden ? stopSky() : startSky());
+
+  /* The rail is a pane of frosted glass over this sky: every frame the sky
+     moves, the browser has to blur a rail-sized slice of it again. That is
+     affordable while you are looking at the work grid, and it is pure waste
+     while you are reading About or a case study — the sky is a decorative
+     strip in the gutters by then. Hold it still whenever a pane is open, and
+     the rail stops being re-composited, which is what was tearing. */
+  const paneOpen = () => document.documentElement.hasAttribute('data-pane-open');
+  new MutationObserver(() => paneOpen() ? stopSky() : startSky())
+    .observe(document.documentElement, { attributes: true, attributeFilter: ['data-pane-open'] });
+  if (paneOpen()) stopSky();
   if (gfx.still) {
     // one frame, then hold it
     requestAnimationFrame(() => renderer.render(scene, camera));

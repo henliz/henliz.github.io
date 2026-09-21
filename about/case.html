@@ -75,11 +75,27 @@ a{ color:inherit }
 /* ── stage ───────────────────────────────────────────────────── */
 #stage{ position:fixed; inset:0 }
 #gl{ position:absolute; inset:0; display:block; width:100%; height:100% }
+/* the corners fall away, the way a room does when you are sitting in it */
+#stage::after{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:6;
+  background:
+    radial-gradient(130% 100% at 50% 42%, transparent 52%, rgba(24,18,12,.30) 100%),
+    radial-gradient(90% 70% at 22% 16%, rgba(255,214,164,.10), transparent 62%);
+  mix-blend-mode:multiply;
+}
+:root[data-theme="light"] #stage::after{
+  background:
+    radial-gradient(130% 100% at 50% 42%, transparent 58%, rgba(40,32,22,.18) 100%),
+    radial-gradient(90% 70% at 22% 16%, rgba(255,222,180,.14), transparent 64%);
+}
 
 /* ── the plus markers, straight off the reference ─────────────── */
 #pins{ position:absolute; inset:0; pointer-events:none }
 .pin{
-  position:absolute; width:34px; height:34px; margin:-17px 0 0 -17px;
+  /* positioned with `translate`, never left/top: left/top is layout, and a
+     layout pass per frame per pin is what made these shimmer */
+  position:absolute; left:0; top:0; translate:-100px -100px;
+  width:34px; height:34px; margin:-17px 0 0 -17px;
   border-radius:50%; border:1px solid rgba(255,255,255,.7);
   background:rgba(255,255,255,.22); backdrop-filter:blur(6px);
   -webkit-backdrop-filter:blur(6px);
@@ -93,6 +109,9 @@ a{ color:inherit }
   border-color:rgba(19,95,90,.5); background:rgba(255,255,255,.62); color:#0d4b47;
 }
 .pin.show{ opacity:1 }
+/* the lamp pin, once you have turned the lamp off */
+.pin.off{ background:rgba(40,46,50,.34); border-color:rgba(255,255,255,.35) }
+.pin.off .ring{ animation:none; opacity:.25 }
 .pin:hover{ transform:scale(1.22); background:rgba(255,255,255,.4) }
 .pin .ring{
   position:absolute; inset:-7px; border-radius:50%;
@@ -100,14 +119,8 @@ a{ color:inherit }
 }
 :root[data-theme="light"] .pin .ring{ border-color:rgba(19,95,90,.35) }
 @keyframes ping{ 0%{transform:scale(.8);opacity:.75} 70%{transform:scale(1.5);opacity:0} 100%{opacity:0} }
-.pin .lbl{
-  position:absolute; left:50%; top:calc(100% + 9px); transform:translateX(-50%);
-  white-space:nowrap; font-size:.66rem; letter-spacing:.16em; text-transform:uppercase;
-  font-weight:600; color:var(--ink); opacity:.0; transition:opacity .25s;
-  text-shadow:0 1px 6px rgba(0,0,0,.55); pointer-events:none;
-}
-:root[data-theme="light"] .pin .lbl{ text-shadow:0 1px 6px rgba(255,255,255,.8) }
-.pin:hover .lbl{ opacity:.9 }
+/* no labels on the pins. Naming everything up front is the opposite
+   of letting somebody find it. */
 
 /* ── the panel a zone opens ──────────────────────────────────── */
 #panel{
@@ -148,33 +161,386 @@ a{ color:inherit }
 }
 #panel .close:hover{ opacity:1 }
 
+/* ── the laptop's desktop ─────────────────────────────────────────
+   Mapped onto the display mesh with matrix3d, so it sits on the glass
+   from any angle. Authored at 900x563 and never responsive: it is
+   always the same screen, just bigger or smaller on yours. */
+#mac{
+  position:absolute; left:0; top:0; width:900px; height:563px;
+  transform-origin:0 0; opacity:0; pointer-events:none; z-index:7;
+}
+#mac.open{ pointer-events:auto }
+#mac .scr{
+  width:900px; height:563px; position:relative; overflow:hidden;
+  font-family:'Satoshi',-apple-system,sans-serif; color:#f2f4f6;
+  background:
+    radial-gradient(38% 26% at 26% 16%, rgba(255,214,168,.7), transparent 70%),
+    radial-gradient(52% 40% at 78% 8%, rgba(150,214,230,.55), transparent 72%),
+    radial-gradient(70% 46% at 44% 72%, rgba(96,154,168,.55), transparent 74%),
+    radial-gradient(110% 70% at 50% 112%, rgba(24,44,64,.9), transparent 72%),
+    linear-gradient(168deg,#16283f 0%,#27486a 28%,#3f6f8e 52%,#5e8f95 74%,#7fa892 100%);
+}
+
+/* menu bar */
+#mac .bar{
+  position:absolute; inset:0 0 auto 0; height:24px; z-index:60;
+  display:flex; align-items:center; gap:13px; padding:0 11px;
+  background:rgba(20,28,36,.34); backdrop-filter:blur(26px) saturate(1.6);
+  font-size:11.5px; color:#fff; font-weight:500;
+}
+#mac .bar .app{ font-weight:800 }
+#mac .bar i{ flex:1 }
+#mac .bar .logo{
+  width:11px; height:13px; display:inline-block; background:#fff;
+  -webkit-mask:radial-gradient(circle at 74% 6%, transparent 2.4px, #000 2.5px) 0 0/100% 100%;
+  mask:radial-gradient(circle at 74% 6%, transparent 2.4px, #000 2.5px) 0 0/100% 100%;
+  clip-path:polygon(46% 12%,62% 0,66% 13%,84% 24%,74% 44%,88% 72%,66% 100%,50% 92%,34% 100%,12% 72%,16% 34%,34% 22%);
+}
+#mac .bar .gl{ width:14px; height:11px; background:rgba(255,255,255,.88); display:inline-block }
+#mac .bar .bat{ width:20px; border-radius:2.5px; background:none; border:1px solid rgba(255,255,255,.75); position:relative }
+#mac .bar .bat::after{ content:''; position:absolute; inset:1.5px; width:11px; background:#fff; border-radius:1px }
+#mac .bar .wifi{ clip-path:polygon(50% 100%,0 34%,14% 22%,50% 58%,86% 22%,100% 34%) }
+#mac .bar .cc{ clip-path:polygon(0 18%,100% 18%,100% 30%,0 30%,0 66%,100% 66%,100% 78%,0 78%) }
+#mac .bar .sr{ clip-path:circle(38% at 44% 44%) }
+#mac #macDate,#mac #macClock{ font-variant-numeric:tabular-nums; font-weight:500 }
+
+/* desktop icons */
+#mac .desk{ position:absolute; right:12px; top:34px; display:grid; gap:12px; z-index:1 }
+#mac .desk .fold{ display:grid; justify-items:center; gap:3px; width:74px; background:none; border:0; cursor:pointer; font-family:inherit }
+#mac .desk s{
+  width:44px; height:34px; border-radius:4px 5px 4px 4px; text-decoration:none; position:relative;
+  background:linear-gradient(170deg,#9ed3f2,#56a0da);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 2px 6px rgba(0,0,0,.3);
+}
+#mac .desk s::before{ content:''; position:absolute; left:3px; top:-4px; width:19px; height:5px; border-radius:3px 3px 0 0; background:#7cb8e2 }
+#mac .desk .fold:hover s{ filter:brightness(1.12) }
+#mac .desk u{ text-decoration:none; font-size:10px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.75); line-height:1.25 }
+
+/* windows */
+#mac .win{
+  position:absolute; left:var(--x); top:var(--y); width:var(--w); height:var(--h);
+  background:#fff; border-radius:10px; display:none; flex-direction:column;
+  overflow:hidden; color:#1b1b1f;
+  box-shadow:0 0 0 .5px rgba(0,0,0,.28), 0 20px 46px rgba(0,0,0,.44);
+}
+#mac .win.open{ display:flex }
+#mac .win.focus{ box-shadow:0 0 0 .5px rgba(0,0,0,.34), 0 30px 70px rgba(0,0,0,.55) }
+#mac .tt{
+  height:30px; flex:0 0 30px; display:flex; align-items:center; gap:8px;
+  padding:0 10px; background:#e9e9ec; border-bottom:.5px solid #cfcfd4; cursor:grab;
+}
+#mac .win.focus .tt{ background:#dedee2 }
+#mac .tt:active{ cursor:grabbing }
+#mac .lights{ display:flex; gap:7px }
+#mac .lights s{
+  width:11px; height:11px; border-radius:50%; text-decoration:none; cursor:pointer;
+  background:#ccc; box-shadow:inset 0 0 0 .5px rgba(0,0,0,.14);
+}
+#mac .win.focus .lights s.r{ background:#ff5f57 }
+#mac .win.focus .lights s.y{ background:#febc2e }
+#mac .win.focus .lights s.g{ background:#28c840 }
+#mac .tt em{ font-style:normal; font-size:12px; font-weight:600; opacity:.7; margin-left:6px }
+
+/* safari chrome */
+#mac .tabs{ display:flex; gap:3px; margin-left:6px; overflow:hidden; flex:1 }
+#mac .tab{
+  font-size:10px; padding:4px 10px; border-radius:6px; background:rgba(0,0,0,.07);
+  color:#42424a; white-space:nowrap; max-width:170px; overflow:hidden; text-overflow:ellipsis;
+}
+#mac .tab.on{ background:#fff; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.14) }
+#mac .url{
+  flex:0 0 26px; display:flex; align-items:center; gap:9px; padding:0 10px;
+  background:#f4f4f6; border-bottom:.5px solid #dedee2;
+}
+#mac .url em{ font-style:normal; font-size:9px; opacity:.4 }
+#mac .url span{ font-size:10px; background:#e6e6ea; border-radius:6px; padding:3px 12px; color:#4a4a52; flex:1; text-align:center }
+#mac .bd{ flex:1; overflow:hidden; position:relative; display:flex }
+#mac .bd.split > .pane{ flex:1; overflow-y:auto }
+
+/* sidebars, which is most of what a mac window actually is */
+#mac .side{
+  flex:0 0 146px; background:rgba(246,246,248,.92); border-right:.5px solid #e2e2e6;
+  padding:10px 8px; overflow-y:auto;
+}
+#mac .side .hd{ font-size:9.5px; font-weight:700; opacity:.4; text-transform:uppercase; letter-spacing:.06em; padding:4px 8px }
+#mac .side .it{
+  display:block; width:100%; text-align:left; border:0; background:none; cursor:pointer;
+  font-family:inherit; font-size:11.5px; padding:6px 8px; border-radius:6px; color:#1b1b1f;
+}
+#mac .side .it span{ display:block; font-size:9.5px; opacity:.5; margin-top:1px }
+#mac .side .it:hover{ background:rgba(0,0,0,.05) }
+#mac .side .it.on{ background:#d8b45a33; font-weight:600 }
+
+#mac .notes{ padding:20px 26px; background:#fffdf7 }
+#mac .notes h3{ font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; margin-bottom:11px }
+#mac .notes p{ font-size:11.5px; line-height:1.72; margin-bottom:9px; opacity:.84 }
+
+#mac .work{ padding:8px }
+#mac .work .row{
+  display:grid; grid-template-columns:26px 1fr; gap:1px 10px; align-items:center;
+  padding:7px 10px; border-radius:6px; text-decoration:none; color:inherit;
+}
+#mac .work .row:hover{ background:rgba(0,0,0,.05) }
+#mac .work s{ grid-row:span 2; width:26px; height:26px; border-radius:5px; text-decoration:none }
+#mac .work s.t{ background:#c8874a } #mac .work s.s{ background:#2f6f68 }
+#mac .work s.m{ background:#6c5ce7 } #mac .work s.a{ background:#d95f97 }
+#mac .work s.e{ background:#b8544b }
+#mac .work b{ font-size:11.5px } #mac .work span{ font-size:9.5px; opacity:.55 }
+
+/* the LinkedIn rebuild */
+#mac .li{ background:#f4f2ee; display:block; overflow-y:auto }
+#mac .li .cover{ height:82px; background:linear-gradient(120deg,#2f6f68,#88abe3 62%,#dbd59c) }
+#mac .li .pfp{
+  position:absolute; left:20px; top:48px; width:66px; height:66px; border-radius:50%;
+  border:3px solid #fff; background:radial-gradient(circle at 38% 32%,#f3cdb4,#c98f6e);
+}
+#mac .li .liin{ background:#fff; padding:26px 20px 16px }
+#mac .li h3{ font-size:17px; font-weight:700; margin-bottom:2px }
+#mac .li h3 em{ font-style:normal; font-size:10px; opacity:.5; font-weight:500 }
+#mac .li .hl{ font-size:11.5px; margin-bottom:3px }
+#mac .li .sub{ font-size:10px; opacity:.6 }
+#mac .li .sub a{ color:#0a66c2; text-decoration:none; font-weight:600 }
+#mac .li .btns{ display:flex; gap:6px; margin:11px 0 3px }
+#mac .li .btns b,#mac .li .btns i{ font-style:normal; font-size:10.5px; font-weight:600; padding:5px 12px; border-radius:99px }
+#mac .li .btns b{ background:#0a66c2; color:#fff }
+#mac .li .btns i{ border:1px solid #0a66c2; color:#0a66c2 }
+#mac .li .out{ display:inline-block; margin-top:10px; font-size:10.5px; font-weight:600; color:#0a66c2; text-decoration:none }
+
+/* dock */
+#mac .dock{
+  position:absolute; left:50%; bottom:6px; transform:translateX(-50%); z-index:50;
+  display:flex; align-items:flex-end; gap:5px; padding:5px 7px; border-radius:17px;
+  background:rgba(255,255,255,.2); backdrop-filter:blur(26px) saturate(1.8);
+  border:.5px solid rgba(255,255,255,.34); box-shadow:0 8px 26px rgba(0,0,0,.36);
+}
+#mac .dock button{
+  width:40px; height:40px; border:0; background:none; cursor:pointer; padding:0;
+  position:relative; transition:transform .16s cubic-bezier(.22,1,.36,1);
+}
+#mac .dock button:hover{ transform:translateY(-8px) scale(1.14) }
+#mac .dock button.off{ cursor:default }
+#mac .dock .i{
+  display:block; width:40px; height:40px; border-radius:11px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 2px 6px rgba(0,0,0,.3);
+  background-size:cover;
+}
+/* the icons, drawn rather than borrowed. Each one gets a base wash and
+   one or two marks on top, which is enough for the eye to name it at
+   this size. Apple's actual artwork is not ours to ship. */
+#mac .dock .i{ position:relative; overflow:hidden }
+#mac .dock .i::before,#mac .dock .i::after{ content:''; position:absolute }
+
+#mac .dock .fi{ background:linear-gradient(180deg,#a5dcf8 0 50%,#2f8fd8 50% 100%) }
+#mac .dock .fi::before{ left:9px; top:12px; width:6px; height:9px; border-radius:50%;
+  background:#123; box-shadow:16px 0 0 #123 }
+#mac .dock .fi::after{ left:13px; bottom:8px; width:14px; height:5px; border-radius:0 0 8px 8px;
+  border-bottom:2px solid #fff }
+
+#mac .dock .sa{ background:linear-gradient(170deg,#4fb4f0,#1264c8) }
+#mac .dock .sa::before{ inset:5px; border-radius:50%; background:#fff }
+#mac .dock .sa::after{ left:12px; top:12px; width:16px; height:16px;
+  background:conic-gradient(from 210deg,#f4544c 0 25%,transparent 25% 50%,#d8dde2 50% 75%,transparent 75%);
+  clip-path:polygon(50% 0,68% 32%,100% 50%,68% 68%,50% 100%,32% 68%,0 50%,32% 32%) }
+
+#mac .dock .no{ background:linear-gradient(180deg,#fde68a 0 24%,#fffdf6 24% 100%) }
+#mac .dock .no::before{ left:8px; top:18px; width:24px; height:1.5px; background:#c9c6ba;
+  box-shadow:0 5px 0 #c9c6ba, 0 10px 0 #c9c6ba, 0 15px 0 #d9d6ca }
+
+#mac .dock .ms{ background:linear-gradient(170deg,#7ff08c,#18b83a) }
+#mac .dock .ms::before{ inset:9px 8px 12px; border-radius:50%/60%; background:#fff }
+#mac .dock .ms::after{ left:13px; bottom:8px; width:7px; height:7px; background:#fff;
+  clip-path:polygon(0 0,100% 0,18% 100%) }
+
+#mac .dock .ma{ background:linear-gradient(170deg,#7ecbfd,#1f74e0) }
+#mac .dock .ma::before{ inset:11px 7px; border-radius:2.5px; background:#fff }
+#mac .dock .ma::after{ left:7px; top:11px; width:26px; height:10px; background:#1f74e0;
+  clip-path:polygon(0 0,100% 0,50% 82%) }
+
+#mac .dock .mu{ background:linear-gradient(170deg,#fd7d84,#e01f4a) }
+#mac .dock .mu::before{ left:14px; top:9px; width:2.5px; height:16px; background:#fff;
+  box-shadow:9px -2px 0 #fff }
+#mac .dock .mu::after{ left:10px; top:22px; width:8px; height:6px; border-radius:50%; background:#fff;
+  box-shadow:9px -2px 0 #fff }
+
+#mac .dock .ph{ background:#fff }
+#mac .dock .ph::before{ inset:6px; border-radius:50%;
+  background:conic-gradient(#f8c44f,#ef5f8b,#7a7bf0,#54c8e8,#6dd36b,#f8c44f); filter:blur(.4px) }
+#mac .dock .ph::after{ inset:14px; border-radius:50%; background:#fff; opacity:.55 }
+
+#mac .dock .ca{ background:linear-gradient(180deg,#fff 0 26%,#fcfcfd 26% 100%) }
+#mac .dock .ca::before{ left:0; right:0; top:0; height:10px; background:#f5443c }
+#mac .dock .ca::after{ left:0; right:0; bottom:5px; text-align:center; color:#2b2b30;
+  font:700 17px/1 'Satoshi',sans-serif; content:'21' }
+
+#mac .dock .fg{ background:#2b2b30 }
+#mac .dock .fg::before{ left:12px; top:7px; width:8px; height:8px; border-radius:50% 50% 0 50%;
+  background:#f24e1e; box-shadow:0 9px 0 #a259ff, 0 18px 0 #0acf83 }
+#mac .dock .fg::after{ left:20px; top:7px; width:8px; height:8px; border-radius:50% 50% 50% 0;
+  background:#ff7262; box-shadow:0 9px 0 #1abcfe }
+
+#mac .dock .te{ background:linear-gradient(170deg,#43434a,#111115) }
+#mac .dock .te::before{ left:9px; top:13px; width:8px; height:8px; border-left:2px solid #6fe07a;
+  border-bottom:2px solid #6fe07a; transform:rotate(-45deg) }
+#mac .dock .te::after{ left:20px; bottom:11px; width:11px; height:2px; background:#6fe07a }
+
+#mac .dock .se{ background:linear-gradient(170deg,#c6ccd3,#767d86) }
+#mac .dock .se::before{ inset:9px; border-radius:50%; border:3.5px solid #fafbfc;
+  border-style:dashed solid }
+#mac .dock .se::after{ inset:16px; border-radius:50%; background:#767d86 }
+
+#mac .dock .tr{ background:linear-gradient(170deg,#eef1f4,#aab1b9) }
+#mac .dock .tr::before{ left:11px; top:12px; right:11px; bottom:7px; border-radius:1px 1px 3px 3px;
+  border:1.5px solid #6c747d; border-top-width:2.5px }
+#mac .dock .tr::after{ left:15px; top:8px; width:10px; height:2px; background:#6c747d; border-radius:1px }
+
+#mac .dock button{ overflow:visible }
+#mac .dock button.run::after{
+  content:''; position:absolute; left:50%; bottom:-4px; width:3.5px; height:3.5px;
+  border-radius:50%; background:rgba(255,255,255,.85); transform:translateX(-50%);
+}
+#mac .dock .sep{ width:1px; height:34px; background:rgba(255,255,255,.3); margin:0 3px }
+
+/* ── the headphones' player ───────────────────────────────────── */
+#audio{
+  position:absolute; left:50%; bottom:clamp(76px,12vh,132px); transform:translate(-50%,14px);
+  width:min(420px,calc(100vw - 32px)); opacity:0; pointer-events:none; z-index:7;
+  background:var(--card); border:1px solid var(--edge); border-radius:18px;
+  padding:clamp(16px,2vw,22px); box-shadow:var(--shadow);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  transition:opacity .4s ease .2s, transform .5s cubic-bezier(.22,1,.36,1) .2s;
+}
+#audio.open{ opacity:1; transform:translate(-50%,0); pointer-events:auto }
+#audio .eyebrow{
+  display:block; font-size:.66rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--accent); font-weight:700; margin-bottom:.7rem;
+}
+#audio iframe{ width:100%; height:152px; border:0; border-radius:12px; display:block }
+#audio .meta{ font-size:.76rem; opacity:.6; margin-top:.7rem; line-height:1.6 }
+
+/* the label that follows a book out of the shelf */
+#booktip{
+  position:absolute; transform:translate(-50%,-100%); pointer-events:none;
+  opacity:0; transition:opacity .2s ease; z-index:9;
+  background:rgba(22,30,34,.82); color:#fff; border:1px solid rgba(255,255,255,.2);
+  border-radius:10px; padding:.5rem .75rem; backdrop-filter:blur(12px);
+  text-align:center; white-space:nowrap;
+}
+#booktip.on{ opacity:1 }
+#booktip b{ display:block; font-size:.86rem; font-weight:700 }
+#booktip span{ display:block; font-size:.72rem; opacity:.7; margin-top:.1rem }
+#booktip em{
+  display:block; font-style:normal; font-size:.62rem; letter-spacing:.14em;
+  text-transform:uppercase; opacity:.62; margin-top:.35rem;
+}
+
 /* ── chrome ──────────────────────────────────────────────────── */
+/* the same pill the playground uses, so the two pages feel like one site */
 .chrome{
-  position:absolute; left:50%; bottom:clamp(14px,2.6vh,28px); transform:translateX(-50%);
-  display:flex; align-items:center; gap:.7rem; z-index:6;
+  position:absolute; left:50%; bottom:20px; transform:translateX(-50%);
+  display:flex; align-items:center; gap:.6rem;
+  padding:.5rem .5rem .5rem 1rem;
+  /* white text, so it needs a ground dark enough to sit on in either theme */
+  background:rgba(22,30,34,.42);
+  border:1px solid rgba(255,255,255,.22); border-radius:999px;
+  backdrop-filter:blur(14px) saturate(140%);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  z-index:8; font-size:.86rem; color:#fff;
+  white-space:nowrap; transition:opacity .4s ease;
 }
-.chrome #hint{
-  font-size:.72rem; letter-spacing:.1em; opacity:.5; white-space:nowrap;
-  transition:opacity .4s;
-}
+.chrome.faded{ opacity:.28 }
+.chrome.faded:hover{ opacity:1 }
+.chrome #hint{ transition:opacity .3s }
 .chrome button{
-  font-family:inherit; font-size:.72rem; letter-spacing:.12em; text-transform:uppercase;
-  font-weight:600; color:var(--ink); cursor:pointer;
-  padding:.5rem .9rem; border-radius:999px;
-  border:1px solid var(--edge); background:rgba(var(--muted-rgb),.08);
-  opacity:0; pointer-events:none; transition:opacity .3s, background .2s;
+  font-family:'Satoshi',sans-serif; font-size:.82rem; font-weight:600;
+  color:#fff; background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.38); border-radius:999px;
+  padding:.4rem .9rem; cursor:pointer;
+  transition:background .2s ease, border-color .2s ease;
+  display:none;
 }
-.chrome button.show{ opacity:1; pointer-events:auto }
-.chrome button:hover{ background:rgba(var(--accent-rgb),.14) }
+.chrome button.show{ display:block }
+.chrome button:hover{ background:rgba(255,255,255,.28); border-color:rgba(255,255,255,.6) }
 
 /* ── loading ─────────────────────────────────────────────────── */
+/* the site's loading card, the one from loading.html, in the room's
+   own palette. it used to say "warming the room" in small caps and
+   then vanish on a six second timer whether or not anything had
+   arrived, which is how you end up watching a desk assemble itself. */
 #boot{
   position:absolute; inset:0; display:grid; place-items:center;
-  background:var(--paper); z-index:20; transition:opacity .7s ease;
-  font-size:.74rem; letter-spacing:.24em; text-transform:uppercase; opacity:1;
+  background:var(--paper); z-index:20; transition:opacity .7s ease; opacity:1;
 }
 #boot.gone{ opacity:0; pointer-events:none }
-#boot span{ opacity:.55 }
+
+.boot-card{
+  position:relative; text-align:center;
+  background:rgba(var(--ink-rgb),.05);
+  backdrop-filter:blur(38px); -webkit-backdrop-filter:blur(38px);
+  border:1px solid rgba(var(--muted-rgb),.22); border-radius:32px;
+  padding:2.6rem 2.4rem 2.2rem;
+  box-shadow:0 20px 60px rgba(0,0,0,.34), inset 0 1px 0 rgba(var(--ink-rgb),.06);
+  max-width:440px; width:min(90vw,440px);
+  animation:bootFloat 6s ease-in-out infinite;
+}
+@keyframes bootFloat{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+.boot-orb{ position:relative; margin-bottom:1.6rem; display:grid; place-items:center }
+.boot-orb img{
+  width:110px; height:110px; border-radius:50%; object-fit:cover;
+  border:3px solid rgba(var(--muted-rgb),.4);
+  background:rgba(var(--muted-rgb),.1);
+  box-shadow:0 0 30px rgba(var(--accent-rgb),.3);
+  animation:bootOrb 4s ease-in-out infinite;
+}
+@keyframes bootOrb{ 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-8px) scale(1.02)} }
+
+.boot-sparks{ position:absolute; width:190px; height:190px; pointer-events:none }
+.boot-sparks i{
+  position:absolute; width:6px; height:6px; border-radius:50%;
+  background:linear-gradient(45deg, var(--accent), var(--muted));
+  box-shadow:0 0 8px rgba(var(--accent-rgb),.5);
+  animation:bootSpark 3s ease-in-out infinite; opacity:.7;
+}
+.boot-sparks i:nth-child(1){ top:20%; left:15%; animation-delay:0s }
+.boot-sparks i:nth-child(2){ top:30%; right:20%; animation-delay:.5s }
+.boot-sparks i:nth-child(3){ bottom:25%; left:25%; animation-delay:1s }
+.boot-sparks i:nth-child(4){ bottom:35%; right:15%; animation-delay:1.5s }
+.boot-sparks i:nth-child(5){ top:50%; left:5%;  animation-delay:2s }
+.boot-sparks i:nth-child(6){ top:15%; right:5%; animation-delay:2.5s }
+@keyframes bootSpark{ 0%,100%{transform:translateY(0) scale(1);opacity:.35} 50%{transform:translateY(-14px) scale(1.2);opacity:.9} }
+
+.boot-title{
+  font-family:'Cormorant Garamond',serif; font-size:2.3rem; font-weight:400;
+  letter-spacing:.02em; margin-bottom:.7rem;
+  background:linear-gradient(45deg, var(--ink), var(--muted), var(--accent), var(--muted));
+  background-size:200% 200%; background-clip:text; -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent; color:transparent;
+  animation:bootShift 8s ease infinite;
+}
+@keyframes bootShift{ 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+.boot-msg{
+  font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.15rem;
+  color:var(--muted); opacity:.9; margin-bottom:1.6rem; min-height:1.5em;
+}
+.boot-track{
+  height:6px; border-radius:10px; overflow:hidden;
+  background:rgba(var(--muted-rgb),.1); border:1px solid rgba(var(--muted-rgb),.2);
+}
+.boot-fill{
+  height:100%; width:0%; border-radius:10px;
+  background:linear-gradient(90deg, var(--accent), var(--muted), var(--accent));
+  background-size:200% 100%; box-shadow:0 0 12px rgba(var(--accent-rgb),.4);
+  transition:width .3s ease; animation:bootShimmer 2s ease-in-out infinite;
+}
+@keyframes bootShimmer{ 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+.boot-pct{
+  font-family:'DotempDemo',monospace; font-size:.95rem; color:var(--accent);
+  letter-spacing:.12em; opacity:.85; margin-top:.8rem;
+}
+@media (prefers-reduced-motion: reduce){
+  .boot-card, .boot-orb img, .boot-sparks i, .boot-title, .boot-fill{ animation:none }
+}
 
 @media (max-width:820px){
   #panel{ right:auto; left:50%; top:auto; bottom:76px; transform:translate(-50%,16px);
@@ -184,6 +550,30 @@ a{ color:inherit }
 </style>
 </head>
 <body>
+<!--
+  Third party assets used in this scene:
+
+  "Cup tea" (https://skfb.ly/ostwx) by rigart is licensed under
+  Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+  "[FREE] Pothos Potted Plant - Money Plant" (https://skfb.ly/oDsVN) by AllQuad
+  is licensed under Creative Commons Attribution
+  (http://creativecommons.org/licenses/by/4.0/).
+
+  "Old Desk Lamp" (https://skfb.ly/6CzIJ) by Maxence Rouillet is licensed under
+  Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+  "Retro Radio" (https://skfb.ly/6YQrt) by Svyatoslav Ovchinnik is licensed
+  under Creative Commons Attribution
+  (http://creativecommons.org/licenses/by/4.0/).
+
+  "Antique wooden desk with props" (https://skfb.ly/oHrDH) by shuvalov.di is
+  licensed under Creative Commons Attribution-ShareAlike
+  (http://creativecommons.org/licenses/by-sa/4.0/). Textures in the copy
+  shipped here are resampled to 1024 and re-encoded; geometry is unchanged.
+
+  Surface textures (wood, floor, plaster, linen) from ambientCG, CC0.
+-->
 
 <div id="stage">
   <canvas id="gl"></canvas>
@@ -194,11 +584,147 @@ a{ color:inherit }
     <div id="panelBody"></div>
   </aside>
 
-  <div class="chrome">
-    <span id="hint">drag to look around &middot; click a <b>+</b></span>
+  <div class="chrome" id="chrome">
+    <span id="hint">click a <b>+</b> to look closer</span>
+    <button type="button" id="back">ba<span class="px">ck</span></button>
   </div>
 
-  <div id="boot"><span>warming the room&hellip;</span></div>
+  <!-- the laptop's desktop. Authored at 900x563, 16:10 like the real
+       display, and mapped onto it with matrix3d. Three real apps, each
+       with its own window, stacked and managed like a desktop actually
+       is. Safari and Notes are open from the start so the screen is
+       alive before anybody clicks anything. -->
+  <div id="mac" aria-label="Laptop screen">
+   <div class="scr">
+    <div class="bar">
+      <b class="logo"></b>
+      <span class="app" id="macApp">Safari</span>
+      <span>File</span><span>Edit</span><span>View</span><span>History</span>
+      <span>Bookmarks</span><span>Window</span><span>Help</span>
+      <i></i>
+      <span class="gl bat"></span><span class="gl wifi"></span>
+      <span class="gl cc"></span><span class="gl sr"></span>
+      <span id="macDate">Sun 21 Sep</span><span id="macClock">4:18 PM</span>
+    </div>
+
+    <div class="desk">
+      <button class="fold" data-open="finder"><s></s><u>Case Studies</u></button>
+      <button class="fold" data-open="notes"><s></s><u>About Me</u></button>
+    </div>
+
+    <!-- Safari -->
+    <div class="win" id="w-safari" data-app="safari" style="--x:34px;--y:46px;--w:600px;--h:436px">
+      <div class="tt">
+        <div class="lights"><s class="r"></s><s class="y"></s><s class="g"></s></div>
+        <div class="tabs">
+          <span class="tab on">Henri&euml;tta van Niekerk | LinkedIn</span>
+          <span class="tab">henliz &middot; GitHub</span>
+          <span class="tab">+</span>
+        </div>
+      </div>
+      <div class="url"><em>&#9664; &#9654;</em><span>linkedin.com/in/henriettavanniekerk</span></div>
+      <div class="bd li">
+        <!-- a rebuild, not an embed: LinkedIn answers frame-ancestors 'self'
+             and GitHub answers 'none', so neither can be iframed anywhere. -->
+        <div class="cover"></div>
+        <div class="pfp"></div>
+        <div class="liin">
+          <h3>Henri&euml;tta van Niekerk <em>She/Her</em></h3>
+          <p class="hl">Design engineer and founder &middot; Building things that survive under pressure</p>
+          <p class="sub">Waterloo, Ontario, Canada &middot; <a href="mailto:henrietta@skrimp.ai">Contact info</a></p>
+          <p class="sub"><a href="https://henliz.github.io" target="_blank" rel="noopener">henliz.github.io &nearr;</a></p>
+          <div class="btns"><b>Open to</b><i>Add section</i><i>More</i></div>
+          <a class="out" href="https://www.linkedin.com/in/henriettavanniekerk" target="_blank" rel="noopener">Open the real profile &nearr;</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="win" id="w-notes" data-app="notes" style="--x:214px;--y:104px;--w:560px;--h:390px">
+      <div class="tt">
+        <div class="lights"><s class="r"></s><s class="y"></s><s class="g"></s></div>
+        <em>Notes</em>
+      </div>
+      <div class="bd split">
+        <div class="side">
+          <p class="hd">iCloud</p>
+          <button class="it on">about me<span>Sideways into software</span></button>
+          <button class="it">reading<span>The Master and Margarita</span></button>
+          <button class="it">gym<span>Lifting since 2021</span></button>
+        </div>
+        <div class="pane notes">
+          <h3>I came to software sideways.</h3>
+          <p>Growing up I trained myself to see. Really see. How light pulls through curtain fabric, how shadow gives a sketch weight. Software arrived through aesthetics, through the kind of attention that makes you want to stop on something and understand it completely.</p>
+          <p>I think about incentive structures the way other people think about colour. The architecture of a thing tells you what it values. I try to build tools that belong to their users and leave scaffolding for whoever comes after me.</p>
+          <p>An endometriosis screener disguised as combat mechanics, because people do not fill out forms about their pain but they do finish games. A Baldur&rsquo;s Gate 3 expansion at actual studio scale. Every project starts the same way: a question I cannot put down.</p>
+          <p>4A Interaction Design &amp; Business, University of Waterloo.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Finder -->
+    <div class="win" id="w-finder" data-app="finder" style="--x:118px;--y:78px;--w:580px;--h:376px">
+      <div class="tt">
+        <div class="lights"><s class="r"></s><s class="y"></s><s class="g"></s></div>
+        <em>Case Studies</em>
+      </div>
+      <div class="bd split">
+        <div class="side">
+          <p class="hd">Favourites</p>
+          <button class="it on">Case Studies</button>
+          <button class="it">Documents</button>
+          <button class="it">Downloads</button>
+        </div>
+        <div class="pane work">
+          <a class="row" href="/trove/"><s class="t"></s><b>Trove</b><span>0 to 10,250 users</span></a>
+          <a class="row" href="/skrimp/"><s class="s"></s><b>Skrimp AI</b><span>Funded, 15+ chains</span></a>
+          <a class="row" href="/menzo/"><s class="m"></s><b>Path to Menzoberranzan</b><span>140 volunteers</span></a>
+          <a class="row" href="/myauntie/"><s class="a"></s><b>MyAuntie</b><span>Won TechNova 2025</span></a>
+          <a class="row" href="/equinox/"><s class="e"></s><b>Equinox</b><span>First of 88</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="dock">
+      <button data-app="finder" title="Finder"><span class="i fi"></span></button>
+      <button data-app="safari" title="Safari"><span class="i sa"></span></button>
+      <button data-app="notes"  title="Notes"><span class="i no"></span></button>
+      <i class="sep"></i>
+      <button class="off" title="Messages"><span class="i ms"></span></button>
+      <button class="off" title="Mail"><span class="i ma"></span></button>
+      <button class="off" title="Music"><span class="i mu"></span></button>
+      <button class="off" title="Photos"><span class="i ph"></span></button>
+      <button class="off" title="Calendar"><span class="i ca"></span></button>
+      <button class="off" title="Figma"><span class="i fg"></span></button>
+      <button class="off" title="Terminal"><span class="i te"></span></button>
+      <button class="off" title="Settings"><span class="i se"></span></button>
+      <i class="sep"></i>
+      <button class="off" title="Trash"><span class="i tr"></span></button>
+    </div>
+   </div>
+  </div>
+
+  <!-- the headphones' player -->
+  <div id="audio" aria-label="Music player">
+    <span class="eyebrow">What I play</span>
+    <iframe title="Spotify player" loading="lazy"
+      src="https://open.spotify.com/embed/playlist/7jWsjDQepOPPB98EdRPueg?theme=0"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+    <p class="meta">Put something on. It keeps playing while you look around the desk.</p>
+  </div>
+
+  <div id="boot">
+    <div class="boot-card">
+      <div class="boot-orb">
+        <span class="boot-sparks"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <img src="../loading.gif" alt="" onerror="this.remove()">
+      </div>
+      <h1 class="boot-title"><span class="px">Warm</span>ing the room&hellip;</h1>
+      <p class="boot-msg" id="bootMsg">Pulling the chair out for you</p>
+      <div class="boot-track"><div class="boot-fill" id="bootFill"></div></div>
+      <div class="boot-pct" id="bootPct">0%</div>
+    </div>
+  </div>
 </div>
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js" } }
@@ -208,6 +734,12 @@ a{ color:inherit }
 import * as THREE from 'three';
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/environments/RoomEnvironment.js';
+import { MeshoptDecoder } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/libs/meshopt_decoder.module.js';
+
+/* one loader for the whole room. the models are meshopt-compressed
+   now, same as the tiles on the front page, so it needs the decoder. */
+THREE.Cache.enabled = true;
+const GLTF = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 
 /* ═══════════════════════════════════════════════════════════════
    THE DESK
@@ -230,12 +762,25 @@ import { RoomEnvironment } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/exam
    ═══════════════════════════════════════════════════════════════ */
 
 const canvas = document.getElementById('gl');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+/* This room is a third WebGL renderer: the shell is already running the rail
+   sky behind it, and the rail sits over that sky behind a backdrop-filter it
+   has to re-blur whenever anything moves. At 1.75x with antialiasing and soft
+   shadows this was more than a modest machine could feed, and the rail was
+   what visibly tore. Take the shell's budget when it is there. */
+const GFX = (() => {
+  try { if (parent !== window && parent.__gfx) return parent.__gfx; } catch (e) {}
+  const cores = navigator.hardwareConcurrency || 4, mem = navigator.deviceMemory || 4;
+  const weak = cores <= 4 || mem <= 4;
+  return { weak, still: matchMedia('(prefers-reduced-motion: reduce)').matches,
+           dpr: Math.min(devicePixelRatio, weak ? 1 : 1.5), aa: !weak };
+})();
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: GFX.aa });
+renderer.setPixelRatio(GFX.dpr);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// soft shadows are the single most expensive thing in here
+renderer.shadowMap.type = GFX.weak ? THREE.BasicShadowMap : THREE.PCFSoftShadowMap;
 
 const scene  = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(38, 1, 0.02, 60);
@@ -248,15 +793,31 @@ scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
 /* ── textures ─────────────────────────────────────────────────── */
 const TL = new THREE.TextureLoader();
-function surf(name, { repeat=[1,1], color, rough=1, metal=0, normal=0.7 } = {}){
-  const grab = (suffix, srgb) => {
+/* One Texture per file, cloned per surface. Wood is the desk, the legs
+   and the shelf, linen is the curtain, the seat and the rug: eight
+   surf() calls over four sets of maps, and each call used to load its
+   own Texture, so the same wood grain went up to the GPU three times.
+   A clone shares the Source, which is what three actually uploads, and
+   carries its own repeat, which is the only thing that differed. */
+const TEX = new Map();
+function tex(file, srgb){
+  let t = TEX.get(file);
+  if (!t){
     /* absolute. this file is served from /about/, so a relative tex/
        path resolves to /about/tex/ and every surface silently falls back
        to flat white, which is what it had been doing. */
-    const t = TL.load(`/tex/${name}-${suffix}.jpg`);
+    t = TL.load(file);
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    t.repeat.set(repeat[0], repeat[1]);
     if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+    TEX.set(file, t);
+  }
+  return t;
+}
+function surf(name, { repeat=[1,1], color, rough=1, metal=0, normal=0.7 } = {}){
+  const grab = (suffix, srgb) => {
+    const t = tex(`/tex/${name}-${suffix}.jpg`, srgb).clone();
+    t.repeat.set(repeat[0], repeat[1]);
+    t.needsUpdate = true;
     return t;
   };
   const m = new THREE.MeshStandardMaterial({
@@ -414,126 +975,101 @@ function buildChair(){
   });
 }
 
-/* ── the shelf on the wall behind the desk ────────────────────────
-   Hung low, 420mm over the desk, which is where a working shelf
-   actually goes: high enough to clear an open laptop lid, low enough
-   that you can reach a book without standing up. It sits in the top
-   third of the seated view, so the wall above the desk stops being
-   empty plaster.
+/* ── the bookshelf ────────────────────────────────────────────────
+   The wall shelf is gone. Once the desk became a roll-top with its own
+   hutch there were two shelves stacked on one wall doing the same job,
+   and the wall one was the fake.
 
-   Everything here is built from the same primitives and the same
-   material set as the desk. There is a Kenney furniture kit sitting
-   in models/room and it would have been quicker, but it is flat
-   low-poly and this scene is PBR oak and limewash. Two art styles in
-   one frame reads as a mistake, so the shelf is hand-built too. */
-const SHELF_Y = 1.16, SHELF_X = DESK_X - 0.16, SHELF_W = 1.00, SHELF_D = 0.20;
-const SHELF_Z = SHELF_D/2 + 0.006;
-function buildShelf(){
-  const plank = box(SHELF_W, 0.034, SHELF_D, MAT.walnut, SHELF_X, SHELF_Y, SHELF_Z);
-  plank.geometry.computeVertexNormals();
+   The books live on the hutch now and they are spine out, which is how
+   books sit. Each one is a real box with a real spine texture, and the
+   row is a thing you can lean into: hover a book and it slides out far
+   enough to read. SHELF_BOOKS is the whole content of it, so changing
+   what is on the shelf is changing one array. */
+const SHELF_BOOKS = [
+  { t:'Trove',                 a:'product design engineer', c:'#2f6f68', href:'/trove/' },
+  { t:'Skrimp AI',             a:'founder and CEO',         c:'#c8874a', href:'/skrimp/' },
+  { t:'Menzoberranzan',        a:'CTO, 140 volunteers',     c:'#5b4a8a', href:'/menzo/' },
+  { t:'MyAuntie',              a:'won TechNova 2025',       c:'#b0517f', href:'/myauntie/' },
+  { t:'Equinox',               a:'first of eighty eight',   c:'#8c3239', href:'/equinox/' },
+  { t:'The Master and Margarita', a:'Bulgakov',             c:'#3f5d6b' },
+  { t:'a novel of my own',     a:'slowly',                  c:'#7a7150' },
+];
 
-  /* two brackets, inset from the ends the way a shelf is actually hung */
-  [-1, 1].forEach(sx => {
-    const bx = SHELF_X + sx * (SHELF_W/2 - 0.14);
-    box(0.016, 0.115, 0.014, MAT.steel, bx, SHELF_Y - 0.075, 0.012);          /* wall plate */
-    box(0.016, 0.014, SHELF_D - 0.05, MAT.steel, bx, SHELF_Y - 0.026, SHELF_Z - 0.012); /* arm */
-    const brace = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.135, 12), MAT.steel);
-    brace.position.set(bx, SHELF_Y - 0.078, 0.062);
-    brace.rotation.x = 0.72; brace.castShadow = true; ROOM.add(brace);
-  });
-
-  /* the books. Spines in the room's own palette so the shelf reads as
-     part of the scene rather than a colour chart, and no two the same
-     height, because a shelf of matched books is a prop. */
-  const SPINES = [0x2f6f68, 0xb8705a, 0xe8e0cf, 0x1f3b3a, 0x8fbdb2,
-                  0xc7a24a, 0xa35a4a, 0xdcd3c2, 0x3f5d6b, 0x6f8f7a];
-  const spineMat = SPINES.map(c =>
-    new THREE.MeshStandardMaterial({ color:c, roughness:0.82 }));
-  const pageMat = new THREE.MeshStandardMaterial({ color:0xe9e2d2, roughness:0.95 });
-
-  const runStart = SHELF_X - SHELF_W/2 + 0.055;
-  const runEnd   = SHELF_X + SHELF_W/2 - 0.38;   /* the last stretch is left for the postcard and the flat stack */
-  let x = runStart, i = 0;
-  const shelfTop = SHELF_Y + 0.017;
-  while (x < runEnd){
-    const w = 0.019 + (i % 4) * 0.007;            /* 19 to 40mm spines */
-    const h = 0.145 + ((i * 7) % 5) * 0.011;      /* 145 to 189mm tall */
-    const d = 0.125 + ((i * 3) % 3) * 0.012;
-    /* the last two before the gap lean into it, which is what happens
-       when a book gets pulled out and never put back properly */
-    const lean = (x + w > runEnd - 0.09) ? 0.20 : 0;
-    const bk = box(w, h, d, spineMat[i % spineMat.length],
-                   x + w/2, shelfTop + h/2, SHELF_Z - 0.012);
-    if (lean){
-      bk.rotation.z = -lean;
-      bk.position.y = shelfTop + Math.cos(lean) * h/2;
-      bk.position.x += Math.sin(lean) * h/2;
-    }
-    /* a sliver of page block, so a spine is not just a coloured slab */
-    box(0.002, h - 0.012, d - 0.01, pageMat, x + w + 0.0015, shelfTop + h/2, SHELF_Z - 0.012)
-      .castShadow = false;
-    x += w + 0.003; i++;
+/* Titles are drawn, not typed into a texture by hand. Shrink-to-fit so a
+   long spine stays on one line instead of running off the end. */
+function labelTexture(w, h, title, author, bg, vertical){
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const x = c.getContext('2d');
+  x.fillStyle = bg; x.fillRect(0, 0, w, h);
+  /* cloth grain, so a spine is not a flat rectangle of colour */
+  for (let i = 0; i < 2600; i++){
+    x.fillStyle = `rgba(0,0,0,${Math.random() * 0.05})`;
+    x.fillRect(Math.random() * w, Math.random() * h, 1.4, 1.4);
   }
-
-  /* three lying flat at the right end, doubling as a plinth */
-  let sy = shelfTop;
-  [[0.155, 0.021, 0x3f5d6b], [0.148, 0.018, 0xb8705a], [0.138, 0.016, 0xe8e0cf]]
-    .forEach(([w, t, c], k) => {
-      box(w, t, 0.115, new THREE.MeshStandardMaterial({ color:c, roughness:0.8 }),
-          SHELF_X + SHELF_W/2 - 0.135, sy + t/2, SHELF_Z - 0.014, 0.06 - k * 0.04);
-      sy += t;
-    });
-
-  /* a small framed photo standing on the stack, leaning on the wall */
-  const fr = box(0.115, 0.145, 0.012, MAT.trim, SHELF_X + SHELF_W/2 - 0.14, sy + 0.073, 0.052, 0.05);
-  fr.rotation.x = -0.10;
-  const ph = new THREE.Mesh(new THREE.PlaneGeometry(0.092, 0.12),
-    new THREE.MeshStandardMaterial({ color:0xc2d6d0, roughness:0.85 }));
-  ph.position.set(SHELF_X + SHELF_W/2 - 0.138, sy + 0.073, 0.059);
-  ph.rotation.set(-0.10, 0, 0.05); ROOM.add(ph);
-
-  /* a postcard propped in the gap the leaning books left.
-     This is where "say hello" lives now. It used to hang on the window,
-     which worked when you could stand back and see the whole room and
-     stopped working the moment the only camera is the seated one: the
-     window is at your left shoulder, about 100 degrees off the way you
-     are facing, so the pin was never once on screen. Contact details
-     you cannot reach are worse than no contact details. */
-  const CARD_X = SHELF_X + SHELF_W/2 - 0.295;
-  const card = box(0.098, 0.128, 0.005, MAT.paper, CARD_X, shelfTop + 0.062, 0.055, 0.04);
-  card.rotation.x = -0.16;
-  /* a stamp and two ruled lines, enough that it reads as post and not as
-     a blank rectangle */
-  const stamp = new THREE.Mesh(new THREE.PlaneGeometry(0.024, 0.03),
-    new THREE.MeshStandardMaterial({ color:0xb8705a, roughness:0.85 }));
-  stamp.position.set(CARD_X + 0.03, shelfTop + 0.103, 0.0605);
-  stamp.rotation.set(-0.16, 0, 0.04); ROOM.add(stamp);
-  [0.045, 0.028].forEach(dy => {
-    const rule = new THREE.Mesh(new THREE.PlaneGeometry(0.052, 0.0022), MAT.ink);
-    rule.position.set(CARD_X - 0.014, shelfTop + dy, 0.0605);
-    rule.rotation.set(-0.16, 0, 0.04); ROOM.add(rule);
-  });
-  P.hello = new THREE.Vector3(CARD_X, shelfTop + 0.07, 0.075);
-
-  /* a trailing plant on the left end. The leaves hang over the edge,
-     which is the detail that stops a shelf looking like a diagram. */
-  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.033, 0.062, 30), MAT.terra);
-  pot.position.set(SHELF_X - SHELF_W/2 + 0.012, shelfTop + 0.031, SHELF_Z + 0.008);
-  pot.castShadow = true; ROOM.add(pot);
-  for (let k = 0; k < 9; k++){
-    const a = k * 2.3, drop = 0.05 + (k % 3) * 0.055;
-    const v = new THREE.Mesh(new THREE.SphereGeometry(0.02, 12, 9), MAT.leaf);
-    v.scale.set(0.5, drop / 0.02 * 0.42, 0.5);
-    v.position.set(
-      SHELF_X - SHELF_W/2 + 0.012 + Math.sin(a) * 0.045,
-      shelfTop + 0.062 - drop * 0.32,
-      SHELF_Z + 0.008 + Math.cos(a) * 0.03);
-    v.rotation.set(Math.cos(a) * 0.9, 0, -Math.sin(a) * 0.9);
-    v.castShadow = true; ROOM.add(v);
-  }
+  const long = vertical ? h : w;
+  x.save();
+  if (vertical){ x.translate(w / 2, h / 2); x.rotate(-Math.PI / 2); }
+  else x.translate(w / 2, h / 2);
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  let size = vertical ? 44 : 56;
+  do { x.font = `600 ${size}px Satoshi, sans-serif`; size -= 2; }
+  while (x.measureText(title).width > long * 0.82 && size > 12);
+  /* two gold rules, the way a cloth spine is stamped */
+  x.fillStyle = 'rgba(214,190,130,.75)';
+  x.fillRect(-long * 0.42, -(vertical ? w : h) * 0.30, long * 0.84, 2);
+  x.fillRect(-long * 0.42,  (vertical ? w : h) * 0.30, long * 0.84, 2);
+  x.fillStyle = '#f3ead6';
+  x.fillText(title, 0, vertical ? -4 : -10);
+  x.globalAlpha = 0.72;
+  x.font = `400 ${Math.max(13, size * 0.5)}px Satoshi, sans-serif`;
+  x.fillText(author, 0, vertical ? 26 : 30);
+  x.restore();
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
 }
 
-/* ── what is on the desk ──────────────────────────────────────────
+const BOOKS = [];          /* the meshes, for the raycaster to hover */
+function buildBookshelf(){
+  const S = HUTCH_SURF;
+  if (!S) return;
+  /* the row sits between the radio on the left and the plant on the
+     right, both of which are placed off the same measured surface. */
+  const x0 = S.x0 + 0.52, x1 = S.x1 - 0.42;
+  const z  = (S.z0 + S.z1) / 2 - 0.01;
+  const pages = new THREE.MeshStandardMaterial({ color:0xe9e0c9, roughness:0.92 });
+
+  let x = x0, i = 0;
+  for (const b of SHELF_BOOKS){
+    const th = 0.022 + (i % 3) * 0.009;               /* 22 to 40mm spines */
+    const hh = 0.155 + ((i * 5) % 4) * 0.014;
+    const dd = 0.115 + ((i * 3) % 3) * 0.012;
+    if (x + th > x1) break;
+    const spine = new THREE.MeshStandardMaterial({
+      map: labelTexture(150, 560, b.t, b.a, b.c, true), roughness:0.72 });
+    const cover = new THREE.MeshStandardMaterial({
+      map: labelTexture(420, 560, b.t, b.a, b.c, false), roughness:0.72 });
+    /* BoxGeometry faces run +x, -x, +y, -y, +z, -z. Thickness is x and
+       depth is z, so +z is the spine and the two x faces are the covers. */
+    const m = new THREE.Mesh(new THREE.BoxGeometry(th, hh, dd),
+      [cover, cover, pages, pages, spine, pages]);
+    m.castShadow = true; m.receiveShadow = true;
+    m.position.set(x + th / 2, S.y + hh / 2, z);
+    /* one leaning, because a row of perfectly upright books is a texture
+       swatch rather than a shelf */
+    if (i === SHELF_BOOKS.length - 1){ m.rotation.z = -0.13; m.position.y -= 0.004; }
+    m.userData.book = b;
+    m.userData.homeZ = m.position.z;
+    m.userData.out = 0;
+    ROOM.add(m); BOOKS.push(m);
+    x += th + 0.004; i++;
+  }
+  P.books = new THREE.Vector3((x0 + x) / 2, S.y + 0.10, z + 0.10);
+}
+
+/* ── what is on the desk ──────────────────────────────────────────/* ── what is on the desk ──────────────────────────────────────────
    Zoned the way a desk that works is zoned. Primary reach is the
    laptop, dead centre at arm's length. Secondary is the mug and the
    notebook to the right, where a right hand lands. The lamp is on
@@ -543,100 +1079,42 @@ function buildShelf(){
    left with nothing on it, which is what makes a desk read calm. */
 const P = {};
 function buildDeskThings(){
-  /* the mug: a lathe, so the wall has a thickness and the lip is round */
-  const prof = [];
-  for (let i = 0; i <= 12; i++){
-    const t = i/12;
-    prof.push(new THREE.Vector2(0.038 + Math.sin(t*Math.PI)*0.008, t*0.095));
-  }
-  prof.push(new THREE.Vector2(0.036, 0.095), new THREE.Vector2(0.0, 0.094), new THREE.Vector2(0.0, 0.0));
-  const mug = new THREE.Mesh(new THREE.LatheGeometry(prof, 48), MAT.glaze);
-  mug.position.set(DESK_X + 0.5, DESK_Y + 0.019, DESK_Z + 0.1);
-  mug.castShadow = true; ROOM.add(mug);
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.031, 0.0085, 14, 30, Math.PI*1.35), MAT.glaze);
-  handle.position.set(DESK_X + 0.5 + 0.048, DESK_Y + 0.07, DESK_Z + 0.1);
-  handle.rotation.set(0, Math.PI/2, -0.5); handle.castShadow = true; ROOM.add(handle);
-  const brew = new THREE.Mesh(new THREE.CircleGeometry(0.036, 40), MAT.coffee);
-  brew.rotation.x = -Math.PI/2; brew.position.set(DESK_X + 0.5, DESK_Y + 0.093, DESK_Z + 0.1);
-  ROOM.add(brew);
-  P.mug = new THREE.Vector3(DESK_X + 0.5, DESK_Y + 0.1, DESK_Z + 0.1);
+  /* the postcard, propped on the desk against the right-hand pile. It
+     used to lean on the wall shelf, which no longer exists. */
+  const CARD_X = DESK_X + 0.62, CARD_Z = DESK_Z + 0.10;
+  const cardTop = DESK_Y + 0.019;
+  const card = box(0.098, 0.128, 0.005, MAT.paper, CARD_X, cardTop + 0.062, CARD_Z, -0.22);
+  card.rotation.x = -0.30;
+  const stamp = new THREE.Mesh(new THREE.PlaneGeometry(0.024, 0.03),
+    new THREE.MeshStandardMaterial({ color:0xb8705a, roughness:0.85 }));
+  stamp.position.set(CARD_X + 0.026, cardTop + 0.100, CARD_Z + 0.018);
+  stamp.rotation.set(-0.30, -0.22, 0); ROOM.add(stamp);
+  P.hello = new THREE.Vector3(CARD_X, cardTop + 0.075, CARD_Z + 0.03);
 
-  /* the notebook and a pen, squared to the desk edge but not to the laptop */
-  const nb = box(0.16, 0.016, 0.22, MAT.ink, DESK_X + 0.46, DESK_Y + 0.027, DESK_Z + 0.24, 0.13);
-  box(0.145, 0.006, 0.205, MAT.paper, DESK_X + 0.46, DESK_Y + 0.038, DESK_Z + 0.24, 0.13);
-  const pen = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.0045, 0.14, 16), MAT.brass);
-  pen.position.set(DESK_X + 0.545, DESK_Y + 0.024, DESK_Z + 0.27);
-  pen.rotation.set(Math.PI/2, 0, 0.5); pen.castShadow = true; ROOM.add(pen);
-  P.notes = new THREE.Vector3(DESK_X + 0.46, DESK_Y + 0.05, DESK_Z + 0.24);
+  /* the tea sits here. It used to be a lathe of mine; it is rigart's model
+     now, loaded in loadCup() once the GLB is in. Credit is in the Say
+     hello panel and in the head of this file. */
+  P.mug = new THREE.Vector3(DESK_X + 0.50, DESK_Y + 0.08, DESK_Z + 0.26);
 
-  /* the task lamp, on the left. Brass arm, linen shade, warm bulb. */
-  const base = cyl(0.062, 0.07, 0.016, MAT.brass, DESK_X - 0.6, DESK_Y + 0.027, DESK_Z - 0.12);
-  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.009, 0.32, 16), MAT.brass);
-  stem.position.set(DESK_X - 0.6, DESK_Y + 0.18, DESK_Z - 0.12);
-  stem.rotation.z = 0.12; stem.castShadow = true; ROOM.add(stem);
-  const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.2, 14), MAT.brass);
-  arm.position.set(DESK_X - 0.545, DESK_Y + 0.34, DESK_Z - 0.09);
-  arm.rotation.set(0.3, 0, -1.0); arm.castShadow = true; ROOM.add(arm);
-  const shade = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.09, 32, 1, true), MAT.linen);
-  shade.position.set(DESK_X - 0.46, DESK_Y + 0.33, DESK_Z - 0.05);
-  shade.rotation.set(0.45, 0, Math.PI + 0.25); shade.castShadow = true; ROOM.add(shade);
+  /* the hand-built notebook is gone. "What I read" points at the desk's
+     own open book instead, which is a real object rather than a white
+     slab, and was sitting right next to it doing nothing. P.notes gets
+     set from that prop in loadDesk. */
 
-  /* a plant, back right, where it cannot be knocked over */
-  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.044, 0.085, 36), MAT.terra);
-  pot.position.set(DESK_X + 0.66, DESK_Y + 0.062, DESK_Z - 0.2);
-  pot.castShadow = true; ROOM.add(pot);
-  for (let i = 0; i < 11; i++){
-    const a = i * 2.1, len = 0.1 + Math.random() * 0.09;
-    const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.03, 14, 10), MAT.leaf);
-    leaf.scale.set(0.42, len / 0.03 * 0.5, 0.42);
-    leaf.position.set(
-      DESK_X + 0.66 + Math.sin(a) * 0.035,
-      DESK_Y + 0.11 + len * 0.55,
-      DESK_Z - 0.2 + Math.cos(a) * 0.035);
-    leaf.rotation.set(Math.cos(a) * 0.5, 0, -Math.sin(a) * 0.5);
-    leaf.castShadow = true; ROOM.add(leaf);
-  }
+  /* the lamp is Maxence Rouillet's now, loaded in loadLamp(). */
 
-  /* the headphones, hung off a hook on the wall so the desk stays clear */
-  const hook = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.07, 12), MAT.brass);
-  hook.position.set(DESK_X + 0.62, 1.34, 0.045);
-  hook.rotation.x = Math.PI/2; hook.castShadow = true; ROOM.add(hook);
-  const band = new THREE.Mesh(new THREE.TorusGeometry(0.082, 0.011, 16, 40, Math.PI * 1.15), MAT.rubber);
-  band.position.set(DESK_X + 0.62, 1.26, 0.085);
-  band.rotation.set(0.12, 0, -0.1); band.castShadow = true; ROOM.add(band);
-  [-1, 1].forEach(s => {
-    const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.04, 0.026, 32), MAT.rubber);
-    cup.position.set(DESK_X + 0.62 + s * 0.079, 1.198, 0.085);
-    cup.rotation.z = Math.PI/2; cup.castShadow = true; ROOM.add(cup);
-    const pad = new THREE.Mesh(new THREE.TorusGeometry(0.031, 0.011, 12, 26), MAT.rubber);
-    pad.position.set(DESK_X + 0.62 + s * 0.092, 1.198, 0.085);
-    pad.rotation.y = Math.PI/2; ROOM.add(pad);
-  });
-  P.phones = new THREE.Vector3(DESK_X + 0.62, 1.24, 0.09);
+  /* the plant is AllQuad's pothos now, loaded in loadPlant(). It used to
+     be a terracotta cylinder with eleven squashed spheres for leaves. */
 
-  /* a little speaker on the back left corner, angled in at the chair the
-     way you would actually point one. The two prints that used to hang
-     here came down: the shelf is the wall now, and a shelf plus framed
-     art plus headphones on one small wall is a junk drawer. */
-  const SX = DESK_X - 0.70, SZ = DESK_Z - 0.26, SPK_H = 0.104;
-  const bodyY = DESK_Y + 0.019 + SPK_H/2;
-  const body = box(0.104, SPK_H, 0.082, MAT.walnut, SX, bodyY, SZ, 0.38);
-  body.geometry.computeVertexNormals();
-  /* the grille is inset on the front face, not painted across the whole
-     box, so the cabinet still reads as a wooden thing */
-  const grille = box(0.082, SPK_H - 0.024, 0.004, MAT.grille, 0, 0, 0.0425);
-  ROOM.remove(grille); body.add(grille);
-  grille.position.set(0, 0.004, 0.0425);
-  /* one brass volume knob, top right, catching the window light */
-  const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.006, 20), MAT.brass);
-  knob.rotation.x = Math.PI/2; knob.position.set(0.032, -0.036, 0.044);
-  knob.castShadow = true; body.add(knob);
-  /* and a cable, because nothing on a desk is wireless when you need it */
-  const cable = new THREE.Mesh(
-    new THREE.TorusGeometry(0.035, 0.0025, 8, 30, Math.PI * 0.9), MAT.rubber);
-  cable.position.set(SX + 0.02, DESK_Y + 0.021, SZ + 0.06);
-  cable.rotation.set(Math.PI/2, 0, 0.6); ROOM.add(cable);
+  /* the headphones are gone: Svyatoslav Ovchinnik's radio is the
+     music now, up on the hutch. See loadRadio(). */
+
+  /* the little speaker I built here came out when the radio went in.
+     A radio and a speaker side by side on one small hutch is two of
+     the same idea. */
+
 }
+
 
 /* ── lighting ─────────────────────────────────────────────────────
    Three layers, which is how a room is actually lit: daylight through
@@ -657,28 +1135,86 @@ const skyFill = new THREE.RectAreaLight ? null : null;
 const bounce = new THREE.DirectionalLight(0xd8e8ea, 0.5);
 bounce.position.set(2.2, 1.6, 3.0);
 const amb = new THREE.HemisphereLight(0xe8f2f0, 0x6a5a48, 0.55);
+/* kept as a soft warm fill on the left of the desk. The lamp's own
+   spot, added in lightTheLamp, is what actually reads as the lamp. */
 const bulb = new THREE.PointLight(0xffc98a, 2.2, 1.5, 2.2);
-bulb.position.set(DESK_X - 0.46, DESK_Y + 0.3, DESK_Z - 0.05);
+bulb.position.set(DESK_X - 0.52, DESK_Y + 0.34, DESK_Z - 0.10);
 const screen = new THREE.PointLight(0xbfe4ff, 0.5, 0.9, 2.0);
 screen.position.set(DESK_X, DESK_Y + 0.16, DESK_Z - 0.02);
 scene.add(sun, sun.target, bounce, amb, bulb, screen);
+
+/* ── atmosphere ───────────────────────────────────────────────────
+   Two cheap things that do most of the work of making a room feel like
+   a room rather than a set of objects: dust hanging in the window
+   light, and a vignette so the corners fall away instead of ending at
+   a hard edge. */
+const DUST_N = 260;
+let dust = null;
+function buildDust(){
+  const g = new THREE.BufferGeometry();
+  const pos = new Float32Array(DUST_N * 3), ph = new Float32Array(DUST_N);
+  for (let i = 0; i < DUST_N; i++){
+    pos[i*3]     = 0.35 + Math.random() * 2.6;
+    pos[i*3 + 1] = 0.55 + Math.random() * 1.7;
+    pos[i*3 + 2] = 0.1  + Math.random() * 2.0;
+    ph[i] = Math.random() * Math.PI * 2;
+  }
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  dust = new THREE.Points(g, new THREE.PointsMaterial({
+    color:0xfff2dc, size:0.006, transparent:true, opacity:0.5,
+    depthWrite:false, blending:THREE.AdditiveBlending, sizeAttenuation:true }));
+  dust.userData.phase = ph;
+  dust.userData.base = pos.slice();
+  scene.add(dust);
+}
+function stepDust(t){
+  if (!dust) return;
+  const pos = dust.geometry.attributes.position.array;
+  const base = dust.userData.base, ph = dust.userData.phase;
+  for (let i = 0; i < DUST_N; i++){
+    pos[i*3]     = base[i*3]     + Math.sin(t * 0.00013 + ph[i]) * 0.055;
+    pos[i*3 + 1] = base[i*3 + 1] + Math.sin(t * 0.00009 + ph[i] * 1.7) * 0.045;
+    pos[i*3 + 2] = base[i*3 + 2] + Math.cos(t * 0.00011 + ph[i]) * 0.05;
+  }
+  dust.geometry.attributes.position.needsUpdate = true;
+}
 
 function paintTheme(){
   const L = isLight();
   const bg = L ? 0xdfeae8 : 0x0c1518;
   scene.background = new THREE.Color(bg);
-  sun.intensity    = L ? 3.2 : 1.05;
-  bounce.intensity = L ? 0.55 : 0.2;
-  amb.intensity    = L ? 0.6 : 0.3;
-  bulb.intensity   = L ? 0.9 : 3.0;
-  screen.intensity = L ? 0.35 : 0.9;
+  sun.intensity    = L ? 3.2 : 0.22;   /* moonlight, not a second sun */
+  bounce.intensity = L ? 0.55 : 0.06;
+  amb.intensity    = L ? 0.6 : 0.10;
+  bulb.intensity   = L ? 0.9 : 1.4;
+  screen.intensity = L ? 0.35 : 1.6;   /* the laptop lights your hands */
   MAT.sky.color.setHex(L ? 0xe6f1ef : 0x9db6bd);
   renderer.toneMappingExposure = L ? 1.0 : 1.12;
+  /* the desk lamp. In daylight it is on but barely earning its keep,
+     which is what a lamp looks like at noon. After dark it does the
+     work: a real pool on the desk, real shadows off the laptop and the
+     cup, and a bulb you can see the glow of. */
+  /* The room environment map was doing most of the lighting, which is
+     why "dark" used to look like "slightly different daylight" and why
+     a lamp could not read against it. three r152 has no
+     scene.environmentIntensity, so turn it down per material instead.
+     This is the switch that lets the lamp actually be a light source. */
+  scene.traverse(n => {
+    if (!n.isMesh) return;
+    const ms = Array.isArray(n.material) ? n.material : [n.material];
+    ms.forEach(m => { if (m && 'envMapIntensity' in m){ m.envMapIntensity = L ? 1.0 : 0.16; } });
+  });
+  if (dust) dust.material.opacity = L ? 0.5 : 0.28;
+  if (LAMP_SPOT){
+    LAMP_SPOT.intensity = LAMP_ON ? (L ? 1.1 : 6.4) : 0;
+    LAMP_SPOT.userData.fil.intensity = LAMP_ON ? (L ? 0.25 : 1.5) : 0;
+    LAMP_GLOW.material.opacity = LAMP_ON ? (L ? 0.22 : 0.85) : 0;
+  }
 }
 
 /* ── the laptop, which is hers ────────────────────────────────── */
 function loadLaptop(){
-  return new Promise(res => new GLTFLoader().load(MINE_MAC, g => {
+  return new Promise(res => GLTF.load(MINE_MAC, g => {
     const o = g.scene;
     o.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
     o.updateMatrixWorld(true);
@@ -703,8 +1239,9 @@ function loadLaptop(){
       let a = openIt(wb.min.z, -1);
       if (a.h < 0.12){                            /* did not stand up: other hinge */
         a.pivot.rotation.x = 0; o.attach(lid); o.remove(a.pivot);
-        openIt(wb.max.z, 1);
+        a = openIt(wb.max.z, 1);
       }
+      addScreen(a.pivot, lid);
     }
 
     /* it is already modelled at a true 304mm, so no rescaling, just placing */
@@ -712,11 +1249,479 @@ function loadLaptop(){
     o.updateMatrixWorld(true);
     const bb = new THREE.Box3().setFromObject(o);
     const c = bb.getCenter(new THREE.Vector3());
-    o.position.set(DESK_X - c.x, DESK_Y + 0.019 - bb.min.y, DESK_Z - 0.04 - c.z);
+    o.position.set(DESK_X - c.x, DESK_Y + 0.019 - bb.min.y, DESK_Z + 0.14 - c.z);
     ROOM.add(o);
-    P.laptop = new THREE.Vector3(DESK_X, DESK_Y + 0.14, DESK_Z - 0.09);
+    P.laptop = new THREE.Vector3(DESK_X, DESK_Y + 0.14, DESK_Z + 0.09);
     res(o);
-  }, undefined, () => { P.laptop = new THREE.Vector3(DESK_X, DESK_Y + 0.14, DESK_Z - 0.09); res(null); }));
+  }, undefined, () => { P.laptop = new THREE.Vector3(DESK_X, DESK_Y + 0.14, DESK_Z + 0.09); res(null); }));
+}
+
+/* ── the screen, and the camera that flies at it ──────────────────
+   Match the model's own display mesh, the same way the Skrimp cover
+   matches on material name. The first pass here built a plane instead
+   and guessed its size and offset, and every part of that guess was
+   wrong: 280x176 against a real 286.6x179.8, centred 8mm off, and sat
+   on the wrong face of the lid. Viewer-facing is local -y, so a plane
+   at y = -0.001 was 6.75mm in FRONT of the display rather than behind
+   it, which is why the laptop rendered as a black rectangle that fit
+   the bezel badly. Never invent geometry you can measure.
+
+   Material.002 is the only textured mesh in the lid. Its own bounding
+   box gives the display rectangle to the tenth of a millimetre. */
+let SCREEN = null;
+function addScreen(pivot, lid){
+  lid.traverse(n => {
+    if (!n.isMesh) return;
+    const m = Array.isArray(n.material) ? n.material[0] : n.material;
+    if (m && (m.name === 'Material.002' || (!SCREEN && m.map))) SCREEN = n;
+  });
+  if (!SCREEN) return;
+  SCREEN.geometry.computeBoundingBox();
+  /* the GLB ships with somebody else's Safari window baked on. Drop the
+     texture and leave a dark panel: the only thing that should ever
+     appear on this laptop is her desktop, and that is the HTML overlay. */
+  const sm = Array.isArray(SCREEN.material) ? SCREEN.material[0] : SCREEN.material;
+  sm.map = null; sm.emissiveMap = null;
+  sm.color.setHex(0x0a1114); sm.roughness = 0.22; sm.metalness = 0;
+  sm.needsUpdate = true;
+}
+
+/* the display's four corners in world space. The mesh is a flat quad, so
+   the thinnest axis of its local box is the normal and the other two
+   span the picture. Order does not matter: the overlay only needs the
+   bounding box of the projection. */
+const SCR_C = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+function screenAxes(){
+  const bb = SCREEN.geometry.boundingBox;
+  const sz = bb.getSize(new THREE.Vector3());
+  const thin = sz.x < sz.y ? (sz.x < sz.z ? 'x' : 'z') : (sz.y < sz.z ? 'y' : 'z');
+  const span = ['x', 'y', 'z'].filter(a => a !== thin);
+  return { bb, thin, span, sz };
+}
+function screenCorners(){
+  if (!SCREEN) return null;
+  SCREEN.updateMatrixWorld(true);
+  const { bb, thin, span } = screenAxes();
+  const mid = (bb.min[thin] + bb.max[thin]) / 2;
+  let i = 0;
+  for (const a of [bb.min, bb.max]) for (const b of [bb.min, bb.max]){
+    const v = SCR_C[i++];
+    v[thin] = mid; v[span[0]] = a[span[0]]; v[span[1]] = b[span[1]];
+    v.applyMatrix4(SCREEN.matrixWorld);
+  }
+  return SCR_C;
+}
+
+/* Straight down the display's own normal, far enough back that the whole
+   lid and a margin of desk stay in frame. FILL is the share of the
+   viewport height the picture takes.
+
+   Everything here comes off the world-space corners, never the local
+   bounding box. The mesh carries a world scale of 0.275, so its local
+   box reads 0.65 where the real display is 0.18, and sizing the camera
+   off that parked it five and a half times too far away. */
+const SCREEN_FILL = 0.72;
+function screenCam(){
+  const cs = screenCorners();
+  if (!cs) return null;
+  const c = new THREE.Vector3();
+  cs.forEach(v => c.add(v));
+  c.multiplyScalar(0.25);
+  /* corners come out (min,min) (min,max) (max,min) (max,max), so these two
+     edges are the picture's two axes */
+  const e1 = new THREE.Vector3().subVectors(cs[1], cs[0]);
+  const e2 = new THREE.Vector3().subVectors(cs[2], cs[0]);
+  const h = Math.min(e1.length(), e2.length());     /* the short side, in metres */
+  const n = new THREE.Vector3().crossVectors(e1, e2).normalize();
+  if (n.dot(new THREE.Vector3(...SEATED.pos).sub(c)) < 0) n.negate();
+  const fov = 34;
+  const d = (h / 2 / Math.tan(fov * Math.PI / 360)) / SCREEN_FILL;
+  return { pos: c.clone().addScaledVector(n, d), look: c.clone(), fov };
+}
+
+/* ── the desk ─────────────────────────────────────────────────────
+   "Antique wooden desk with props" (https://skfb.ly/oHrDH) by
+   shuvalov.di, CC BY-SA 4.0.
+
+   It arrived at 190MB, which is not a thing you can put on a web page:
+   185MB of that was 46 textures, several of them 4K PNGs, against only
+   49k vertices of geometry. Every texture is resampled to 1024 and
+   re-encoded, alpha kept as PNG and everything else as JPEG. 14.7MB
+   out, all 46 maps still there.
+
+   It brings its own props and none of them get thrown away. They get
+   moved, because the laptop owns the middle of this desk and the model
+   was not built with that in mind. PROPS below is that arrangement. */
+const DESK_GLB = '/models/antique_desk.glb';
+
+/* name -> [x, z, yaw, scale, surface]. x and z are metres from the
+   centre of whichever surface it is on: 'desk' is the writing surface,
+   'hutch' is the raised back of the roll-top. Left is negative x,
+   toward you is positive z. Scale multiplies whatever shipped.
+
+   The front of the writing surface is kept clear for the laptop, the
+   tea and the lamp. Small things go up on the hutch, which is what the
+   back of a roll-top is actually for. Nothing is deleted. */
+const PROPS = {
+  /* stacked on the hutch beside the plant. On the desk they were
+     growing through the lamp. The 6th field stacks a book on the one
+     named, rather than on the surface. */
+  Book_1:    [ 0.34,  0.02,  0.10, 1,    'hutch'],
+  Book_2:    [ 0.33,  0.01, -0.16, 1,    'hutch', 'Book_1'],
+  Book_3:    [ 0.35,  0.02,  0.28, 1,    'hutch', 'Book_2'],
+
+  Open_book: [ 0.40,  0.14, -0.34, 0.72, 'desk'],
+  Magnifier: [ 0.19,  0.20,  0.85, 0.8,  'desk'],
+  Note_3:    [-0.62,  0.16,  0.62, 0.85, 'desk'],
+
+  /* up on the back, out of the way of the work */
+  Bottle:    [-0.12,  0.02,  0.00, 1,    'hutch'],
+  Jar_1:     [-0.02,  0.05,  0.00, 1,    'hutch'],
+  Jar_2:     [-0.24,  0.04,  0.00, 1,    'hutch'],
+  Note_1:    [ 0.18,  0.00, -0.55, 1,    'hutch'],
+  Note_2:    [ 0.08, -0.06,  0.30, 1,    'hutch'],
+  /* the model's banker's lamp is the same object as Maxence's, and at
+     its shipped size it was 480mm wide. A third of the size, up on the
+     hutch, it reads as an ornament instead of a second fixture. */
+  Lamp:      [-0.38, -0.02,  0.55, 0.34, 'hutch'],
+};
+
+function loadDesk(){
+  return new Promise(res => GLTF.load(DESK_GLB, g => {
+    const o = g.scene;
+    o.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
+    o.updateMatrixWorld(true);
+
+    /* Scale by the TABLE's width, not by everything: the chair and the
+       props would drag the numbers around. */
+    const table = o.getObjectByName('Table');
+    let tb = new THREE.Box3().setFromObject(table);
+    const k = DESK_W / tb.getSize(new THREE.Vector3()).x;
+    o.scale.setScalar(k);
+    o.updateMatrixWorld(true);
+
+    /* Then sit it by the WRITING SURFACE, not by the top of the bounding
+       box. This desk is 1.08m tall: a writing surface with a hutch and a
+       tambour above it. Pinning the bbox top to desk height buried the
+       whole thing 320mm into the floor and left the hutch as the only
+       thing at hand level, so everything got arranged on a back ledge
+       instead of on the desk. Find the real surface instead: the largest
+       upward-facing horizontal plane in the piece. */
+    const picked = pickSurfaces(table);
+    const surf = picked.desk;
+    o.position.x += DESK_X - (surf.x0 + surf.x1) / 2;
+    o.position.y += (DESK_Y + 0.019) - surf.y;
+    o.position.z += DESK_Z - (surf.z0 + surf.z1) / 2;
+    o.updateMatrixWorld(true);
+    /* the surface in its final place, so props can be kept on it */
+    DESK_SURF = {
+      y: DESK_Y + 0.019,
+      x0: surf.x0 + (DESK_X - (surf.x0 + surf.x1) / 2),
+      x1: surf.x1 + (DESK_X - (surf.x0 + surf.x1) / 2),
+      z0: surf.z0 + (DESK_Z - (surf.z0 + surf.z1) / 2),
+      z1: surf.z1 + (DESK_Z - (surf.z0 + surf.z1) / 2),
+    };
+    if (picked.hutch){
+      const h = picked.hutch, ox = DESK_X - (surf.x0 + surf.x1) / 2,
+            oz = DESK_Z - (surf.z0 + surf.z1) / 2, oy = (DESK_Y + 0.019) - surf.y;
+      HUTCH_SURF = { y:h.y + oy, x0:h.x0 + ox, x1:h.x1 + ox, z0:h.z0 + oz, z1:h.z1 + oz };
+    }
+    ROOM.add(o);
+    DESK_MODEL = o;
+
+    /* now move the props. Each one is placed by its own footprint so it
+       sits on the top rather than hovering or sinking into it, and is
+       clamped inside the surface we just measured so nothing ends up
+       balanced on the lip. */
+    const placed = {};
+    for (const [name, [dx, dz, yaw, sc, where, stackOn]] of Object.entries(PROPS)){
+      const n = o.getObjectByName(name);
+      if (!n) continue;
+      const S = (where === 'hutch' && HUTCH_SURF) ? HUTCH_SURF : DESK_SURF;
+      /* a stacked book rests on the one below it, not on the surface */
+      const top = (stackOn && placed[stackOn] != null) ? placed[stackOn] : S.y;
+      const cx = (S.x0 + S.x1) / 2, cz = (S.z0 + S.z1) / 2;
+      n.rotation.y += yaw;
+      if (sc && sc !== 1) n.scale.multiplyScalar(sc);
+      n.updateMatrixWorld(true);
+      const bb = new THREE.Box3().setFromObject(n);
+      const bc = bb.getCenter(new THREE.Vector3());
+      /* n.position lives in its parent's space, and this model's root
+         carries a scale, so a world-space delta cannot just be added to
+         it. Convert both ends through the parent instead: that survives
+         the scale and any rotation in the chain. */
+      const sz = bb.getSize(new THREE.Vector3());
+      const tx = THREE.MathUtils.clamp(cx + dx, S.x0 + sz.x/2 + 0.01, S.x1 - sz.x/2 - 0.01);
+      /* the hutch is only 300mm deep, so let a prop overhang its front
+         lip a little rather than crushing everything into one line */
+      const pad = (S === HUTCH_SURF) ? sz.z * 0.15 : sz.z/2 + 0.01;
+      const tz = THREE.MathUtils.clamp(cz + dz, S.z0 + sz.z/2 + 0.01, S.z1 - pad);
+      const here = n.parent.worldToLocal(bc.clone());
+      const want = n.parent.worldToLocal(
+        new THREE.Vector3(tx, bc.y + (top - bb.min.y), tz));
+      n.position.add(want.sub(here));
+      n.updateMatrixWorld(true);
+      placed[name] = new THREE.Box3().setFromObject(n).max.y;
+    }
+    o.updateMatrixWorld(true);
+
+    buildBookshelf();
+
+    /* "what I read" lives on the open book now that the notebook is gone */
+    const ob = o.getObjectByName('Open_book');
+    if (ob){
+      const b2 = new THREE.Box3().setFromObject(ob);
+      P.notes = new THREE.Vector3(b2.getCenter(new THREE.Vector3()).x, b2.max.y + 0.02,
+                                  b2.getCenter(new THREE.Vector3()).z);
+    }
+    paintTheme();
+    res(o);
+  }, undefined, () => res(null)));
+}
+let DESK_MODEL = null, DESK_SURF = null, HUTCH_SURF = null;
+
+/* The biggest flat thing you could put a cup down on. Adds up the area
+   of every upward-facing triangle per height band and takes the winner,
+   which finds a writing surface under a hutch where a bounding box
+   cannot. */
+function topSurface(root){
+  const bands = new Map();
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  const ab = new THREE.Vector3(), ac = new THREE.Vector3(), nm = new THREE.Vector3();
+  root.updateMatrixWorld(true);
+  root.traverse(m => {
+    if (!m.isMesh) return;
+    const g = m.geometry, pa = g.attributes.position, ix = g.index;
+    const cnt = ix ? ix.count : pa.count;
+    for (let i = 0; i < cnt; i += 3){
+      const i0 = ix ? ix.getX(i) : i, i1 = ix ? ix.getX(i+1) : i+1, i2 = ix ? ix.getX(i+2) : i+2;
+      a.fromBufferAttribute(pa, i0).applyMatrix4(m.matrixWorld);
+      b.fromBufferAttribute(pa, i1).applyMatrix4(m.matrixWorld);
+      c.fromBufferAttribute(pa, i2).applyMatrix4(m.matrixWorld);
+      ab.subVectors(b, a); ac.subVectors(c, a); nm.crossVectors(ab, ac);
+      const area = nm.length() / 2;
+      if (area < 1e-7) continue;
+      nm.normalize();
+      if (nm.y < 0.9) continue;                       /* upward faces only */
+      const key = Math.round(((a.y + b.y + c.y) / 3) * 100) / 100;
+      let e = bands.get(key);
+      if (!e) bands.set(key, e = { area:0, x0:1e9, x1:-1e9, z0:1e9, z1:-1e9, y:key });
+      e.area += area;
+      for (const v of [a, b, c]){
+        e.x0 = Math.min(e.x0, v.x); e.x1 = Math.max(e.x1, v.x);
+        e.z0 = Math.min(e.z0, v.z); e.z1 = Math.max(e.z1, v.z);
+      }
+    }
+  });
+  return [...bands.values()].filter(e => e.area > 0.02).sort((p, q) => q.area - p.area);
+}
+
+/* the writing surface is the biggest flat thing; the hutch top is the
+   highest flat thing worth putting an object on. Measured on this desk:
+   1.16 m2 at y 0.76 and 0.45 m2 at y 1.08. */
+function pickSurfaces(root){
+  const all = topSurface(root);
+  const desk = all[0];
+  const hutch = all
+    .filter(e => e.area >= 0.2 && e.y > desk.y + 0.15)
+    .sort((p, q) => q.y - p.y)[0] || null;
+  return { desk, hutch };
+}
+
+/* ── the lamp ─────────────────────────────────────────────────────
+   "Old Desk Lamp" (https://skfb.ly/6CzIJ) by Maxence Rouillet, CC BY 4.0.
+
+   The whole lamp is one mesh with one material, so the bulb cannot be
+   lit on its own. The light is real light instead: a spot at the mouth
+   of the shade, aimed at the desk, casting real shadows. Where the
+   shade actually is gets measured off the model rather than guessed,
+   because a lamp whose glow does not start at its own shade reads as
+   broken even when nobody can say why. */
+let LAMP = null, LAMP_SPOT = null, LAMP_GLOW = null, LAMP_ON = true;
+const LAMP_GLB = '/models/desk_lamp.glb';
+function loadLamp(){
+  return new Promise(res => GLTF.load(LAMP_GLB, g => {
+    const o = g.scene;
+    o.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
+    o.updateMatrixWorld(true);
+    let bb = new THREE.Box3().setFromObject(o);
+    o.scale.setScalar(0.375 / bb.getSize(new THREE.Vector3()).y);  /* ~375mm tall */
+    o.rotation.y = LAMP_YAW;
+    o.updateMatrixWorld(true);
+    bb = new THREE.Box3().setFromObject(o);
+    const c = bb.getCenter(new THREE.Vector3());
+    o.position.set(LAMP_AT.x - c.x, DESK_Y + 0.019 - bb.min.y, LAMP_AT.z - c.z);
+    ROOM.add(o);
+    o.updateMatrixWorld(true);
+    LAMP = o;
+    lightTheLamp();
+    res(o);
+  }, undefined, () => res(null)));
+}
+
+const LAMP_AT = new THREE.Vector3(DESK_X - 0.58, 0, DESK_Z + 0.12);
+const LAMP_YAW = 2.35;
+
+/* Find the shade by looking at the model rather than assuming. The head
+   is the highest cluster of geometry, so take every vertex in the top
+   of the bounding box and average it: that is the centre of the shade,
+   wherever the arm happens to be posed. */
+function shadeMouth(){
+  const bb = new THREE.Box3().setFromObject(LAMP);
+  const cut = bb.max.y - (bb.max.y - bb.min.y) * 0.26;
+  const sum = new THREE.Vector3(); let n = 0;
+  const v = new THREE.Vector3();
+  LAMP.traverse(m => {
+    if (!m.isMesh) return;
+    const pa = m.geometry.attributes.position;
+    for (let i = 0; i < pa.count; i += 3){
+      v.fromBufferAttribute(pa, i).applyMatrix4(m.matrixWorld);
+      if (v.y >= cut){ sum.add(v); n++; }
+    }
+  });
+  return n ? sum.multiplyScalar(1 / n) : bb.getCenter(new THREE.Vector3());
+}
+
+function lightTheLamp(){
+  const head = shadeMouth();
+  /* aim at the near side of the desk, which is where a task lamp points:
+     at the work, not at the wall */
+  const aim = new THREE.Vector3(DESK_X - 0.14, DESK_Y + 0.02, DESK_Z + 0.24);
+
+  LAMP_SPOT = new THREE.SpotLight(0xffc27a, 0, 1.9, 0.72, 0.55, 1.4);
+  LAMP_SPOT.position.copy(head);
+  LAMP_SPOT.target.position.copy(aim);
+  LAMP_SPOT.castShadow = true;
+  LAMP_SPOT.shadow.mapSize.set(1024, 1024);
+  LAMP_SPOT.shadow.camera.near = 0.05;
+  LAMP_SPOT.shadow.camera.far = 2.2;
+  LAMP_SPOT.shadow.bias = -0.0012;
+  LAMP_SPOT.shadow.radius = 4;
+  scene.add(LAMP_SPOT, LAMP_SPOT.target);
+
+  /* the bulb itself. A tiny sphere just inside the shade so there is a
+     hot source you can see, plus a short-range point light so the inside
+     of the shade and the arm pick up bounce. Without these the pool of
+     light on the desk has no visible cause. */
+  LAMP_GLOW = new THREE.Mesh(
+    new THREE.SphereGeometry(0.016, 16, 12),
+    new THREE.MeshBasicMaterial({ color:0xffd9a3, transparent:true, opacity:0 }));
+  LAMP_GLOW.position.copy(head).addScaledVector(
+    new THREE.Vector3().subVectors(aim, head).normalize(), 0.012);
+  scene.add(LAMP_GLOW);
+
+  const fil = new THREE.PointLight(0xffc98a, 0, 0.34, 2.0);
+  fil.position.copy(LAMP_GLOW.position);
+  scene.add(fil);
+  LAMP_SPOT.userData.fil = fil;
+  P.lamp = head.clone();
+  paintTheme();
+}
+
+/* ── the radio ────────────────────────────────────────────────────
+   "Retro Radio" (https://skfb.ly/6YQrt) by Svyatoslav Ovchinnik,
+   CC BY 4.0.
+
+   This is the music. It replaced a pair of headphones lying on the
+   desk, and it lives up on the hutch, which is where a radio goes:
+   somewhere behind the work, on all day, not something you pick up. */
+const RADIO_GLB = '/models/retro_radio.glb';
+function loadRadio(){
+  return new Promise(res => GLTF.load(RADIO_GLB, g => {
+    const o = g.scene;
+    o.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
+    o.updateMatrixWorld(true);
+    let bb = new THREE.Box3().setFromObject(o);
+    let sz = bb.getSize(new THREE.Vector3());
+    o.scale.setScalar(0.23 / Math.max(sz.x, sz.z));   /* ~230mm across */
+    o.rotation.y = 0.42;                              /* angled at the chair */
+    o.updateMatrixWorld(true);
+
+    bb = new THREE.Box3().setFromObject(o);
+    sz = bb.getSize(new THREE.Vector3());
+    const c = bb.getCenter(new THREE.Vector3());
+    const S = HUTCH_SURF || DESK_SURF;
+    /* far left of the hutch, the end the lamp does not use */
+    const x = S.x0 + sz.x/2 + 0.03;
+    const z = (S.z0 + S.z1)/2 + 0.01;
+    o.position.set(x - c.x, S.y - bb.min.y, z - c.z);
+    ROOM.add(o);
+    o.updateMatrixWorld(true);
+    const fb = new THREE.Box3().setFromObject(o);
+    P.radio = new THREE.Vector3(x, fb.max.y - 0.02, z + sz.z * 0.4);
+    res(o);
+  }, undefined, () => res(null)));
+}
+
+/* ── the plant ────────────────────────────────────────────────────
+   "[FREE] Pothos Potted Plant - Money Plant" (https://skfb.ly/oDsVN) by
+   AllQuad, CC BY 4.0.
+
+   This one is honest metallic-roughness with real baseColorTextures, so
+   unlike the teacup it needs no surgery: it loads and it is textured. */
+const POTHOS_GLB = '/models/pothos.glb';
+function loadPlant(){
+  return new Promise(res => GLTF.load(POTHOS_GLB, g => {
+    const o = g.scene;
+    o.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
+    o.updateMatrixWorld(true);
+    let bb = new THREE.Box3().setFromObject(o);
+    let sz = bb.getSize(new THREE.Vector3());
+    /* about 300mm tall, which is a desk plant rather than a houseplant */
+    o.scale.setScalar(0.30 / sz.y);
+    o.rotation.y = -0.7;
+    o.updateMatrixWorld(true);
+
+    bb = new THREE.Box3().setFromObject(o);
+    sz = bb.getSize(new THREE.Vector3());
+    const c = bb.getCenter(new THREE.Vector3());
+    /* up on the hutch, at the right hand end. That end is past the wall
+       shelf, so the leaves have headroom: on the middle of the hutch it
+       would grow straight into the underside of the shelf. */
+    const S = HUTCH_SURF || DESK_SURF;
+    const x = S.x1 - Math.max(sz.x, 0.14)/2 - 0.02;
+    const z = (S.z0 + S.z1)/2 + 0.02;
+    o.position.set(x - c.x, S.y - bb.min.y, z - c.z);
+    ROOM.add(o);
+    res(o);
+  }, undefined, () => res(null)));
+}
+
+/* ── the tea ──────────────────────────────────────────────────────
+   "Cup tea" (https://skfb.ly/ostwx) by rigart, CC BY 4.0.
+
+   The model ships as two settings: an upright cup with tea in it, and a
+   knocked-over one twenty units away. Read off the glTF node matrices,
+   the upright set is Line003 (saucer), Line004 (cup) and Object002
+   (the tea surface), all sitting at x = -0.13 with clean Y-up rotations.
+   Line007 and Line008 are the spill: Line008's matrix is tilted hard off
+   vertical, which is the cup on its side. Those two get dropped. */
+const CUP_GLB = '/models/cup_tea.glb';
+const CUP_DROP = ['Line007', 'Line008'];
+function loadCup(){
+  return new Promise(res => GLTF.load(CUP_GLB, g => {
+    const o = g.scene;
+    CUP_DROP.forEach(n => { const m = o.getObjectByName(n); if (m) m.removeFromParent(); });
+    o.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
+
+    /* size it off what is left, so dropping the spill cannot skew the fit.
+       A saucer is about 140mm across. */
+    o.updateMatrixWorld(true);
+    let bb = new THREE.Box3().setFromObject(o);
+    let sz = bb.getSize(new THREE.Vector3());
+    o.scale.setScalar(0.14 / Math.max(sz.x, sz.z));
+    o.rotation.y = -0.55;
+    o.updateMatrixWorld(true);
+
+    bb = new THREE.Box3().setFromObject(o);
+    const c = bb.getCenter(new THREE.Vector3());
+    o.position.set(DESK_X + 0.50 - c.x, DESK_Y + 0.019 - bb.min.y, DESK_Z + 0.26 - c.z);
+    ROOM.add(o);
+    o.updateMatrixWorld(true);
+    /* the pin wants the lip, not the saucer */
+    P.mug = new THREE.Vector3(DESK_X + 0.50, new THREE.Box3().setFromObject(o).max.y - 0.01, DESK_Z + 0.26);
+    res(o);
+  }, undefined, () => res(null)));
 }
 
 const MINE_MAC = '/models/macbook.glb';   /* same reason as the textures */
@@ -737,11 +1742,22 @@ const MINE_MAC = '/models/macbook.glb';   /* same reason as the textures */
    the opening glide starts from, so the room registers as a room
    for a beat before you are sitting at the desk in it. */
 const WIDE   = { pos:[2.48, 1.66, 3.05], look:[1.05, 0.76, 0.52], fov:46 };
-const SEATED = { pos:[DESK_X + 0.08, 1.28, CHAIR_Z + 0.34], look:[DESK_X + 0.04, 0.95, DESK_Z - 0.02], fov:62 };
+const SEATED = { pos:[DESK_X + 0.08, 1.26, CHAIR_Z + 0.66], look:[DESK_X + 0.04, 0.88, DESK_Z + 0.02], fov:58 };
 
 /* the things you can click, and where they live */
+/* Fly from where you are sitting straight at the thing, and stop short of
+   it. Doing it off the seated position rather than a hand-placed camera
+   per object means the move always reads as leaning in, never as cutting
+   to a different room. */
+function closeUp(target, dist, fov){
+  const from = new THREE.Vector3(...SEATED.pos);
+  const dir = from.clone().sub(target).normalize();
+  return { pos: target.clone().addScaledVector(dir, dist), look: target.clone(), fov:fov || 34 };
+}
+
 const SPOTS = [
   { id:'laptop', label:'what I build', at:() => P.laptop, stage:'seated',
+    cam:() => screenCam(), overlay:'mac',
     eyebrow:'What I build',
     title:'Design engineer, founder, and occasional chaos architect.',
     html:`<p>I build at the intersection of structure and experience. Diagnostic games, ARGs inside AI tools, studio-scale mods, and chat platforms written from scratch because I did not want my community's data sitting on somebody else's servers.</p>
@@ -749,7 +1765,8 @@ const SPOTS = [
       <div class="row"><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Three.js</span><span class="chip">Convex</span><span class="chip">Godot</span><span class="chip">Python</span></div>
       <p class="meta">Founding product design engineer at Trove. Founder and CEO at Skrimp AI. CTO and Technical Director on Path to Menzoberranzan.</p>` },
 
-  { id:'notes', label:'the notebook', at:() => P.notes, stage:'seated',
+  { id:'notes', label:'what I read', at:() => P.notes, stage:'seated',
+    cam:() => closeUp(P.notes, 0.3, 34),
     eyebrow:'What I read',
     title:'I came to software sideways.',
     html:`<p>Growing up, I trained myself to see. Really see. How light pulls through curtain fabric, how shadow gives a sketch weight. Software arrived through aesthetics, through the kind of attention that makes you want to stop on something and understand it completely.</p>
@@ -758,7 +1775,8 @@ const SPOTS = [
       <li>Writing a novel of my own, slowly</li>
       <li>4A Interaction Design &amp; Business, University of Waterloo</li></ul>` },
 
-  { id:'phones', label:'what I play', at:() => P.phones, stage:'seated',
+  { id:'radio', label:'what I play', at:() => P.radio, stage:'seated',
+    cam:() => closeUp(P.radio, 0.34, 36), overlay:'audio',
     eyebrow:'What I play',
     title:'Games are how I learned what a system feels like from the inside.',
     html:`<p>Baldur's Gate 3 and Disco Elysium are the two I keep going back to, and these days I am helping build a third. Path to Menzoberranzan is a 140 person volunteer studio making a full custom campaign in the Underdark, and I run its technical direction.</p>
@@ -767,6 +1785,7 @@ const SPOTS = [
       <li>Equinox, Comfy Jam Winter 2026 winner</li></ul>` },
 
   { id:'mug', label:'the rest of me', at:() => P.mug, stage:'seated',
+    cam:() => closeUp(P.mug, 0.3, 34),
     eyebrow:'The rest of me',
     title:'The chaotic details that make me, me.',
     html:`<p>Based in Ontario, Canada, and always chasing the next impossible question to answer.</p>
@@ -775,14 +1794,22 @@ const SPOTS = [
       <li>Founding between lectures, which is exactly as tidy as it sounds</li></ul>
       <p>I build systems that keep working when the world is messy. That is the throughline.</p>` },
 
+  /* the shelf. No panel: you lean in and the books tell you themselves. */
+  { id:'books', label:'what I read', at:() => P.books, stage:'seated',
+    cam:() => closeUp(P.books, 0.40, 32), shelf:true },
+
+  /* not a panel. Clicking this pulls the chain. */
+  { id:'lamp', label:'the lamp', at:() => P.lamp, stage:'seated', toggle:true },
+
   { id:'hello', label:'say hello', at:() => P.hello, stage:'seated',
+    cam:() => closeUp(P.hello, 0.34, 34),
     eyebrow:'Where to find me',
     title:'Looking for where I can do the most interesting work.',
     html:`<p>Technically rigorous, a little bit magic. If that sounds like something you are building, I would like to hear about it.</p>
       <ul><li><a class="link" href="mailto:henrietta@skrimp.ai">henrietta@skrimp.ai</a></li>
       <li><a class="link" href="https://www.linkedin.com/in/henriettavanniekerk" target="_blank" rel="noopener">linkedin.com/in/henriettavanniekerk</a></li>
       <li><a class="link" href="https://github.com/henliz" target="_blank" rel="noopener">github.com/henliz</a></li></ul>
-      <p class="meta">Ontario, Canada. Currently 4A at the University of Waterloo.<br>Surfaces from ambientCG (CC0).</p>` },
+      <p class="meta">Ontario, Canada. Currently 4A at the University of Waterloo.<br>Surfaces from ambientCG (CC0). &ldquo;<a class="link" href="https://skfb.ly/ostwx" target="_blank" rel="noopener">Cup tea</a>&rdquo; by rigart and &ldquo;<a class="link" href="https://skfb.ly/oDsVN" target="_blank" rel="noopener">[FREE] Pothos Potted Plant - Money Plant</a>&rdquo; by AllQuad and &ldquo;<a class="link" href="https://skfb.ly/6CzIJ" target="_blank" rel="noopener">Old Desk Lamp</a>&rdquo; by Maxence Rouillet, all <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6YQrt" target="_blank" rel="noopener">Retro Radio</a>&rdquo; by Svyatoslav Ovchinnik, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/oHrDH" target="_blank" rel="noopener">Antique wooden desk with props</a>&rdquo; by shuvalov.di, <a class="link" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.</p>` },
 
 ];
 
@@ -795,10 +1822,10 @@ const pinLayer  = document.getElementById('pins');
 let stage = 'seated', openSpot = null;
 const camPos = new THREE.Vector3(...WIDE.pos), camLook = new THREE.Vector3(...WIDE.look);
 let toPos = camPos.clone(), toLook = camLook.clone(), toFov = WIDE.fov;
-let yaw = 0, yawTo = 0, pitch = 0, pitchTo = 0;
 /* the normal camera ease. the intro drops it to a crawl for one glide
    and puts it back, so arriving in the chair takes about a second and a
    half instead of the third of a second everything else moves in. */
+const HINT = 'click the laptop, the radio, the lamp';
 const EASE = 0.07;
 let camEase = EASE, seated = false;
 
@@ -808,61 +1835,353 @@ function setStage(next){
   toPos = new THREE.Vector3(...s.pos);
   toLook = new THREE.Vector3(...s.look);
   toFov = s.fov;
-  yawTo = 0; pitchTo = 0;
-  hint.textContent = 'click the laptop, the notebook, the mug · drag to look';
+  hint.textContent = HINT;
   closePanel();
 }
+/* ── zoom ─────────────────────────────────────────────────────────
+   Clicking does not open a drawer any more, it leans in. The camera
+   flies at the thing until it fills the frame, and whatever that thing
+   carries comes up with it: the laptop carries a desktop, the
+   headphones carry a player, everything else carries the panel.
+
+   The laptop overlay is pinned to the projected corners of the real
+   screen mesh, which is why the camera belongs to the stages alone:
+   one degree of stray yaw would slide the HTML off the glass. */
+const backBtn = document.getElementById('back');
+const macEl   = document.getElementById('mac');
+const audioEl = document.getElementById('audio');
+let overlay = null;
+
 function openPanel(spot){
   openSpot = spot;
-  panelBody.innerHTML = `<span class="eyebrow">${spot.eyebrow}</span><h2>${spot.title}</h2>${spot.html}`;
-  panel.classList.add('open');
+  if (spot.cam){
+    const c = spot.cam();
+    if (c){ toPos.copy(c.pos); toLook.copy(c.look); toFov = c.fov; }
+  }
+  if (spot.overlay){
+    overlay = spot.overlay;
+    (overlay === 'mac' ? macEl : audioEl).classList.add('open');
+    if (overlay === 'mac') macEl.classList.add('lit');
+    hint.textContent = 'have a look around';
+  } else {
+    panelBody.innerHTML = `<span class="eyebrow">${spot.eyebrow}</span><h2>${spot.title}</h2>${spot.html}`;
+    panel.classList.add('open');
+    hint.textContent = 'have a look around';
+  }
+  /* not everybody knows to click off a thing to get out of it */
+  backBtn.classList.add('show');
 }
-function closePanel(){ openSpot = null; panel.classList.remove('open'); }
+function closePanel(){
+  if (!openSpot) return;
+  openSpot = null;
+  panel.classList.remove('open');
+  if (overlay){
+    macEl.classList.remove('open'); macEl.classList.remove('lit');
+    audioEl.classList.remove('open');
+    /* stop the music rather than leave it playing at an empty desk */
+    if (overlay === 'audio'){ const f = audioEl.querySelector('iframe'); if (f) f.src = f.src; }
+    overlay = null;
+  }
+  hint.textContent = HINT;
+  backBtn.classList.remove('show');
+  toPos.set(...SEATED.pos); toLook.set(...SEATED.look); toFov = SEATED.fov;
+}
+
+/* lay the desktop over the real screen, from any angle.
+
+   A bounding box was only ever right head on. The desktop is live the
+   whole time now, including from the chair where you see the lid at a
+   slant, so the overlay has to be a genuine projective map: the four
+   projected corners of the display mesh drive a CSS matrix3d, and the
+   div lands on the glass the way a decal would. The model's own
+   placeholder screenshot is switched off in loadLaptop, so what you are
+   looking at is only ever this.
+
+   Standard 2D homography: solve the basis that takes the unit square to
+   each quad, then compose one with the inverse of the other. */
+function adj(m){
+  return [ m[4]*m[8]-m[5]*m[7], m[2]*m[7]-m[1]*m[8], m[1]*m[5]-m[2]*m[4],
+           m[5]*m[6]-m[3]*m[8], m[0]*m[8]-m[2]*m[6], m[2]*m[3]-m[0]*m[5],
+           m[3]*m[7]-m[4]*m[6], m[1]*m[6]-m[0]*m[7], m[0]*m[4]-m[1]*m[3] ];
+}
+function mulmm(a, b){
+  const c = [];
+  for (let i = 0; i < 3; i++) for (let k = 0; k < 3; k++){
+    let t = 0;
+    for (let n = 0; n < 3; n++) t += a[3*i + n] * b[3*n + k];
+    c[3*i + k] = t;
+  }
+  return c;
+}
+function mulmv(m, v){
+  return [ m[0]*v[0]+m[1]*v[1]+m[2]*v[2],
+           m[3]*v[0]+m[4]*v[1]+m[5]*v[2],
+           m[6]*v[0]+m[7]*v[1]+m[8]*v[2] ];
+}
+function basis(p){
+  const m = [p[0][0], p[1][0], p[2][0], p[0][1], p[1][1], p[2][1], 1, 1, 1];
+  const v = mulmv(adj(m), [p[3][0], p[3][1], 1]);
+  return mulmm(m, [v[0],0,0, 0,v[1],0, 0,0,v[2]]);
+}
+
+const MAC_W = 900, MAC_H = 563;
+const _p = new THREE.Vector3();
+let macM = '', macO = null;
+function macHide(){ if (macO !== 0){ macO = 0; macEl.style.opacity = 0; } }
+function placeMac(){
+  const cs = screenCorners();
+  if (!cs) return macHide();
+  /* behind you, or edge on, means nothing to draw */
+  const pts = [];
+  for (const c of cs){
+    _p.copy(c).project(camera);
+    if (_p.z > 1) return macHide();
+    pts.push([(_p.x * 0.5 + 0.5) * innerWidth, (-_p.y * 0.5 + 0.5) * innerHeight]);
+  }
+  /* order them clockwise from the top left, since the mesh's own corner
+     order says nothing about where they land on screen */
+  const cx = (pts[0][0]+pts[1][0]+pts[2][0]+pts[3][0]) / 4;
+  const cy = (pts[0][1]+pts[1][1]+pts[2][1]+pts[3][1]) / 4;
+  pts.sort((a, b) => Math.atan2(a[1]-cy, a[0]-cx) - Math.atan2(b[1]-cy, b[0]-cx));
+
+  const t = mulmm(basis(pts), adj(basis([[0,0],[MAC_W,0],[MAC_W,MAC_H],[0,MAC_H]])));
+  for (let k = 0; k < 9; k++) t[k] /= t[8];
+  const m = 'matrix3d(' +
+    [t[0],t[3],0,t[6], t[1],t[4],0,t[7], 0,0,1,0, t[2],t[5],0,1].join(',') + ')';
+  if (m !== macM){ macM = m; macEl.style.transform = m; }
+  if (macO !== 1){ macO = 1; macEl.style.opacity = 1; }
+}
 
 /* ── pins ─────────────────────────────────────────────────────── */
 const pins = SPOTS.map(spot => {
   const el = document.createElement('button');
   el.className = 'pin'; el.type = 'button';
   el.setAttribute('aria-label', spot.label);
-  el.innerHTML = `<i class="ring"></i>+<span class="lbl">${spot.label}</span>`;
+  el.innerHTML = '<i class="ring"></i>+';
   el.addEventListener('click', e => {
     e.stopPropagation();
-    if (spot.sit) setStage('seated'); else openPanel(spot);
+    if (spot.toggle){
+      LAMP_ON = !LAMP_ON;
+      paintTheme();
+      el.classList.toggle('off', !LAMP_ON);
+      el.setAttribute('aria-label', LAMP_ON ? 'turn the lamp off' : 'turn the lamp on');
+      return;
+    }
+    openPanel(spot);
   });
   pinLayer.appendChild(el);
-  return { spot, el };
+  /* last written state, so a frame that changes nothing touches nothing */
+  return { spot, el, st: { on: null, x: null, y: null } };
 });
 document.getElementById('panelClose').addEventListener('click', closePanel);
-addEventListener('keydown', e => {
-  if (e.key !== 'Escape') return;
-  if (openSpot) closePanel();
+backBtn.addEventListener('click', e => { e.stopPropagation(); closePanel(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+/* ── the desktop's window manager ─────────────────────────────────
+   Apps own windows. Opening one does not close another, the way it
+   did in the first pass, which was really one window swapping its
+   contents and had no business calling itself a desktop.
+
+   Windows stack on a z counter, clicking one raises it and renames the
+   menu bar, the red light closes, the yellow minimises back to the
+   dock, the green zooms to full screen, and the title bar drags. The
+   dock shows a dot under whatever is running. */
+(function(){
+  const wins = new Map();
+  [...macEl.querySelectorAll('.win')].forEach(w => wins.set(w.dataset.app, w));
+  const dockBtns = [...macEl.querySelectorAll('.dock button[data-app]')];
+  const appName  = macEl.querySelector('#macApp');
+  const TITLES = { safari:'Safari', notes:'Notes', finder:'Finder' };
+  let z = 10, front = null;
+
+  const running = () => dockBtns.forEach(b =>
+    b.classList.toggle('run', wins.get(b.dataset.app).classList.contains('open')));
+
+  function focus(app){
+    const w = wins.get(app);
+    if (!w || !w.classList.contains('open')) return;
+    front = app;
+    w.style.zIndex = ++z;
+    wins.forEach(v => v.classList.toggle('focus', v === w));
+    appName.textContent = TITLES[app] || 'Finder';
+  }
+  function open(app){
+    const w = wins.get(app);
+    if (!w) return;
+    w.classList.add('open');
+    running(); focus(app);
+  }
+  function close(app){
+    wins.get(app).classList.remove('open', 'zoom');
+    running();
+    /* hand focus to whatever is still up, highest first */
+    const left = [...wins.entries()].filter(([, v]) => v.classList.contains('open'))
+      .sort((a, b) => (+b[1].style.zIndex || 0) - (+a[1].style.zIndex || 0));
+    if (left.length) focus(left[0][0]);
+    else { front = null; appName.textContent = 'Finder'; wins.forEach(v => v.classList.remove('focus')); }
+  }
+
+  dockBtns.forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    const app = b.dataset.app;
+    /* clicking the app you are already in puts it away, like a real dock */
+    if (wins.get(app).classList.contains('open') && front === app) close(app);
+    else open(app);
+  }));
+  macEl.querySelectorAll('.desk .fold').forEach(f =>
+    f.addEventListener('click', e => { e.stopPropagation(); open(f.dataset.open); }));
+
+  wins.forEach((w, app) => {
+    w.addEventListener('pointerdown', () => focus(app));
+    w.querySelector('.lights s.r').addEventListener('click', e => { e.stopPropagation(); close(app); });
+    w.querySelector('.lights s.y').addEventListener('click', e => { e.stopPropagation(); close(app); });
+    w.querySelector('.lights s.g').addEventListener('click', e => {
+      e.stopPropagation();
+      const on = w.classList.toggle('zoom');
+      if (on){
+        w.dataset.was = [w.style.getPropertyValue('--x'), w.style.getPropertyValue('--y'),
+                         w.style.getPropertyValue('--w'), w.style.getPropertyValue('--h')].join('|');
+        w.style.setProperty('--x','0px'); w.style.setProperty('--y','24px');
+        w.style.setProperty('--w','900px'); w.style.setProperty('--h','483px');
+      } else if (w.dataset.was){
+        const [x,y,ww,hh] = w.dataset.was.split('|');
+        w.style.setProperty('--x',x); w.style.setProperty('--y',y);
+        w.style.setProperty('--w',ww); w.style.setProperty('--h',hh);
+      }
+      focus(app);
+    });
+
+    /* drag by the title bar. The desktop is a scaled, projected surface,
+       so pointer deltas have to be divided by how big a logical pixel
+       currently is on screen, or the window bolts away from the cursor. */
+    const tt = w.querySelector('.tt');
+    let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0, k = 1;
+    tt.addEventListener('pointerdown', e => {
+      if (e.target.closest('.lights')) return;
+      dragging = true; focus(app);
+      sx = e.clientX; sy = e.clientY;
+      ox = parseFloat(w.style.getPropertyValue('--x')) || 0;
+      oy = parseFloat(w.style.getPropertyValue('--y')) || 0;
+      k = macEl.getBoundingClientRect().width / 900 || 1;
+      tt.setPointerCapture(e.pointerId); e.stopPropagation();
+    });
+    tt.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      e.stopPropagation();
+      const nx = Math.max(-40, Math.min(880, ox + (e.clientX - sx) / k));
+      const ny = Math.max(24,  Math.min(520, oy + (e.clientY - sy) / k));
+      w.style.setProperty('--x', nx + 'px');
+      w.style.setProperty('--y', ny + 'px');
+    });
+    const stop = e => { if (dragging){ dragging = false; try { tt.releasePointerCapture(e.pointerId); } catch(_){} } };
+    tt.addEventListener('pointerup', stop);
+    tt.addEventListener('pointercancel', stop);
+  });
+
+  /* what is open when you sit down */
+  open('notes'); open('safari');
+
+  /* the menu bar clock is the real one. A frozen 9:41 on a screen you
+     are looking straight at is what gives the game away. */
+  const clock = macEl.querySelector('#macClock'), dateEl = macEl.querySelector('#macDate');
+  const tick = () => {
+    const d = new Date();
+    clock.textContent = d.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+    dateEl.textContent = d.toLocaleDateString([], { weekday:'short', day:'numeric', month:'short' });
+  };
+  tick(); setInterval(tick, 20000);
+
+  /* case-study links belong to the parent, not to this frame */
+  macEl.querySelectorAll('.work .row').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation();
+    const href = a.getAttribute('href');
+    if (window.parent !== window) window.parent.postMessage({ type:'navigate', href }, '*');
+    else location.href = href;
+  }));
+  /* the note list actually selects */
+  macEl.querySelectorAll('.side .it').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    [...b.parentElement.children].forEach(c => c.classList && c.classList.remove('on'));
+    b.classList.add('on');
+  }));
+
+  /* neither overlay lets a click through to the canvas behind it */
+  [macEl, audioEl].forEach(el => ['pointerdown','pointerup','click'].forEach(t =>
+    el.addEventListener(t, e => e.stopPropagation())));
+})();
+
+/* ── the shelf, up close ──────────────────────────────────────────
+   Once you have leaned into the books, the pointer picks one out: a
+   raycast finds whichever spine is under the cursor and that book
+   slides toward you far enough to read its cover, with its title in a
+   label that follows it. Everything eases, so the row breathes rather
+   than snapping. */
+const rayc = new THREE.Raycaster();
+const ptr = new THREE.Vector2(-2, -2);
+let hoverBook = null;
+const bookTip = document.createElement('div');
+bookTip.id = 'booktip';
+document.getElementById('stage').appendChild(bookTip);
+
+function shelfMode(){ return openSpot && openSpot.shelf; }
+
+canvas.addEventListener('pointermove', e => {
+  ptr.x = (e.clientX / innerWidth) * 2 - 1;
+  ptr.y = -(e.clientY / innerHeight) * 2 + 1;
+});
+canvas.addEventListener('pointerleave', () => { ptr.set(-2, -2); });
+
+canvas.addEventListener('click', () => {
+  /* a book you have pulled out and that belongs to a case study opens it */
+  if (!shelfMode() || !hoverBook) return;
+  const href = hoverBook.userData.book.href;
+  if (!href) return;
+  if (window.parent !== window) window.parent.postMessage({ type:'navigate', href }, '*');
+  else location.href = href;
 });
 
-/* ── drag to look ─────────────────────────────────────────────── */
-let dragging = false, px = 0, py = 0, moved = 0;
-canvas.addEventListener('pointerdown', e => {
-  dragging = true; moved = 0; px = e.clientX; py = e.clientY;
-  canvas.setPointerCapture(e.pointerId);
-});
-canvas.addEventListener('pointermove', e => {
-  if (!dragging) return;
-  const dx = e.clientX - px, dy = e.clientY - py;
-  px = e.clientX; py = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
-  /* a glance around the desk, not a free camera. wide enough to take in
-     the shelf and the speaker on the corner, tight enough that you can
-     never end up looking at bare wall. */
-  const span = 0.62;
-  yawTo   = THREE.MathUtils.clamp(yawTo   - dx * 0.0035, -span, span);
-  pitchTo = THREE.MathUtils.clamp(pitchTo + dy * 0.0022, -0.3, 0.34);
-});
-const endDrag = e => {
-  if (!dragging) return;
-  dragging = false;
-  try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
-  if (moved < 6 && openSpot) closePanel();
-};
-canvas.addEventListener('pointerup', endDrag);
-canvas.addEventListener('pointercancel', endDrag);
+function stepShelf(){
+  if (!BOOKS.length) return;
+  let hit = null;
+  if (shelfMode()){
+    rayc.setFromCamera(ptr, camera);
+    const xs = rayc.intersectObjects(BOOKS, false);
+    if (xs.length) hit = xs[0].object;
+  }
+  hoverBook = hit;
+  for (const m of BOOKS){
+    const want = (m === hit) ? 1 : 0;
+    m.userData.out += (want - m.userData.out) * 0.18;
+    const o = m.userData.out;
+    m.position.z = m.userData.homeZ + o * 0.085;
+    m.position.y = m.userData.baseY = m.position.y;   /* height is untouched */
+  }
+  if (hit){
+    const b = hit.userData.book;
+    bookTip.innerHTML = `<b>${b.t}</b><span>${b.a}</span>` + (b.href ? '<em>open the case study</em>' : '');
+    const v = new THREE.Vector3().copy(hit.position);
+    v.y += 0.10; v.project(camera);
+    bookTip.style.left = ((v.x * 0.5 + 0.5) * innerWidth) + 'px';
+    bookTip.style.top  = ((-v.y * 0.5 + 0.5) * innerHeight) + 'px';
+    bookTip.classList.add('on');
+    canvas.style.cursor = b.href ? 'pointer' : 'default';
+  } else {
+    bookTip.classList.remove('on');
+    canvas.style.cursor = '';
+  }
+}
+
+/* ── clicking off ─────────────────────────────────────────────────
+   The desk used to be draggable, a glance around the room laid over
+   the stage camera. It cost more than it gave: every pointermove woke
+   the render loop and re-projected six pins against a camera that had
+   moved a fraction of a degree, so the room could never sit still
+   while the cursor was anywhere over it. The stages already frame
+   everything worth seeing, and the pins are the way around the desk.
+
+   The pins are their own DOM buttons, so anything that reaches the
+   canvas is genuinely empty desk: close whatever is open. */
+canvas.addEventListener('click', () => { if (openSpot) closePanel(); });
 
 /* ── loop ─────────────────────────────────────────────────────── */
 function resize(){
@@ -874,8 +2193,6 @@ addEventListener('resize', resize);
 
 const v = new THREE.Vector3();
 function step(){
-  yaw   += (yawTo   - yaw)   * 0.08;
-  pitch += (pitchTo - pitch) * 0.08;
   camPos.lerp(toPos, camEase);
   camLook.lerp(toLook, camEase * 1.14);
   camera.fov += (toFov - camera.fov) * camEase * 1.14;
@@ -883,39 +2200,88 @@ function step(){
 
   v.copy(camPos).sub(camLook);
   const r = v.length();
-  const a = Math.atan2(v.x, v.z) + yaw;
-  const p = THREE.MathUtils.clamp(Math.asin(v.y / r) + pitch, -0.25, 1.1);
+  const a = Math.atan2(v.x, v.z);
+  const p = THREE.MathUtils.clamp(Math.asin(v.y / r), -0.25, 1.1);
   camera.position.set(
     camLook.x + Math.sin(a) * Math.cos(p) * r,
     camLook.y + Math.sin(p) * r,
     camLook.z + Math.cos(a) * Math.cos(p) * r);
   camera.lookAt(camLook);
 
-  for (const { spot, el } of pins){
+  for (const { spot, el, st } of pins){
     /* pins stay down through the glide. arriving in the chair to find
        five markers already floating there reads as a menu, not a room. */
     const here = seated && spot.stage === stage && !openSpot;
     const at = here ? spot.at() : null;
-    if (!at){ el.style.display = 'none'; continue; }
-    v.copy(at).project(camera);
-    const on = v.z < 1 && Math.abs(v.x) < 1.02 && Math.abs(v.y) < 1.02;
-    el.style.display = on ? '' : 'none';
+    let on = false;
+    if (at){
+      v.copy(at).project(camera);
+      on = v.z < 1 && Math.abs(v.x) < 1.02 && Math.abs(v.y) < 1.02;
+    }
+    if (on !== st.on){
+      st.on = on;
+      el.style.display = on ? '' : 'none';
+      if (on) el.classList.add('show');
+    }
     if (!on) continue;
-    el.classList.add('show');
-    el.style.left = ((v.x * 0.5 + 0.5) * innerWidth) + 'px';
-    el.style.top  = ((-v.y * 0.5 + 0.5) * innerHeight) + 'px';
+    /* whole pixels: half a pixel of drift re-renders the glyph and the ring
+       every frame and reads as a shimmer even when the camera is parked */
+    const x = Math.round((v.x * 0.5 + 0.5) * innerWidth);
+    const y = Math.round((-v.y * 0.5 + 0.5) * innerHeight);
+    if (x !== st.x || y !== st.y){
+      st.x = x; st.y = y;
+      el.style.translate = x + 'px ' + y + 'px';
+    }
   }
+  placeMac();          /* the screen is live from every angle, not just zoomed */
+  stepShelf();
+  stepDust(performance.now());
   renderer.render(scene, camera);
 }
-function frame(){ requestAnimationFrame(frame); step(); }
+/* Everything in step() eases toward a target, so once those have arrived the
+   room is a still life and every further frame draws exactly the same pixels.
+   Sixty of those a second is not free: the shell's rail is a large
+   backdrop-filtered pane sitting over its own animated canvas, and with this
+   renderer running flat out the compositor could not keep up — the rail
+   stopped painting its own text, which is the flicker. So: draw while
+   something is moving, hold still when it is not, and wake on any input.
+   The first few seconds always draw, because models and textures are still
+   arriving and the camera is already sitting at its target. */
+let roomRaf = 0, settled = 0;
+let roomT0 = performance.now();
+function roomMoving(){
+  return camPos.distanceToSquared(toPos) > 1e-6
+      || camLook.distanceToSquared(toLook) > 1e-6
+      || Math.abs(toFov - camera.fov) > 1e-3;
+}
+function frame(){
+  roomRaf = requestAnimationFrame(frame);
+  step();
+  if (roomMoving() || performance.now() - roomT0 < 8000) settled = 0;
+  else if (++settled > 15) stopRoom();
+}
+/* nothing to draw until the room is built, and pointer events fire
+   over the loading card too */
+function startRoom(){ if (!roomLive) return; settled = 0; if (!roomRaf) frame(); }
+function stopRoom(){ cancelAnimationFrame(roomRaf); roomRaf = 0; }
+document.addEventListener('visibilitychange', () => document.hidden ? stopRoom() : startRoom());
+/* only the things that can actually move the camera now. pointermove
+   used to be in this list and it is the single biggest reason the room
+   never got to sleep. */
+['pointerdown','pointerup','keydown']
+  .forEach(t => addEventListener(t, startRoom, { passive: true }));
+addEventListener('resize', startRoom);
+addEventListener('message', startRoom);   // the shell posts theme changes in
 
 buildMaterials();
+buildDust();
 buildShell();
 buildWindow();
-buildDesk();
-buildChair();
+/* buildDesk and buildChair are shuvalov.di's model now, in loadDesk().
+   The DESK_* constants stay: everything on the desk is placed against
+   them, and the model is scaled and sat to match them rather than the
+   other way round. */
 buildDeskThings();
-buildShelf();
 paintTheme();
 new MutationObserver(paintTheme).observe(document.documentElement,
   { attributes:true, attributeFilter:['data-theme'] });
@@ -936,15 +2302,99 @@ function sitDown(){
   setStage('seated');
   setTimeout(() => { camEase = EASE; seated = true; }, 1700);
 }
-loadLaptop().then(() => {
-  document.getElementById('boot').classList.add('gone');
+/* ── getting in ───────────────────────────────────────────────────
+   Every model the room needs is fetched up front, with real byte
+   progress, and parked in three's own cache so the six loaders below
+   parse straight out of memory instead of each opening its own
+   connection halfway through the camera move.
+
+   The card used to leave on a six second timer whether or not
+   anything had arrived, which on a slower machine meant watching the
+   desk assemble itself a prop at a time while the camera was already
+   gliding. Now it leaves when the room is actually built, and the
+   render loop does not start until then either: parsing 5MB of
+   geometry and uploading it to the GPU while rAF runs flat out is
+   what the stutter was. */
+const bootEl   = document.getElementById('boot');
+const bootFill = document.getElementById('bootFill');
+const bootPct  = document.getElementById('bootPct');
+const bootMsg  = document.getElementById('bootMsg');
+const BOOT_MSGS = [
+  'Pulling the chair out for you',
+  'Putting the kettle on',
+  'Finding the good lamp',
+  'Watering the pothos',
+  'Almost there'
+];
+function boot(pct){
+  const p = Math.max(0, Math.min(100, Math.round(pct)));
+  bootFill.style.width = p + '%';
+  bootPct.textContent  = p + '%';
+  const m = BOOT_MSGS[Math.min(BOOT_MSGS.length - 1, Math.floor(p / 100 * BOOT_MSGS.length))];
+  if (bootMsg.textContent !== m) bootMsg.textContent = m;
+}
+
+async function preload(urls){
+  const got = new Array(urls.length).fill(0);
+  const cap = new Array(urls.length).fill(0);
+  const report = () => {
+    let done = 0;
+    for (let i = 0; i < urls.length; i++) if (cap[i]) done += Math.min(1, got[i] / cap[i]);
+    boot(done / urls.length * 100);
+  };
+  await Promise.all(urls.map(async (url, i) => {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(r.status);
+      /* content-length is the compressed length and the chunks are not,
+         so each file's share is clamped at its own 100% */
+      const total = +r.headers.get('content-length') || 0;
+      if (!r.body || !total){
+        const b = await r.arrayBuffer();
+        cap[i] = got[i] = b.byteLength || 1;
+        THREE.Cache.add(url, b); report(); return;
+      }
+      cap[i] = total;
+      const reader = r.body.getReader(), chunks = [];
+      for (;;){
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value); got[i] += value.length; report();
+      }
+      const buf = new Uint8Array(got[i]); let off = 0;
+      for (const c of chunks){ buf.set(c, off); off += c.length; }
+      THREE.Cache.add(url, buf.buffer);
+      got[i] = cap[i]; report();
+    } catch (e) {
+      /* leave it to the loader to fetch the ordinary way */
+      cap[i] = got[i] = 1; report();
+    }
+  }));
+}
+
+let roomLive = false;
+function openTheDoor(){
+  if (roomLive) return;
+  roomLive = true;
+  bootEl.classList.add('gone');
+  roomT0 = performance.now();
   step();
+  startRoom();
   setTimeout(sitDown, 260);
-});
-/* if the model never turns up, sit down anyway rather than stare at a
-   loading card */
-setTimeout(() => { document.getElementById('boot').classList.add('gone'); sitDown(); }, 6000);
-frame();
+}
+
+/* the desk goes first on its own: the plant and the speaker need its
+   measured surfaces before they know where they live. */
+preload([DESK_GLB, MINE_MAC, LAMP_GLB, RADIO_GLB, POTHOS_GLB, CUP_GLB])
+  .then(loadDesk)
+  .then(() => Promise.all([loadLaptop(), loadCup(), loadPlant(), loadLamp(), loadRadio()]))
+  .then(() => boot(100))
+  .catch(e => console.warn('room:', e))
+  .then(openTheDoor);
+
+/* a genuine failure now, not the routine path: if something never
+   turns up, sit down anyway rather than leave the card up forever */
+setTimeout(openTheDoor, 30000);
 window.__room = { step, scene, camera, renderer, setStage, SPOTS, openPanel };
 </script>
 <script>
