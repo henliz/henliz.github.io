@@ -934,6 +934,22 @@
     #scene-overlay.hidden {
       opacity: 0;
       visibility: hidden;
+      /* opacity and visibility hide it, they do not switch it off. The
+         gradient kept animating for the life of the page: a full-viewport
+         background-position animation, which is not a compositor property,
+         so it repainted 1433x715 every frame behind everything else. The
+         card inside it kept a blur(35px) backdrop-filter alive too, and
+         the opacity:0 makes this element a backdrop root, which is its own
+         render surface. All of it invisible, none of it free. */
+      animation: none;
+      pointer-events: none;
+    }
+    #scene-overlay.hidden *,
+    #scene-overlay.hidden::before,
+    #scene-overlay.hidden::after {
+      animation: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
     }
     .scene-overlay-card {
       text-align: center;
@@ -1619,8 +1635,6 @@
             transform: translateX(-50%) translateY(4px);
             background: rgba(var(--rail-tint-rgb), 0.94);
             color: var(--rail-accent);
-            backdrop-filter: blur(10px) saturate(150%);
-            -webkit-backdrop-filter: blur(10px) saturate(150%);
             padding: 0.35rem 0.7rem;
             border-radius: 5px;
             font-family: 'Satoshi', sans-serif;
@@ -1637,6 +1651,14 @@
         .social-btn:hover .social-tooltip {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
+        }
+        /* the glass arrives with the tooltip. Sitting on .social-tooltip it
+           gave five permanent backdrop-filter surfaces to five things that
+           are opacity:0 until you hover them. */
+        .social-btn:hover .social-tooltip,
+        .social-btn:focus-visible .social-tooltip {
+            backdrop-filter: blur(10px) saturate(150%);
+            -webkit-backdrop-filter: blur(10px) saturate(150%);
         }
         /* "/in/henriettavanniekerk" is 184px wide and centring it on the first
            icon pushed it 36px past the rail, where overflow-x clipped it. The
@@ -2319,33 +2341,34 @@
         :root[data-pane-open] .content-card,
         :root[data-pane-open] #gl { visibility: hidden; }
 
-        /* ── while a pane is open, stop paying for glass you cannot see ──
-           Every backdrop-filter is its own compositing layer, and each one
-           makes the browser re-read and re-blur whatever sits behind it. The
-           page carries a lot of them — the rail, the card, all five tiles,
-           the contact pill. With a case study or About open, the card and its
-           tiles are hidden but their layers still exist and still cost, and
-           About is running a third WebGL renderer on top of that.
-
-           The symptom that comes out of this is the rail going blank: its
-           text keeps perfect layout and colour, the pixels just never get
-           rastered, which reads as flicker. So while a pane is open every
-           frosted layer behind it is switched off, and the rail itself stops
-           being glass and becomes near-solid. The sky behind it is already
-           held still by then, so there is almost nothing to see. */
+        /* The hidden card's tiles keep their compositing layers even with
+           visibility:hidden, and each frosted one still costs a re-read and
+           a re-blur of whatever is behind it. Nothing can see them while a
+           pane is open, so switch the glass off — the rail is deliberately
+           not in this list. It stays frosted in every state, because making
+           it solid was tried and fixed nothing. */
+        :root[data-pane-open] .content-card,
         :root[data-pane-open] .content-card *,
         :root[data-pane-open] .tile,
         :root[data-pane-open] .conspire-socials {
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
         }
-        :root[data-pane-open] .sidebar {
+        /* visibility:hidden hides the grid, it does not stop it. Behind an
+           open pane the tiles were still running about twenty-five CSS
+           animations — drifting clouds, swaying grass, rising steam, a
+           hopping mascot, a blinking caret — every one of them repainting
+           into the same surface the rail's glass has to re-read. */
+        :root[data-pane-open] .content-card *,
+        :root[data-pane-open] .content-card *::before,
+        :root[data-pane-open] .content-card *::after {
+            animation-play-state: paused !important;
+        }
+        /* an 18px blur that follows the pointer is cheap over a still page
+           and not cheap at all over a pane that is redrawing */
+        :root[data-pane-open] .custom-cursor {
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
-            background: linear-gradient(115deg,
-                rgba(var(--rail-tint-rgb), 0.97) 0%,
-                rgba(var(--rail-tint-rgb), 0.96) 55%,
-                rgba(var(--rail-tint-rgb), 0.95) 100%);
         }
         /* rail sits above the pane so it's never covered */
         .sidebar { z-index: 900; }

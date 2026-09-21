@@ -83,11 +83,7 @@ a{ color:inherit }
     radial-gradient(90% 70% at 22% 16%, rgba(255,214,164,.10), transparent 62%);
   mix-blend-mode:multiply;
 }
-:root[data-theme="light"] #stage::after{
-  background:
-    radial-gradient(130% 100% at 50% 42%, transparent 58%, rgba(40,32,22,.18) 100%),
-    radial-gradient(90% 70% at 22% 16%, rgba(255,222,180,.14), transparent 64%);
-}
+
 
 /* ── the plus markers, straight off the reference ─────────────── */
 #pins{ position:absolute; inset:0; pointer-events:none }
@@ -831,12 +827,64 @@ function surf(name, { repeat=[1,1], color, rough=1, metal=0, normal=0.7 } = {}){
   return m;
 }
 
+/* ── the wallpaper ────────────────────────────────────────────────
+   One tile, half-drop repeat, warm ground. Faded enough that it is the
+   room's temperature rather than its subject. */
+function wallpaper(){
+  const N = 512;
+  const c = document.createElement('canvas');
+  c.width = c.height = N;
+  const x = c.getContext('2d');
+  x.fillStyle = '#d9cdb4'; x.fillRect(0, 0, N, N);
+  /* the stripe */
+  for (let i = 0; i < N; i += 64){
+    x.fillStyle = 'rgba(255,252,242,.30)'; x.fillRect(i, 0, 32, N);
+  }
+  /* a sprig, stamped on a half drop so the repeat does not read as a grid */
+  const sprig = (cx, cy, sc) => {
+    x.save(); x.translate(cx, cy); x.scale(sc, sc);
+    x.strokeStyle = 'rgba(122,110,80,.42)'; x.lineWidth = 2.2; x.lineCap = 'round';
+    x.beginPath(); x.moveTo(0, 26); x.quadraticCurveTo(2, 0, 0, -26); x.stroke();
+    for (let k = -2; k <= 2; k++){
+      const y = k * 11, d = (k % 2 ? 1 : -1);
+      x.beginPath();
+      x.moveTo(0, y);
+      x.quadraticCurveTo(d * 15, y - 8, d * 20, y - 15);
+      x.stroke();
+      x.fillStyle = 'rgba(138,126,92,.30)';
+      x.beginPath(); x.ellipse(d * 19, y - 15, 6.5, 3.6, d * -0.5, 0, 7); x.fill();
+    }
+    x.fillStyle = 'rgba(150,120,86,.34)';
+    x.beginPath(); x.arc(0, -30, 4.2, 0, 7); x.fill();
+    x.restore();
+  };
+  for (let gx = 0; gx < 2; gx++) for (let gy = 0; gy < 2; gy++)
+    sprig(64 + gx * 256 + (gy % 2) * 128, 90 + gy * 256, 1);
+  /* age it, so it is not a crisp vector print */
+  for (let i = 0; i < 9000; i++){
+    x.fillStyle = `rgba(90,74,50,${Math.random() * 0.035})`;
+    x.fillRect(Math.random() * N, Math.random() * N, 2, 2);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
 const MAT = {};
 function buildMaterials(){
   MAT.oak     = surf('wood',    { repeat:[1.6, 0.8], color:0xd8b48a, rough:0.58, normal:0.8 });
   MAT.oakLeg  = surf('wood',    { repeat:[0.5, 3.0], color:0xc9a478, rough:0.62, normal:0.7 });
   MAT.floor   = surf('floor',   { repeat:[3, 2.4],  rough:0.7,  normal:0.85 });
-  MAT.wall    = surf('plaster', { repeat:[2.2, 1.8], color:0xbdd2cb, rough:0.96, normal:0.45 });
+  /* wallpaper, drawn on a canvas: a warm ground, a damask sprig on a
+     half-drop repeat, and a vertical stripe under it. Tiled over the
+     plaster normal map so it still reads as paper on a wall rather
+     than as a flat print. */
+  MAT.wall    = surf('plaster', { repeat:[2.2, 1.8], color:0xffffff, rough:0.97, normal:0.35 });
+  MAT.wall.map = wallpaper();
+  MAT.wall.map.repeat.set(5.5, 4.0);
+  MAT.wall.color.setHex(0xffffff);
   MAT.linen   = surf('linen',   { repeat:[2, 3],    color:0xf2efe6, rough:0.92, normal:0.6 });
   MAT.linen.side = THREE.DoubleSide;
   MAT.seat    = surf('linen',   { repeat:[1.4, 1.4], color:0x8fbdb2, rough:0.9,  normal:0.7 });
@@ -995,81 +1043,83 @@ const SHELF_BOOKS = [
   { t:'a novel of my own',     a:'slowly',                  c:'#7a7150' },
 ];
 
-/* Titles are drawn, not typed into a texture by hand. Shrink-to-fit so a
-   long spine stays on one line instead of running off the end. */
-function labelTexture(w, h, title, author, bg, vertical){
-  const c = document.createElement('canvas');
-  c.width = w; c.height = h;
-  const x = c.getContext('2d');
-  x.fillStyle = bg; x.fillRect(0, 0, w, h);
-  /* cloth grain, so a spine is not a flat rectangle of colour */
-  for (let i = 0; i < 2600; i++){
-    x.fillStyle = `rgba(0,0,0,${Math.random() * 0.05})`;
-    x.fillRect(Math.random() * w, Math.random() * h, 1.4, 1.4);
-  }
-  const long = vertical ? h : w;
-  x.save();
-  if (vertical){ x.translate(w / 2, h / 2); x.rotate(-Math.PI / 2); }
-  else x.translate(w / 2, h / 2);
-  x.textAlign = 'center'; x.textBaseline = 'middle';
-  let size = vertical ? 44 : 56;
-  do { x.font = `600 ${size}px Satoshi, sans-serif`; size -= 2; }
-  while (x.measureText(title).width > long * 0.82 && size > 12);
-  /* two gold rules, the way a cloth spine is stamped */
-  x.fillStyle = 'rgba(214,190,130,.75)';
-  x.fillRect(-long * 0.42, -(vertical ? w : h) * 0.30, long * 0.84, 2);
-  x.fillRect(-long * 0.42,  (vertical ? w : h) * 0.30, long * 0.84, 2);
-  x.fillStyle = '#f3ead6';
-  x.fillText(title, 0, vertical ? -4 : -10);
-  x.globalAlpha = 0.72;
-  x.font = `400 ${Math.max(13, size * 0.5)}px Satoshi, sans-serif`;
-  x.fillText(author, 0, vertical ? 26 : 30);
-  x.restore();
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  t.anisotropy = 8;
-  return t;
+/* Prop it on the foot of the lamp: handle down on the desk, glass end
+   raised and resting on the base. Its long axis is local y, which is
+   why the tilt is on x. */
+function leanMagnifier(root){
+  const m = root.getObjectByName('Magnifier');
+  if (!m) return;
+  m.rotation.set(-1.02, 0.5, 0.12);
+  m.updateMatrixWorld(true);
+  const bb = new THREE.Box3().setFromObject(m);
+  const c = bb.getCenter(new THREE.Vector3());
+  const tx = LAMP_AT.x + 0.13, tz = LAMP_AT.z + 0.05;
+  const here = m.parent.worldToLocal(c.clone());
+  const want = m.parent.worldToLocal(
+    new THREE.Vector3(tx, c.y + ((DESK_Y + 0.019) - bb.min.y) + 0.006, tz));
+  m.position.add(want.sub(here));
 }
 
 const BOOKS = [];          /* the meshes, for the raycaster to hover */
-function buildBookshelf(){
+function buildBookshelf(root){
   const S = HUTCH_SURF;
   if (!S) return;
-  /* the row sits between the radio on the left and the plant on the
-     right, both of which are placed off the same measured surface. */
-  const x0 = S.x0 + 0.52, x1 = S.x1 - 0.42;
-  const z  = (S.z0 + S.z1) / 2 - 0.01;
-  const pages = new THREE.MeshStandardMaterial({ color:0xe9e0c9, roughness:0.92 });
+  /* the desk ships three closed books. They are the real thing, with
+     real leather and real gilt, so the row is built out of them and
+     clones of them rather than out of boxes I drew. Cloning shares the
+     materials, so seven books cost three textures. */
+  const tpl = ['Book_1', 'Book_2', 'Book_3'].map(n => root.getObjectByName(n)).filter(Boolean);
+  if (!tpl.length) return;
 
-  let x = x0, i = 0;
-  for (const b of SHELF_BOOKS){
-    const th = 0.022 + (i % 3) * 0.009;               /* 22 to 40mm spines */
-    const hh = 0.155 + ((i * 5) % 4) * 0.014;
-    const dd = 0.115 + ((i * 3) % 3) * 0.012;
-    if (x + th > x1) break;
-    const spine = new THREE.MeshStandardMaterial({
-      map: labelTexture(150, 560, b.t, b.a, b.c, true), roughness:0.72 });
-    const cover = new THREE.MeshStandardMaterial({
-      map: labelTexture(420, 560, b.t, b.a, b.c, false), roughness:0.72 });
-    /* BoxGeometry faces run +x, -x, +y, -y, +z, -z. Thickness is x and
-       depth is z, so +z is the spine and the two x faces are the covers. */
-    const m = new THREE.Mesh(new THREE.BoxGeometry(th, hh, dd),
-      [cover, cover, pages, pages, spine, pages]);
-    m.castShadow = true; m.receiveShadow = true;
-    m.position.set(x + th / 2, S.y + hh / 2, z);
-    /* one leaning, because a row of perfectly upright books is a texture
-       swatch rather than a shelf */
-    if (i === SHELF_BOOKS.length - 1){ m.rotation.z = -0.13; m.position.y -= 0.004; }
+  const x0 = S.x0 + 0.56, x1 = S.x1 - 0.50;
+  const z  = (S.z0 + S.z1) / 2 - 0.01;
+
+  let x = x0;
+  SHELF_BOOKS.forEach((b, i) => {
+    const src = tpl[i % tpl.length];
+    /* the first three ARE the originals, relocated rather than copied,
+       so nothing the desk shipped with is thrown away */
+    const m = (i < tpl.length) ? src : src.clone(true);
+    if (m !== src) ROOM.add(m); else ROOM.attach(m);
+
+    /* stand it spine out. Locally the book lies flat: y is its
+       thickness and z its tall edge. YXZ order applies Rx first, which
+       stands the tall edge up, then Ry, which turns the thickness to
+       run along the shelf. */
+    m.rotation.order = 'YXZ';
+    m.rotation.set(-Math.PI / 2, Math.PI / 2, 0);
+    m.scale.setScalar(src.scale.x);
+    m.updateMatrixWorld(true);
+
+    let bb = new THREE.Box3().setFromObject(m);
+    let sz = bb.getSize(new THREE.Vector3());
+    /* every book a slightly different height, or it reads as wallpaper */
+    const want = 0.150 + ((i * 5) % 4) * 0.016;
+    m.scale.multiplyScalar(want / sz.y);
+    /* and a couple of degrees of slouch each */
+    m.rotation.z = (i === SHELF_BOOKS.length - 1) ? -0.09 : (i % 3 - 1) * 0.018;
+    m.updateMatrixWorld(true);
+
+    bb = new THREE.Box3().setFromObject(m);
+    sz = bb.getSize(new THREE.Vector3());
+    const c = bb.getCenter(new THREE.Vector3());
+    if (x + sz.x > x1) return;
+    m.position.x += (x + sz.x / 2) - c.x;
+    m.position.y += S.y - bb.min.y;
+    m.position.z += z - c.z;
+    m.updateMatrixWorld(true);
+
+    m.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
     m.userData.book = b;
     m.userData.homeZ = m.position.z;
     m.userData.out = 0;
-    ROOM.add(m); BOOKS.push(m);
-    x += th + 0.004; i++;
-  }
-  P.books = new THREE.Vector3((x0 + x) / 2, S.y + 0.10, z + 0.10);
+    BOOKS.push(m);
+    x += sz.x + 0.006;
+  });
+  P.books = new THREE.Vector3((x0 + x) / 2, S.y + 0.10, z + 0.12);
 }
 
-/* ── what is on the desk ──────────────────────────────────────────/* ── what is on the desk ──────────────────────────────────────────
+/* ── what is on the desk ──────────────────────────────────────────/* ── what is on the desk ──────────────────────────────────────────/* ── what is on the desk ──────────────────────────────────────────
    Zoned the way a desk that works is zoned. Primary reach is the
    laptop, dead centre at arm's length. Secondary is the mug and the
    notebook to the right, where a right hand lands. The lamp is on
@@ -1121,7 +1171,7 @@ function buildDeskThings(){
    the window doing the modelling, a bounce to keep the shadows from
    going black, and the desk lamp as a warm accent you can see the
    source of. */
-const sun = new THREE.DirectionalLight(0xfff0dc, 3.0);
+const sun = new THREE.DirectionalLight(0xffdcae, 3.0);   /* late afternoon */
 sun.position.set(-3.4, 2.9, WIN_Z + 0.9);
 sun.target.position.set(DESK_X, 0.6, DESK_Z + 0.2);
 sun.castShadow = true;
@@ -1132,9 +1182,9 @@ sun.shadow.camera.top = 3;   sun.shadow.camera.bottom = -2;
 sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.012; sun.shadow.radius = 3;
 /* a broad soft fill standing in for the sky through the glass */
 const skyFill = new THREE.RectAreaLight ? null : null;
-const bounce = new THREE.DirectionalLight(0xd8e8ea, 0.5);
+const bounce = new THREE.DirectionalLight(0xbfd2d8, 0.5);
 bounce.position.set(2.2, 1.6, 3.0);
-const amb = new THREE.HemisphereLight(0xe8f2f0, 0x6a5a48, 0.55);
+const amb = new THREE.HemisphereLight(0xd9e2dd, 0x4a3b2a, 0.55);
 /* kept as a soft warm fill on the left of the desk. The lamp's own
    spot, added in lightTheLamp, is what actually reads as the lamp. */
 const bulb = new THREE.PointLight(0xffc98a, 2.2, 1.5, 2.2);
@@ -1179,81 +1229,38 @@ function stepDust(t){
   dust.geometry.attributes.position.needsUpdate = true;
 }
 
+/* ── the light, which does not have a light mode ──────────────────
+   The scene used to be wired to the page theme, so the room went from
+   a bright white box in the day to a different bright white box at
+   night. That was wrong twice over: the toggle is for the interface,
+   not for the time of day in somebody's study, and neither end of it
+   was the look we actually wanted.
+
+   There is one room now. Late afternoon, warm, lamp on, the corners
+   going soft. The toggle still swaps the panels and the chrome, and
+   the only thing in here that changes is what you do to the lamp. */
 function paintTheme(){
-  const L = isLight();
-  const bg = L ? 0xdfeae8 : 0x0c1518;
-  scene.background = new THREE.Color(bg);
-  sun.intensity    = L ? 3.2 : 0.22;   /* moonlight, not a second sun */
-  bounce.intensity = L ? 0.55 : 0.06;
-  amb.intensity    = L ? 0.6 : 0.10;
-  bulb.intensity   = L ? 0.9 : 1.4;
-  screen.intensity = L ? 0.35 : 1.6;   /* the laptop lights your hands */
-  MAT.sky.color.setHex(L ? 0xe6f1ef : 0x9db6bd);
-  renderer.toneMappingExposure = L ? 1.0 : 1.12;
-  /* the desk lamp. In daylight it is on but barely earning its keep,
-     which is what a lamp looks like at noon. After dark it does the
-     work: a real pool on the desk, real shadows off the laptop and the
-     cup, and a bulb you can see the glow of. */
-  /* The room environment map was doing most of the lighting, which is
-     why "dark" used to look like "slightly different daylight" and why
-     a lamp could not read against it. three r152 has no
-     scene.environmentIntensity, so turn it down per material instead.
-     This is the switch that lets the lamp actually be a light source. */
+  scene.background = new THREE.Color(0x141b1e);
+  sun.intensity    = 1.35;      /* low warm daylight through the window */
+  bounce.intensity = 0.22;
+  amb.intensity    = 0.26;
+  bulb.intensity   = 1.1;
+  screen.intensity = 1.25;      /* the laptop lights your hands */
+  MAT.sky.color.setHex(0xe8d7b8);
+  renderer.toneMappingExposure = 1.16;
+  /* keep the environment map well down: at full strength it flattens
+     everything into daylight and the lamp cannot read against it */
   scene.traverse(n => {
     if (!n.isMesh) return;
     const ms = Array.isArray(n.material) ? n.material : [n.material];
-    ms.forEach(m => { if (m && 'envMapIntensity' in m){ m.envMapIntensity = L ? 1.0 : 0.16; } });
+    ms.forEach(m => { if (m && 'envMapIntensity' in m) m.envMapIntensity = 0.30; });
   });
-  if (dust) dust.material.opacity = L ? 0.5 : 0.28;
+  if (dust) dust.material.opacity = 0.42;
   if (LAMP_SPOT){
-    LAMP_SPOT.intensity = LAMP_ON ? (L ? 1.1 : 6.4) : 0;
-    LAMP_SPOT.userData.fil.intensity = LAMP_ON ? (L ? 0.25 : 1.5) : 0;
-    LAMP_GLOW.material.opacity = LAMP_ON ? (L ? 0.22 : 0.85) : 0;
+    LAMP_SPOT.intensity = LAMP_ON ? 5.2 : 0;
+    LAMP_SPOT.userData.fil.intensity = LAMP_ON ? 1.15 : 0;
+    LAMP_GLOW.material.opacity = LAMP_ON ? 0.8 : 0;
   }
-}
-
-/* ── the laptop, which is hers ────────────────────────────────── */
-function loadLaptop(){
-  return new Promise(res => GLTF.load(MINE_MAC, g => {
-    const o = g.scene;
-    o.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
-    o.updateMatrixWorld(true);
-
-    /* The model ships shut. The lid is the group called Bevels_2, so it gets
-       a pivot at the hinge and swings open. Which edge is the hinge is not
-       documented anywhere, so this tries one, checks whether the lid actually
-       went up, and takes the other if it did not. */
-    const lid = o.getObjectByName('Bevels_2');
-    if (lid){
-      const wb = new THREE.Box3().setFromObject(lid);
-      const mid = (wb.min.x + wb.max.x) / 2;
-      const openIt = (z, sign) => {
-        const pivot = new THREE.Group();
-        pivot.position.set(mid, wb.min.y, z);
-        o.add(pivot); pivot.updateMatrixWorld(true);
-        pivot.attach(lid);
-        pivot.rotation.x = sign * 1.88;          /* ~108 degrees, a working angle */
-        o.updateMatrixWorld(true);
-        return { pivot, h: new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()).y };
-      };
-      let a = openIt(wb.min.z, -1);
-      if (a.h < 0.12){                            /* did not stand up: other hinge */
-        a.pivot.rotation.x = 0; o.attach(lid); o.remove(a.pivot);
-        a = openIt(wb.max.z, 1);
-      }
-      addScreen(a.pivot, lid);
-    }
-
-    /* it is already modelled at a true 304mm, so no rescaling, just placing */
-    o.rotation.y = 0.06;
-    o.updateMatrixWorld(true);
-    const bb = new THREE.Box3().setFromObject(o);
-    const c = bb.getCenter(new THREE.Vector3());
-    o.position.set(DESK_X - c.x, DESK_Y + 0.019 - bb.min.y, DESK_Z + 0.14 - c.z);
-    ROOM.add(o);
-    P.laptop = new THREE.Vector3(DESK_X, DESK_Y + 0.14, DESK_Z + 0.09);
-    res(o);
-  }, undefined, () => { P.laptop = new THREE.Vector3(DESK_X, DESK_Y + 0.14, DESK_Z + 0.09); res(null); }));
 }
 
 /* ── the screen, and the camera that flies at it ──────────────────
@@ -1366,13 +1373,15 @@ const PROPS = {
   /* stacked on the hutch beside the plant. On the desk they were
      growing through the lamp. The 6th field stacks a book on the one
      named, rather than on the surface. */
-  Book_1:    [ 0.34,  0.02,  0.10, 1,    'hutch'],
-  Book_2:    [ 0.33,  0.01, -0.16, 1,    'hutch', 'Book_1'],
-  Book_3:    [ 0.35,  0.02,  0.28, 1,    'hutch', 'Book_2'],
+  /* Book_1..3 are not listed: buildBookshelf takes them over and stands
+     them spine out on the hutch, along with clones of them. */
 
   Open_book: [ 0.40,  0.14, -0.34, 0.72, 'desk'],
-  Magnifier: [ 0.19,  0.20,  0.85, 0.8,  'desk'],
-  Note_3:    [-0.62,  0.16,  0.62, 0.85, 'desk'],
+  /* Note_3 is gone. It was a sheet of paper standing up through the
+     lamp, and no amount of nudging fixes a plane intersecting a solid. */
+  /* the magnifier is posed by hand in leanMagnifier(), propped on the
+     lamp base rather than lying flat, so it stops reading as floating */
+  Magnifier: [-0.40,  0.16,  0.00, 0.8,  'desk'],
 
   /* up on the back, out of the way of the work */
   Bottle:    [-0.12,  0.02,  0.00, 1,    'hutch'],
@@ -1433,6 +1442,9 @@ function loadDesk(){
        sits on the top rather than hovering or sinking into it, and is
        clamped inside the surface we just measured so nothing ends up
        balanced on the lip. */
+    const gone = o.getObjectByName('Note_3');
+    if (gone) gone.removeFromParent();
+
     const placed = {};
     for (const [name, [dx, dz, yaw, sc, where, stackOn]] of Object.entries(PROPS)){
       const n = o.getObjectByName(name);
@@ -1465,7 +1477,8 @@ function loadDesk(){
     }
     o.updateMatrixWorld(true);
 
-    buildBookshelf();
+    leanMagnifier(o);
+    buildBookshelf(o);
 
     /* "what I read" lives on the open book now that the notebook is gone */
     const ob = o.getObjectByName('Open_book');
@@ -1724,6 +1737,51 @@ function loadCup(){
   }, undefined, () => res(null)));
 }
 
+/* ── the laptop, which is hers ─────────────────────────────────── */
+function loadLaptop(){
+  return new Promise(res => GLTF.load(MINE_MAC, g => {
+    const o = g.scene;
+    o.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
+    o.updateMatrixWorld(true);
+
+    /* The model ships shut. The lid is the group called Bevels_2, so it gets
+       a pivot at the hinge and swings open. Which edge is the hinge is not
+       documented anywhere, so this tries one, checks whether the lid actually
+       went up, and takes the other if it did not. */
+    const lid = o.getObjectByName('Bevels_2');
+    if (lid){
+      const wb = new THREE.Box3().setFromObject(lid);
+      const mid = (wb.min.x + wb.max.x) / 2;
+      const openIt = (z, sign) => {
+        const pivot = new THREE.Group();
+        pivot.position.set(mid, wb.min.y, z);
+        o.add(pivot); pivot.updateMatrixWorld(true);
+        pivot.attach(lid);
+        pivot.rotation.x = sign * 1.88;          /* ~108 degrees, a working angle */
+        o.updateMatrixWorld(true);
+        return { pivot, h: new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()).y };
+      };
+      let a = openIt(wb.min.z, -1);
+      if (a.h < 0.12){                            /* did not stand up: other hinge */
+        a.pivot.rotation.x = 0; o.attach(lid); o.remove(a.pivot);
+        a = openIt(wb.max.z, 1);
+      }
+      addScreen(a.pivot, lid);
+    }
+
+    /* it is already modelled at a true 304mm, so no rescaling, just placing */
+    o.rotation.y = 0.06;
+    o.updateMatrixWorld(true);
+    const bb = new THREE.Box3().setFromObject(o);
+    const c = bb.getCenter(new THREE.Vector3());
+    o.position.set(DESK_X - c.x, (DESK_SURF ? DESK_SURF.y : DESK_Y + 0.019) - bb.min.y,
+                   DESK_Z + 0.14 - c.z);
+    ROOM.add(o);
+    P.laptop = new THREE.Vector3(DESK_X, DESK_Y + 0.14, DESK_Z + 0.09);
+    res(o);
+  }, undefined, () => { P.laptop = new THREE.Vector3(DESK_X, DESK_Y + 0.14, DESK_Z + 0.09); res(null); }));
+}
+
 const MINE_MAC = '/models/macbook.glb';   /* same reason as the textures */
 
 /* ── where the camera sits ────────────────────────────────────────
@@ -1765,7 +1823,7 @@ const SPOTS = [
       <div class="row"><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Three.js</span><span class="chip">Convex</span><span class="chip">Godot</span><span class="chip">Python</span></div>
       <p class="meta">Founding product design engineer at Trove. Founder and CEO at Skrimp AI. CTO and Technical Director on Path to Menzoberranzan.</p>` },
 
-  { id:'notes', label:'what I read', at:() => P.notes, stage:'seated',
+  { id:'notes', label:'how I got here', at:() => P.notes, stage:'seated',
     cam:() => closeUp(P.notes, 0.3, 34),
     eyebrow:'What I read',
     title:'I came to software sideways.',
@@ -1863,6 +1921,9 @@ function openPanel(spot){
     (overlay === 'mac' ? macEl : audioEl).classList.add('open');
     if (overlay === 'mac') macEl.classList.add('lit');
     hint.textContent = 'have a look around';
+  } else if (spot.shelf){
+    /* the shelf has no panel. The books say what they are themselves. */
+    hint.textContent = 'hover a book';
   } else {
     panelBody.innerHTML = `<span class="eyebrow">${spot.eyebrow}</span><h2>${spot.title}</h2>${spot.html}`;
     panel.classList.add('open');
@@ -2145,8 +2206,13 @@ function stepShelf(){
   let hit = null;
   if (shelfMode()){
     rayc.setFromCamera(ptr, camera);
-    const xs = rayc.intersectObjects(BOOKS, false);
-    if (xs.length) hit = xs[0].object;
+    const xs = rayc.intersectObjects(BOOKS, true);
+    if (xs.length){
+      /* the hit is a mesh inside a book; walk up to the book itself */
+      let n = xs[0].object;
+      while (n && !n.userData.book) n = n.parent;
+      hit = n || null;
+    }
   }
   hoverBook = hit;
   for (const m of BOOKS){
@@ -2154,7 +2220,6 @@ function stepShelf(){
     m.userData.out += (want - m.userData.out) * 0.18;
     const o = m.userData.out;
     m.position.z = m.userData.homeZ + o * 0.085;
-    m.position.y = m.userData.baseY = m.position.y;   /* height is untouched */
   }
   if (hit){
     const b = hit.userData.book;

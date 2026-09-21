@@ -105,8 +105,13 @@
     .social-icon:hover::before{left:100%}
     .social-icon svg{width:22px;height:22px;stroke:#a8dadc;transition:all .3s ease;z-index:1}
     .social-icon:hover svg{stroke:#f1faee;transform:scale(1.1)}
-    .social-tooltip{position:absolute;bottom:120%;left:50%;transform:translateX(-50%);padding:.3rem .5rem;border-radius:.5rem;font-size:.8rem;background:rgba(15,20,25,.8);color:#f1faee;opacity:0;pointer-events:none;transition:all .2s ease;border:1px solid rgba(168,218,220,.4);backdrop-filter:blur(15px);z-index:100;font-weight:500}
-    .social-icon:hover .social-tooltip{opacity:1;transform:translateX(-50%) translateY(-5px)}
+    /* this file's styles are injected into the shell, and .social-tooltip
+       is also the rail's class name, so the blur landed on five rail
+       tooltips that are opacity:0 until hovered. A backdrop-filter is a
+       compositing layer whether or not you can see through it, so the
+       glass waits for the hover now. */
+    .social-tooltip{position:absolute;bottom:120%;left:50%;transform:translateX(-50%);padding:.3rem .5rem;border-radius:.5rem;font-size:.8rem;background:rgba(15,20,25,.8);color:#f1faee;opacity:0;pointer-events:none;transition:all .2s ease;border:1px solid rgba(168,218,220,.4);z-index:100;font-weight:500}
+    .social-icon:hover .social-tooltip{opacity:1;transform:translateX(-50%) translateY(-5px);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
 
     .credit{text-align:center;opacity:.8;font-size:.95rem;margin:.2rem 0 0}
 
