@@ -624,8 +624,14 @@ a{ color:inherit }
    track does, and let object-fit letterbox inside it. */
 #mac .pstage{ position:relative; overflow:hidden; min-height:0; min-width:0 }
 #mac .pstage img, #mac .pstage video{
-  position:absolute; top:6px; bottom:6px; left:30px; right:30px;
-  width:auto; height:auto; object-fit:contain; border-radius:2px;
+  /* sized, not just pinned. A replaced element with width:auto takes
+     its intrinsic size and quietly ignores the opposite inset, so four
+     insets alone did nothing at all. A percentage against an absolutely
+     positioned element's containing block is always definite, which is
+     the whole reason this is out of flow. */
+  position:absolute; top:6px; left:30px;
+  width:calc(100% - 60px); height:calc(100% - 12px);
+  object-fit:contain; border-radius:2px;
 }
 #mac .pmeta{ text-align:center; font-size:9.5px; color:rgba(255,255,255,.6); padding:4px 0 8px }
 #mac .pnav{
