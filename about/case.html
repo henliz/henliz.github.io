@@ -1709,7 +1709,7 @@ function buildBookshelf(root){
      three books' jackets, one of them a second Dracula. */
   const clean = tpl.map(t => t.clone(true));
 
-  const x0 = S.x0 + 0.72, x1 = S.x1 - 0.46;   /* clear of the jars on the left */
+  const x0 = S.x0 + 0.80, x1 = S.x1 - 0.44;   /* clear of the clutter on the left */
   const z  = (S.z0 + S.z1) / 2 - 0.01;
 
   let x = x0;
@@ -2030,15 +2030,20 @@ const PROPS = {
      One of them was close enough to catch the ray before the books
      did, so clicking a title near it did nothing and felt broken.
      They live to the left of the shelf now, clear of it. */
-  Bottle:    [-0.34,  0.03,  0.00, 1,    'hutch'],
-  Jar_1:     [-0.25,  0.06,  0.00, 1,    'hutch'],
-  Jar_2:     [-0.43,  0.04,  0.00, 1,    'hutch'],
-  Note_1:    [-0.50, -0.05, -0.55, 1,    'hutch'],
-  Note_2:    [-0.16, -0.07,  0.30, 1,    'hutch'],
+  /* clustered just left of the books, in two shallow rows. They used
+     to be spread across the left of the hutch, which is where the
+     record player now lives, and they buried it completely. */
+  Jar_1:     [-0.200,-0.050, 0.00, 1,    'hutch'],
+  Jar_2:     [-0.180, 0.060, 0.00, 1,    'hutch'],
+  Bottle:    [-0.120, 0.055, 0.00, 1,    'hutch'],
+  Note_1:    [-0.070, 0.000,-0.55, 1,    'hutch'],
+  Note_2:    [-0.030, 0.060, 0.30, 1,    'hutch'],
   /* the model's banker's lamp is the same object as Maxence's, and at
      its shipped size it was 480mm wide. A third of the size, up on the
      hutch, it reads as an ornament instead of a second fixture. */
-  Lamp:      [-0.38, -0.02,  0.55, 0.34, 'hutch'],
+  /* down to a quarter size: at a third it was 168mm wide and still
+     sprawling across the record player */
+  Lamp:      [-0.120,-0.060, 0.55, 0.24, 'hutch'],
 };
 
 function loadDesk(){
@@ -2522,6 +2527,7 @@ const RECORDS = [
 
 let DECK = null, DISC = null, ARM = null, LID = null;
 let DISC_HOME = null, DISC_ON = new THREE.Vector3(), ARM_HOME = 0, LID_HOME = 0;
+let SLEEVE = null, SLEEVE_HOME = 0;
 let deckSpin = 0, nowPlaying = -1, lastPick2 = 0;
 
 function loadDeck(){
@@ -2531,8 +2537,12 @@ function loadDeck(){
     o.updateMatrixWorld(true);
 
     let bb = new THREE.Box3().setFromObject(o);
-    o.scale.setScalar(0.34 / Math.max(bb.getSize(new THREE.Vector3()).x,
-                                      bb.getSize(new THREE.Vector3()).z));
+    /* the sleeve lies out to one side, so sizing by the whole model made
+       the deck itself tiny. Size by the DECK and let the sleeve sit
+       wherever it sits. */
+    const deck0 = o.getObjectByName('Vinyl_Player_Base') || o;
+    const d0 = new THREE.Box3().setFromObject(deck0).getSize(new THREE.Vector3());
+    o.scale.setScalar(0.30 / Math.max(d0.x, d0.z));
     o.rotation.y = 0.30;
     o.updateMatrixWorld(true);
 
@@ -2543,7 +2553,7 @@ function loadDeck(){
     bb = new THREE.Box3().setFromObject(o);
     const c = bb.getCenter(new THREE.Vector3());
     const S = HUTCH_SURF || DESK_SURF;
-    const x = S.x0 + 0.24, z = (S.z0 + S.z1) / 2;
+    const x = S.x0 + 0.20, z = (S.z0 + S.z1) / 2;
     o.position.set(x - c.x, S.y - db.min.y, z - c.z);
     ROOM.add(o);
     o.updateMatrixWorld(true);
@@ -2556,23 +2566,58 @@ function loadDeck(){
     ARM  = pick('record_arm');
     LID  = pick('Vinyl_Lid', 'Vinyl Lid');
     if (ARM) ARM_HOME = ARM.rotation.y;
-    if (LID) LID_HOME = LID.rotation.x;
-    if (DISC){
-      DISC_HOME = DISC.position.clone();
-      /* where the spindle is: the middle of the deck, at its top */
-      const base = o.getObjectByName('Vinyl_Player_Base');
-      const pb = new THREE.Box3().setFromObject(base || o);
-      const spindle = pb.getCenter(new THREE.Vector3());
-      spindle.y = pb.max.y;
-      DISC_ON.copy(DISC.parent.worldToLocal(spindle));
-      /* the disc is a hair proud of the platter so it does not z-fight */
-      DISC_ON.y += 0.4;
+
+    /* The dust cover hinges at its back edge, not about its own middle,
+       which is why it barely seemed to move: half of it was sinking
+       into the deck as the other half rose. Measured in the model's
+       space the lid runs z -14 to 20, so the hinge is the back edge. */
+    if (LID){
+      const lp = LID.parent;
+      const lb2 = new THREE.Box3();
+      LID.updateMatrixWorld(true);
+      LID.traverse(n => { if (n.isMesh) lb2.expandByObject(n); });
+      const hinge = lb2.getCenter(new THREE.Vector3());
+      hinge.z = lb2.min.z;
+      hinge.y = lb2.min.y;
+      const piv = new THREE.Group();
+      piv.position.copy(lp.worldToLocal(hinge));
+      lp.add(piv);
+      piv.updateMatrixWorld(true);
+      piv.attach(LID);
+      LID = piv;
+      LID_HOME = piv.rotation.x;
     }
 
-    const fb = new THREE.Box3().setFromObject(o);
-    const dc = fb.getCenter(new THREE.Vector3());
-    P.deck    = new THREE.Vector3(dc.x, fb.max.y + 0.05, dc.z);
-    P.deckAim = new THREE.Vector3(dc.x, dc.y + 0.01, dc.z);
+    if (DISC){
+      /* The model ships the record scaled to 1e-12, which is a way of
+         hiding a part. Unhidden and sized to the platter here: without
+         this there is simply no record, which is why nothing appeared
+         to come out of the sleeve. */
+      DISC.scale.setScalar(2.2);
+      DISC.rotation.set(-Math.PI / 2, 0, 0);       /* it is modelled upright */
+      DISC_ON.copy(DISC.position);                 /* it is authored on the spindle */
+      /* home is inside the sleeve, off to the side */
+      const sl = o.getObjectByName('album_sleeve');
+      if (sl){
+        const sb = new THREE.Box3();
+        sl.updateMatrixWorld(true);
+        sl.traverse(n => { if (n.isMesh) sb.expandByObject(n); });
+        DISC_HOME = DISC.parent.worldToLocal(sb.getCenter(new THREE.Vector3()));
+        DISC_HOME.y += 1.2;
+      } else {
+        DISC_HOME = DISC_ON.clone().add(new THREE.Vector3(-60, 0, 0));
+      }
+      DISC.position.copy(DISC_HOME);
+      SLEEVE = sl;
+      if (sl) SLEEVE_HOME = sl.rotation.x;
+    }
+
+    /* aim at the DECK, not the whole model: the sleeve lies out to the
+       side and dragged the centre of the shot off with it */
+    const db2 = new THREE.Box3().setFromObject(deck0);
+    const dc = db2.getCenter(new THREE.Vector3());
+    P.deck    = new THREE.Vector3(dc.x, db2.max.y + 0.075, dc.z);
+    P.deckAim = new THREE.Vector3(dc.x, dc.y + 0.02, dc.z);
     res(o);
   }, undefined, () => res(null)));
 }
@@ -2586,19 +2631,23 @@ function stepDeck(dt){
   const moved = Math.abs(want - discT) > 0.001;
   if (moved){
     discT += (want - discT) * 0.07;
-    DISC.position.lerpVectors(DISC_HOME, DISC_ON, discT);
-    /* it lifts clear of the sleeve on the way rather than sliding
-       through it */
-    DISC.position.y += Math.sin(discT * Math.PI) * 1.6;
+    /* the lid gets out of the way first, then the record travels, so
+       the disc is never passing through a closed cover */
+    const lidT  = Math.min(1, discT / 0.35);
+    const discM = Math.max(0, (discT - 0.3) / 0.7);
+    if (LID) LID.rotation.x = LID_HOME - lidT * 1.15;
+    if (SLEEVE) SLEEVE.rotation.x = SLEEVE_HOME - Math.sin(Math.min(1, discT / 0.5) * Math.PI) * 0.55;
+    DISC.position.lerpVectors(DISC_HOME, DISC_ON, discM);
+    /* it lifts clear on the way rather than sliding through the sleeve */
+    DISC.position.y += Math.sin(discM * Math.PI) * 6;
     if (ARM) ARM.rotation.y = ARM_HOME + discT * -0.42;
-    if (LID) LID.rotation.x = LID_HOME - discT * 0.55;
     startRoom();
   }
   /* the needle drops only once the record is actually down */
   if (cueing >= 0 && discT > 0.97) cueDone();
   if (nowPlaying >= 0 && discT > 0.92){
     deckSpin += dt * 3.49;            /* 33 and a third, near enough */
-    DISC.rotation.y = deckSpin;
+    DISC.rotation.z = deckSpin;       /* its own normal, once it is lying flat */
     startRoom();
   }
 }
@@ -2808,7 +2857,8 @@ const SPOTS = [
        Shifting the camera RIGHT is what puts the subject left; the
        first pass had the sign the wrong way round, which is why half
        the frame was bare wall. Closer in, for the same reason. */
-    cam:() => offsetCloseUp(P.deckAim || P.deck, 0.56, 34, 0.125, -0.02), overlay:'audio',
+    /* back far enough for the lid, which now stands right up */
+    cam:() => offsetCloseUp(P.deckAim || P.deck, 0.92, 32, 0.20, 0.02), overlay:'audio',
     eyebrow:'What I play',
     title:'Games are how I learned what a system feels like from the inside.',
     html:`<p>Baldur's Gate 3 and Disco Elysium are the two I keep going back to, and these days I am helping build a third. Path to Menzoberranzan is a 140 person volunteer studio making a full custom campaign in the Underdark, and I run its technical direction.</p>
