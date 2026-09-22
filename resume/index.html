@@ -3650,11 +3650,17 @@
               <!-- Left: Endorsements -->
               <div>
                 <p class="pe-track-label">en<span class="px">dor</span>se<span class="px">men</span>ts</p>
+                <!-- Avatars are local files or the .pe-avatar-init monogram, never
+                     a hotlink. LinkedIn's media URLs carry a signed ?e= expiry and
+                     two of these had been 403ing since March. Drop a square webp in
+                     endorsements/ and swap the monogram for an <img> if a portrait
+                     turns up. -->
                 <div class="pe-endorsements">
 
                   <div class="pe-endorse-card">
                     <div class="pe-card-header">
-                      <img class="pe-avatar" src="https://uwaterloo.ca/engineering/sites/default/files/uploads/images/mary-wells-portrait-1.png" alt="Mary Wells" />
+                      <img class="pe-avatar" src="/endorsements/mary-wells.webp" alt="Mary Wells"
+                           width="48" height="48" loading="lazy" decoding="async" />
                       <div class="pe-attrib">
                         <span class="pe-name">Mary Wells</span>
                         <span class="pe-role">Dean of Engineering, University of Waterloo</span>
@@ -3666,7 +3672,7 @@
 
                   <div class="pe-endorse-card">
                     <div class="pe-card-header">
-                      <img class="pe-avatar" src="https://media.licdn.com/dms/image/v2/D5603AQEaarNL9JpNjw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1715719346421?e=1774483200&v=beta&t=aZDzOUjfSy_Qja7dXFavuK-3XutW5paNE3GfurYpXJg" alt="Mary Wells" />
+                      <div class="pe-avatar-init" aria-hidden="true">KT</div>
                       <div class="pe-attrib">
                         <span class="pe-name">Krysta Traianovski</span>
                         <span class="pe-role">Associate Director of Founder Development @ Velocity</span>
@@ -3678,7 +3684,7 @@
 
                   <div class="pe-endorse-card">
                     <div class="pe-card-header">
-                      <img class="pe-avatar" src="https://media.licdn.com/dms/image/v2/D5603AQH3RuPISR2kMA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1729535798644?e=1774483200&v=beta&t=fBS-FBoc8O6Pw31kUxqCGyjlbnOzrvfzMlX2bq0wIaM" alt="Lisa Freeman" />
+                      <div class="pe-avatar-init" aria-hidden="true">LF</div>
                       <div class="pe-attrib">
                         <span class="pe-name">Lisa Freeman</span>
                         <span class="pe-role">Skrimp user &mdash; via CTV News Kitchener</span>
