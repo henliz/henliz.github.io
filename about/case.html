@@ -138,16 +138,67 @@ a{ color:inherit }
 
 
 /* ── the plus markers, straight off the reference ─────────────── */
-#pins{ position:absolute; inset:0; pointer-events:none }
+/* above the laptop's desktop, which is live at all times and sits at
+   z-index 7. Without this the laptop's own marker was painted over by
+   its own screen, so the one object with the most inside it looked
+   like the one thing you could not click. Pins hide whenever a card
+   is open, so this never covers the desktop you are actually using. */
+#pins{ position:absolute; inset:0; pointer-events:none; z-index:9 }
+/* ── the name under each cover ─────────────────────────────────────
+   Positioned off the projected centre of its sleeve, the same way the
+   pins are, and only up once the covers have stopped moving. */
+#crateTags{ position:absolute; inset:0; pointer-events:none; z-index:9 }
+.crate-tag{
+  position:absolute; left:0; top:0; translate:-1000px -1000px;
+  width:176px; margin-left:-88px; text-align:center;
+  opacity:0; transition:opacity .35s ease;
+  /* its own ground: album art is busy and high contrast, and white text
+     with a shadow over it was not readable on half of these covers */
+  /* no box of its own: the plate behind the whole grid is the dark
+     ground now, so six little cards on top of it was one too many. */
+  padding:.15rem .3rem 0;
+}
+.crate-tag.show{ opacity:1 }
+.crate-tag b{
+  display:block; color:#fff; font-size:.78rem; font-weight:600; line-height:1.22;
+  overflow-wrap:anywhere;
+}
+.crate-tag i{
+  display:flex; flex-wrap:wrap; gap:3px; justify-content:center;
+  margin-top:.28rem; font-style:normal;
+}
+.crate-tag em{
+  font-style:normal; font-size:.58rem; font-weight:600;
+  letter-spacing:.06em; text-transform:uppercase;
+  padding:.14rem .38rem; border-radius:99px; white-space:nowrap;
+  background:rgba(var(--accent-rgb),.26); color:#eafcfa;
+  border:1px solid rgba(var(--accent-rgb),.5);
+}
+#crateTitle{
+  position:absolute; left:0; top:0; translate:-1000px -1000px;
+  width:340px; margin:-340px 0 0 -170px;      /* anchored by its own centre */
+  text-align:center; pointer-events:none; opacity:0;
+  transition:opacity .35s ease; z-index:9;
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:1.2rem; color:#fff;
+  text-shadow:0 1px 10px rgba(0,0,0,.9), 0 0 4px rgba(0,0,0,.8);
+}
+#crateTitle.show{ opacity:1 }
+.crate-tag span{
+  display:block; color:rgba(255,255,255,.78); font-size:.63rem;
+  letter-spacing:.1em; text-transform:uppercase; margin-top:.16rem;
+  overflow-wrap:anywhere;
+}
+
 .pin{
   /* positioned with `translate`, never left/top: left/top is layout, and a
      layout pass per frame per pin is what made these shimmer */
   position:absolute; left:0; top:0; translate:-100px -100px;
-  width:34px; height:34px; margin:-17px 0 0 -17px;
+  width:27px; height:27px; margin:-13.5px 0 0 -13.5px;
   border-radius:50%; border:1px solid rgba(255,255,255,.7);
   background:rgba(255,255,255,.22); backdrop-filter:blur(6px);
   -webkit-backdrop-filter:blur(6px);
-  color:#fff; font-size:19px; line-height:32px; text-align:center;
+  color:#fff; font-size:15px; line-height:25px; text-align:center;
   cursor:pointer; pointer-events:auto;
   box-shadow:0 4px 14px rgba(0,0,0,.35);
   transition:transform .28s cubic-bezier(.22,1,.36,1), background .22s, opacity .3s;
@@ -162,7 +213,7 @@ a{ color:inherit }
 .pin.off .ring{ animation:none; opacity:.25 }
 .pin:hover{ transform:scale(1.22); background:rgba(255,255,255,.4) }
 .pin .ring{
-  position:absolute; inset:-7px; border-radius:50%;
+  position:absolute; inset:-6px; border-radius:50%;
   border:1px solid rgba(255,255,255,.45); animation:ping 2.8s ease-out infinite;
 }
 :root[data-theme="light"] .pin .ring{ border-color:rgba(19,95,90,.35) }
@@ -426,11 +477,49 @@ a{ color:inherit }
 
 /* the LinkedIn rebuild */
 #mac .li{ background:#f4f2ee; display:block; overflow-y:auto }
-#mac .li .cover{ height:82px; background:linear-gradient(120deg,#2f6f68,#88abe3 62%,#dbd59c) }
+/* the banner and headshot are her real ones, pulled off the profile and
+   kept locally: LinkedIn's CDN signs every URL with an expiry, so hotlinking
+   would go blank in a few weeks. */
+#mac .li .cover{
+  height:82px; background:#e7f2ef url('/about/media/li/cover.jpg') center/cover no-repeat;
+}
 #mac .li .pfp{
   position:absolute; left:20px; top:48px; width:66px; height:66px; border-radius:50%;
-  border:3px solid #fff; background:radial-gradient(circle at 38% 32%,#f3cdb4,#c98f6e);
+  border:3px solid #fff; background:#eee url('/about/media/li/pfp.jpg') center/cover no-repeat;
+  box-shadow:0 1px 3px rgba(0,0,0,.18);
 }
+/* verified tick, current-employer chips */
+#mac .li .vf{ width:12px; height:12px; vertical-align:-1px; margin-left:3px }
+#mac .li .now{ display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:8px }
+#mac .li .now span{
+  display:flex; align-items:center; gap:6px;
+  font-size:10.5px; font-weight:600; color:rgba(0,0,0,.9);
+}
+#mac .li .now img{ width:18px; height:18px; border-radius:3px; object-fit:contain }
+#mac .li .conn{ font-size:10px; font-weight:600; color:#0a66c2; margin-top:5px }
+
+/* the About blurb, straight off the profile */
+#mac .li .abt{ font-size:9.5px; color:rgba(0,0,0,.78); line-height:1.65 }
+#mac .li .abt b{ display:block; margin:7px 0 2px; color:rgba(0,0,0,.9); font-size:10px }
+#mac .li .abt b:first-child{ margin-top:0 }
+
+/* activity: her three most recent posts, with the real counts */
+#mac .li .fol{ font-size:9.5px; color:rgba(0,0,0,.55); margin:-4px 0 8px }
+#mac .li .post{
+  display:flex; gap:9px; padding:8px 0; border-top:1px solid rgba(0,0,0,.06);
+}
+#mac .li .post:first-of-type{ border-top:0; padding-top:0 }
+#mac .li .post img{
+  width:52px; height:52px; flex:none; border-radius:4px; object-fit:cover;
+  background:#e9e9e9;
+}
+#mac .li .post .when{ font-size:9px; color:rgba(0,0,0,.5) }
+#mac .li .post p{
+  font-size:9.5px; color:rgba(0,0,0,.85); line-height:1.5; margin:1px 0 3px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+#mac .li .post .eng{ font-size:9px; color:rgba(0,0,0,.5) }
+#mac .li .post .eng b{ color:rgba(0,0,0,.72); font-weight:600 }
 #mac .li .liin{ background:#fff; padding:26px 20px 16px }
 #mac .li h3{ font-size:17px; font-weight:700; margin-bottom:2px }
 #mac .li h3 em{ font-style:normal; font-size:10px; opacity:.5; font-weight:500 }
@@ -454,6 +543,9 @@ a{ color:inherit }
   width:26px; height:26px; flex:none; border-radius:4px; margin-top:2px;
   display:grid; place-items:center; font-size:11px; font-weight:700; color:#fff;
 }
+#mac .li .job img.ico{
+  object-fit:contain; background:#fff; border:1px solid rgba(0,0,0,.08);
+}
 #mac .li .job b{ display:block; font-size:11px; font-weight:600; color:rgba(0,0,0,.9); line-height:1.35 }
 #mac .li .job span{ display:block; font-size:10px; color:rgba(0,0,0,.6); line-height:1.45 }
 #mac .li .job p{ font-size:9.5px; color:rgba(0,0,0,.72); line-height:1.5; margin-top:3px }
@@ -474,6 +566,75 @@ a{ color:inherit }
 #mac .li .btns b{ background:#0a66c2; color:#fff }
 #mac .li .btns i{ border:1px solid #0a66c2; color:#0a66c2 }
 #mac .li .out{ display:inline-block; margin-top:10px; font-size:10.5px; font-weight:600; color:#0a66c2; text-decoration:none }
+
+/* ── Photos ───────────────────────────────────────────────────────
+   A square grid under month headings, and a one-up view that slides
+   over the top of it. Everything is sized in the desktop's own logical
+   pixels, which are small, so the type is small to match. */
+#mac .pics{ position:relative; overflow:hidden; background:#fff }
+#mac .pgrid{
+  position:absolute; inset:0; overflow-y:auto; padding:8px 10px 14px;
+  /* Fixed squares rather than fractional columns with an aspect ratio.
+     A tile whose height comes from a ratio off a fractional width is a
+     circular dependency as far as row sizing goes: the tiles measured
+     75px tall while their rows measured three, so every month's photos
+     sat on top of the next month's heading. Both axes definite, no
+     circle, and a photo grid wants uniform squares anyway. */
+  display:grid; grid-template-columns:repeat(auto-fill, 74px);
+  gap:3px; align-content:start; justify-content:start;
+}
+#mac .pgrid .mo{
+  grid-column:1 / -1; font-size:10.5px; font-weight:700; color:rgba(0,0,0,.85);
+  padding:10px 1px 4px; position:sticky; top:-8px; background:#fff; z-index:1;
+}
+#mac .pgrid .mo:first-child{ padding-top:2px }
+/* a definite height, so the row track is sized by it. Fixing the rows
+   instead would have made the month headings 74px tall as well. */
+#mac .pgrid button{
+  position:relative; height:74px; padding:0; border:0; border-radius:2px;
+  line-height:0; overflow:hidden; cursor:pointer; background:#ececec;
+}
+#mac .pgrid img{ width:100%; height:100%; object-fit:cover; display:block }
+#mac .pgrid button:hover img{ filter:brightness(1.06) }
+#mac .pgrid button:focus-visible{ outline:2px solid #0a66c2; outline-offset:1px }
+/* the little play glyph a video gets in the grid */
+#mac .pgrid .mv::after{
+  content:''; position:absolute; right:4px; bottom:4px;
+  border-style:solid; border-width:4px 0 4px 7px;
+  border-color:transparent transparent transparent #fff;
+  filter:drop-shadow(0 0 2px rgba(0,0,0,.65));
+}
+
+/* one-up */
+#mac .pone{
+  position:absolute; inset:0; background:#141414; z-index:3;
+  display:grid; grid-template-rows:auto 1fr auto;
+}
+#mac .pone[hidden]{ display:none !important }
+#mac .pback{
+  justify-self:start; margin:6px 0 0 8px; padding:3px 8px; border:0; border-radius:5px;
+  background:rgba(255,255,255,.14); color:#fff; font-family:inherit; font-size:10px;
+  cursor:pointer;
+}
+#mac .pback:hover{ background:rgba(255,255,255,.24) }
+/* The stage is a grid track, so its height is not definite while its
+   contents are being sized, and Chrome drops a percentage max-height
+   against it: a portrait clip came out 771px tall in a 331px box. Pin
+   the media to all four edges instead, which is definite whatever the
+   track does, and let object-fit letterbox inside it. */
+#mac .pstage{ position:relative; overflow:hidden; min-height:0; min-width:0 }
+#mac .pstage img, #mac .pstage video{
+  position:absolute; top:6px; bottom:6px; left:30px; right:30px;
+  width:auto; height:auto; object-fit:contain; border-radius:2px;
+}
+#mac .pmeta{ text-align:center; font-size:9.5px; color:rgba(255,255,255,.6); padding:4px 0 8px }
+#mac .pnav{
+  position:absolute; top:50%; translate:0 -50%; width:26px; height:40px; border:0;
+  border-radius:5px; background:rgba(255,255,255,.10); color:#fff; font-size:17px;
+  line-height:1; cursor:pointer; font-family:inherit;
+}
+#mac .pnav:hover{ background:rgba(255,255,255,.22) }
+#mac .pprev{ left:5px } #mac .pnext{ right:5px }
 
 /* dock */
 #mac .dock{
@@ -581,12 +742,72 @@ a{ color:inherit }
   transition:opacity .4s ease .2s, transform .5s cubic-bezier(.22,1,.36,1) .2s;
 }
 #audio.open{ opacity:1; transform:translate(0,-50%); pointer-events:auto }
-#audio .eyebrow{
+
+/* While the six are up the card gets out of the way entirely: the
+   plate they stand on is a mesh IN the scene (see PLATE), because a DOM
+   node can never sit behind a WebGL canvas. */
+#audio.picking{ opacity:0; pointer-events:none }
+
+#audio #spotWrap, #audio #nowPlaying, #audio #repick{ max-height:0; opacity:0; margin:0 }
+#audio #crate{ max-height:460px; opacity:1 }
+#audio.playing:not(.picking) #crate{ max-height:0; opacity:0; margin:0 }
+#audio.playing:not(.picking) #spotWrap{ max-height:380px; opacity:1 }
+#audio.playing:not(.picking) #nowPlaying{ max-height:70px; opacity:1; margin-bottom:.5rem }
+#audio.playing:not(.picking) #repick{ max-height:44px; opacity:1; margin-bottom:.7rem }
+
+#nowPlaying b{ display:block; font-family:'Cormorant Garamond',serif;
+  font-size:1.25rem; font-weight:600; line-height:1.2 }
+#nowPlaying span{ font-size:.78rem; color:var(--muted); opacity:.85 }
+#repick{
+  display:block; width:100%; padding:.48rem .8rem;
+  background:rgba(var(--accent-rgb),.12); color:var(--accent);
+  border:1px solid rgba(var(--accent-rgb),.32); border-radius:9px;
+  font-family:'Satoshi',sans-serif; font-size:.76rem; letter-spacing:.1em;
+  text-transform:uppercase; cursor:pointer;
+}
+#repick:hover{ background:rgba(var(--accent-rgb),.2) }
+@media (prefers-reduced-motion:reduce){
+  /* The six titles, laid out the way the covers are laid out in the
+   room, and only up once they have STOPPED MOVING: a caption chasing a
+   cover across the room is not something anyone can read. */
+#crateGrid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:.5rem .55rem }
+#crateGrid button{
+  display:block; width:100%; text-align:left; cursor:pointer;
+  background:rgba(var(--muted-rgb),.07);
+  border:1px solid rgba(var(--muted-rgb),.16); border-radius:9px;
+  padding:.45rem .5rem; font-family:'Satoshi',sans-serif; color:var(--ink);
+}
+#crateGrid button:hover{ background:rgba(var(--accent-rgb),.16);
+                         border-color:rgba(var(--accent-rgb),.36) }
+#crateGrid b{
+  display:block; font-size:.72rem; font-weight:600; line-height:1.25;
+  overflow-wrap:anywhere;          /* the long ones wrap, not overflow */
+}
+#crateGrid span{
+  display:block; font-size:.62rem; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--muted); opacity:.8; margin-top:.15rem; overflow-wrap:anywhere;
+}
+#audio #spotWrap, #audio #nowPlaying, #audio #repick{ transition:none }
+}
+#audio.hushed{ opacity:.4 }
+/* the rugby card, same furniture as the music one */
+#rugby{
+  position:absolute; right:clamp(16px,3vw,44px); top:50%; transform:translate(22px,-50%);
+  width:min(420px,calc(100vw - 32px)); opacity:0; pointer-events:none; z-index:7;
+  background:var(--card); border:1px solid var(--edge); border-radius:18px;
+  padding:clamp(16px,2vw,22px); box-shadow:var(--shadow);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  transition:opacity .4s ease .2s, transform .5s cubic-bezier(.22,1,.36,1) .2s;
+}
+#rugby.open{ opacity:1; transform:translate(0,-50%); pointer-events:auto }
+#rugby .eyebrow{
   display:block; font-size:.66rem; letter-spacing:.2em; text-transform:uppercase;
   color:var(--accent); font-weight:700; margin-bottom:.7rem;
 }
-#audio #spot iframe{ width:100%; height:152px; border:0; border-radius:12px; display:block }
-#audio.hushed{ opacity:.4 }
+#rugby #rugbyPlayer, #rugby iframe{
+  width:100%; aspect-ratio:16/9; height:auto; border:0; border-radius:12px; display:block;
+}
+#rugby .meta{ font-size:.76rem; opacity:.62; margin-top:.7rem; line-height:1.6 }
 /* the crate: six sleeves, two across and three down, with the disc
    peeking out from behind whichever one is on */
 #crate{ display:grid; grid-template-columns:1fr 1fr; gap:.55rem; margin-bottom:.8rem }
@@ -794,6 +1015,10 @@ a{ color:inherit }
   licensed under Creative Commons Attribution
   (http://creativecommons.org/licenses/by/4.0/).
 
+  "SpringBok - Rugby Jersey" (https://skfb.ly/6SBPP) by OmegaRedZA is licensed
+  under Creative Commons Attribution
+  (http://creativecommons.org/licenses/by/4.0/).
+
   "Antique wooden desk with props" (https://skfb.ly/oHrDH) by shuvalov.di is
   licensed under Creative Commons Attribution-ShareAlike
   (http://creativecommons.org/licenses/by-sa/4.0/). Textures in the copy
@@ -810,6 +1035,8 @@ a{ color:inherit }
 <div id="stage">
   <canvas id="gl"></canvas>
   <div id="pins"></div>
+  <div id="crateTags" aria-hidden="true"></div>
+  <p id="crateTitle">pick an al<span class="px">bu</span>m to listen to</p>
 
   <aside id="panel" role="dialog" aria-label="About Henrietta">
     <div id="panelBody"></div>
@@ -860,12 +1087,73 @@ a{ color:inherit }
         <div class="cover"></div>
         <div class="pfp"></div>
         <div class="liin">
-          <h3>Henri&euml;tta van Niekerk <em>She/Her</em></h3>
-          <p class="hl">Design engineer and founder &middot; Building things that survive under pressure</p>
-          <p class="sub">Waterloo, Ontario, Canada &middot; <a href="mailto:henrietta@skrimp.ai">Contact info</a></p>
+          <h3>Henri&euml;tta van Niekerk<svg class="vf" viewBox="0 0 24 24" aria-label="Verified"><path fill="#0a66c2" d="M12 1.5 14.6 4l3.5-.4 1 3.4 3.2 1.6-1.4 3.3 1.4 3.3-3.2 1.6-1 3.4-3.5-.4L12 22.5 9.4 20l-3.5.4-1-3.4L1.7 15.4 3.1 12 1.7 8.7l3.2-1.6 1-3.4L9.4 4z"/><path fill="#fff" d="m10.9 15.4-3-3 1.3-1.3 1.7 1.7 4.2-4.2 1.3 1.3z"/></svg> <em>She/Her</em></h3>
+          <p class="hl">Founder @ Skrimp (your AI sous chef)&#12539;KW Oktoberfest Women of the Year Nominee &rsquo;26&#12539;Honours Interaction Design &amp; Business @ University of Waterloo</p>
+          <p class="sub">Greater Kitchener-Cambridge-Waterloo Metropolitan Area &middot; <a href="mailto:henrietta@skrimp.ai">Contact info</a></p>
           <p class="sub"><a href="https://henliz.github.io" target="_blank" rel="noopener">henliz.github.io &nearr;</a></p>
+          <p class="conn">500+ connections</p>
+          <div class="now">
+            <span><img src="/about/media/li/skrimp.png" alt="">Skrimp</span>
+            <span><img src="/about/media/li/uw.png" alt="">University of Waterloo</span>
+          </div>
           <div class="btns"><b>Open to</b><i>Add section</i><i>More</i></div>
           <a class="out" href="https://www.linkedin.com/in/henriettavanniekerk" target="_blank" rel="noopener">Open the real profile &nearr;</a>
+        </div>
+
+        <div class="card">
+          <h4>About</h4>
+          <div class="abt">
+            <b>Founder @ Skrimp&#12539;CTO @ Path to Menzoberranzan&#12539;Honours Interaction Design &amp; Business</b>
+            <b>What I'm Building:</b>
+            Skrimp is a live AI grocery app saving Ontario families up to $100/week, covered by CTV News,
+            Waterloo Region Record and Rogers TV, backed by KWC municipal governments and Velocity.
+            Path to Menzoberranzan is a 140+ contributor volunteer expansion to Baldur's Gate 3 that
+            Kotaku, TheGamer and WCCFTech are watching. Alpha 2026.
+            <b>What I Do:</b>
+            I'm a design engineer, so I don't stop at the mockup, and I don't write code with no thought
+            for the person on the other end. I build constraint-first systems that keep working when the
+            world stops cooperating, lead teams through real messes, and ship things that move right.
+            <b>The Receipts:</b>
+            Jain Family Award for Entrepreneurship &middot; Velocity Cornerstone Award &middot; CEWIL WIL Award &middot;
+            TechNova 2025 Winner &middot; Comfy Winter Jam 2025 Winner &middot; E-Launch Pitch Award &middot;
+            Enterprise Co-op Pitch Winner &middot; Conrad School &middot; UWaterloo homepage
+            <b>What I'm Into:</b>
+            HCI, narrative UX, game design, cosmic horror fiction, systems that shouldn't work but do.
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>Activity</h4>
+          <p class="fol">1,036 followers</p>
+          <div class="post">
+            <img src="/about/media/li/post1.jpg" alt="">
+            <div>
+              <span class="when">4mo</span>
+              <p>Woman of the Year Nominee. Four words I'm still turning over in my head. A nomination is a
+                strange kind of mirror. You look up expecting your own face and find everyone who got you
+                there standing behind it.</p>
+              <span class="eng"><b>122</b> reactions &middot; <b>14</b> comments &middot; <b>6,296</b> impressions</span>
+            </div>
+          </div>
+          <div class="post">
+            <img src="/about/media/li/post2.jpg" alt="">
+            <div>
+              <span class="when">6mo</span>
+              <p>In 1927, Bluma Zeigarnik discovered that the brain keeps incomplete things cognitively
+                active until they resolve. A century later, we still don't have a way to hear that signal.
+                This weekend at FigBuild 2026, my team built Aperture.</p>
+              <span class="eng"><b>32</b> reactions &middot; <b>9</b> comments &middot; <b>3,155</b> impressions</span>
+            </div>
+          </div>
+          <div class="post">
+            <img src="/about/media/li/post3.jpg" alt="">
+            <div>
+              <span class="when">6mo</span>
+              <p>Hey Figma, are you sure you're ready for us? FigBuild 2026 is live and the Figma Breakers
+                have entered the chat. One team, two cities, 5,700+ participants.</p>
+              <span class="eng"><b>85</b> reactions &middot; <b>16</b> comments &middot; <b>6,636</b> impressions</span>
+            </div>
+          </div>
         </div>
 
         <div class="card">
@@ -875,7 +1163,7 @@ a{ color:inherit }
             <span>Trove &middot; Full-time</span><span>Apr 2026 &ndash; Aug 2026 &middot; 5 mos</span>
             <p>Hire #1 on a consumer social product on web and iOS. Took it from one validated feature to 10,250 users and 3&times; weekly growth. Built the LLM authoring and eval pipeline, the runtime sprite compositor, and 1,331 commits of Convex and React in 18 weeks.</p>
           </div></div>
-          <div class="job"><i class="ico" style="background:#4a9d8e">S</i><div>
+          <div class="job"><img class="ico" src="/about/media/li/skrimp.png" alt=""><div>
             <b>Founder &amp; CEO</b>
             <span>Skrimp &middot; Full-time</span><span>Apr 2025 &ndash; Present</span>
             <p>Live AI grocery app across Ontario, 2,000+ registered users, covered by CTV News and the Waterloo Region Record. Sole designer and co-engineer on the meal planning engine. Funded by Conrad E Co-op, Velocity, and KWC municipal governments.</p>
@@ -904,7 +1192,7 @@ a{ color:inherit }
 
         <div class="card">
           <h4>Education</h4>
-          <div class="job"><i class="ico" style="background:#f5b32a;color:#1a1a1a">W</i><div>
+          <div class="job"><img class="ico" src="/about/media/li/uw.png" alt=""><div>
             <b>University of Waterloo</b>
             <span>Honours Bachelor of Interaction Design &amp; Business (GBDA)</span>
             <span>Expected Dec 2026</span>
@@ -935,9 +1223,10 @@ a{ color:inherit }
           </div>
         </div>
 
-        <p class="note">LinkedIn has no public API and refuses to be embedded,
-          so this page is written by hand rather than fetched. The GitHub tab
-          next door is live.</p>
+        <p class="note">LinkedIn has no public API and refuses to be embedded, so this
+          page is rebuilt rather than fetched. The photo, banner, logos, blurb, post
+          thumbnails and engagement counts are all the real ones, copied off the profile.
+          The GitHub tab next door is live.</p>
       </div>
 
       <!-- GitHub. Everything with an id here is filled from the live API on
@@ -989,7 +1278,36 @@ a{ color:inherit }
         <!-- the attributions used to live in the Say hello panel. That
              panel is gone, and CC BY needs them somewhere a person can
              actually read them, so they live here now. -->
-        <p class="cred"><b>Credits</b><br>Surfaces from ambientCG (CC0). &ldquo;<a class="link" href="https://skfb.ly/ostwx" target="_blank" rel="noopener">Cup tea</a>&rdquo; by rigart and &ldquo;<a class="link" href="https://skfb.ly/oDsVN" target="_blank" rel="noopener">[FREE] Pothos Potted Plant - Money Plant</a>&rdquo; by AllQuad and &ldquo;<a class="link" href="https://skfb.ly/6CzIJ" target="_blank" rel="noopener">Old Desk Lamp</a>&rdquo; by Maxence Rouillet, all <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6GoDo" target="_blank" rel="noopener">Vinyl / Record Player</a>&rdquo; by Phaedrus, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/oHrDH" target="_blank" rel="noopener">Antique wooden desk with props</a>&rdquo; by shuvalov.di, <a class="link" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6FUoz" target="_blank" rel="noopener">Zippo Lighter - 60s Style, Vietnam War Era</a>&rdquo; by Kingy, <a class="link" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/p7qM9" target="_blank" rel="noopener">Tape Recorder with cassettes</a>&rdquo; by Varvara Dolgova, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
+        <p class="cred"><b>Credits</b><br>Surfaces from ambientCG (CC0). &ldquo;<a class="link" href="https://skfb.ly/ostwx" target="_blank" rel="noopener">Cup tea</a>&rdquo; by rigart and &ldquo;<a class="link" href="https://skfb.ly/oDsVN" target="_blank" rel="noopener">[FREE] Pothos Potted Plant - Money Plant</a>&rdquo; by AllQuad and &ldquo;<a class="link" href="https://skfb.ly/6CzIJ" target="_blank" rel="noopener">Old Desk Lamp</a>&rdquo; by Maxence Rouillet, all <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6GoDo" target="_blank" rel="noopener">Vinyl / Record Player</a>&rdquo; by Phaedrus, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/oHrDH" target="_blank" rel="noopener">Antique wooden desk with props</a>&rdquo; by shuvalov.di, <a class="link" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6FUoz" target="_blank" rel="noopener">Zippo Lighter - 60s Style, Vietnam War Era</a>&rdquo; by Kingy, <a class="link" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/p7qM9" target="_blank" rel="noopener">Tape Recorder with cassettes</a>&rdquo; by Varvara Dolgova, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6SBPP" target="_blank" rel="noopener">SpringBok - Rugby Jersey</a>&rdquo; by OmegaRedZA, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photos. The grid, the month headings and the one-up view are all
+         built from one list in script: PHOTOS. -->
+    <div class="win" id="w-photos" data-app="photos" style="--x:150px;--y:62px;--w:640px;--h:412px">
+      <div class="tt">
+        <div class="lights"><s class="r"></s><s class="y"></s><s class="g"></s></div>
+        <em>Photos</em>
+      </div>
+      <div class="bd split">
+        <div class="side">
+          <p class="hd">Photos</p>
+          <button class="it on" data-view="all">Library</button>
+          <button class="it" data-view="recents">Recents</button>
+          <p class="hd">Media Types</p>
+          <button class="it" data-view="videos">Videos</button>
+        </div>
+        <div class="pane pics">
+          <div class="pgrid" id="pGrid"></div>
+          <!-- one-up. Hidden until you click something. -->
+          <div class="pone" id="pOne" hidden>
+            <button class="pback" id="pBack">&lsaquo; Library</button>
+            <div class="pstage" id="pStage"></div>
+            <button class="pnav pprev" id="pPrev" aria-label="Previous">&lsaquo;</button>
+            <button class="pnav pnext" id="pNext" aria-label="Next">&rsaquo;</button>
+            <p class="pmeta" id="pMeta"></p>
+          </div>
         </div>
       </div>
     </div>
@@ -1025,7 +1343,7 @@ a{ color:inherit }
       <button class="off" title="Messages"><span class="i ms"></span></button>
       <button class="off" title="Mail"><span class="i ma"></span></button>
       <button class="off" title="Music"><span class="i mu"></span></button>
-      <button class="off" title="Photos"><span class="i ph"></span></button>
+      <button data-app="photos" title="Photos"><span class="i ph"></span></button>
       <button class="off" title="Calendar"><span class="i ca"></span></button>
       <button class="off" title="Figma"><span class="i fg"></span></button>
       <button class="off" title="Terminal"><span class="i te"></span></button>
@@ -1039,8 +1357,9 @@ a{ color:inherit }
   <!-- the headphones' player -->
   <div id="audio" aria-label="Music player">
     <span class="eyebrow">What I play</span>
-    <div id="crate"></div>
-    <div id="spot"></div>
+    <div id="nowPlaying"></div>
+    <button type="button" id="repick">pick a new al<span class="px">bu</span>m</button>
+    <div id="spotWrap"><div id="spot"></div></div>
     <p class="meta">It keeps playing while you look around the desk. The
       lighter and the tape recorder will hush it and hand it back.</p>
   </div>
@@ -1048,6 +1367,15 @@ a{ color:inherit }
   <!-- the poems the lighter plays. Audio only: the player is parked
        off screen and the clip is held between two timestamps. -->
   <div id="poembox" aria-hidden="true"><div id="poem"></div><div id="tape"></div></div>
+
+  <!-- the rugby, which is the one clip you are meant to watch rather
+       than just hear, so its player is on the card -->
+  <div id="rugby" aria-label="Rugby World Cup highlights">
+    <span class="eyebrow">Where I am from</span>
+    <div id="rugbyPlayer"></div>
+    <p class="meta">South Africa. The 2023 final was decided by a point,
+      three matches running, and I have not been normal about it since.</p>
+  </div>
 
   <div id="boot">
     <div class="boot-card">
@@ -1071,6 +1399,12 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/environments/RoomEnvironment.js';
 import { MeshoptDecoder } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/libs/meshopt_decoder.module.js';
+/* the grade. r152 has no OutputPass, so the last pass in the chain does
+   the tone map, the grade and the sRGB write itself. */
+import { EffectComposer }   from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass }       from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass }  from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { ShaderPass }       from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/postprocessing/ShaderPass.js';
 
 /* ── the stage's own coordinate space ─────────────────────────────
    On a phone held upright the whole stage is rotated a quarter turn by
@@ -1137,6 +1471,114 @@ renderer.shadowMap.type = GFX.weak ? THREE.BasicShadowMap : THREE.PCFSoftShadowM
 const scene  = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(38, 1, 0.02, 60);
 const isLight = () => document.documentElement.getAttribute('data-theme') === 'light';
+
+/* ── the grade ────────────────────────────────────────────────────
+   Everything up to here renders in linear light with no tone curve,
+   into a half-float buffer, so the lamp and the window are allowed to
+   go well above 1.0 and stay there. Bloom reads those real highlights,
+   and then one last pass does what a colourist would: split the tone
+   (cool in the shadows, warm in the highlights), apply the ACES curve,
+   set contrast and saturation, fall the corners off, lay a little
+   grain over the whole thing, and only then write sRGB.
+
+   Weak machines skip the chain entirely and go straight to the screen
+   with the renderer's own tone mapping, which is what was here before. */
+const POST = !GFX.weak;
+renderer.toneMapping = POST ? THREE.NoToneMapping : THREE.ACESFilmicToneMapping;
+
+const GradeShader = {
+  uniforms: {
+    tDiffuse:   { value: null },
+    /* Restrained on purpose. The first pass at this set the contrast,
+       the vignette and the split all near the top of their useful range
+       at once, and the room came out with black corners and a blown
+       window: a grade you can see is a grade that is too strong. These
+       are all small enough to read as the room having a look rather
+       than as a filter over it. */
+    uExposure:  { value: 1.22 },
+    uLift:      { value: new THREE.Color(0.93, 0.975, 1.035) }, /* shadows toward the window */
+    uGain:      { value: new THREE.Color(1.04, 1.005, 0.955) }, /* highlights toward the lamp */
+    uContrast:  { value: 1.02 },
+    uSat:       { value: 1.05 },
+    uVignette:  { value: 0.17 },
+    uGrain:     { value: 0.020 },
+    uSeed:      { value: 0.0 },
+    uRes:       { value: new THREE.Vector2(1, 1) },
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+  `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float uExposure, uContrast, uSat, uVignette, uGrain, uSeed;
+    uniform vec3  uLift, uGain;
+    uniform vec2  uRes;
+    varying vec2  vUv;
+
+    const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);
+
+    /* Stephen Hill's fit of the ACES RRT + ODT, the same one three uses */
+    const mat3 ACESIn = mat3(
+      0.59719, 0.07600, 0.02840,
+      0.35458, 0.90834, 0.13383,
+      0.04823, 0.01566, 0.83777);
+    const mat3 ACESOut = mat3(
+       1.60475, -0.10208, -0.00327,
+      -0.53108,  1.10813, -0.07276,
+      -0.07367, -0.00605,  1.07602);
+    vec3 aces(vec3 c){
+      c = ACESIn * c;
+      vec3 a = c * (c + 0.0245786) - 0.000090537;
+      vec3 b = c * (0.983729 * c + 0.4329510) + 0.238081;
+      return clamp(ACESOut * (a / b), 0.0, 1.0);
+    }
+    vec3 lin2srgb(vec3 c){
+      return mix(c * 12.92,
+                 1.055 * pow(max(c, vec3(0.0)), vec3(0.41666)) - 0.055,
+                 step(vec3(0.0031308), c));
+    }
+
+    void main(){
+      vec3 c = texture2D(tDiffuse, vUv).rgb * uExposure;
+
+      /* split tone while the values are still linear and unclipped */
+      float l = dot(c, LUMA);
+      c *= mix(vec3(1.0), uLift, 1.0 - smoothstep(0.0, 0.32, l));
+      c *= mix(vec3(1.0), uGain, smoothstep(0.22, 1.20, l));
+
+      c = aces(c);
+
+      c = (c - 0.5) * uContrast + 0.5;
+      c = mix(vec3(dot(c, LUMA)), c, uSat);
+
+      /* an oval falloff, wider than it is tall so it does not pinch
+         the sides of a letterbox window */
+      vec2 q = (vUv - 0.5) * vec2(1.0, 0.86);
+      c *= 1.0 - uVignette * pow(clamp(dot(q, q) * 2.6, 0.0, 1.0), 1.35);
+
+      /* grain, over the shadows more than the highlights, which is
+         where film actually shows it */
+      float n = fract(sin(dot(vUv * uRes + uSeed, vec2(12.9898, 78.233))) * 43758.5453);
+      c += (n - 0.5) * uGrain * (1.25 - dot(c, LUMA) * 0.75);
+
+      gl_FragColor = vec4(lin2srgb(clamp(c, 0.0, 1.0)), 1.0);
+    }
+  `,
+};
+
+let composer = null, bloomPass = null, gradePass = null;
+if (POST){
+  composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  /* threshold sits above 1.0 so only things that are genuinely emitting
+     bloom: the lamp's glow, the laptop, the window. Wood does not. */
+  bloomPass = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.26, 0.60, 1.05);
+  composer.addPass(bloomPass);
+  gradePass = new ShaderPass(GradeShader);
+  gradePass.renderToScreen = true;
+  composer.addPass(gradePass);
+}
 
 /* an indoor environment map, so metal and glaze have something to reflect
    and nothing reads as flat vertex colour */
@@ -1282,10 +1724,35 @@ function buildShell(){
   const f = new THREE.Mesh(new THREE.BoxGeometry(W, 0.12, D), MAT.floor);
   f.position.set(W/2, -0.06, D/2); f.receiveShadow = true; ROOM.add(f);
   box(W, H, 0.1, MAT.wall, W/2, H/2, -0.05);        /* back wall  */
-  box(0.1, H, D, MAT.wall, -0.05, H/2, D/2);        /* left wall  */
+
+  /* The left wall is built in four pieces around a real hole, and there
+     is a ceiling over the lot. Both of those used to be one solid slab
+     and open sky: the window was a picture of a window painted on the
+     inside face, and the sun, having nothing to go through, simply came
+     in over the top of the walls and washed the whole room evenly. It
+     read as fine because nothing had enough contrast to show it up. The
+     moment the grade went in it showed up as a hard diagonal of daylight
+     across the wall behind the chair, which is the shadow of the top of
+     that wall.
+
+     With a hole in it, the sunlight arrives as a window-shaped patch
+     with the mullion and the transom drawn across it, which is the one
+     thing that makes a room read as a room with an afternoon in it. */
+  const WIN_Z0 = WIN_Z - WIN_W / 2, WIN_Z1 = WIN_Z + WIN_W / 2;
+  const WIN_Y1 = SILL_Y + WIN_H;
+  box(0.1, SILL_Y,   D, MAT.wall, -0.05, SILL_Y / 2, D / 2);                  /* under the sill */
+  box(0.1, H - WIN_Y1, D, MAT.wall, -0.05, (H + WIN_Y1) / 2, D / 2);          /* over the head  */
+  box(0.1, WIN_H, WIN_Z0, MAT.wall, -0.05, SILL_Y + WIN_H / 2, WIN_Z0 / 2);   /* the near pier  */
+  box(0.1, WIN_H, D - WIN_Z1, MAT.wall, -0.05, SILL_Y + WIN_H / 2, (D + WIN_Z1) / 2);
+  box(W, 0.1, D, MAT.wall, W / 2, H + 0.05, D / 2);                           /* ceiling */
+  /* and a right wall. There was never one, which did not matter while
+     nothing looked that way; the jersey hangs on that side now and the
+     camera turns far enough to see straight out of the room. */
+  box(0.1, H, D, MAT.wall, W + 0.05, H/2, D/2);
   /* skirting: the line that tells you the wall meets a floor */
   box(W, 0.11, 0.022, MAT.trim, W/2, 0.055, 0.011);
   box(0.022, 0.11, D, MAT.trim, 0.011, 0.055, D/2);
+  box(0.022, 0.11, D, MAT.trim, W - 0.011, 0.055, D/2);
 
   /* a wool rug under the chair, turned a few degrees off square because
      nothing in a real room is square to anything */
@@ -1424,7 +1891,11 @@ const SHELF_BOOKS = [
       whole thing snaps into focus. A thousand pages of setup paying off
       at once is its own kind of engineering.</p>
       <p>Journey before destination.</p>` },
-  { t:'',  a:'', c:'#2f6f68' },
+  { t:'The Hobbit', a:'J.R.R. Tolkien', c:'#141018',
+    img:'/about/media/hobbit-cover.jpg', spine:'/about/media/hobbit-spine.jpg',
+    /* the Alan Lee illustrated hardback: chunky, but nothing like the
+       leather-bound volumes the desk shipped with */
+    spineRatio: 178 / 1484 },
   { t:'Before the Coffee Gets Cold', a:'Toshikazu Kawaguchi', c:'#5b9ea6',
     img:'/about/media/coffee-cover.jpg', spine:'/about/media/coffee-spine.jpg',
     /* thickness over height, straight off the printed wrap. The desk's
@@ -1433,8 +1904,23 @@ const SHELF_BOOKS = [
        would have to stretch to three times its printed width to fill
        the face. */
     spineRatio: 39 / 528 },
-  { t:'',  a:'', c:'#b0517f' },
-  { t:'',  a:'', c:'#c8874a' },
+  { t:'The Great Gatsby', a:'F. Scott Fitzgerald', c:'#123a8a',
+    img:'/about/media/gatsby-cover.jpg', spine:'/about/media/gatsby-spine.jpg',
+    /* Cugat's 1925 celestial eyes, cut out of a scan of the whole wrap.
+       Same height as the Kawaguchi next to it, but a 1925 Scribners
+       hardback is a fatter object than a modern paperback, so the spine
+       keeps its own printed width rather than the row's default. */
+    tall: 0.150,
+    spineRatio: 74 / 476 },
+  /* closes the row, and the only one that leans. There used to be two
+     plain spines here; Gatsby took the width of one and this took the
+     other, and the shelf silently drops anything past its right edge. */
+  { t:'Red Rising', a:'Pierce Brown', c:'#0d0a0a',
+    img:'/about/media/redrising-cover.jpg', spine:'/about/media/redrising-spine.jpg',
+    /* the tall trade paperback, so it is the big one on the shelf: the
+       same height as the Alan Lee Hobbit and a 400-page spine to match. */
+    tall: 0.198,
+    spineRatio: 76 / 474 },
 ];
 
 /* Prop it on the foot of the lamp: handle down on the desk, glass end
@@ -1731,8 +2217,10 @@ function buildBookshelf(root){
 
     let bb = new THREE.Box3().setFromObject(m);
     let sz = bb.getSize(new THREE.Vector3());
-    /* every book a slightly different height, or it reads as wallpaper */
-    const want = 0.150 + ((i * 5) % 4) * 0.016;
+    /* every book a slightly different height, or it reads as wallpaper.
+       A book may name its own height instead, for the ones where the
+       real edition is a known size next to its neighbour. */
+    const want = b.tall || (0.150 + ((i * 5) % 4) * 0.016);
     m.scale.multiplyScalar(want / sz.y);
     /* a book may declare its real thickness-to-height. Local y is the
        thickness, so this thins the board stack without touching the
@@ -1757,9 +2245,13 @@ function buildBookshelf(root){
        model's leather; the rest keep the leather they came with */
     if (b.img) dressBook(m, b);
     m.userData.book = b;
-    m.userData.homeZ = m.position.z;
-    m.userData.homeY = m.position.y;
-    m.userData.homeRY = m.rotation.y;
+    m.userData.homePos = m.position.clone();
+    m.userData.homeQuat = m.quaternion.clone();
+    /* the way out of the row: straight forward off the shelf, and a
+       little up. The flight bends through this before it heads for
+       the camera, so a book never swings sideways through the two
+       standing next to it. */
+    m.userData.viaPos = m.position.clone().add(new THREE.Vector3(0, 0.018, 0.20));
     m.userData.out = 0;
     BOOKS.push(m);
     x += sz.x + 0.006;
@@ -1811,18 +2303,43 @@ function buildDeskThings(){
    going black, and the desk lamp as a warm accent you can see the
    source of. */
 const sun = new THREE.DirectionalLight(0xffdcae, 3.0);   /* late afternoon */
-sun.position.set(-3.4, 2.9, WIN_Z + 0.9);
-sun.target.position.set(DESK_X, 0.6, DESK_Z + 0.2);
+/* Aimed, not guessed. With a real hole in the wall the sun's angle
+   decides where the patch of daylight lands, and the first honest
+   version of this put it on the floor behind the desk where nothing
+   can see it. Traced back the other way instead: the patch should
+   cross the book spines on the hutch, so the ray has to leave the
+   centre of the glass, clear the left end of the desk, and come down
+   on the shelf. That is a twelve degree sun, which is the hour this
+   room has always claimed to be set at. */
+sun.target.position.set(1.83, 1.12, 0.20);              /* the shelf */
+sun.position.copy(sun.target.position)
+   .add(new THREE.Vector3(-5.03, 1.25, 3.02));          /* back up the ray */
 sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.mapSize.set(GFX.weak ? 1024 : 3072, GFX.weak ? 1024 : 3072);
 sun.shadow.camera.near = 0.3; sun.shadow.camera.far = 12;
-sun.shadow.camera.left = -3; sun.shadow.camera.right = 3;
-sun.shadow.camera.top = 3;   sun.shadow.camera.bottom = -2;
-sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.012; sun.shadow.radius = 3;
-/* a broad soft fill standing in for the sky through the glass */
-const skyFill = new THREE.RectAreaLight ? null : null;
+/* The frustum has to cover the whole room, not just the desk: anything
+   outside it is simply not in the shadow map and comes back fully lit,
+   which the first pass at this turned into a hard diagonal wedge of
+   sunlight across the wall behind the chair. So keep the coverage and
+   buy the sharpness back from the map size instead. */
+sun.shadow.camera.left = -3.0; sun.shadow.camera.right = 3.0;
+sun.shadow.camera.top = 2.6;   sun.shadow.camera.bottom = -2.4;
+sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.010; sun.shadow.radius = 2.2;
+
+/* Cool sky bounce off the wall behind the chair, filling the side of
+   everything the sun cannot reach without ever casting a second shadow. */
 const bounce = new THREE.DirectionalLight(0xbfd2d8, 0.5);
 bounce.position.set(2.2, 1.6, 3.0);
+
+/* The kicker, and the single thing that makes the room read as three
+   dimensional: a cool light raking along the wall from the window end,
+   high and behind, so the top edge of the hutch, the shoulders of the
+   books and the leaves of the plant all pick up a thin bright line and
+   separate from the wallpaper instead of melting into it. */
+const rim = new THREE.DirectionalLight(0xcfe3f2, 0.9);
+rim.position.set(-1.2, 2.5, -1.4);
+rim.target.position.set(DESK_X, DESK_Y + 0.35, DESK_Z);
+
 const amb = new THREE.HemisphereLight(0xd9e2dd, 0x4a3b2a, 0.55);
 /* kept as a soft warm fill on the left of the desk. The lamp's own
    spot, added in lightTheLamp, is what actually reads as the lamp. */
@@ -1830,7 +2347,12 @@ const bulb = new THREE.PointLight(0xffc98a, 2.2, 1.5, 2.2);
 bulb.position.set(DESK_X - 0.52, DESK_Y + 0.34, DESK_Z - 0.10);
 const screen = new THREE.PointLight(0xbfe4ff, 0.5, 0.9, 2.0);
 screen.position.set(DESK_X, DESK_Y + 0.16, DESK_Z - 0.02);
-scene.add(sun, sun.target, bounce, amb, bulb, screen);
+scene.add(sun, sun.target, bounce, rim, rim.target, amb, bulb, screen);
+
+/* Air. A room this size needs almost none of it, but a little warm haze
+   means the far corner reads as further away than the near one, which is
+   most of what depth is. */
+scene.fog = new THREE.FogExp2(0x20160f, 0.055);
 
 /* ── atmosphere ───────────────────────────────────────────────────
    Two cheap things that do most of the work of making a room feel like
@@ -1856,6 +2378,93 @@ function buildDust(){
   dust.userData.base = pos.slice();
   scene.add(dust);
 }
+/* ── the shaft ────────────────────────────────────────────────────
+   The one thing a room with a low sun in it needs and cannot fake with
+   lights: the air between the window and the floor lighting up.
+
+   The usual trick is a stack of transparent cards, which works only
+   until you look along them and they turn into a set of lines. This is
+   the window aperture swept along the sun's own direction into a box,
+   and the fragment shader walks the view ray through that box and adds
+   up how much of it is inside. That is correct from every angle, it is
+   one draw call, and because depth testing is on, the desk and the
+   chair cut into it the way they should.
+
+   It is deliberately faint. The dust doing its slow drift through the
+   same volume is what sells it; the shaft on its own reads as a prop. */
+let SHAFT = null;
+function buildShaft(){
+  const dir = new THREE.Vector3().subVectors(sun.target.position, sun.position).normalize();
+  const L = 3.7;
+  /* a unit box with its z running 0..1 away from the glass */
+  const g = new THREE.BoxGeometry(1, 1, 1).translate(0, 0, 0.5);
+  const m = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, depthTest: true,
+    blending: THREE.AdditiveBlending, side: THREE.FrontSide,
+    uniforms: {
+      uCam:     { value: new THREE.Vector3() },
+      uColor:   { value: new THREE.Color(0xffd9a4) },
+      /* There is no scene depth here to integrate against, so a fragment
+         adds up the whole segment even where the desk is standing in the
+         middle of it. Keeping the shaft faint and letting it die back
+         before it gets that far is what keeps that from showing. */
+      uDensity: { value: 0.38 },
+    },
+    vertexShader: `
+      varying vec3 vLocal;
+      void main(){ vLocal = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+    `,
+    fragmentShader: `
+      uniform vec3  uCam;
+      uniform vec3  uColor;
+      uniform float uDensity;
+      varying vec3  vLocal;
+
+      /* how much shaft is at a point inside the box: feathered across
+         the beam, eased in at the glass, dying out down the room */
+      float dens(vec3 p){
+        vec2 q = abs(p.xy) * 2.0;
+        float across = (1.0 - smoothstep(0.50, 1.0, q.x)) * (1.0 - smoothstep(0.50, 1.0, q.y));
+        return across * smoothstep(0.0, 0.08, p.z) * (1.0 - smoothstep(0.16, 0.66, p.z));
+      }
+
+      void main(){
+        vec3 ro = uCam;
+        vec3 rd = normalize(vLocal - ro);
+        vec3 lo = vec3(-0.5, -0.5, 0.0), hi = vec3(0.5, 0.5, 1.0);
+        vec3 t1 = (lo - ro) / rd, t2 = (hi - ro) / rd;
+        vec3 tn = min(t1, t2), tf = max(t1, t2);
+        float tEnter = max(max(tn.x, tn.y), max(tn.z, 0.0));
+        float tExit  = min(min(tf.x, tf.y), tf.z);
+        float seg = tExit - tEnter;
+        if (seg <= 0.0) discard;
+
+        float acc = 0.0;
+        for (int i = 0; i < 8; i++){
+          float f = (float(i) + 0.5) / 8.0;
+          acc += dens(ro + rd * (tEnter + seg * f));
+        }
+        float a = clamp(acc / 8.0 * seg * uDensity, 0.0, 1.0);
+        gl_FragColor = vec4(uColor * a, a);
+      }
+    `,
+  });
+  SHAFT = new THREE.Mesh(g, m);
+  SHAFT.scale.set(WIN_W * 1.02, WIN_H * 0.94, L);
+  SHAFT.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), dir);
+  SHAFT.position.set(0.03, SILL_Y + WIN_H / 2, WIN_Z);
+  SHAFT.renderOrder = 4;
+  SHAFT.frustumCulled = false;
+  scene.add(SHAFT);
+}
+const _shaftCam = new THREE.Vector3();
+function stepShaft(){
+  if (!SHAFT) return;
+  _shaftCam.copy(camera.position);
+  SHAFT.worldToLocal(_shaftCam);
+  SHAFT.material.uniforms.uCam.value.copy(_shaftCam);
+}
+
 function stepDust(t){
   if (!dust) return;
   const pos = dust.geometry.attributes.position.array;
@@ -1880,13 +2489,21 @@ function stepDust(t){
    the only thing in here that changes is what you do to the lamp. */
 function paintTheme(){
   scene.background = new THREE.Color(0x141b1e);
-  sun.intensity    = 1.35;      /* low warm daylight through the window */
-  bounce.intensity = 0.22;
-  amb.intensity    = 0.26;
-  bulb.intensity   = 1.1;
-  screen.intensity = 1.25;      /* the laptop lights your hands */
+  /* The rig is a key, a fill, a kicker and two practicals, and the whole
+     point of the grade is that these can be set for shape rather than for
+     exposure. The sun is nearly twice what it was and the ambient nearly
+     half: the room is lit from the window, not from everywhere. */
+  sun.intensity    = 1.80;      /* low warm daylight through the window */
+  bounce.intensity = 0.30;
+  rim.intensity    = 0.85;
+  amb.intensity    = 0.34;      /* enough that no shadow goes to black */
+  bulb.intensity   = 1.25;
+  screen.intensity = 1.75;      /* the laptop lights your hands */
   MAT.sky.color.setHex(0xe8d7b8);
-  renderer.toneMappingExposure = 1.16;
+  /* the no-post path has no grade to pull the exposure back, and the rig
+     it is lighting is the brighter one, so it gets a lower stop */
+  renderer.toneMappingExposure = 0.98;
+  if (gradePass) gradePass.uniforms.uExposure.value = 1.22;
   /* keep the environment map well down: at full strength it flattens
      everything into daylight and the lamp cannot read against it */
   scene.traverse(n => {
@@ -1896,8 +2513,8 @@ function paintTheme(){
   });
   if (dust) dust.material.opacity = 0.42;
   if (LAMP_SPOT){
-    LAMP_SPOT.intensity = LAMP_ON ? 5.2 : 0;
-    LAMP_SPOT.userData.fil.intensity = LAMP_ON ? 1.15 : 0;
+    LAMP_SPOT.intensity = LAMP_ON ? 7.2 : 0;
+    LAMP_SPOT.userData.fil.intensity = LAMP_ON ? 1.7 : 0;
     LAMP_GLOW.material.opacity = LAMP_ON ? 0.8 : 0;
   }
 }
@@ -2255,6 +2872,32 @@ function shadeMouth(){
   return n ? sum.multiplyScalar(1 / n) : bb.getCenter(new THREE.Vector3());
 }
 
+/* Frontmost point on the body, a third of the way up: past the base, below
+   the arm. The pin sits just proud of it so it never sinks into the brass. */
+function lampShaft(){
+  const bb = new THREE.Box3().setFromObject(LAMP);
+  /* Height is chosen, not searched. Widening the band and taking the
+     frontmost vertex just snapped back to the shaft's widest flare every
+     time, so the marker would not move up. Instead: fix the height, then
+     look only in a thin slab around it for the near face. */
+  const h  = bb.max.y - bb.min.y;
+  const at = bb.min.y + h * 0.44;
+  const lo = at - h * 0.03, hi = at + h * 0.03;
+  const v = new THREE.Vector3();
+  let x = 0, z = -1e9;
+  LAMP.traverse(m => {
+    if (!m.isMesh) return;
+    const pa = m.geometry.attributes.position;
+    for (let i = 0; i < pa.count; i++){
+      v.fromBufferAttribute(pa, i).applyMatrix4(m.matrixWorld);
+      if (v.y < lo || v.y > hi) continue;
+      if (v.z > z){ z = v.z; x = v.x; }
+    }
+  });
+  if (z < -1e8) return shadeMouth();
+  return new THREE.Vector3(x, at, z + 0.012);
+}
+
 function lightTheLamp(){
   const head = shadeMouth();
   /* aim at the near side of the desk, which is where a task lamp points:
@@ -2287,8 +2930,54 @@ function lightTheLamp(){
   fil.position.copy(LAMP_GLOW.position);
   scene.add(fil);
   LAMP_SPOT.userData.fil = fil;
-  P.lamp = head.clone();
+  /* on the column, not up on the shade. At the shade mouth it read as
+     floating off the top of the lamp, and it half covered the one part that
+     visibly changes when you switch it on. Aiming at the lamp's axis instead
+     was no better: the brass shaft is thin and set back from LAMP_AT, so the
+     marker still hung in the air beside it. So find the shaft the way
+     shadeMouth finds the shade, by looking at the model: take the vertices a
+     third of the way up and use the one nearest the viewer. */
+  P.lamp = lampShaft();
   paintTheme();
+}
+
+/* ── the jersey ───────────────────────────────────────────────────
+   "SpringBok - Rugby Jersey" (https://skfb.ly/6SBPP) by OmegaRedZA,
+   CC BY 4.0.
+
+   On the back wall to the right of the desk, which is the one piece
+   of wall the roll-top does not reach. Click it for the World Cup. */
+const JERSEY_GLB = '/models/jersey.glb';
+function loadJersey(){
+  return new Promise(res => GLTF.load(JERSEY_GLB, g => {
+    const o = g.scene;
+    o.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
+    o.updateMatrixWorld(true);
+
+    let bb = new THREE.Box3().setFromObject(o);
+    let sz = bb.getSize(new THREE.Vector3());
+    o.scale.setScalar(0.54 / Math.max(sz.x, sz.y));
+    o.updateMatrixWorld(true);
+
+    bb = new THREE.Box3().setFromObject(o);
+    sz = bb.getSize(new THREE.Vector3());
+    const c = bb.getCenter(new THREE.Vector3());
+    /* flat to the back wall, right of where the desk ends */
+    const x = (DESK_X + DESK_W / 2) + 0.33;
+    const y = 1.14;
+    const z = sz.z / 2 + 0.02;
+    o.position.set(x - c.x, y - c.y, z - c.z);
+    ROOM.add(o);
+    o.updateMatrixWorld(true);
+
+    const fb = new THREE.Box3().setFromObject(o);
+    /* on the chest, not up by the hanger. Near the top it sat above the
+       seated view's upper edge and the frustum test culled it, so the
+       jersey looked like the one thing with no marker on it. */
+    P.jersey = new THREE.Vector3(x, y + 0.02, fb.max.z + 0.03);
+    P.jerseyAim = new THREE.Vector3(x, y, fb.max.z);
+    res(o);
+  }, undefined, () => res(null)));
 }
 
 /* ── the tape recorder ────────────────────────────────────────────
@@ -2341,6 +3030,48 @@ function loadTape(){
 const ZIPPO_GLB = '/models/zippo.glb';
 let ZIPPO = null, ZIPPO_LID = null, ZIPPO_HOME = 0, ZIPPO_OPEN = false;
 let FLAME = null, FLAME_LIGHT = null;
+
+/* ── the cheat light on the lighter ───────────────────────────────
+   The engraving is on the flat of the case, and the flat of the case
+   points at the chair, which is the one direction nothing in this room
+   lights from: the sun comes through the window behind it and the lamp
+   is off to the side, so the poem sat in its own shade and you had to
+   take it on trust that it was there.
+
+   So this is a light that only exists for one shot. It lives just off
+   the camera's shoulder, it follows the camera so the face you are
+   looking at is always the face it is on, and it is at zero until the
+   lighter is the thing you are looking at. A photographer would call it
+   a fill card and think nothing of it. */
+let ZIPPO_KEY = null, ZIPPO_KEY_AT = 0;
+const ZIPPO_KEY_I = 3.8;   /* bright enough to read at the flame's trough */
+function buildZippoKey(){
+  ZIPPO_KEY = new THREE.SpotLight(0xfff1e0, 0, 0.62, 0.58, 0.95, 1.0);
+  ZIPPO_KEY.castShadow = false;
+  ZIPPO_KEY.target.position.set(0, 0, 0);
+  scene.add(ZIPPO_KEY, ZIPPO_KEY.target);
+}
+const _zkTo = new THREE.Vector3(), _zkSide = new THREE.Vector3(), _zkUp = new THREE.Vector3(0, 1, 0);
+function stepZippoKey(){
+  if (!ZIPPO_KEY) return;
+  const aim = P.zippoAim || P.zippo;
+  const want = (aim && openSpot && openSpot.id === 'zippo') ? ZIPPO_KEY_I : 0;
+  ZIPPO_KEY_AT += (want - ZIPPO_KEY_AT) * 0.10;
+  ZIPPO_KEY.intensity = ZIPPO_KEY_AT;
+  if (ZIPPO_KEY_AT < 0.01 || !aim) return;
+  /* off the shoulder rather than dead on: straight down the lens puts
+     one flat specular over the whole case and the text disappears into
+     it, where a little to the side keeps the brass bright and leaves
+     the lettering to read against it */
+  _zkTo.copy(camera.position).sub(aim).normalize();
+  _zkSide.crossVectors(_zkUp, _zkTo).normalize();
+  ZIPPO_KEY.position.copy(aim)
+    .addScaledVector(_zkTo, 0.155)
+    .addScaledVector(_zkUp, 0.055)
+    .addScaledVector(_zkSide, 0.075);
+  ZIPPO_KEY.target.position.copy(aim);
+  ZIPPO_KEY.target.updateMatrixWorld();
+}
 const WICK = new THREE.Vector3();
 
 function loadLighter(){
@@ -2439,6 +3170,7 @@ function buildFlame(){
   FLAME_LIGHT = new THREE.PointLight(0xffb057, 0, 0.45, 2.0);
   FLAME_LIGHT.position.copy(WICK).add(new THREE.Vector3(0, 0.016, 0));
   scene.add(FLAME_LIGHT);
+  buildZippoKey();
 }
 
 function stepFlame(t){
@@ -2511,23 +3243,35 @@ const DECK_GLB = '/models/turntable.glb';
 /* The crate. One line each: what it is called, and the Spotify URI it
    puts on. Anything in here shows up as a record you can pick. */
 const RECORDS = [
-  { t:'Working in The Magnus Archives', by:'playlist',            art:'magnus',
-    uri:'spotify:playlist:7jWsjDQepOPPB98EdRPueg' },
   { t:'In case I make it,',             by:'Will Wood',           art:'incase',
+    g:['art rock','cabaret','chamber pop'],
     uri:'spotify:album:0O6onBuhBVzHtJb9bk4rOV' },
+  { t:'Working in The Magnus Archives', by:'playlist',            art:'magnus',
+    g:['dark ambient','horror score','drone'],
+    uri:'spotify:playlist:7jWsjDQepOPPB98EdRPueg' },
   { t:'Puberty 2',                      by:'Mitski',              art:'puberty2',
+    g:['indie rock','art pop','noise pop'],
     uri:'spotify:album:4Coa8Eb9SzjrkwWEom963Q' },
   { t:'Hawaii: Part II',                by:'Miracle Musical',     art:'hawaii2',
+    g:['psych pop','art rock','experimental'],
     uri:'spotify:album:1CbtBQqibzdxhmpiLD7vzN' },
   { t:'Disco Elysium',                  by:'Sea Power',           art:'disco',
+    g:['post rock','chamber','soundtrack'],
     uri:'spotify:album:5IhBwGYrQotmDvfLcdIj8R' },
   { t:'Worthless Highs',                by:'Homestyle Dinner Rolls', art:'worthless',
+    g:['hyperpop','digicore','breakcore'],
     uri:'spotify:album:57Rsbf3XQE2S3fTbSMfZs1' },
 ];
 
 let DECK = null, DISC = null, ARM = null, LID = null;
 let DISC_HOME = null, DISC_ON = new THREE.Vector3(), ARM_HOME = 0, LID_HOME = 0;
 let SLEEVE = null, SLEEVE_HOME = 0;
+/* the sleeve's rest pose, and where it goes when it is presenting the
+   record to you: a point in front of the camera, worked out at the
+   moment you pick, because that is when we know where you are sitting */
+let SLEEVE_REST = null, SLEEVE_SHOW = null, SLEEVE_QREST = null, SLEEVE_QSHOW = null;
+let outOfCrate = -1;           /* which sleeve is currently out of the stack */
+let SLEEVE_MAT = null;
 let deckSpin = 0, nowPlaying = -1, lastPick2 = 0;
 
 function loadDeck(){
@@ -2553,7 +3297,7 @@ function loadDeck(){
     bb = new THREE.Box3().setFromObject(o);
     const c = bb.getCenter(new THREE.Vector3());
     const S = HUTCH_SURF || DESK_SURF;
-    const x = S.x0 + 0.20, z = (S.z0 + S.z1) / 2;
+    const x = S.x0 + 0.20, z = (S.z0 + S.z1) / 2 + 0.07;   /* forward, off the back of the hutch */
     o.position.set(x - c.x, S.y - db.min.y, z - c.z);
     ROOM.add(o);
     o.updateMatrixWorld(true);
@@ -2595,7 +3339,20 @@ function loadDeck(){
          to come out of the sleeve. */
       DISC.scale.setScalar(2.2);
       DISC.rotation.set(-Math.PI / 2, 0, 0);       /* it is modelled upright */
-      DISC_ON.copy(DISC.position);                 /* it is authored on the spindle */
+
+      /* THE SPINDLE, in the deck's own space, so it survives the deck
+         being moved. Measured off a calibrated top-down render of the
+         platter: a bounding box is no good here because it takes in the
+         lid, the case and the speakers, and the centre of all that is a
+         point in mid air over the middle of the player, which is
+         exactly where the record used to hang. */
+      const SPINDLE = new THREE.Vector3(26.656, 9.933, 4.277);
+      DISC.updateMatrixWorld(true);
+      const onPlatter = DECK.localToWorld(SPINDLE.clone());
+      onPlatter.y += 0.002;                        /* the record's own thickness */
+      const centreNow = new THREE.Box3().setFromObject(DISC).getCenter(new THREE.Vector3());
+      DISC_ON.copy(DISC.position).add(
+        DISC.parent.worldToLocal(onPlatter).sub(DISC.parent.worldToLocal(centreNow)));
       /* home is inside the sleeve, off to the side */
       const sl = o.getObjectByName('album_sleeve');
       if (sl){
@@ -2609,44 +3366,418 @@ function loadDeck(){
       }
       DISC.position.copy(DISC_HOME);
       SLEEVE = sl;
-      if (sl) SLEEVE_HOME = sl.rotation.x;
+      if (sl){
+        SLEEVE_HOME  = sl.rotation.x;
+        SLEEVE_REST  = sl.position.clone();
+        SLEEVE_QREST = sl.quaternion.clone();
+        sl.traverse(n => { if (n.isMesh && !SLEEVE_MAT) SLEEVE_MAT = n.material; });
+      }
     }
 
     /* aim at the DECK, not the whole model: the sleeve lies out to the
        side and dragged the centre of the shot off with it */
     const db2 = new THREE.Box3().setFromObject(deck0);
     const dc = db2.getCenter(new THREE.Vector3());
-    P.deck    = new THREE.Vector3(dc.x, db2.max.y + 0.075, dc.z);
-    P.deckAim = new THREE.Vector3(dc.x, dc.y + 0.02, dc.z);
+    buildLeaningCrate();
+    /* aimed a little left of the deck's own centre so the leaning crate
+       is in the shot with it rather than off the edge of the frame */
+    P.deck    = new THREE.Vector3(dc.x - 0.05, db2.max.y + 0.075, dc.z);
+    P.deckAim = new THREE.Vector3(dc.x - 0.07, dc.y + 0.02, dc.z);
     res(o);
   }, undefined, () => res(null)));
 }
 
+/* The 3D sleeve wears the record you picked. Same six files the crate
+   uses, so there is nothing new to ship. */
+const sleeveTex = {};
+let dressed = -1;
+function albumTexture(i){
+  const art = RECORDS[i].art;
+  if (!sleeveTex[art]){
+    /* The sleeve's own texture is an ATLAS: each face gets a QUARTER of
+       the sheet, which is why a full-bleed album cover dropped straight
+       on it showed only a corner.
+
+       This is the +Z island. +Z is the face that lies UPWARDS when the
+       sleeve is at rest, which is the front of the cover. u runs right
+       to left across it, hence the negative repeat anchored on U1; both
+       stay inside 0..1 across the island so nothing clamps. */
+    const U0 = 0.466, U1 = 0.979, V0 = 0.020, V1 = 0.532;
+    const t = new THREE.TextureLoader().load(`/about/media/sleeves/${art}.jpg`,
+                                             () => startRoom());
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 8;
+    t.flipY = false;                 /* glTF uv convention */
+    t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+    t.repeat.set(-1 / (U1 - U0), 1 / (V1 - V0));
+    t.offset.set(U1 / (U1 - U0), -V0 * t.repeat.y);
+    sleeveTex[art] = t;
+  }
+  return sleeveTex[art];
+}
+
+function dressSleeve(i){
+  if (!SLEEVE_MAT || i < 0) return;
+  SLEEVE_MAT.map = albumTexture(i);
+  SLEEVE_MAT.needsUpdate = true;
+}
+
+/* ── the crate ─────────────────────────────────────────────────────
+   Six sleeves that live leaning on the hutch beside the deck, come up
+   into a 2x3 grid in front of you when you open the player, and leave
+   one behind when you pick it.
+
+   Every move is an ARC: each sleeve lifts clear before it travels and
+   sets back down at the far end. Straight lerps dragged them through
+   the deck and the bottle, which is what looked wrong. */
+const CRATE = [];
+let crateMode = 'shelf';        /* shelf | grid | chosen */
+let chosen = -1;
+
+function buildLeaningCrate(){
+  if (!SLEEVE || !HUTCH_SURF || CRATE.length) return;
+  const ws = SLEEVE.getWorldScale(new THREE.Vector3());
+  const LEAN = 0.30;
+  /* Built from scratch, not as a turn applied to the sleeve's resting
+     pose: that pose carries the deck's own yaw and the model's Z-up, so
+     anything multiplied onto it came out skewed into the wall. The front
+     face is the node's local +Z, and the art is upright when local +Y is
+     world up, which is what a lookAt with a world up vector gives. */
+  const dir = new THREE.Vector3(0, Math.sin(LEAN), Math.cos(LEAN));
+  const stand = new THREE.Quaternion().setFromRotationMatrix(
+    new THREE.Matrix4().lookAt(new THREE.Vector3(), dir.clone().negate(),
+                               new THREE.Vector3(0, 1, 0)));
+  RECORDS.forEach((r, i) => {
+    const m = SLEEVE.clone(true);
+    m.traverse(n => {
+      if (!n.isMesh) return;
+      n.material = n.material.clone();
+      n.material.map = albumTexture(i);
+      n.material.transparent = true;
+      n.material.needsUpdate = true;
+      n.castShadow = true; n.receiveShadow = true;
+    });
+    m.scale.copy(ws);
+    m.quaternion.copy(stand);
+    m.position.set(0.88 + i * 0.004, 0, 0.115 + i * 0.016);
+    ROOM.add(m);
+    /* stand it ON the shelf: the node's origin is not its bottom edge,
+       so the height is measured rather than assumed */
+    m.updateMatrixWorld(true);
+    m.position.y += HUTCH_SURF.y - new THREE.Box3().setFromObject(m).min.y;
+    m.updateMatrixWorld(true);
+    CRATE.push({ mesh: m, i,
+      shelfP: m.position.clone(), shelfQ: m.quaternion.clone(), shelfS: m.scale.clone(),
+      gridP: null, gridQ: null, showP: null, showQ: null,
+      t: 0, fade: 1 });
+  });
+  SLEEVE.visible = false;      /* the model's own sleeve is never used */
+  buildCrateTags();
+  buildPlate();
+}
+
+/* Where the grid hangs and where the chosen one comes to. Worked out
+   when the player opens, because that is when we know where you are. */
+function layoutCrate(){
+  if (!CRATE.length) return;
+  const fwd = new THREE.Vector3();
+  camera.getWorldDirection(fwd);
+  const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
+  const up    = new THREE.Vector3().crossVectors(right, fwd).normalize();
+  /* Close enough to be in FRONT of the bottle and the books: at any
+     real distance the grid hung behind the things on the shelf and you
+     saw album covers peeping out from behind a gin bottle. Sized off
+     the camera's own field of view so it fills the frame whatever the
+     stage has done to the fov. */
+  const DIST = 0.33;
+  const mid  = camera.position.clone().addScaledVector(fwd, DIST);
+  const face = new THREE.Quaternion().setFromRotationMatrix(
+    new THREE.Matrix4().lookAt(camera.position, mid, new THREE.Vector3(0, 1, 0)));
+  const vH  = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * DIST;
+  const ROW = vH * 0.34, COL = ROW * 0.94;
+  const SLEEVE_W = 0.302;                       /* the model's own size */
+  const gridK = (vH * 0.30) / SLEEVE_W;
+  CRATE.forEach((c, i) => {
+    const col = i % 3, row = (i / 3) | 0;
+    c.gridP = mid.clone()
+      .addScaledVector(right, (col - 1) * COL)
+      .addScaledVector(up,    (0.5 - row) * ROW);
+    c.gridQ = face.clone();
+    c.gridS = c.shelfS.clone().multiplyScalar(gridK);
+    /* the one you picked comes closer and bigger */
+    c.showP = camera.position.clone().addScaledVector(fwd, DIST * 1.05);
+    c.showQ = face.clone();
+    c.showS = c.shelfS.clone().multiplyScalar(gridK * 2.0);
+  });
+  /* big enough to frame the whole 3x2 with room to breathe, and set
+     back from the covers so it reads as the thing behind them */
+  if (PLATE){
+    const sleeveW = SLEEVE_W * gridK;
+    PLATE.position.copy(camera.position).addScaledVector(fwd, DIST * 1.10);
+    PLATE.quaternion.copy(face);
+    /* snug: just enough to frame the six and their names. 2.05 tall
+       was a gross overcorrection for one row hanging over the edge. */
+    /* tall enough to hold the names under the bottom row, and dropped a
+       little so the whole thing sits centred on covers-plus-captions */
+    PLATE.scale.set((COL * 2 + sleeveW) * 1.24, (ROW + sleeveW) * 1.92, 1);
+    PLATE.position.addScaledVector(up, -(ROW + sleeveW) * 0.20);
+    PLATE_TOP.copy(PLATE.position).addScaledVector(up, PLATE.scale.y * 0.5);
+  }
+}
+
+function setCrateMode(mode){
+  crateMode = mode;
+  startRoom();
+}
+
+/* one eased pose per sleeve, lifted on an arc so nothing is dragged
+   through the deck on the way */
+const _cp = new THREE.Vector3();
+function stepCrate(dt){
+  if (!CRATE.length) return;
+  /* laid out against the camera EVERY frame it is up, not once when you
+     click: the camera is still flying to the deck at that moment, so a
+     one-shot layout put the grid where you used to be standing. */
+  if (crateMode !== 'shelf') layoutCrate();
+  let busy = false;
+  CRATE.forEach(c => {
+    const target = crateMode === 'shelf' ? 0
+                 : crateMode === 'grid'  ? 1
+                 : (c.i === chosen ? 2 : 1);
+    const wantFade = (crateMode === 'chosen' && c.i !== chosen) ? 0 : 1;
+    const step = dt / 1.15;
+    if (Math.abs(target - c.t) > 0.001){
+      c.t += Math.sign(target - c.t) * Math.min(step, Math.abs(target - c.t));
+      busy = true;
+    }
+    if (Math.abs(wantFade - c.fade) > 0.01){
+      c.fade += (wantFade - c.fade) * 0.09;
+      busy = true;
+    } else c.fade = wantFade;
+
+    if (!c.gridP) return;
+    const e = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
+    let A, B, u;
+    if (c.t <= 1){ A = c.shelfP; B = c.gridP; u = e(c.t); }
+    else          { A = c.gridP; B = c.showP; u = e(c.t - 1); }
+    _cp.lerpVectors(A, B, u);
+    /* the arc: up first, down last, so it clears whatever is between */
+    _cp.y += Math.sin(u * Math.PI) * 0.085;
+    c.mesh.position.copy(_cp);
+
+    const qA = c.t <= 1 ? c.shelfQ : c.gridQ;
+    const qB = c.t <= 1 ? c.gridQ  : c.showQ;
+    c.mesh.quaternion.copy(qA).slerp(qB, u);
+
+    const sA = c.t <= 1 ? c.shelfS : c.gridS;
+    const sB = c.t <= 1 ? c.gridS  : c.showS;
+    c.mesh.scale.lerpVectors(sA, sB, u);
+
+    c.mesh.visible = c.fade > 0.02;
+    c.mesh.traverse(n => { if (n.isMesh) n.material.opacity = c.fade; });
+  });
+  if (PLATE){
+    const want = crateMode === 'grid' ? 0.88 : 0;   /* the ground, not a tint */
+    PLATE.material.opacity += (want - PLATE.material.opacity) * 0.10;
+    PLATE.visible = PLATE.material.opacity > 0.01;
+    PLATE.material.color.setHex(0x0a0e13);          /* dark in both themes: the art sits on it */
+  }
+  const ready = crateSettled();
+  audioEl.classList.toggle('crate-ready', ready);
+  stepCrateTags(ready);
+  if (busy) startRoom();
+}
+
+/* ── the plate the covers stand on ─────────────────────────────────
+   A mesh, not a card: the covers are drawn in WebGL and the canvas is
+   beneath every DOM node, so anything in HTML lands in FRONT of them
+   however it is stacked. This sits in the scene, a little further from
+   you than the grid, and is simply behind them. */
+let PLATE = null;
+const PLATE_TOP = new THREE.Vector3();
+function buildPlate(){
+  if (PLATE) return;
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const g = c.getContext('2d');
+  g.fillStyle = '#fff';
+  g.beginPath();
+  if (g.roundRect) g.roundRect(10, 10, 492, 492, 54); else g.rect(10, 10, 492, 492);
+  g.fill();
+  const tex = new THREE.CanvasTexture(c);
+  PLATE = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0,
+                                  depthWrite: false, side: THREE.DoubleSide }));
+  PLATE.renderOrder = -2;
+  PLATE.visible = false;
+  scene.add(PLATE);
+}
+
+/* one name per cover, under it */
+const CRATE_TAGS = [];
+function buildCrateTags(){
+  const host = document.getElementById('crateTags');
+  if (!host || CRATE_TAGS.length) return;
+  RECORDS.forEach(r => {
+    const el = document.createElement('div');
+    el.className = 'crate-tag';
+    el.innerHTML = `<b>${r.t}</b><span>${r.by}</span>` +
+      `<i>${(r.g || []).map(x => `<em>${x}</em>`).join('')}</i>`;
+    host.appendChild(el);
+    CRATE_TAGS.push({ el, x: null, y: null, on: null });
+  });
+}
+
+const _tv = new THREE.Vector3(), _te = new THREE.Vector3();
+const WORLD_UP = new THREE.Vector3(0, 1, 0);
+function stepCrateTags(ready){
+  if (!CRATE_TAGS.length) return;
+  const head = document.getElementById('crateTitle');
+  if (head){
+    head.classList.toggle('show', !!ready);
+    if (ready && PLATE){
+      _tv.copy(PLATE_TOP).project(camera);
+      head.style.translate =
+        Math.round((_tv.x * 0.5 + 0.5) * vw()) + 'px ' +
+        Math.round((-_tv.y * 0.5 + 0.5) * vh() + 372) + 'px';
+    }
+  }
+  CRATE.forEach((c, i) => {
+    const T = CRATE_TAGS[i];
+    if (!T) return;
+    const on = ready && c.fade > 0.5;
+    if (on !== T.on){ T.on = on; T.el.classList.toggle('show', on); }
+    if (!on) return;
+    /* Under the cover's BOTTOM EDGE, worked out by projecting that edge
+       rather than guessing a pixel offset: the covers change size with
+       the fov and the fixed 64px had the titles sitting on the art. */
+    const half = 0.302 * (c.mesh.scale.x / c.shelfS.x) * 0.5;
+    _tv.copy(c.mesh.position).project(camera);
+    const x = Math.round((_tv.x * 0.5 + 0.5) * vw());
+    _te.copy(c.mesh.position).addScaledVector(WORLD_UP, -half).project(camera);
+    const y = Math.round((-_te.y * 0.5 + 0.5) * vh()) + 12;
+    if (x !== T.x || y !== T.y){
+      T.x = x; T.y = y;
+      T.el.style.translate = x + 'px ' + y + 'px';
+    }
+  });
+}
+
+/* up only while the grid is up AND every cover has arrived */
+function crateSettled(){
+  return crateMode === 'grid' && CRATE.length > 0 && CRATE.every(c => c.t > 0.985);
+}
+
+/* the sleeve the record is currently coming out of */
+function heldSleeve(){ return chosen >= 0 && CRATE[chosen] ? CRATE[chosen].mesh : null; }
+
+/* clicking a sleeve in the grid is how you pick one */
+function sleeveUnder(){
+  if (crateMode !== 'grid' || !CRATE.length) return -1;
+  rayc.setFromCamera(ptr, camera);
+  const hits = rayc.intersectObjects(CRATE.filter(c => c.mesh.visible).map(c => c.mesh), true);
+  if (!hits.length) return -1;
+  let n = hits[0].object;
+  while (n && !CRATE.some(c => c.mesh === n)) n = n.parent;
+  const c = CRATE.find(x => x.mesh === n);
+  return c ? c.i : -1;
+}
+
 /* the record travels, the platter turns, the arm comes over */
+const DECK_SECONDS = 5.2;      /* the whole putting-a-record-on move */
+let lifting = false;           /* taking the old one off before the new goes on */
 let discT = 0;
 function stepDeck(dt){
   if (!DISC) return;
   /* on when something is cued or playing, off otherwise */
-  const want = (nowPlaying >= 0 || cueing >= 0) ? 1 : 0;
+  /* lifting: the old record goes back in its sleeve before the new one
+     comes out, so you get the whole move every time, not just the first */
+  if (lifting && discT <= 0.02) lifting = false;
+  const want = lifting ? 0 : (nowPlaying >= 0 || cueing >= 0) ? 1 : 0;
   const moved = Math.abs(want - discT) > 0.001;
   if (moved){
-    discT += (want - discT) * 0.07;
-    /* the lid gets out of the way first, then the record travels, so
-       the disc is never passing through a closed cover */
-    const lidT  = Math.min(1, discT / 0.35);
-    const discM = Math.max(0, (discT - 0.3) / 0.7);
-    if (LID) LID.rotation.x = LID_HOME - lidT * 1.15;
-    if (SLEEVE) SLEEVE.rotation.x = SLEEVE_HOME - Math.sin(Math.min(1, discT / 0.5) * Math.PI) * 0.55;
-    DISC.position.lerpVectors(DISC_HOME, DISC_ON, discM);
-    /* it lifts clear on the way rather than sliding through the sleeve */
-    DISC.position.y += Math.sin(discM * Math.PI) * 6;
-    if (ARM) ARM.rotation.y = ARM_HOME + discT * -0.42;
+    /* A constant rate over DECK_SECONDS rather than an exponential
+       chase. The chase was quick where it should have been slow — most
+       of the move happened in the first half second — and then crawled
+       at the end where nothing was left to watch. The easing that makes
+       it feel unhurried is inside each segment below. */
+    /* taking one off is brisk, putting one on is the ceremony — the
+       same as it is at a real deck */
+    const rate = want > discT ? DECK_SECONDS : DECK_SECONDS / 2.8;
+    discT += (want > discT ? 1 : -1) * dt / rate;
+    discT = Math.max(0, Math.min(1, discT));
+
+    /* The whole move, in order: the lid lifts, the sleeve stands up and
+       comes out in front of you, the record slides up out of it,
+       crosses to the platter as the sleeve goes back to its place, and
+       the arm comes over last. Each step is a window on the same one
+       number so they overlap instead of queueing. */
+    const ease = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
+    const seg  = (a, b) => ease((discT - a) / (b - a));
+
+    if (LID) LID.rotation.x = LID_HOME - seg(0, 0.22) * 1.15;
+
+    const out   = seg(0.30, 0.55);          /* sliding out of the cover */
+    const cross = seg(0.55, 0.90);          /* crossing to the platter */
+
+    /* nothing to see until it is actually coming out of the cover, and
+       nothing at all unless you are at the deck or it is on the platter:
+       a record hanging in mid air across the room is not a record. */
+    const atDeck = !!(openSpot && openSpot.overlay === 'audio');
+    DISC.visible = discT > 0.285 && (atDeck || discT > 0.92);
+
+    /* The record comes out of whichever sleeve is being held out, along
+       that sleeve's own axes: up out of the open edge, behind the face
+       you are looking at, so the cover hides it until it clears. */
+    const held = heldSleeve();
+    if (held){
+      held.updateMatrixWorld(true);
+      const sQ = held.getWorldQuaternion(new THREE.Quaternion());
+      const sP = held.getWorldPosition(new THREE.Vector3());
+      const edge   = new THREE.Vector3(0, 1, 0).applyQuaternion(sQ);
+      const behind = new THREE.Vector3(0, 0, -1).applyQuaternion(sQ);
+      /* The cover you are shown is a fraction of its real size, so the
+         record has to be too, or a full-size 12in disc hangs over a
+         thumbnail sleeve like a dinner plate on a postcard. Everything
+         here is measured off the cover's CURRENT width and grows back
+         to the real thing by the time it reaches the platter. */
+      const sw = 0.302 * held.scale.x / CRATE[chosen].shelfS.x;
+      const wantD = 0.82 * sw;                      /* a record in its sleeve */
+      DISC.scale.setScalar(THREE.MathUtils.lerp(2.2 * wantD / 0.244, 2.2, cross));
+      const w = sP.clone()
+        .addScaledVector(edge,   0.66 * sw * out)
+        .addScaledVector(behind, 0.04 * sw);
+      DISC.position.copy(DISC.parent.worldToLocal(w)).lerp(DISC_ON, cross);
+      /* and it lifts on an arc rather than sliding through the deck */
+      DISC.position.y += Math.sin(cross * Math.PI) * 4.5;   /* an arc, not a slide through the deck */
+      const qInv  = DISC.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+      /* +PI/2, not -PI/2: the record goes down on the face that was
+         hidden in the sleeve, so the side you were shown stays up. */
+      const qFlat = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));
+      DISC.quaternion.copy(qInv.multiply(sQ)).slerp(qFlat, cross);
+    } else {
+      DISC.position.lerpVectors(DISC_HOME, DISC_ON, cross);
+    }
+    /* +0.30 on its own y lands the stylus 95mm out from the spindle,
+       which is the outer groove of this 244mm record. Solved against
+       the geometry rather than guessed: the arm rests at x = pi and
+       z = -pi, so its frame is flipped and the obvious sign swings it
+       off the record instead of onto it. */
+    if (ARM) ARM.rotation.y = ARM_HOME + discT * 0.30;
     startRoom();
   }
   /* the needle drops only once the record is actually down */
+  stepCrate(dt);
   if (cueing >= 0 && discT > 0.97) cueDone();
+  /* dress it as the lift finishes, so the cover you see coming back out
+     is the one you just chose rather than the one going away */
+  if (lifting && discT < 0.06 && cueing >= 0 && dressed !== cueing){
+    dressed = cueing; chosen = cueing; setCrateMode('chosen');
+  }
   if (nowPlaying >= 0 && discT > 0.92){
     deckSpin += dt * 3.49;            /* 33 and a third, near enough */
+    DISC.rotation.x = Math.PI / 2;    /* flat, whatever the ease left behind */
     DISC.rotation.z = deckSpin;       /* its own normal, once it is lying flat */
     startRoom();
   }
@@ -2893,6 +4024,14 @@ const SPOTS = [
   { id:'books', label:'what I read', at:() => P.books, stage:'seated',
     cam:() => closeUp(P.books, 0.40, 32), shelf:true },
 
+  { id:'jersey', label:'where I am from', at:() => P.jersey, stage:'seated',
+    /* shirt and hanger are 540mm top to hem. a 32 degree frame at 0.90 only
+       holds 516mm of it, which is why the hem kept running off the bottom,
+       and the drop tilt was pushing it further down. 1.25 leaves a quarter
+       of the frame as air. */
+    cam:() => offsetCloseUp(P.jerseyAim || P.jersey, 1.25, 32, 0.20, 0),
+    overlay:'rugby' },
+
   { id:'tape', label:'the tape', at:() => P.tape, stage:'seated',
     /* subject left, card right, like the radio and the lighter. A
        negative side puts it under the card, which is where it went. */
@@ -2937,7 +4076,7 @@ let toPos = camPos.clone(), toLook = camLook.clone(), toFov = WIDE.fov;
 /* the normal camera ease. the intro drops it to a crawl for one glide
    and puts it back, so arriving in the chair takes about a second and a
    half instead of the third of a second everything else moves in. */
-const HINT = 'click the laptop, the record player, the lighter';
+const HINT = 'please turn sound on for best experience, explore my desk!';
 const EASE = 0.07;
 let camEase = EASE, seated = false;
 
@@ -2972,11 +4111,38 @@ function showSound(where, lead){
   soundTag.classList.add('on');
   soundTag.classList.toggle('lead', !!lead);
 }
+const rugbyEl = document.getElementById('rugby');
 const macEl   = document.getElementById('mac');
 const audioEl = document.getElementById('audio');
 let overlay = null;
 
 function openPanel(spot){
+  /* One thing open at a time. Opening the lighter while the record
+     player's card was up left both of them stacked on top of each
+     other, which is unreadable and which is what the screenshot of the
+     poem printed over the tracklist was. */
+  /* UNCONDITIONAL. This used to be gated on openSpot being set, and
+     there are paths that leave a card on screen after openSpot has been
+     cleared — clicking bare desk closes the spot but the click can also
+     have come from the thing you were trying to open. Then the next
+     openPanel saw openSpot === null, skipped the clear, and you got the
+     poem printed over the tracklist. Nothing is gated now: whatever was
+     up goes, every time, and the music keeps playing regardless. */
+  if (openSpot !== spot){
+    /* And stop whatever the old one was SAYING. Switching straight from
+       the lighter to the tape never ran closePanel, so 'lighter' stayed
+       in the noisy set for good — after which every hushMusic(false)
+       bailed out on `noisy.size`, `hushing` stuck true, spotWasPlaying
+       stopped updating, and the whole priority system wedged. That is
+       the other half of the overlapping-cards bug. */
+    if (openSpot && openSpot.lighter) openLighter(false);
+    if (openSpot && openSpot.tape)    playTape(false);
+    panel.classList.remove('open');
+    macEl.classList.remove('open', 'lit');
+    audioEl.classList.remove('open');
+    if (typeof rugbyEl !== 'undefined' && rugbyEl) rugbyEl.classList.remove('open');
+    overlay = null;
+  }
   openSpot = spot;
   if (spot.cam){
     const c = spot.cam();
@@ -2984,7 +4150,8 @@ function openPanel(spot){
   }
   if (spot.overlay){
     overlay = spot.overlay;
-    (overlay === 'mac' ? macEl : audioEl).classList.add('open');
+    if (spot.overlay === 'audio' && chosen < 0) setCrateMode('grid');
+    ({ mac:macEl, audio:audioEl, rugby:rugbyEl })[overlay].classList.add('open');
     if (overlay === 'mac') macEl.classList.add('lit');
     hint.textContent = 'have a look around';
   } else if (spot.toggle){
@@ -3014,14 +4181,22 @@ function openPanel(spot){
 }
 function closePanel(){
   if (!openSpot) return;
+  if (crateMode !== 'shelf' && nowPlaying < 0 && cueing < 0){ chosen = -1; setCrateMode('shelf'); }
   if (openSpot.lighter) openLighter(false);
   if (openSpot.tape) playTape(false);
   showSound(null);
   openSpot = null;
   panel.classList.remove('open');
+  macEl.classList.remove('open', 'lit');
+  audioEl.classList.remove('open');
   if (overlay){
-    macEl.classList.remove('open'); macEl.classList.remove('lit');
-    audioEl.classList.remove('open');
+    rugbyEl.classList.remove('open');
+    /* stop the rugby on the way out rather than leaving it talking to
+       an empty desk, and hand the record back */
+    if (overlay === 'rugby'){
+      try { if (rugbyReady) rugby.pauseVideo(); } catch (e) {}
+      hushMusic(false);
+    }
     /* the iframe is never touched on the way out. Reloading its src is
        what used to kill the track the moment you sat back, and a radio
        you have to stand next to is not a radio. */
@@ -3294,19 +4469,34 @@ const POEM_FADE = 1.6;        /* seconds of ramp at each end of a 64s clip */
 
 let poem = null, poemReady = false, poemTimer = 0;
 let spotCtl = null, spotWasPlaying = false;
+/* whatever of ours is making a noise right now. The music is hushed
+   while this has anything in it and handed back only when it empties,
+   which is what "the lighter and the tape take priority" has to mean
+   when both of them can be going at once. */
+const noisy = new Set();
+let hushing = false;
 
 /* Spotify's controller, so the music can be paused and put back */
 window.onSpotifyIframeApiReady = api => {
   const host = document.getElementById('spot');
   if (!host) return;
   api.createController(host, {
-    uri: RECORDS[0].uri, width:'100%', height:152
+    /* 152 is Spotify's COMPACT layout: a big cover header and barely two
+       rows of tracklist. It picks the layout from the height it is built
+       at, not from what CSS does to the iframe afterwards, which is why
+       stretching the iframe only stretched the header. 352 is the tall
+       one, where the tracklist is the point. */
+    uri: RECORDS[0].uri, width:'100%', height:352
   }, c => {
     spotCtl = c;
     buildCrate();
     c.addListener('playback_update', e => {
       const playing = !e.data.isPaused;
-      if (!lighterOpen()) spotWasPlaying = playing;
+      /* Do not learn a new "was it playing" while we are the ones who
+         paused it. This used to check the lighter only, so the TAPE's
+         own pause taught it spotWasPlaying = false and the music was
+         never handed back afterwards. */
+      if (!hushing) spotWasPlaying = playing;
       /* the badge belongs to whichever card is open and making noise */
       if (overlay === 'audio') showSound(playing ? audioEl : null);
       /* The record does NOT come off when the audio pauses. It used to,
@@ -3323,21 +4513,44 @@ window.onSpotifyIframeApiReady = api => {
 /* the tape. Unlike the poem it is not looped and not restarted: it
    keeps its place for the session, so leaning back in picks the tape
    up where it was rather than rewinding it. */
+const RUGBY_ID = 'sI1JHbSYaaA';
+let rugby = null, rugbyReady = false;
+
 const TAPE_ID = 'AdiUHYacaRI';
 const TAPE_IN = 63;            /* 1:03 */
-let tape = null, tapeReady = false, tapeStarted = false;
+let tape = null, tapeReady = false, tapeStarted = false, tapeWanted = false;
 
 function onYouTubeIframeAPIReady(){
+  rugby = new YT.Player('rugbyPlayer', {
+    videoId:RUGBY_ID,
+    playerVars:{ rel:0, playsinline:1, modestbranding:1 },
+    events:{
+      onReady: () => { rugbyReady = true; },
+      /* it has its own sound, so it takes the room the way the lighter
+         and the tape do, and gives it back when it stops */
+      onStateChange: e => {
+        if (e.data === YT.PlayerState.PLAYING) hushMusic(true);
+        else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) hushMusic(false);
+      }
+    }
+  });
   tape = new YT.Player('tape', {
     width:1, height:1, videoId:TAPE_ID,
     playerVars:{ start:TAPE_IN, controls:0, disablekb:1, playsinline:1, rel:0 },
-    events:{ onReady: () => { tapeReady = true; tape.setVolume(100); tape.pauseVideo(); } }
+    events:{ onReady: () => {
+      tapeReady = true; tape.setVolume(100); tape.pauseVideo();
+      /* if you opened the drawer before the player was up, honour it now */
+      if (tapeWanted) playTape(true);
+    } }
   });
   poem = new YT.Player('poem', {
     width:1, height:1, videoId:POEM_ID,
     playerVars:{ start:POEM_IN, controls:0, disablekb:1, playsinline:1, rel:0 },
     events:{
-      onReady: () => { poemReady = true; poem.setVolume(0); poem.pauseVideo(); },
+      onReady: () => {
+        poemReady = true; poem.setVolume(0); poem.pauseVideo();
+        if (ZIPPO_OPEN){ restartPoem(); clearInterval(poemTimer); poemTimer = setInterval(watchPoem, 250); }
+      },
       onStateChange: e => {
         /* if it ever runs past the clip on its own, put it back */
         if (e.data === YT.PlayerState.ENDED && ZIPPO_OPEN) restartPoem();
@@ -3370,13 +4583,21 @@ function tapeIsOn(){ return !!(openSpot && openSpot.tape); }
 
 /* anything of ours that is making a noise wants the music out of the
    way, and wants it back afterwards */
-function hushMusic(on){
+function hushMusic(on, who){
   if (on){
+    noisy.add(who);
+    hushing = true;
     if (spotCtl && spotWasPlaying){ try { spotCtl.pause(); } catch (e) {} }
     audioEl.classList.toggle('hushed', !!spotWasPlaying);
   } else {
+    noisy.delete(who);
+    if (noisy.size) return;          /* the other one still has the floor */
     audioEl.classList.remove('hushed');
-    if (spotCtl && spotWasPlaying) setTimeout(() => { try { spotCtl.resume(); } catch (e) {} }, 520);
+    const back = spotCtl && spotWasPlaying;
+    setTimeout(() => {
+      if (back){ try { spotCtl.resume(); } catch (e) {} }
+      hushing = false;
+    }, 520);
   }
 }
 
@@ -3384,9 +4605,17 @@ function hushMusic(on){
    Picking a record loads it and starts it. Picking the one already on
    takes it off. The animation and the audio are driven from the same
    nowPlaying index, so the disc is never spinning over silence. */
+/* The six covers in the room are the picker now, so there is no list
+   of them in the card. What stays is what is specific to the record
+   that is ON: what it is, the tracklist, and the way back to the six. */
 function buildCrate(){
+  const re = document.getElementById('repick');
+  if (re && !re.dataset.wired){
+    re.dataset.wired = '1';
+    re.addEventListener('click', e => { e.stopPropagation(); setBrowsing(true); });
+  }
   const crate = document.getElementById('crate');
-  if (!crate) return;
+  if (!crate){ paintCrate(); return; }
   crate.innerHTML = '';
   RECORDS.forEach((r, i) => {
     const b = document.createElement('button');
@@ -3399,7 +4628,7 @@ function buildCrate(){
       `<img src="/about/media/sleeves/${r.art}.jpg" alt="">` +
       `<span class="cue">cueing</span></span>` +
       `<b>${r.t}</b><span>${r.by}</span>`;
-    b.addEventListener('click', e => { e.stopPropagation(); pickRecord(i); });
+    b.addEventListener('click', e => { e.stopPropagation(); pickRecord(i); setBrowsing(false); });
     crate.appendChild(b);
   });
   paintCrate();
@@ -3409,7 +4638,23 @@ function paintCrate(){
     b.classList.toggle('on', i === nowPlaying);
     b.classList.toggle('cueing', i === cueing);
   });
+  /* An empty Spotify player sitting under the crate before you have
+     chosen anything is just a grey box. The crate is the menu; the
+     tracklist turns up once a record is actually on and playing. */
+  audioEl.classList.toggle('playing', nowPlaying >= 0);
+  audioEl.classList.toggle('picking', browsing || nowPlaying < 0);
+  const np = document.getElementById('nowPlaying');
+  if (np && nowPlaying >= 0){
+    const r = RECORDS[nowPlaying];
+    np.innerHTML = `<b>${r.t}</b><span>${r.by}</span>`;
+  }
 }
+
+/* the crate is a drawer you open, not something you are stuck looking
+   at. Once a record is on, the panel is the record and the tracklist,
+   with one way back to the shelf of six. */
+let browsing = false;
+function setBrowsing(on){ browsing = on; if (on) setCrateMode('grid'); paintCrate(); }
 
 /* Picking a record does not start the music. It starts the turntable.
    The disc has to come out of the sleeve, cross to the platter and
@@ -3427,9 +4672,15 @@ function pickRecord(i){
     startRoom();
     return;
   }
-  /* swapping records: lift the old one off first, then cue the new */
+  /* swapping records: lift the old one off first, then cue the new.
+     Without the lift, discT was already sitting at 1 and the whole
+     move was skipped from the second album onward. */
+  lifting = discT > 0.02;
   cueing = i;
   nowPlaying = -1;
+  /* only dress it now if nothing has to go away first; mid-lift the
+     cover is swapped in stepDeck once the old record is back inside */
+  if (!lifting){ dressed = i; chosen = i; setCrateMode('chosen'); }
   try { spotCtl.pause(); } catch (e) {}
   paintCrate();
   startRoom();
@@ -3440,6 +4691,10 @@ function cueDone(){
   const i = cueing;
   cueing = -1;
   nowPlaying = i;
+  /* the cover has done its job: back to the shelf with the others,
+     rather than hanging in front of you for the rest of the song */
+  CRATE.forEach(c => { c.fade = c.fade; });
+  setCrateMode('shelf');
   spotWasPlaying = true;
   lastPick2 = performance.now();
   try { spotCtl.loadUri(RECORDS[i].uri); spotCtl.play(); } catch (e) {}
@@ -3449,16 +4704,21 @@ function cueDone(){
 }
 
 function playTape(on){
-  if (!tapeReady) return;
+  /* The hush comes FIRST and never waits on the player. This used to
+     bail out at the top if the tape's YouTube player had not reported
+     ready, which meant the record player was not quietened at all —
+     you got Magnus over the music, or Magnus over silence. */
   if (on){
-    hushMusic(true);
+    hushMusic(true, 'tape');
+    if (!tapeReady){ tapeWanted = true; return; }
     /* first time in, start at 1:03; after that, carry on from wherever
        it was left */
     if (!tapeStarted){ tape.seekTo(TAPE_IN, true); tapeStarted = true; }
     tape.playVideo();
   } else {
+    tapeWanted = false;
     try { tape.pauseVideo(); } catch (e) {}
-    hushMusic(false);
+    hushMusic(false, 'tape');
   }
 }
 
@@ -3468,7 +4728,7 @@ function openLighter(on){
   if (!on && FLAME_LIGHT) FLAME_LIGHT.intensity = 0;
 
   if (on){
-    hushMusic(true);
+    hushMusic(true, 'lighter');
     if (poemReady){ poem.setVolume(0); restartPoem(); }
     clearInterval(poemTimer);
     poemTimer = setInterval(watchPoem, 250);
@@ -3483,7 +4743,7 @@ function openLighter(on){
         if (v <= 0){ clearInterval(fade); try { poem.pauseVideo(); } catch (e) {} }
       }, 60);
     }
-    hushMusic(false);
+    hushMusic(false, 'lighter');
   }
   startRoom();
 }
@@ -3513,7 +4773,7 @@ function stepLid(){
   [...macEl.querySelectorAll('.win')].forEach(w => wins.set(w.dataset.app, w));
   const dockBtns = [...macEl.querySelectorAll('.dock button[data-app]')];
   const appName  = macEl.querySelector('#macApp');
-  const TITLES = { safari:'Safari', notes:'Notes', finder:'Finder' };
+  const TITLES = { safari:'Safari', notes:'Notes', finder:'Finder', photos:'Photos' };
   let z = 10, front = null;
 
   const running = () => dockBtns.forEach(b =>
@@ -3675,32 +4935,114 @@ let lastPick = 0;
 canvas.addEventListener('pointermove', e => {
   ptr.x = (sx(e) / vw()) * 2 - 1;
   ptr.y = -(sy(e) / vh()) * 2 + 1;
-  if (!shelfMode()) return;
   /* the cursor hint is worth one raycast every 90ms, not one per
      pointermove: the books carry projected decals now and testing all
      of them on every mouse event is what made the shelf feel sticky */
   const t = performance.now();
   if (t - lastPick < 90) return;
   lastPick = t;
+  /* the covers are checked BEFORE the shelf guard: this used to sit
+     under `if (!shelfMode()) return`, so the six album covers never
+     got a pointer even though clicking them worked. */
+  if (crateMode === 'grid'){
+    canvas.style.cursor = sleeveUnder() >= 0 ? 'pointer' : '';
+    return;
+  }
+  if (!shelfMode()){ canvas.style.cursor = ''; return; }
   const n = bookUnder();
   canvas.style.cursor = (n && readable(n.userData.book)) ? 'pointer' : '';
 });
 canvas.addEventListener('pointerleave', () => { ptr.set(-2, -2); });
 
+/* Where a chosen book goes: out of the row entirely and up into the
+   left of the frame, turned square to the camera so the cover is
+   actually readable. It is computed off the camera every frame rather
+   than baked as a fixed spot, so it holds its place in the shot while
+   the camera is still easing in. */
+const _bPos = new THREE.Vector3(), _bQuat = new THREE.Quaternion();
+const _bx = new THREE.Vector3(), _by = new THREE.Vector3(), _bz = new THREE.Vector3();
+const _bm = new THREE.Matrix4(), _fwd = new THREE.Vector3(), _rgt = new THREE.Vector3(), _up = new THREE.Vector3();
+const _bTilt = new THREE.Quaternion();
+
+function bookStage(){
+  camera.updateMatrixWorld();
+  _fwd.set(0, 0, -1).applyQuaternion(camera.quaternion);
+  _rgt.set(1, 0, 0).applyQuaternion(camera.quaternion);
+  _up .set(0, 1, 0).applyQuaternion(camera.quaternion);
+  /* in front of the lens, left of centre, a touch below the axis */
+  _bPos.copy(camera.position)
+       .addScaledVector(_fwd, 0.345)
+       .addScaledVector(_rgt, -0.088)
+       /* the book's origin is near its foot, so the object reads high
+          in the frame unless the staged point is dropped below the
+          lens axis by most of its own height */
+       .addScaledVector(_up,  -0.072);
+  /* the covers are the book's y faces, so local +y points away from
+     the camera and local +z, its tall edge, stands up the screen */
+  _by.copy(_bPos).sub(camera.position).normalize();
+  _bz.copy(_up);
+  _bx.crossVectors(_by, _bz).normalize();
+  _bz.crossVectors(_bx, _by).normalize();
+  _bm.makeBasis(_bx, _by, _bz);
+  _bQuat.setFromRotationMatrix(_bm);
+  /* off square by a few degrees. Dead head on reads as a flat scan of
+     a cover; a little turn keeps it a solid object with a spine. */
+  _bTilt.setFromAxisAngle(_bz, 0.34);
+  _bQuat.premultiply(_bTilt);
+  _bTilt.setFromAxisAngle(_bx, -0.07);
+  _bQuat.premultiply(_bTilt);
+}
+
+const _lp = new THREE.Vector3(), _lq = new THREE.Quaternion(), _pq = new THREE.Quaternion();
+const _bez = new THREE.Vector3();
 function stepShelf(){
   if (!BOOKS.length) return;
   if (!shelfMode() && pickedBook) pickedBook = null;
+  if (pickedBook) bookStage();
   for (const m of BOOKS){
-    const want = (m === pickedBook) ? 1 : 0;
-    m.userData.out += (want - m.userData.out) * 0.14;
+    const chosen = m === pickedBook;
+    /* slower. At 0.12 a book was out of the shelf and square to the
+       camera inside about a third of a second, which read as a snap
+       rather than as somebody taking a book down. */
+    m.userData.out += ((chosen ? 1 : 0) - m.userData.out) * 0.055;
     const o = m.userData.out;
-    if (o < 0.0015 && want === 0) continue;
-    /* a hand's width out and a quarter turn, which is enough to read
-       the cover. The first pass moved it far enough to leave the row. */
-    /* far enough out to clear its neighbours, which 85mm did not */
-    m.position.z = m.userData.homeZ + o * 0.165;
-    m.position.y = m.userData.homeY + o * 0.016;
-    m.rotation.y = m.userData.homeRY - o * 0.40;
+    if (o < 0.0015 && !chosen) continue;
+
+    /* A quadratic through the via point rather than a straight line.
+       Straight from the slot to the camera cut a diagonal across the
+       row and the book passed through its neighbours on the way. */
+    const e = o < 0.5 ? 2 * o * o : 1 - Math.pow(-2 * o + 2, 2) / 2;   /* ease */
+    const k = 1 - e;
+    if (chosen){
+      m.parent.getWorldQuaternion(_pq).invert();
+      _lp.copy(_bPos); m.parent.worldToLocal(_lp);
+      _lq.copy(_pq).multiply(_bQuat);
+      /* remember where it was staged. Without this the curve's far end
+         snapped back to the shelf the instant it was released, so the
+         book lurched partway home before it started easing. That was
+         the stumble, and it only happened on the way back because the
+         way out had a stable endpoint all along. */
+      m.userData.stagePos = _lp.clone();
+      m.userData.stageQuat = _lq.clone();
+      m.renderOrder = 10;
+    } else {
+      m.renderOrder = 0;
+    }
+    /* home -> via -> staged, run forwards or backwards along the same
+       curve so the two directions are the same motion */
+    const far = m.userData.stagePos || m.userData.homePos;
+    _bez.set(0, 0, 0)
+        .addScaledVector(m.userData.homePos, k * k)
+        .addScaledVector(m.userData.viaPos, 2 * k * e)
+        .addScaledVector(far, e * e);
+    m.position.copy(_bez);
+    /* It holds its shelf angle until it is clear of the row, then
+       turns. Keeping the last staged orientation means the same curve
+       runs in reverse on the way back, so it does not snap. */
+    const target = m.userData.stageQuat || m.userData.homeQuat;
+    const turn = Math.max(0, (e - 0.28) / 0.72);
+    m.quaternion.copy(m.userData.homeQuat).slerp(target, turn);
+    startRoom();
   }
 }
 
@@ -3715,6 +5057,12 @@ function stepShelf(){
    The pins are their own DOM buttons, so anything that reaches the
    canvas is genuinely empty desk: close whatever is open. */
 canvas.addEventListener('click', () => {
+  /* with the crate up, the canvas is six album covers: clicking one is
+     how you choose, the same as clicking its row in the card */
+  if (crateMode === 'grid'){
+    const i = sleeveUnder();
+    if (i >= 0){ pickRecord(i); setBrowsing(false); startRoom(); return; }
+  }
   /* inside the shelf the canvas is not empty: it is books. Take one
      down, or put the open one back, and only leave the shelf when the
      click actually lands on nothing. */
@@ -3736,6 +5084,13 @@ function resize(){
   renderer.setSize(vw(), vh(), false);
   camera.aspect = vw() / vh();
   camera.updateProjectionMatrix();
+  if (composer){
+    composer.setSize(vw(), vh());
+    /* bloom works on the drawing buffer, not on CSS pixels */
+    const b = renderer.getDrawingBufferSize(new THREE.Vector2());
+    bloomPass.setSize(b.x, b.y);
+    gradePass.uniforms.uRes.value.set(b.x, b.y);
+  }
 }
 addEventListener('resize', resize);
 
@@ -3783,11 +5138,21 @@ function step(){
   }
   placeMac();          /* the screen is live from every angle, not just zoomed */
   stepShelf();
+  stepShaft();
+  stepZippoKey();
   stepDust(performance.now());
   stepFlame(performance.now());
   stepDeck(1/60);
   stepLid();
-  renderer.render(scene, camera);
+  if (composer){
+    /* the grain resolves with the frame rather than crawling: the loop
+       parks itself when the room stops moving, so a time-driven seed
+       would freeze mid-shimmer anyway */
+    gradePass.uniforms.uSeed.value = (gradePass.uniforms.uSeed.value + 1.0) % 977.0;
+    composer.render();
+  } else {
+    renderer.render(scene, camera);
+  }
 }
 /* Everything in step() eases toward a target, so once those have arrived the
    room is a still life and every further frame draws exactly the same pixels.
@@ -3801,9 +5166,11 @@ function step(){
 let roomRaf = 0, settled = 0;
 let roomT0 = performance.now();
 function roomMoving(){
+  const zkWant = (openSpot && openSpot.id === 'zippo') ? ZIPPO_KEY_I : 0;
   return camPos.distanceToSquared(toPos) > 1e-6
       || camLook.distanceToSquared(toLook) > 1e-6
-      || Math.abs(toFov - camera.fov) > 1e-3;
+      || Math.abs(toFov - camera.fov) > 1e-3
+      || Math.abs(zkWant - ZIPPO_KEY_AT) > 0.01;
 }
 function frame(){
   roomRaf = requestAnimationFrame(frame);
@@ -3829,6 +5196,7 @@ TILTED.addEventListener('change', () => { resize(); startRoom(); });   // the sh
 
 buildMaterials();
 buildDust();
+buildShaft();
 buildShell();
 buildWindow();
 /* buildDesk and buildChair are shuvalov.di's model now, in loadDesk().
@@ -3939,9 +5307,9 @@ function openTheDoor(){
 
 /* the desk goes first on its own: the plant and the speaker need its
    measured surfaces before they know where they live. */
-preload([DESK_GLB, MINE_MAC, LAMP_GLB, DECK_GLB, POTHOS_GLB, CUP_GLB, ZIPPO_GLB, TAPE_GLB])
+preload([DESK_GLB, MINE_MAC, LAMP_GLB, DECK_GLB, POTHOS_GLB, CUP_GLB, ZIPPO_GLB, TAPE_GLB, JERSEY_GLB])
   .then(loadDesk)
-  .then(() => Promise.all([loadLaptop(), loadCup(), loadPlant(), loadLamp(), loadDeck(), loadLighter(), loadTape()]))
+  .then(() => Promise.all([loadLaptop(), loadCup(), loadPlant(), loadLamp(), loadDeck(), loadLighter(), loadTape(), loadJersey()]))
   .then(() => boot(100))
   .catch(e => console.warn('room:', e))
   .then(openTheDoor);
@@ -3951,9 +5319,146 @@ preload([DESK_GLB, MINE_MAC, LAMP_GLB, DECK_GLB, POTHOS_GLB, CUP_GLB, ZIPPO_GLB,
 setTimeout(openTheDoor, 30000);
 window.__room = { step, scene, camera, renderer, setStage, SPOTS, openPanel,
                   THREE, get LAMP(){ return LAMP }, get MAG(){ return MAG },
-                  LAMP_AT, DESK_Y, restMagnifierOnLamp, P };
+                  LAMP_AT, DESK_Y, restMagnifierOnLamp, P,
+                  composer, bloomPass, gradePass,
+                  lights: { sun, bounce, amb, bulb, screen, get rim(){ return rim },
+                            get LAMP_SPOT(){ return LAMP_SPOT } },
+                  paintTheme };
 </script>
 <script>
+/* ── Photos ───────────────────────────────────────────────────────
+   Her camera roll, thinned to the ones worth showing. The HEICs no
+   browser will open are converted to jpeg on the way in, the two clips
+   are re-encoded small, and the dates are the real capture dates off
+   the files rather than anything invented: the app groups by them, so
+   inventing one would put a photo in the wrong month.
+
+   Every frame has a thumbnail and a full size. The grid only ever
+   loads the thumbnails, and a full size is fetched when you open it. */
+(function photosApp(){
+  const macEl = document.getElementById('mac');
+  const win   = macEl && macEl.querySelector('#w-photos');
+  if (!win) return;
+
+  /* id, date, and whether it is a clip */
+  const PHOTOS = [
+    ['p02', '2026-09-20'], ['p05', '2026-09-17'],
+    ['p17', '2026-08-15'], ['p15', '2026-08-04'], ['p16', '2026-08-04'],
+    ['p03', '2026-07-20'], ['p19', '2026-07-12'], ['p18', '2026-07-09', 1],
+    ['p14', '2026-06-25'], ['p13', '2026-06-25'],
+    ['p23', '2026-05-06'],
+    ['p06', '2026-01-13'], ['p12', '2026-01-12'],
+    ['p11', '2025-12-23'], ['p10', '2025-12-23'],
+    ['p09', '2025-11-06'],
+    ['p08', '2025-10-27'], ['p07', '2025-10-22'],
+    ['p01', '2025-06-17'],
+    ['p21', '2025-03-01'],
+    ['p04', '2025-01-01', 1],
+    ['p20', '2024-01-04'],
+    ['p22', '2008-02-06'],
+  ].map(([id, d, v]) => ({ id, d, v: !!v }));
+
+  const MONTHS = ['January','February','March','April','May','June',
+                  'July','August','September','October','November','December'];
+  const pretty = d => {
+    const [y, m, day] = d.split('-').map(Number);
+    return MONTHS[m - 1] + ' ' + day + ', ' + y;
+  };
+  const monthOf = d => {
+    const [y, m] = d.split('-').map(Number);
+    return MONTHS[m - 1] + ' ' + y;
+  };
+
+  const grid  = win.querySelector('#pGrid');
+  const one   = win.querySelector('#pOne');
+  const stage = win.querySelector('#pStage');
+  const meta  = win.querySelector('#pMeta');
+  let shown = PHOTOS, at = 0;
+
+  function paint(list){
+    shown = list;
+    grid.innerHTML = '';
+    let month = '';
+    list.forEach((ph, i) => {
+      const m = monthOf(ph.d);
+      if (m !== month){
+        month = m;
+        const h = document.createElement('p');
+        h.className = 'mo'; h.textContent = m;
+        grid.appendChild(h);
+      }
+      const b = document.createElement('button');
+      b.type = 'button';
+      if (ph.v) b.className = 'mv';
+      b.setAttribute('aria-label', (ph.v ? 'Video, ' : 'Photo, ') + pretty(ph.d));
+      const img = document.createElement('img');
+      img.src = '/about/media/photos/t/' + ph.id + '.jpg';
+      /* not lazy. These sit inside a matrix3d-mapped layer, and the lazy
+         loader never decides they are near the viewport, so they simply
+         never arrive. There are 23 of them at 520px; just fetch them. */
+      img.alt = ''; img.decoding = 'async';
+      b.appendChild(img);
+      b.addEventListener('click', e => { e.stopPropagation(); openAt(i); });
+      grid.appendChild(b);
+    });
+  }
+
+  function openAt(i){
+    at = (i + shown.length) % shown.length;
+    const ph = shown[at];
+    stage.innerHTML = '';
+    if (ph.v){
+      const v = document.createElement('video');
+      v.src = '/about/media/photos/f/' + ph.id + '.mp4';
+      v.poster = '/about/media/photos/t/' + ph.id + '.jpg';
+      v.controls = true; v.playsInline = true; v.loop = true;
+      /* muted, because the record player or the poem may well be
+         running behind this and two things talking at once is nobody's
+         idea of a good time */
+      v.muted = true;
+      stage.appendChild(v);
+    } else {
+      const img = document.createElement('img');
+      img.src = '/about/media/photos/f/' + ph.id + '.jpg';
+      img.alt = '';
+      stage.appendChild(img);
+    }
+    meta.textContent = pretty(ph.d) + (ph.v ? '  ·  Video' : '');
+    one.hidden = false;
+  }
+  function shut(){
+    one.hidden = true;
+    stage.innerHTML = '';     /* stops a clip that was still running */
+  }
+
+  win.querySelector('#pBack').addEventListener('click', e => { e.stopPropagation(); shut(); });
+  win.querySelector('#pPrev').addEventListener('click', e => { e.stopPropagation(); openAt(at - 1); });
+  win.querySelector('#pNext').addEventListener('click', e => { e.stopPropagation(); openAt(at + 1); });
+
+  win.querySelectorAll('.side .it').forEach(b => {
+    b.addEventListener('click', e => {
+      e.stopPropagation();
+      win.querySelectorAll('.side .it').forEach(o => o.classList.toggle('on', o === b));
+      shut();
+      const v = b.dataset.view;
+      paint(v === 'videos'  ? PHOTOS.filter(p => p.v)
+          : v === 'recents' ? PHOTOS.slice(0, 12)
+          : PHOTOS);
+      grid.scrollTop = 0;
+    });
+  });
+
+  /* arrows and escape, but only while the window is the one in front */
+  addEventListener('keydown', e => {
+    if (one.hidden || !win.classList.contains('open') || !win.classList.contains('focus')) return;
+    if (e.key === 'Escape'){ shut(); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft'){ openAt(at - 1); e.preventDefault(); }
+    else if (e.key === 'ArrowRight'){ openAt(at + 1); e.preventDefault(); }
+  });
+
+  paint(PHOTOS);
+})();
+
 /* ── pane wiring, the same contract the playground uses ───────── */
 (function () {
   addEventListener('message', e => {
