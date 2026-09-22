@@ -150,7 +150,7 @@ a{ color:inherit }
 #crateTags{ position:absolute; inset:0; pointer-events:none; z-index:9 }
 .crate-tag{
   position:absolute; left:0; top:0; translate:-1000px -1000px;
-  width:176px; margin-left:-88px; text-align:center;
+  width:215px; margin-left:-107.5px; text-align:center;
   opacity:0; transition:opacity .35s ease;
   /* its own ground: album art is busy and high contrast, and white text
      with a shadow over it was not readable on half of these covers */
@@ -160,17 +160,17 @@ a{ color:inherit }
 }
 .crate-tag.show{ opacity:1 }
 .crate-tag b{
-  display:block; color:#fff; font-size:.78rem; font-weight:600; line-height:1.22;
+  display:block; color:#fff; font-size:.72rem; font-weight:600; line-height:1.2;
   overflow-wrap:anywhere;
 }
 .crate-tag i{
-  display:flex; flex-wrap:wrap; gap:3px; justify-content:center;
-  margin-top:.28rem; font-style:normal;
+  display:flex; flex-wrap:wrap; gap:2px 3px; justify-content:center;
+  margin-top:.22rem; font-style:normal; line-height:1;
 }
 .crate-tag em{
-  font-style:normal; font-size:.58rem; font-weight:600;
-  letter-spacing:.06em; text-transform:uppercase;
-  padding:.14rem .38rem; border-radius:99px; white-space:nowrap;
+  font-style:normal; font-size:.5rem; font-weight:600;
+  letter-spacing:.03em; text-transform:uppercase;
+  padding:.1rem .28rem; border-radius:99px; white-space:nowrap;
   background:rgba(var(--accent-rgb),.26); color:#eafcfa;
   border:1px solid rgba(var(--accent-rgb),.5);
 }
@@ -185,8 +185,8 @@ a{ color:inherit }
 }
 #crateTitle.show{ opacity:1 }
 .crate-tag span{
-  display:block; color:rgba(255,255,255,.78); font-size:.63rem;
-  letter-spacing:.1em; text-transform:uppercase; margin-top:.16rem;
+  display:block; color:rgba(255,255,255,.78); font-size:.58rem;
+  letter-spacing:.08em; text-transform:uppercase; margin-top:.1rem;
   overflow-wrap:anywhere;
 }
 
@@ -225,7 +225,10 @@ a{ color:inherit }
 #panel{
   position:absolute; right:clamp(16px,3vw,44px); top:50%;
   width:min(440px,calc(100vw - 32px)); max-height:78vh; overflow-y:auto;
-  transform:translate(24px,-50%); opacity:0; pointer-events:none;
+  /* above #mac, which is 7. This had no z-index at all and got away with
+     it only while the laptop screen was force-hidden: the moment the
+     screen was live from every angle it painted over the card. */
+  transform:translate(24px,-50%); opacity:0; pointer-events:none; z-index:8;
   background:var(--card); border:1px solid var(--edge); border-radius:18px;
   padding:clamp(20px,2.4vw,30px); box-shadow:var(--shadow);
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
@@ -741,7 +744,7 @@ a{ color:inherit }
    camera frames the radio slightly left of centre for exactly this. */
 #audio{
   position:absolute; right:clamp(16px,3vw,44px); top:50%; transform:translate(22px,-50%);
-  width:min(380px,calc(100vw - 32px)); opacity:0; pointer-events:none; z-index:7;
+  width:min(380px,calc(100vw - 32px)); opacity:0; pointer-events:none; z-index:8;
   background:var(--card); border:1px solid var(--edge); border-radius:18px;
   padding:clamp(16px,2vw,22px); box-shadow:var(--shadow);
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
@@ -795,11 +798,32 @@ a{ color:inherit }
 }
 #audio #spotWrap, #audio #nowPlaying, #audio #repick{ transition:none }
 }
-#audio.hushed{ opacity:.4 }
+/* THE overlap bug. This had no .open in it, so it out-specified the
+   base `#audio{opacity:0}` and held the music card on screen at 40%
+   whenever it was hushed — which is only ever when a record is playing
+   AND the lighter, the tape or the rugby has just taken the floor. That
+   is why the cards stacked only in that one case. It dims the card now,
+   it does not summon it. */
+#audio.open.hushed{ opacity:.4 }
+
+/* and a floor under all of it: a card that is not open is not visible,
+   whatever any other rule has to say */
+/* #mac is deliberately NOT in this list. It is not a card: it is the
+   laptop screen, it is meant to be live from every angle, and placeMac()
+   drives its opacity inline every frame. Sweeping it in here beat that
+   inline value and left the screen black everywhere except the laptop
+   close-up, which is the one place .open is ever set. */
+#audio:not(.open), #panel:not(.open), #rugby:not(.open){
+  opacity:0 !important; pointer-events:none !important;
+}
+#mac:not(.open){ pointer-events:none !important }
 /* the rugby card, same furniture as the music one */
+/* the widest of the cards: this one has a jersey and a paragraph and a
+   lot of empty desk to the side of it, so it uses the room */
 #rugby{
   position:absolute; right:clamp(16px,3vw,44px); top:50%; transform:translate(22px,-50%);
-  width:min(420px,calc(100vw - 32px)); opacity:0; pointer-events:none; z-index:7;
+  max-height:82vh; overflow-y:auto;
+  width:min(620px,calc(100vw - 32px)); opacity:0; pointer-events:none; z-index:8;
   background:var(--card); border:1px solid var(--edge); border-radius:18px;
   padding:clamp(16px,2vw,22px); box-shadow:var(--shadow);
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
@@ -850,7 +874,7 @@ a{ color:inherit }
 #crate button.cueing .cue{ opacity:1 }
 @media (prefers-reduced-motion:reduce){ #crate button.on .vinyl{ animation:none } }
 /* the poem player is never seen, only heard */
-#poembox{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden }
+#poemAudio, #tapeAudio{ display:none }
 #audio .meta{ font-size:.76rem; opacity:.6; margin-top:.7rem; line-height:1.6 }
 
 /* ── sound on ─────────────────────────────────────────────────────
@@ -1284,7 +1308,7 @@ a{ color:inherit }
         <!-- the attributions used to live in the Say hello panel. That
              panel is gone, and CC BY needs them somewhere a person can
              actually read them, so they live here now. -->
-        <p class="cred"><b>Credits</b><br>Surfaces from ambientCG (CC0). &ldquo;<a class="link" href="https://skfb.ly/ostwx" target="_blank" rel="noopener">Cup tea</a>&rdquo; by rigart and &ldquo;<a class="link" href="https://skfb.ly/oDsVN" target="_blank" rel="noopener">[FREE] Pothos Potted Plant - Money Plant</a>&rdquo; by AllQuad and &ldquo;<a class="link" href="https://skfb.ly/6CzIJ" target="_blank" rel="noopener">Old Desk Lamp</a>&rdquo; by Maxence Rouillet, all <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6GoDo" target="_blank" rel="noopener">Vinyl / Record Player</a>&rdquo; by Phaedrus, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/oHrDH" target="_blank" rel="noopener">Antique wooden desk with props</a>&rdquo; by shuvalov.di, <a class="link" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6FUoz" target="_blank" rel="noopener">Zippo Lighter - 60s Style, Vietnam War Era</a>&rdquo; by Kingy, <a class="link" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/p7qM9" target="_blank" rel="noopener">Tape Recorder with cassettes</a>&rdquo; by Varvara Dolgova, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6SBPP" target="_blank" rel="noopener">SpringBok - Rugby Jersey</a>&rdquo; by OmegaRedZA, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
+        <p class="cred"><b>Credits</b><br>Surfaces from ambientCG (CC0). &ldquo;<a class="link" href="https://skfb.ly/ostwx" target="_blank" rel="noopener">Cup tea</a>&rdquo; by rigart and &ldquo;<a class="link" href="https://skfb.ly/oDsVN" target="_blank" rel="noopener">[FREE] Pothos Potted Plant - Money Plant</a>&rdquo; by AllQuad and &ldquo;<a class="link" href="https://skfb.ly/6CzIJ" target="_blank" rel="noopener">Old Desk Lamp</a>&rdquo; by Maxence Rouillet, all <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6GoDo" target="_blank" rel="noopener">Vinyl / Record Player</a>&rdquo; by Phaedrus, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/oHrDH" target="_blank" rel="noopener">Antique wooden desk with props</a>&rdquo; by shuvalov.di, <a class="link" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6FUoz" target="_blank" rel="noopener">Zippo Lighter - 60s Style, Vietnam War Era</a>&rdquo; by Kingy, <a class="link" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/p7qM9" target="_blank" rel="noopener">Tape Recorder with cassettes</a>&rdquo; by Varvara Dolgova, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6SBPP" target="_blank" rel="noopener">SpringBok - Rugby Jersey</a>&rdquo; by OmegaRedZA, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6nEHT" target="_blank" rel="noopener">Fallout 4 Nuka Cola Bottle</a>&rdquo; by Aike, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/oPvW9" target="_blank" rel="noopener">Porsche 911 turbo 930 Johnny Silverhand&rsquo;s</a>&rdquo; by valvetin, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/pCFBN" target="_blank" rel="noopener">Decorative plate</a>&rdquo; by Daria and &ldquo;<a class="link" href="https://skfb.ly/6XrZJ" target="_blank" rel="noopener">3December 2020 - Liquorice allsorts</a>&rdquo; by Jack Kelly, both <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
         </div>
       </div>
     </div>
@@ -1370,9 +1394,13 @@ a{ color:inherit }
       lighter and the tape recorder will hush it and hand it back.</p>
   </div>
 
-  <!-- the poems the lighter plays. Audio only: the player is parked
-       off screen and the clip is held between two timestamps. -->
-  <div id="poembox" aria-hidden="true"><div id="poem"></div><div id="tape"></div></div>
+  <!-- The lighter's poem and the tape's episode, as plain audio.
+       They used to be two 1x1 YouTube iframes, which is a size YouTube
+       quietly refuses to start in: playVideo() returned, the state went
+       back to unstarted, and there was no error to see. An <audio>
+       element returns a promise that actually says why it failed. -->
+  <audio id="poemAudio" src="/about/media/poem.mp3" preload="auto" loop></audio>
+  <audio id="tapeAudio" src="/about/media/tape.mp3" preload="auto"></audio><div id="tape"></div></div>
 
   <!-- the rugby, which is the one clip you are meant to watch rather
        than just hear, so its player is on the card -->
@@ -1462,7 +1490,19 @@ const canvas = document.getElementById('gl');
 const GFX = (() => {
   try { if (parent !== window && parent.__gfx) return parent.__gfx; } catch (e) {}
   const cores = navigator.hardwareConcurrency || 4, mem = navigator.deviceMemory || 4;
-  const weak = cores <= 4 || mem <= 4;
+  /* Cores and RAM say nothing about the GPU, and this room is entirely
+     GPU-bound. A Windows laptop with eight cores and Intel integrated
+     graphics was being handed a 3072px shadow map, full antialiasing
+     and a 1.5 pixel ratio — which is why it crawled there and not here.
+     Ask the driver what it actually is. */
+  let gpuWeak = false;
+  try {
+    const gl = document.createElement('canvas').getContext('webgl');
+    const dbg = gl && gl.getExtension('WEBGL_debug_renderer_info');
+    const name = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : '';
+    gpuWeak = /intel|uhd|iris|hd graphics|vega \d|radeon graphics|microsoft basic|swiftshader|llvmpipe|mali|adreno|apple gpu \(/i.test(name);
+  } catch (e) {}
+  const weak = cores <= 4 || mem <= 4 || gpuWeak;
   return { weak, still: matchMedia('(prefers-reduced-motion: reduce)').matches,
            dpr: Math.min(devicePixelRatio, weak ? 1 : 1.5), aa: !weak };
 })();
@@ -2321,7 +2361,9 @@ sun.target.position.set(1.83, 1.12, 0.20);              /* the shelf */
 sun.position.copy(sun.target.position)
    .add(new THREE.Vector3(-5.03, 1.25, 3.02));          /* back up the ray */
 sun.castShadow = true;
-sun.shadow.mapSize.set(GFX.weak ? 1024 : 3072, GFX.weak ? 1024 : 3072);
+/* 3072 was four times the fill of 1536 for a shadow nobody inspects
+   at pixel level. 1024 on anything integrated. */
+sun.shadow.mapSize.set(GFX.weak ? 1024 : 1536, GFX.weak ? 1024 : 1536);
 sun.shadow.camera.near = 0.3; sun.shadow.camera.far = 12;
 /* The frustum has to cover the whole room, not just the desk: anything
    outside it is simply not in the shadow map and comes back fully lit,
@@ -2515,7 +2557,12 @@ function paintTheme(){
   scene.traverse(n => {
     if (!n.isMesh) return;
     const ms = Array.isArray(n.material) ? n.material : [n.material];
-    ms.forEach(m => { if (m && 'envMapIntensity' in m) m.envMapIntensity = 0.30; });
+    /* unless it has asked to be left alone. The lighter is the one metal
+       you get close enough to read, and 0.30 leaves it looking like dark
+       bronze. Without this, toggling the lamp silently undid that. */
+    ms.forEach(m => {
+      if (m && 'envMapIntensity' in m && !m.userData.envLock) m.envMapIntensity = 0.30;
+    });
   });
   if (dust) dust.material.opacity = 0.42;
   if (LAMP_SPOT){
@@ -2658,7 +2705,14 @@ const PROPS = {
      record player now lives, and they buried it completely. */
   Jar_1:     [-0.200,-0.050, 0.00, 1,    'hutch'],
   Jar_2:     [-0.180, 0.060, 0.00, 1,    'hutch'],
+  /* The desk ships a little apothecary bottle here. It is gone: the
+     Nuka Cola stands in its place, loaded separately in loadNuka() and
+     posted at the same spot on the shelf. This line is what tells the
+     arrangement where that spot is, so leave it. */
   Bottle:    [-0.120, 0.055, 0.00, 1,    'hutch'],
+  /* The two standing sheets of paper are gone: the Porsche parks where
+     they were. Same as the Bottle above, the lines stay because they are
+     what tells loadPorsche() which patch of shelf to aim for. */
   Note_1:    [-0.070, 0.000,-0.55, 1,    'hutch'],
   Note_2:    [-0.030, 0.060, 0.30, 1,    'hutch'],
   /* the model's banker's lamp is the same object as Maxence's, and at
@@ -2756,6 +2810,19 @@ function loadDesk(){
       n.position.add(want.sub(here));
       n.updateMatrixWorld(true);
       placed[name] = new THREE.Box3().setFromObject(n).max.y;
+      /* the desk's own bottle only exists to reserve the spot */
+      if (name === 'Bottle'){
+        const nb = new THREE.Box3().setFromObject(n);
+        NUKA_AT = nb.getCenter(new THREE.Vector3());
+        NUKA_AT.y = nb.min.y;
+        n.visible = false;
+      }
+      /* and the two notes reserve the car's */
+      if (name === 'Note_1' || name === 'Note_2'){
+        const nb = new THREE.Box3().setFromObject(n);
+        PORSCHE_BOX = PORSCHE_BOX ? PORSCHE_BOX.union(nb) : nb;
+        n.visible = false;
+      }
     }
     o.updateMatrixWorld(true);
 
@@ -3049,13 +3116,22 @@ let FLAME = null, FLAME_LIGHT = null;
    looking at is always the face it is on, and it is at zero until the
    lighter is the thing you are looking at. A photographer would call it
    a fill card and think nothing of it. */
-let ZIPPO_KEY = null, ZIPPO_KEY_AT = 0;
+let ZIPPO_KEY = null, ZIPPO_KEY_AT = 0, ZIPPO_FILL = null, ZIPPO_WRAP = null;
 const ZIPPO_KEY_I = 3.8;   /* bright enough to read at the flame's trough */
 function buildZippoKey(){
   ZIPPO_KEY = new THREE.SpotLight(0xfff1e0, 0, 0.62, 0.58, 0.95, 1.0);
   ZIPPO_KEY.castShadow = false;
   ZIPPO_KEY.target.position.set(0, 0, 0);
   scene.add(ZIPPO_KEY, ZIPPO_KEY.target);
+  /* One light off one shoulder gave one bright streak and left the lid and
+     the far edge black, so the thing read as dark bronze with a highlight
+     on it. These two are the rest of the setup: a fill on the other side
+     at about a third of the key, and a soft wrap under the front so the
+     bottom edge of the case is not a silhouette. Points rather than spots
+     because there is no cone edge to hide this close. */
+  ZIPPO_FILL = new THREE.PointLight(0xffe4bd, 0, 0.50, 1.2);
+  ZIPPO_WRAP = new THREE.PointLight(0xffd7a4, 0, 0.40, 1.3);
+  scene.add(ZIPPO_FILL, ZIPPO_WRAP);
 }
 const _zkTo = new THREE.Vector3(), _zkSide = new THREE.Vector3(), _zkUp = new THREE.Vector3(0, 1, 0);
 function stepZippoKey(){
@@ -3077,6 +3153,17 @@ function stepZippoKey(){
     .addScaledVector(_zkSide, 0.075);
   ZIPPO_KEY.target.position.copy(aim);
   ZIPPO_KEY.target.updateMatrixWorld();
+  /* both ride the same fade as the key, so the whole rig arrives and
+     leaves with the shot */
+  ZIPPO_FILL.intensity = ZIPPO_KEY_AT * 0.34;
+  ZIPPO_FILL.position.copy(aim)
+    .addScaledVector(_zkTo,   0.105)
+    .addScaledVector(_zkSide, -0.095)
+    .addScaledVector(_zkUp,    0.020);
+  ZIPPO_WRAP.intensity = ZIPPO_KEY_AT * 0.20;
+  ZIPPO_WRAP.position.copy(aim)
+    .addScaledVector(_zkTo,  0.080)
+    .addScaledVector(_zkUp, -0.055);
 }
 const WICK = new THREE.Vector3();
 
@@ -3217,17 +3304,56 @@ function engrave(o){
   const w = (thin === 'x') ? sz.z : sz.x;
   const h = (thin === 'y') ? sz.z : sz.y;
 
-  const tex = new THREE.TextureLoader().load('/about/media/zippo-engraving.jpg');
-  tex.colorSpace = THREE.SRGBColorSpace;
+  /* The source photo is a whole engraved plate: it carries its own raised
+     border, its own baked shadow and a sliver of some other surface at the
+     edge. Pasted on as a colour map that is exactly what it looked like, a
+     rectangle stuck to the case. So the plate is thrown away and only the
+     strokes are kept, as a mask: the lettering is the only thing that
+     draws, the brass around it is the model's own brass, and there is no
+     edge to see. The mask doubles as a bump so the strokes read as cut in
+     rather than painted on. */
+  const tex = new THREE.TextureLoader().load('/about/media/zippo-engraving-mask.png');
+  tex.colorSpace = THREE.NoColorSpace;      /* a mask, not a colour */
   const mat = new THREE.MeshStandardMaterial({
-    map:tex, roughness:0.44, metalness:0.5, side:THREE.DoubleSide,
+    color:0x140c02,          /* the shadow down in a cut, not a sticker */
+    roughness:0.98,          /* a cut scatters where the polished face does not */
+    metalness:0.28,
+    alphaMap:tex, transparent:true, depthWrite:false,
+    bumpMap:tex, bumpScale:-1.3,   /* negative: into the metal */
+    side:THREE.DoubleSide,
     polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2 });
+  mat.envMapIntensity = 1.5;
+  mat.userData.envLock = true;
+  /* The case shipped as plain dark steel and the engraving plate sits on
+     it in warm brass, which read as two objects rather than one. The
+     body takes the plate's own gold so the whole lighter is one thing. */
+  /* Every part of this model shares one material, so recolouring the body
+     recolours the lid and the hinge with it. The model shipped at
+     metalness 1, which is why the brass read as dark bronze: a fully
+     metallic surface has NO diffuse term, so its colour can only arrive as
+     a reflection, and this room's environment is deliberately dim. Backing
+     off to 0.62 lets the gold be lit as well as reflected, and the lock
+     keeps the lamp toggle from clamping it back down. */
+  body.traverse(n => {
+    if (!n.isMesh) return;
+    const ms = Array.isArray(n.material) ? n.material : [n.material];
+    ms.forEach(m => {
+      if (!m || !m.color) return;
+      m.color.setHex(0xd2a44a);
+      if ('metalness' in m) m.metalness = 0.62;
+      if ('roughness' in m) m.roughness = 0.33;
+      m.envMapIntensity = 1.5;
+      m.userData.envLock = true;
+      m.needsUpdate = true;
+    });
+  });
+
   const rightOf = (u, n) => new THREE.Vector3().crossVectors(u, n).normalize();
   [1, -1].forEach(sg => {
     const n = N.clone().multiplyScalar(sg);
     const org = c.clone();
     org[thin] = sg > 0 ? mx[thin] : mn[thin];
-    body.add(projectDecal(body, mesh, w * 0.82, h * 0.66, org, rightOf(up, n), up, n, mat));
+    body.add(projectDecal(body, mesh, w * 0.78, h * 0.63, org, rightOf(up, n), up, n, mat));
   });
 }
 
@@ -3253,7 +3379,7 @@ const RECORDS = [
     g:['art rock','cabaret','chamber pop'],
     uri:'spotify:album:0O6onBuhBVzHtJb9bk4rOV' },
   { t:'Working in The Magnus Archives', by:'playlist',            art:'magnus',
-    g:['dark ambient','horror score','drone'],
+    g:['indie rock','art pop','sad folk'],
     uri:'spotify:playlist:7jWsjDQepOPPB98EdRPueg' },
   { t:'Puberty 2',                      by:'Mitski',              art:'puberty2',
     g:['indie rock','art pop','noise pop'],
@@ -3475,9 +3601,19 @@ function buildLeaningCrate(){
     CRATE.push({ mesh: m, i,
       shelfP: m.position.clone(), shelfQ: m.quaternion.clone(), shelfS: m.scale.clone(),
       gridP: null, gridQ: null, showP: null, showQ: null,
-      t: 0, fade: 1 });
+      /* where this move STARTED, so every move is a straight A to B.
+         Easing along one shelf-grid-show line meant a chosen sleeve on
+         its way home flew out to its grid slot first — to a grid that
+         had already closed — and only then to the shelf. */
+      place: 'shelf', p: 1,
+      fromP: m.position.clone(), fromQ: m.quaternion.clone(), fromS: m.scale.clone(),
+      fade: 1 });
   });
   SLEEVE.visible = false;      /* the model's own sleeve is never used */
+  /* and neither is the record inside it. DISC is a SIBLING of that
+     sleeve rather than a child, so hiding the sleeve left its vinyl
+     lying there on the hutch on its side. */
+  if (DISC) DISC.visible = false;
   buildCrateTags();
   buildPlate();
 }
@@ -3496,13 +3632,19 @@ function layoutCrate(){
      the camera's own field of view so it fills the frame whatever the
      stage has done to the fov. */
   const DIST = 0.33;
+  /* lifted, so the bottom row's captions clear the chrome bar at the
+     foot of the screen instead of printing through it */
   const mid  = camera.position.clone().addScaledVector(fwd, DIST);
   const face = new THREE.Quaternion().setFromRotationMatrix(
     new THREE.Matrix4().lookAt(camera.position, mid, new THREE.Vector3(0, 1, 0)));
   const vH  = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * DIST;
-  const ROW = vH * 0.34, COL = ROW * 0.94;
+  /* The rows need room for a name and three genres under each cover, or
+     the captions land on the row below — which is what made this
+     unreadable. Smaller covers, more air between them. */
+  const ROW = vH * 0.44, COL = vH * 0.33;
+  mid.addScaledVector(up, vH * 0.10);
   const SLEEVE_W = 0.302;                       /* the model's own size */
-  const gridK = (vH * 0.30) / SLEEVE_W;
+  const gridK = (vH * 0.275) / SLEEVE_W;
   CRATE.forEach((c, i) => {
     const col = i % 3, row = (i / 3) | 0;
     c.gridP = mid.clone()
@@ -3547,37 +3689,34 @@ function stepCrate(dt){
   if (crateMode !== 'shelf') layoutCrate();
   let busy = false;
   CRATE.forEach(c => {
-    const target = crateMode === 'shelf' ? 0
-                 : crateMode === 'grid'  ? 1
-                 : (c.i === chosen ? 2 : 1);
-    const wantFade = (crateMode === 'chosen' && c.i !== chosen) ? 0 : 1;
-    const step = dt / 1.15;
-    if (Math.abs(target - c.t) > 0.001){
-      c.t += Math.sign(target - c.t) * Math.min(step, Math.abs(target - c.t));
-      busy = true;
-    }
-    if (Math.abs(wantFade - c.fade) > 0.01){
-      c.fade += (wantFade - c.fade) * 0.09;
-      busy = true;
-    } else c.fade = wantFade;
-
     if (!c.gridP) return;
+    const want = crateMode === 'shelf' ? 'shelf'
+               : (crateMode === 'chosen' && c.i === chosen) ? 'show' : 'grid';
+    if (want !== c.place){
+      /* start from wherever it actually IS, not from a waypoint */
+      c.fromP.copy(c.mesh.position);
+      c.fromQ.copy(c.mesh.quaternion);
+      c.fromS.copy(c.mesh.scale);
+      c.place = want; c.p = 0;
+    }
+    if (c.p < 1){ c.p = Math.min(1, c.p + dt / 1.15); busy = true; }
+
+    const wantFade = (crateMode === 'chosen' && c.i !== chosen) ? 0 : 1;
+    if (Math.abs(wantFade - c.fade) > 0.01){ c.fade += (wantFade - c.fade) * 0.09; busy = true; }
+    else c.fade = wantFade;
+
+    const P = want === 'shelf' ? c.shelfP : want === 'grid' ? c.gridP : c.showP;
+    const Q = want === 'shelf' ? c.shelfQ : want === 'grid' ? c.gridQ : c.showQ;
+    const S = want === 'shelf' ? c.shelfS : want === 'grid' ? c.gridS : c.showS;
     const e = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
-    let A, B, u;
-    if (c.t <= 1){ A = c.shelfP; B = c.gridP; u = e(c.t); }
-    else          { A = c.gridP; B = c.showP; u = e(c.t - 1); }
-    _cp.lerpVectors(A, B, u);
-    /* the arc: up first, down last, so it clears whatever is between */
+    const u = e(c.p);
+
+    _cp.lerpVectors(c.fromP, P, u);
+    /* up first, down last, so it clears whatever is between */
     _cp.y += Math.sin(u * Math.PI) * 0.085;
     c.mesh.position.copy(_cp);
-
-    const qA = c.t <= 1 ? c.shelfQ : c.gridQ;
-    const qB = c.t <= 1 ? c.gridQ  : c.showQ;
-    c.mesh.quaternion.copy(qA).slerp(qB, u);
-
-    const sA = c.t <= 1 ? c.shelfS : c.gridS;
-    const sB = c.t <= 1 ? c.gridS  : c.showS;
-    c.mesh.scale.lerpVectors(sA, sB, u);
+    c.mesh.quaternion.copy(c.fromQ).slerp(Q, u);
+    c.mesh.scale.lerpVectors(c.fromS, S, u);
 
     c.mesh.visible = c.fade > 0.02;
     c.mesh.traverse(n => { if (n.isMesh) n.material.opacity = c.fade; });
@@ -3615,7 +3754,18 @@ function buildPlate(){
     new THREE.PlaneGeometry(1, 1),
     new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0,
                                   depthWrite: false, side: THREE.DoubleSide }));
-  PLATE.renderOrder = -2;
+  /* Last of all the see-through things, not first. The plate is a panel
+     held right in front of the lens, it writes no depth (it fades in, and
+     a fading thing that writes depth punches a hole in the room), and
+     every transparent object drawn after it therefore paints straight
+     over it. Nothing in the room was transparent when this was written,
+     so -2 went unnoticed until the Nuka Cola arrived: its glass is
+     alpha blended, so it sat in the transparent pass and showed through
+     the panel while the opaque record player behind it did not.
+
+     The six covers are opaque and nearer than the plate, so depth keeps
+     them on top whatever the order says, and the captions are DOM. */
+  PLATE.renderOrder = 60;
   PLATE.visible = false;
   scene.add(PLATE);
 }
@@ -3672,7 +3822,7 @@ function stepCrateTags(ready){
 
 /* up only while the grid is up AND every cover has arrived */
 function crateSettled(){
-  return crateMode === 'grid' && CRATE.length > 0 && CRATE.every(c => c.t > 0.985);
+  return crateMode === 'grid' && CRATE.length > 0 && CRATE.every(c => c.place === 'grid' && c.p > 0.985);
 }
 
 /* the sleeve the record is currently coming out of */
@@ -3697,6 +3847,12 @@ let discT = 0;
 function stepDeck(dt){
   if (!DISC) return;
   /* on when something is cued or playing, off otherwise */
+  /* Visibility is decided EVERY frame, not only on frames where
+     something moved — otherwise at rest the disc simply kept whatever
+     it had, which is how a record ended up parked on the hutch. */
+  const atDeck = !!(openSpot && openSpot.overlay === 'audio');
+  DISC.visible = discT > 0.285 && (atDeck || discT > 0.92);
+
   /* lifting: the old record goes back in its sleeve before the new one
      comes out, so you get the whole move every time, not just the first */
   if (lifting && discT <= 0.02) lifting = false;
@@ -3730,8 +3886,7 @@ function stepDeck(dt){
     /* nothing to see until it is actually coming out of the cover, and
        nothing at all unless you are at the deck or it is on the platter:
        a record hanging in mid air across the room is not a record. */
-    const atDeck = !!(openSpot && openSpot.overlay === 'audio');
-    DISC.visible = discT > 0.285 && (atDeck || discT > 0.92);
+
 
     /* The record comes out of whichever sleeve is being held out, along
        that sleeve's own axes: up out of the open edge, behind the face
@@ -3832,6 +3987,238 @@ function loadPlant(){
    (the tea surface), all sitting at x = -0.13 with clean Y-up rotations.
    Line007 and Line008 are the spill: Line008's matrix is tilted hard off
    vertical, which is the cup on its side. Those two get dropped. */
+/* ── the plate, and the liquorice on it ───────────────────────────
+   "Decorative plate" (https://skfb.ly/pCFBN) by Daria and "3December
+   2020 - Liquorice allsorts" (https://skfb.ly/6XrZJ) by Jack Kelly,
+   both CC BY 4.0.
+
+   They go in the one gap left on the writing surface, between the
+   laptop and the teacup at the front edge: about 200mm across and
+   160mm deep, which a side plate fits with a couple of centimetres to
+   spare either side. Sweets next to the tea, which is where they
+   belong anyway. */
+const PLATE_GLB = '/models/plate.glb';
+const ALLSORTS_GLB = '/models/allsorts.glb';
+/* Right up against the teacup. The saucer's near edge is at x 2.024 and
+   the plate is 100mm across, so this leaves 3mm of daylight between the
+   two rims: as close as they can sit without overlapping. Lined up on
+   the saucer's own z as well, so they sit on one line. */
+const PLATE_AT = new THREE.Vector3(1.971, 0, 0.700);
+let SWEET_PLATE = null;
+
+function loadPlate(){
+  return new Promise(res => GLTF.load(PLATE_GLB, g => {
+    const o = g.scene;
+    o.traverse(n => {
+      if (!n.isMesh) return;
+      n.castShadow = true; n.receiveShadow = true;
+      const ms = Array.isArray(n.material) ? n.material : [n.material];
+      ms.forEach(m => { m.envMapIntensity = 0.30; m.needsUpdate = true; });
+    });
+    o.updateMatrixWorld(true);
+
+    /* Turn it BEFORE measuring it. This plate is square, so scaling it to
+       155mm and then rotating half a radian grew its footprint to 210mm:
+       a square turned by t measures side*(cos t + sin t) across. That put
+       it hard against the teacup and hanging over the front of the desk. */
+    o.rotation.y = 0.5;
+    o.updateMatrixWorld(true);
+    let bb = new THREE.Box3().setFromObject(o);
+    let sz = bb.getSize(new THREE.Vector3());
+    /* A small dish, not a side plate. At 155mm the allsorts read as four
+       sweets abandoned in the middle of something far too big for them. */
+    o.scale.setScalar(0.100 / Math.max(sz.x, sz.z));
+    o.updateMatrixWorld(true);
+
+    bb = new THREE.Box3().setFromObject(o);
+    const c = bb.getCenter(new THREE.Vector3());
+    const S = DESK_SURF || { y: DESK_Y + 0.019 };
+    o.position.set(PLATE_AT.x - c.x, S.y - bb.min.y, PLATE_AT.z - c.z);
+    ROOM.add(o);
+    o.updateMatrixWorld(true);
+    SWEET_PLATE = o;
+    res(o);
+  }, undefined, () => res(null)));
+}
+
+function loadAllsorts(){
+  return new Promise(res => GLTF.load(ALLSORTS_GLB, g => {
+    const o = g.scene;
+    o.traverse(n => {
+      if (!n.isMesh) return;
+      n.castShadow = true; n.receiveShadow = true;
+      const ms = Array.isArray(n.material) ? n.material : [n.material];
+      ms.forEach(m => { m.envMapIntensity = 0.30; m.needsUpdate = true; });
+    });
+    o.updateMatrixWorld(true);
+
+    o.rotation.y = -0.9;                               /* turned, then sized */
+    o.updateMatrixWorld(true);
+    let bb = new THREE.Box3().setFromObject(o);
+    let sz = bb.getSize(new THREE.Vector3());
+    o.scale.setScalar(0.072 / Math.max(sz.x, sz.z));   /* heaped, nearly to the rim */
+    o.updateMatrixWorld(true);
+
+    /* Sit them in the WELL of the plate, not on its rim. Drop a ray
+       down the plate's own axis and take what it hits: guessing off the
+       bounding box would have put them level with the gold edge and
+       floating over the middle. */
+    let top = (DESK_SURF || { y: DESK_Y + 0.019 }).y;
+    if (SWEET_PLATE){
+      const ray = new THREE.Raycaster(
+        new THREE.Vector3(PLATE_AT.x, top + 0.25, PLATE_AT.z),
+        new THREE.Vector3(0, -1, 0));
+      const hit = ray.intersectObject(SWEET_PLATE, true)[0];
+      if (hit) top = hit.point.y;
+    }
+
+    bb = new THREE.Box3().setFromObject(o);
+    const c = bb.getCenter(new THREE.Vector3());
+    o.position.set(PLATE_AT.x - c.x, top - bb.min.y, PLATE_AT.z - c.z);
+    ROOM.add(o);
+    o.updateMatrixWorld(true);
+    res(o);
+  }, undefined, () => res(null)));
+}
+
+/* ── the Porsche ──────────────────────────────────────────────────
+   "Porsche 911 turbo 930 Johnny Silverhand's" (https://skfb.ly/oPvW9)
+   by valvetin, CC BY 4.0. A die-cast on the shelf, parked where the two
+   standing notes used to be. Scenery, not a thing to click.
+
+   The file arrives at 31.9MB, which is a lot of page for a 120mm toy.
+   Run through gltf-transform's optimize with meshopt compression and
+   1024px webp textures it is 3.5MB, and meshopt is the one to pick here
+   because the loader already carries that decoder and no Draco one. */
+const PORSCHE_GLB = '/models/porsche911.glb';
+let PORSCHE_BOX = null;
+function loadPorsche(){
+  return new Promise(res => GLTF.load(PORSCHE_GLB, g => {
+    const o = g.scene;
+    o.traverse(n => {
+      if (!n.isMesh) return;
+      n.castShadow = true; n.receiveShadow = true;
+      const ms = Array.isArray(n.material) ? n.material : [n.material];
+      ms.forEach(m => {
+        /* paintTheme pulls the whole room's reflections down to 0.3, but it
+           runs before this model exists, so the car arrives at full strength
+           and reads shinier than everything around it */
+        m.envMapIntensity = 0.30;
+        if (m.name === 'Glass'){
+          /* it ships OPAQUE WHITE, which turns the windscreen into a blank
+             slab and is why the front of the car looked like a grey wedge
+             with a sheet of paper on it */
+          m.transparent = true; m.opacity = 0.30;
+          m.color.setHex(0x0b1014);
+          m.roughness = 0.10; m.metalness = 0;
+          m.depthWrite = false;
+          n.renderOrder = 3;
+        } else {
+          /* and the body ships metalness 1 with roughness 1, which is the
+             same not-quite-a-material this model set keeps shipping: fully
+             rough metal has no diffuse at all, so the livery was coming
+             entirely from the environment and reading grey */
+          m.metalness = 0.18; m.roughness = 0.48;
+          /* The body also ships alphaMode BLEND, which the loader honours
+             by putting all five body meshes in the transparent pass with
+             depth writing OFF. Opacity is 1, so it did not look faded, it
+             looked hollow: nothing occluded anything, so the seats and the
+             offside wheel drew straight through the near flank and the roof
+             vanished from most angles.
+
+             It is not really a blended material. Its alpha is a cutout
+             mask, 97% of texels fully opaque and the ~2% that are not
+             sitting near zero, with almost nothing in between. So it goes
+             back where it belongs: opaque pass, depth on, and the holes
+             punched by alphaTest instead of by blending. */
+          m.transparent = false;
+          m.alphaTest = 0.5;
+          m.depthWrite = true;
+        }
+        m.needsUpdate = true;
+      });
+    });
+    o.updateMatrixWorld(true);
+
+    /* a 1:18 930 is about 240mm. This is a shelf between a cola bottle
+       and a row of paperbacks, so it is a 1:32 instead. */
+    let bb = new THREE.Box3().setFromObject(o);
+    let sz = bb.getSize(new THREE.Vector3());
+    o.scale.setScalar(0.135 / Math.max(sz.x, sz.z));
+    /* Nose out, turned across the shelf far enough to show the flank as
+       well as the front. Nose-out looked wrong at first for a reason that
+       had nothing to do with the angle: the windscreen was an opaque
+       white panel, so the front of the car was a blank shape. With the
+       glass actually glass, this is the side of it worth showing. */
+    o.rotation.y = 50 * Math.PI / 180;
+    o.updateMatrixWorld(true);
+
+    bb = new THREE.Box3().setFromObject(o);
+    const c = bb.getCenter(new THREE.Vector3());
+    const S = HUTCH_SURF || DESK_SURF;
+    const at = PORSCHE_BOX
+      ? PORSCHE_BOX.getCenter(new THREE.Vector3())
+      : new THREE.Vector3(DESK_X - 0.05, S.y, DESK_Z);
+    /* Right and forward off the notes' own centre. Parked exactly where
+       they stood, its nearside disappeared behind the Nuka Cola from the
+       chair, which is the only angle most people will ever see it from.
+       Out to the front lip it reads as a whole car. */
+    at.x += 0.050; at.z += 0.038;
+    o.position.set(at.x - c.x, S.y - bb.min.y, at.z - c.z);
+    ROOM.add(o);
+    o.updateMatrixWorld(true);
+    res(o);
+  }, undefined, () => res(null)));
+}
+
+/* ── the Nuka Cola ────────────────────────────────────────────────
+   "Fallout 4 Nuka Cola Bottle" (https://skfb.ly/6nEHT) by Aike,
+   CC BY 4.0. It takes the apothecary bottle's place on the shelf, at
+   whatever spot the desk's arrangement put that bottle, so moving the
+   line in PROPS moves this too. Sized by hand: a Nuka Cola is a
+   glass soda bottle, so about 240mm to the top of the cap. */
+const NUKA_GLB = '/models/nuka_cola.glb';
+let NUKA_AT = null;
+function loadNuka(){
+  return new Promise(res => GLTF.load(NUKA_GLB, g => {
+    const o = g.scene;
+    o.traverse(n => { if (n.isMesh){ n.castShadow = true; n.receiveShadow = true; } });
+    o.updateMatrixWorld(true);
+
+    /* The glass and the cola are both alphaMode BLEND and they share a
+       centre, so three has nothing to sort them by and the liquid was
+       landing on top of the label. Say which is in front. */
+    o.traverse(n => {
+      if (!n.isMesh) return;
+      const m = Array.isArray(n.material) ? n.material[0] : n.material;
+      if (!m || !m.transparent) return;
+      m.depthWrite = false;
+      n.renderOrder = (m.name === 'Material.001') ? 1 : 2;   /* cola, then glass */
+    });
+
+    let bb = new THREE.Box3().setFromObject(o);
+    let sz = bb.getSize(new THREE.Vector3());
+    o.scale.setScalar(0.20 / sz.y);          /* a glass soda bottle, to the cap */
+    /* Turned so the label faces the chair. Which axis that is depends on
+       which node you ask: the -90 that stands this Z-up model upright
+       lives on the Sketchfab_model node INSIDE the file, not on the
+       scene root, so on the root a plain y rotation is a true yaw and a
+       z rotation rolls the bottle onto its side. Swept the label through
+       twelve positions and measured how much red actually reached the
+       camera at each, from where the chair is: it peaks at 195. */
+    o.rotation.y = 195 * Math.PI / 180;
+    o.updateMatrixWorld(true);
+
+    bb = new THREE.Box3().setFromObject(o);
+    const c = bb.getCenter(new THREE.Vector3());
+    const at = NUKA_AT || new THREE.Vector3(DESK_X - 0.12, (HUTCH_SURF || DESK_SURF).y, DESK_Z);
+    o.position.set(at.x - c.x, at.y - bb.min.y, at.z - c.z);
+    ROOM.add(o);
+    o.updateMatrixWorld(true);
+    res(o);
+  }, undefined, () => res(null)));
+}
+
 const CUP_GLB = '/models/cup_tea.glb';
 const CUP_DROP = ['Line007', 'Line008'];
 function loadCup(){
@@ -4044,10 +4431,17 @@ const SPOTS = [
     cam:() => offsetCloseUp(P.tapeAim || P.tape, 0.44, 32, 0.105, 0.03),
     tape:true,
     eyebrow:'',
-    title:'Press play and leave it running.',
-    html:`<p>It picks up where you left it, so you can wander off to the
-      bookshelf and come back to the same place on the tape rather than
-      the top of it.</p>` },
+    title:'The Archivist got to me.',
+    html:`<p>I came to <a class="link" href="https://rustyquill.com/show/the-magnus-archives/" target="_blank" rel="noopener"><i>The Magnus Archives</i></a> for the horror and stayed
+      for Jonathan Sims. His whole job is taking other people's accounts
+      and reading them out loud, and he cannot stop at the reading. He has
+      to know, it costs him, and he goes back anyway.</p>
+      <p>Look at the rest of this desk and the connection is not subtle. I
+      build institutional things that watch people and hand them back their
+      own patterns, and more than one rewards whoever reads the output
+      instead of skimming it. There is Magnus in my wardrobe too.</p>
+      <p>No spoilers on the fears. Go in cold. The tape picks up where you
+      left it.</p>` },
 
   /* leans in, opens the lid, lights it, and starts the reading */
   { id:'zippo', label:'the lighter', at:() => P.zippo, stage:'seated',
@@ -4056,14 +4450,16 @@ const SPOTS = [
     cam:() => offsetCloseUp(P.zippoAim || P.zippo, 0.30, 30, 0.055, 0.004), lighter:true,
     eyebrow:'',            /* the SOUND ON badge is the eyebrow here */
     title:'A poem and a promise it is short.',
-    html:`<p>Frost, <i>Stopping By The Woods On A Snowy Evening</i>.
+    html:`<p>This is John Doe reading Frost's <i>Stopping By The Woods On
+      A Snowy Evening</i> to Arthur, from
+      <a class="link" href="https://www.malevolent.ca/" target="_blank" rel="noopener">Malevolent</a>.
       About a minute, and it loops, so you can leave it burning while
       you look at the rest of the desk.</p>
-      <p>This reading and <a class="link" href="https://www.malevolent.ca/" target="_blank" rel="noopener">Malevolent</a>
-      both changed my life. One taught me that a voice in the dark is
-      enough to build a whole world out of, and the other is the reason
-      I keep making things you have to listen to properly.</p>
-      <p class="meta"><a class="link" href="https://www.malevolent.ca/" target="_blank" rel="noopener">malevolent.ca &nearr;</a></p>` },
+      <p>The poem and the show both changed my life. The poem is the one
+      I go back to when a thing is hard and temporary, which is why it is
+      on the lighter. The show is the reason I keep making things you have
+      to listen to properly, because a voice in the dark turned out to be
+      enough to build a whole world out of.</p>` },
 
   /* not a panel. Clicking this pulls the chain. */
   { id:'lamp', label:'the lamp', at:() => P.lamp, stage:'seated', toggle:true },
@@ -4468,12 +4864,13 @@ addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
    was playing in the first place. That needs Spotify's own iframe
    API rather than a plain embed, because a plain embed cannot be
    told anything once it exists. */
-const POEM_ID = 'DSNDd60KvuM';
-const POEM_IN  = 207;         /* 3:27, Stopping By The Woods begins */
-const POEM_OUT = 271;         /* 4:31, before A Poison Tree starts at 4:34 */
-const POEM_FADE = 1.6;        /* seconds of ramp at each end of a 64s clip */
-
-let poem = null, poemReady = false, poemTimer = 0;
+/* The clip is already trimmed to the 64 seconds the room uses, so it
+   simply loops; the ramp at each end is what makes the loop a breath
+   rather than a cut. */
+const POEM_FADE = 1.6;
+const poem = document.getElementById('poemAudio');
+const tape = document.getElementById('tapeAudio');
+let poemTimer = 0;
 let spotCtl = null, spotWasPlaying = false;
 /* whatever of ours is making a noise right now. The music is hushed
    while this has anything in it and handed back only when it empties,
@@ -4482,50 +4879,35 @@ let spotCtl = null, spotWasPlaying = false;
 const noisy = new Set();
 let hushing = false;
 
-/* Spotify's controller, so the music can be paused and put back */
+/* Spotify's controller, so the music can be paused and put back. This
+   and the rugby player below were collateral when the poem and the tape
+   were moved off YouTube: they lived in the same block, so cutting it
+   took the record player's controller with it. No controller meant
+   pickRecord returned at its first line and NOTHING was selectable. */
 window.onSpotifyIframeApiReady = api => {
   const host = document.getElementById('spot');
   if (!host) return;
   api.createController(host, {
-    /* 152 is Spotify's COMPACT layout: a big cover header and barely two
-       rows of tracklist. It picks the layout from the height it is built
-       at, not from what CSS does to the iframe afterwards, which is why
-       stretching the iframe only stretched the header. 352 is the tall
-       one, where the tracklist is the point. */
+    /* 352 is Spotify's tall layout, the one with a real tracklist; 152
+       is the compact header-heavy one. It reads this at build time, not
+       from whatever CSS does to the iframe afterwards. */
     uri: RECORDS[0].uri, width:'100%', height:352
   }, c => {
     spotCtl = c;
     buildCrate();
     c.addListener('playback_update', e => {
       const playing = !e.data.isPaused;
-      /* Do not learn a new "was it playing" while we are the ones who
-         paused it. This used to check the lighter only, so the TAPE's
-         own pause taught it spotWasPlaying = false and the music was
-         never handed back afterwards. */
+      /* do not learn a new "was it playing" while we are the ones who
+         paused it */
       if (!hushing) spotWasPlaying = playing;
-      /* the badge belongs to whichever card is open and making noise */
       if (overlay === 'audio') showSound(playing ? audioEl : null);
-      /* The record does NOT come off when the audio pauses. It used to,
-         and it was wrong twice over: the player reports paused for a
-         moment while a new uri loads, and the lighter and the tape
-         both pause it on purpose and hand it back. A record yanking
-         itself off the deck because somebody hit pause in Spotify is
-         not what a turntable does. It stays on until it is taken off
-         or another one is put on. */
     });
   });
 };
 
-/* the tape. Unlike the poem it is not looped and not restarted: it
-   keeps its place for the session, so leaning back in picks the tape
-   up where it was rather than rewinding it. */
+/* the rugby, the one clip meant to be watched rather than overheard */
 const RUGBY_ID = 'sI1JHbSYaaA';
 let rugby = null, rugbyReady = false;
-
-const TAPE_ID = 'AdiUHYacaRI';
-const TAPE_IN = 63;            /* 1:03 */
-let tape = null, tapeReady = false, tapeStarted = false, tapeWanted = false;
-
 function onYouTubeIframeAPIReady(){
   rugby = new YT.Player('rugbyPlayer', {
     videoId:RUGBY_ID,
@@ -4535,53 +4917,48 @@ function onYouTubeIframeAPIReady(){
       /* it has its own sound, so it takes the room the way the lighter
          and the tape do, and gives it back when it stops */
       onStateChange: e => {
-        if (e.data === YT.PlayerState.PLAYING) hushMusic(true);
-        else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) hushMusic(false);
-      }
-    }
-  });
-  tape = new YT.Player('tape', {
-    width:1, height:1, videoId:TAPE_ID,
-    playerVars:{ start:TAPE_IN, controls:0, disablekb:1, playsinline:1, rel:0 },
-    events:{ onReady: () => {
-      tapeReady = true; tape.setVolume(100); tape.pauseVideo();
-      /* if you opened the drawer before the player was up, honour it now */
-      if (tapeWanted) playTape(true);
-    } }
-  });
-  poem = new YT.Player('poem', {
-    width:1, height:1, videoId:POEM_ID,
-    playerVars:{ start:POEM_IN, controls:0, disablekb:1, playsinline:1, rel:0 },
-    events:{
-      onReady: () => {
-        poemReady = true; poem.setVolume(0); poem.pauseVideo();
-        if (ZIPPO_OPEN){ restartPoem(); clearInterval(poemTimer); poemTimer = setInterval(watchPoem, 250); }
-      },
-      onStateChange: e => {
-        /* if it ever runs past the clip on its own, put it back */
-        if (e.data === YT.PlayerState.ENDED && ZIPPO_OPEN) restartPoem();
+        if (e.data === YT.PlayerState.PLAYING) hushMusic(true, 'rugby');
+        else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) hushMusic(false, 'rugby');
       }
     }
   });
 }
-window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+/* The API is a classic <script> and this is a module, so the module
+   runs LAST. If the widget api is already cached it can fire its
+   callback before this line ever runs, and the call is simply lost —
+   which is why the rugby player turned up sometimes and not others.
+   Cover both orders: register, and also check whether it beat us. */
+let rugbyBuilt = false;
+function buildRugby(){
+  if (rugbyBuilt || !window.YT || !YT.Player) return;
+  rugbyBuilt = true;
+  onYouTubeIframeAPIReady();
+}
+window.onYouTubeIframeAPIReady = buildRugby;
+buildRugby();
+addEventListener('load', buildRugby);
+
+/* Every failure is now visible: play() gives back a promise, where the
+   old player just quietly did nothing. */
+function startAudio(el, why){
+  const go = el.play();
+  if (go && go.catch) go.catch(e => console.warn('about: ' + why + ' would not play —', e.name, e.message));
+}
 
 function restartPoem(){
-  if (!poemReady) return;
-  poem.seekTo(POEM_IN, true);
-  poem.playVideo();
+  poem.currentTime = 0;
+  poem.volume = 0;
+  startAudio(poem, 'the poem');
+  watchPoem();
 }
 
-/* hold the clip between its two marks, and ramp the volume at both
-   ends so the loop is a breath rather than a cut */
+/* hold the volume ramped at both ends of the loop */
 function watchPoem(){
-  if (!poemReady || !ZIPPO_OPEN) return;
-  let t;
-  try { t = poem.getCurrentTime(); } catch (e) { return; }
-  if (t >= POEM_OUT - 0.15 || t < POEM_IN - 1){ restartPoem(); return; }
-  const inRamp  = Math.min(1, Math.max(0, (t - POEM_IN) / POEM_FADE));
-  const outRamp = Math.min(1, Math.max(0, (POEM_OUT - t) / POEM_FADE));
-  poem.setVolume(Math.round(100 * Math.min(inRamp, outRamp)));
+  if (!ZIPPO_OPEN) return;
+  const t = poem.currentTime, len = poem.duration || 64;
+  const inRamp  = Math.min(1, Math.max(0, t / POEM_FADE));
+  const outRamp = Math.min(1, Math.max(0, (len - t) / POEM_FADE));
+  poem.volume = Math.max(0, Math.min(1, Math.min(inRamp, outRamp)));
 }
 
 function lighterOpen(){ return ZIPPO_OPEN; }
@@ -4710,20 +5087,14 @@ function cueDone(){
 }
 
 function playTape(on){
-  /* The hush comes FIRST and never waits on the player. This used to
-     bail out at the top if the tape's YouTube player had not reported
-     ready, which meant the record player was not quietened at all —
-     you got Magnus over the music, or Magnus over silence. */
+  /* The hush comes first and never waits on the player. An <audio>
+     element is usable the moment it exists, so there is nothing to
+     queue behind any more. */
   if (on){
     hushMusic(true, 'tape');
-    if (!tapeReady){ tapeWanted = true; return; }
-    /* first time in, start at 1:03; after that, carry on from wherever
-       it was left */
-    if (!tapeStarted){ tape.seekTo(TAPE_IN, true); tapeStarted = true; }
-    tape.playVideo();
+    startAudio(tape, 'the tape');
   } else {
-    tapeWanted = false;
-    try { tape.pauseVideo(); } catch (e) {}
+    tape.pause();
     hushMusic(false, 'tape');
   }
 }
@@ -4735,20 +5106,16 @@ function openLighter(on){
 
   if (on){
     hushMusic(true, 'lighter');
-    if (poemReady){ poem.setVolume(0); restartPoem(); }
+    restartPoem();
     clearInterval(poemTimer);
-    poemTimer = setInterval(watchPoem, 250);
+    poemTimer = setInterval(watchPoem, 120);
   } else {
     clearInterval(poemTimer); poemTimer = 0;
-    if (poemReady){
-      /* ease it out rather than dropping it */
-      let v = 100;
-      const fade = setInterval(() => {
-        v -= 12;
-        try { poem.setVolume(Math.max(0, v)); } catch (e) {}
-        if (v <= 0){ clearInterval(fade); try { poem.pauseVideo(); } catch (e) {} }
-      }, 60);
-    }
+    /* ease it out rather than dropping it */
+    const fade = setInterval(() => {
+      poem.volume = Math.max(0, poem.volume - 0.12);
+      if (poem.volume <= 0){ clearInterval(fade); poem.pause(); }
+    }, 60);
     hushMusic(false, 'lighter');
   }
   startRoom();
@@ -5101,7 +5468,12 @@ function resize(){
 addEventListener('resize', resize);
 
 const v = new THREE.Vector3();
-function step(){
+/* dt is the real frame time, clamped. It used to be a hardcoded 1/60,
+   which meant that on a machine running at 30fps every animation took
+   twice as long in wall-clock — a large part of why this felt sluggish
+   on Windows rather than merely coarse. */
+function step(dt = 1 / 60){
+  dt = Math.min(Math.max(dt, 1 / 240), 1 / 20);
   camPos.lerp(toPos, camEase);
   camLook.lerp(toLook, camEase * 1.14);
   camera.fov += (toFov - camera.fov) * camEase * 1.14;
@@ -5148,7 +5520,7 @@ function step(){
   stepZippoKey();
   stepDust(performance.now());
   stepFlame(performance.now());
-  stepDeck(1/60);
+  stepDeck(dt);
   stepLid();
   if (composer){
     /* the grain resolves with the frame rather than crawling: the loop
@@ -5173,20 +5545,53 @@ let roomRaf = 0, settled = 0;
 let roomT0 = performance.now();
 function roomMoving(){
   const zkWant = (openSpot && openSpot.id === 'zippo') ? ZIPPO_KEY_I : 0;
+  /* A lit flame is never still. The loop sleeps once the camera settles,
+     which froze the flicker mid-frame and left the lighter looking like
+     a photograph of a flame. While it is burning, the room is moving. */
+  if (ZIPPO_OPEN && FLAME && FLAME.visible) return true;
   return camPos.distanceToSquared(toPos) > 1e-6
       || camLook.distanceToSquared(toLook) > 1e-6
       || Math.abs(toFov - camera.fov) > 1e-3
       || Math.abs(zkWant - ZIPPO_KEY_AT) > 0.01;
 }
+/* Whatever the guess above decided, the honest measure is the frame
+   itself. If the room cannot hold a reasonable rate it sheds pixel
+   ratio and shadow resolution once, and stops there. */
+let fpsN = 0, fpsSum = 0, shed = false;
+function watchCost(dt){
+  if (shed || dt <= 0 || dt > 0.5) return;
+  fpsSum += dt; fpsN++;
+  if (fpsN < 120) return;
+  const avg = fpsSum / fpsN;
+  fpsSum = 0; fpsN = 0;
+  if (avg > 0.028){                       /* under ~36fps */
+    shed = true;
+    renderer.setPixelRatio(1);
+    renderer.shadowMap.type = THREE.BasicShadowMap;
+    sun.shadow.mapSize.set(1024, 1024);
+    if (sun.shadow.map){ sun.shadow.map.dispose(); sun.shadow.map = null; }
+    resize();
+    console.info('about: easing off — average frame was ' + Math.round(avg * 1000) + 'ms');
+  }
+}
+
+let _last = 0;
 function frame(){
   roomRaf = requestAnimationFrame(frame);
-  step();
+  /* performance.now, not a THREE.Clock: there isn't one in this file.
+     Assuming there was threw on the first frame and killed the loop
+     outright, which is why the room sat there with nothing clickable. */
+  const now = performance.now();
+  const _dt = _last ? (now - _last) / 1000 : 1 / 60;
+  _last = now;
+  watchCost(_dt);
+  step(_dt);
   if (roomMoving() || performance.now() - roomT0 < 8000) settled = 0;
   else if (++settled > 15) stopRoom();
 }
 /* nothing to draw until the room is built, and pointer events fire
    over the loading card too */
-function startRoom(){ if (!roomLive) return; settled = 0; if (!roomRaf) frame(); }
+function startRoom(){ if (!roomLive) return; settled = 0; if (!roomRaf){ _last = 0; frame(); } }
 function stopRoom(){ cancelAnimationFrame(roomRaf); roomRaf = 0; }
 document.addEventListener('visibilitychange', () => document.hidden ? stopRoom() : startRoom());
 /* only the things that can actually move the camera now. pointermove
@@ -5315,7 +5720,8 @@ function openTheDoor(){
    measured surfaces before they know where they live. */
 preload([DESK_GLB, MINE_MAC, LAMP_GLB, DECK_GLB, POTHOS_GLB, CUP_GLB, ZIPPO_GLB, TAPE_GLB, JERSEY_GLB])
   .then(loadDesk)
-  .then(() => Promise.all([loadLaptop(), loadCup(), loadPlant(), loadLamp(), loadDeck(), loadLighter(), loadTape(), loadJersey()]))
+  .then(() => Promise.all([loadLaptop(), loadCup(), loadPlant(), loadLamp(), loadDeck(), loadLighter(), loadTape(), loadJersey(), loadNuka(), loadPorsche(),
+                   loadPlate().then(loadAllsorts)]))
   .then(() => boot(100))
   .catch(e => console.warn('room:', e))
   .then(openTheDoor);
@@ -5324,6 +5730,13 @@ preload([DESK_GLB, MINE_MAC, LAMP_GLB, DECK_GLB, POTHOS_GLB, CUP_GLB, ZIPPO_GLB,
    turns up, sit down anyway rather than leave the card up forever */
 setTimeout(openTheDoor, 30000);
 window.__room = { step, scene, camera, renderer, setStage, SPOTS, openPanel,
+                  /* the two spoken-word players, so their state can be read
+                     from the console when they will not start */
+                  get sound(){ return {
+                    hushing, noisy: [...noisy], spotWasPlaying,
+                    poem, tape,
+                    poemState: { paused: poem.paused, t: poem.currentTime, vol: poem.volume },
+                    tapeState: { paused: tape.paused, t: tape.currentTime, vol: tape.volume } }; },
                   THREE, get LAMP(){ return LAMP }, get MAG(){ return MAG },
                   LAMP_AT, DESK_Y, restMagnifierOnLamp, P,
                   composer, bloomPass, gradePass,
