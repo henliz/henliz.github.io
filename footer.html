@@ -61,12 +61,28 @@
 
     .dangerous-stage img{image-rendering:pixelated;image-rendering:crisp-edges}
 
-    /* Hen */
+    /* Hen. She is four animated webps now rather than one still frame:
+       an idle that loops, and three flourishes that play over the top of
+       it now and then. Two stacked layers so the swap can cross fade;
+       the flourishes were cut from separate takes, so their first and
+       last frames do not line up exactly with the idle pose and a hard
+       cut shows as a twitch. 180ms of overlap hides it. */
     .hen-sprite{
       position:absolute; left:var(--hen-left); bottom:var(--hen-bottom);
-      width:var(--hen-w); height:auto;
+      width:var(--hen-w); line-height:0;
       filter:drop-shadow(0 2px 0 rgba(0,0,0,.2));
     }
+    .hen-sprite .base{ display:block; width:100%; height:auto }
+    .hen-sprite .flourish{
+      position:absolute; inset:0; width:100%; height:auto;
+      opacity:0; pointer-events:none;
+    }
+    .hen-sprite .base, .hen-sprite .flourish{ transition:opacity 180ms linear }
+    .hen-sprite .flourish.on{ opacity:1 }
+    .hen-sprite .base.under{ opacity:0 }
+    /* this art is drawn, not pixel art: the stage's blanket pixelated
+       rule turns her edges into staircases */
+    .hen-sprite img{ image-rendering:auto }
 
     /* Speech bubble */
     .bubble-float{
@@ -153,7 +169,10 @@
     </div>
 
     <div class="dangerous-stage" aria-label="It’s dangerous to go alone — take this! (visual only)">
-      <img class="hen-sprite" src="/HenSprite.webp" alt="Hen, tiny 8-bit adventurer" />
+      <div class="hen-sprite" id="henSprite">
+        <img class="base" src="/hen-idle.webp" alt="Hen, a tiny fairy, shifting her weight"
+             onload="if(!window.__henIdleAsked){window.__henIdleAsked=1;var s=document.createElement('script');s.src='/hen-idle.js';document.head.appendChild(s);}" />
+      </div>
       <img class="bubble-float" src="/Dangerous_Bubble.png" alt="" aria-hidden="true" />
       <button class="sword-btn" aria-label="Open resume" title="Open resume" onclick="(window.openResumePopup? openResumePopup() : window.location.href='/Henrietta_van_Niekerk_Resume_2026.pdf')">
         <img src="https://i.pinimg.com/originals/ef/92/86/ef92866ae3725f7148677928e585c11f.gif" alt="8-bit sword" />
@@ -181,6 +200,7 @@
         window.lucide.createIcons();
       }
     });
+
   </script>
 </body>
 </html>

@@ -303,7 +303,55 @@ a{ color:inherit }
 #mac #macDate,#mac #macClock{ font-variant-numeric:tabular-nums; font-weight:500 }
 
 /* desktop icons */
-#mac .desk{ position:absolute; right:12px; top:34px; display:grid; gap:12px; z-index:1 }
+/* the folder gets the right-hand side to itself */
+#mac .desk{ position:absolute; right:14px; top:34px; display:grid; gap:12px; z-index:1 }
+
+/* ── previously at ─────────────────────────────────────────────────
+   Top right, laid out the way apps sit on a home screen: a tile, the
+   real logo inside it at its own colours, a name underneath. The old
+   version knocked every mark to white, which is tidy and also throws
+   away the one thing a logo is for. */
+#mac .prev{ position:absolute; left:26px; top:34px; z-index:1; pointer-events:none }
+#mac .prev-h{
+  margin:0 0 9px; text-align:left;
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:16px; color:rgba(255,255,255,.94);
+  text-shadow:0 1px 10px rgba(0,0,0,.7);
+}
+#mac .prev-row{
+  display:grid; grid-template-columns:repeat(3, 66px); gap:14px 6px;
+  justify-items:center;
+}
+#mac .prev-lg{ display:grid; justify-items:center; gap:7px; width:66px }
+/* No tile. App icons carry their own shape and their own transparency
+   now, so a white card behind each one is both dated and a lie about
+   where the artwork ends. A soft drop shadow does the lifting instead. */
+/* A fixed box with contain, so a wide wordmark and a square emblem end
+   up the same optical weight instead of the wide one shrinking to fit
+   its own height. */
+/* SQUARE. A 46x40 box letterboxed every square mark to 40 tall and left
+   it sitting on its own label; the wide ones were the only thing that
+   box ever suited. */
+#mac .prev-lg i{ display:grid; place-items:center; width:46px; height:46px }
+#mac .prev-lg img{
+  width:100%; height:100%; object-fit:contain; display:block;
+  /* app-icon corners: does nothing to the marks that are already
+     transparent, and stops the ones with a solid ground (Trove) from
+     reading as a sticker next to them */
+  border-radius:11px;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.45));
+}
+#mac .prev-lg b{
+  font-family:'Satoshi',sans-serif; font-weight:600; font-size:9px;
+  letter-spacing:.02em; color:rgba(255,255,255,.95); text-align:center;
+  line-height:1.15; text-shadow:0 1px 6px rgba(0,0,0,.8);
+}
+/* no file yet: the tile carries its initials instead of sitting empty */
+#mac .prev-lg i em{
+  font-style:normal; font-family:'Satoshi',sans-serif; font-weight:700;
+  font-size:15px; letter-spacing:.02em; color:rgba(255,255,255,.92);
+  text-shadow:0 1px 6px rgba(0,0,0,.8);
+}
 #mac .desk .fold{ display:grid; justify-items:center; gap:3px; width:74px; background:none; border:0; cursor:pointer; font-family:inherit }
 #mac .desk s{
   width:44px; height:34px; border-radius:4px 5px 4px 4px; text-decoration:none; position:relative;
@@ -1096,12 +1144,32 @@ a{ color:inherit }
     </div>
 
     <div class="desk">
-      <button class="fold" data-open="finder"><s></s><u>Case Studies</u></button>
       <button class="fold" data-open="notes"><s></s><u>About Me</u></button>
     </div>
 
+    <!-- written on the desktop itself, the way somebody actually would.
+         Each logo falls back to its own wordmark if the file is not
+         there, so a missing one degrades to type rather than a gap. -->
+    <div class="prev">
+      <p class="prev-h">previously at</p>
+      <div class="prev-row">
+        <span class="prev-lg"><i><img src="/about/media/logos/trove.webp" alt="Trove"
+              onerror="this.replaceWith(Object.assign(document.createElement('em'),{textContent:'TR'}))"></i><b>Trove</b></span>
+        <span class="prev-lg"><i><img src="/about/media/logos/skrimp.webp" alt="Skrimp"
+              onerror="this.replaceWith(Object.assign(document.createElement('em'),{textContent:'SK'}))"></i><b>Skrimp</b></span>
+        <span class="prev-lg"><i><img src="/about/media/logos/sunlife.webp" alt="Sun Life"
+              onerror="this.replaceWith(Object.assign(document.createElement('em'),{textContent:'SL'}))"></i><b>Sun Life</b></span>
+        <span class="prev-lg"><i><img src="/about/media/logos/halalmeals.webp" alt="HalalMeals"
+              onerror="this.replaceWith(Object.assign(document.createElement('em'),{textContent:'HM'}))"></i><b>HalalMeals</b></span>
+        <span class="prev-lg"><i><img src="/about/media/logos/uwaterloo.webp" alt="Waterloo"
+              onerror="this.replaceWith(Object.assign(document.createElement('em'),{textContent:'UW'}))"></i><b>Waterloo</b></span>
+        <span class="prev-lg"><i><img src="/about/media/logos/menzo.webp" alt="Path to Menzoberranzan"
+              onerror="this.replaceWith(Object.assign(document.createElement('em'),{textContent:'PtM'}))"></i><b>PtM</b></span>
+      </div>
+    </div>
+
     <!-- Safari -->
-    <div class="win" id="w-safari" data-app="safari" style="--x:34px;--y:46px;--w:600px;--h:436px">
+    <div class="win" id="w-safari" data-app="safari" style="--x:272px;--y:62px;--w:600px;--h:436px">
       <div class="tt">
         <div class="lights"><s class="r"></s><s class="y"></s><s class="g"></s></div>
         <div class="tabs">
@@ -1343,7 +1411,7 @@ a{ color:inherit }
     </div>
 
     <!-- Finder -->
-    <div class="win" id="w-finder" data-app="finder" style="--x:118px;--y:78px;--w:580px;--h:376px">
+    <div class="win" id="w-finder" data-app="finder" style="--x:290px;--y:92px;--w:580px;--h:376px">
       <div class="tt">
         <div class="lights"><s class="r"></s><s class="y"></s><s class="g"></s></div>
         <em>Case Studies</em>

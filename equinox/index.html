@@ -2480,7 +2480,11 @@
     }
     .theme-toggle {
         flex-shrink: 0;
-        width: 38px; height: 38px;
+        /* 46 against the conspire pill's 50. Matched exactly it MEASURED
+           equal and LOOKED bigger: a solid circle carries more weight
+           than a wide pill of the same height, so it needs a few percent
+           off to sit level. 38, where this started, was just short. */
+        width: 46px; height: 46px;
         display: flex; align-items: center; justify-content: center;
         border-radius: 50%;
         background: rgba(255,255,255,0.05);
@@ -2489,7 +2493,7 @@
         transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
     }
     .theme-toggle:hover { background: rgba(168,218,220,0.12); border-color: rgba(168,218,220,0.35); transform: translateY(-2px); }
-    .theme-toggle svg { width: 16px; height: 16px; stroke: rgba(240,242,240,0.6); }
+    .theme-toggle svg { width: 19px; height: 19px; stroke: rgba(240,242,240,0.6); }
     .theme-toggle:hover svg { stroke: #a8dadc; }
     .theme-icon { display: none; line-height: 0; }
     :root[data-theme="dark"]  .theme-icon-light { display: block; }
@@ -3656,7 +3660,7 @@
                 <p class="ns-chaos-num">03</p>
                 <p class="ns-chaos-name">Us<span class="px">er</span> St<span class="px">at</span>e Ch<span class="px">ao</span>s</p>
                 <p class="ns-chaos-desc">The person using your system is already overwhelmed before they open it. They're not at their best; they may never be at their best. Design for the person who is tired, in pain, grieving, or just out of bandwidth. That's most people, most of the time.</p>
-                <p class="ns-chaos-examples">MyAuntie &nbsp;·&nbsp; EndoQuest &nbsp;·&nbsp; Skrimp</p>
+                <p class="ns-chaos-examples">MyAuntie &nbsp;·&nbsp; Skrimp</p>
               </div>
             </div>
 

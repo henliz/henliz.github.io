@@ -12,6 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Playground – Henriëtta van Niekerk</title>
     <link rel="icon" type="image/png" href="/HenLogo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,700&display=swap" rel="stylesheet">
     <script>
       // follows the toggle on the main page (same origin, so same storage)
       (function () {
@@ -35,14 +36,16 @@
        default font size keeps that increase (WCAG 1.4.4). */
     html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
 
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
-
     @font-face {
       font-family: 'DotempDemo';
       src: url('../fonts/DotempDemo.ttf') format('truetype');
       font-weight: normal; font-style: normal;
     }
-    .px { font-family: 'DotempDemo', monospace; font-style: normal; font-size: 0.88em; }
+    /* The two halves of the blend. Titles alternate between them a few
+       characters at a time, the same way the case studies do, which is
+       the house treatment and was missing here entirely. */
+    .px { font-family: 'DotempDemo', monospace; font-style: normal; font-weight: 400; font-size: 0.88em; }
+    .di { font-family: 'Didot', 'Cormorant Garamond', serif; font-style: italic; font-weight: 700; }
 
     /* ── the desk ─────────────────────────────────────────────────
        This is Henrietta's own page, so it keeps the site's blue-teal
@@ -152,6 +155,24 @@
     .frame img, .frame video { width: 100%; height: auto; display: block; }
     .frame.plain { background: none; border: none; box-shadow: none; border-radius: 0; }
 
+    /* YouTube paints its own furniture over a video the moment it is
+       hovered: title bar, share, watch later. The iframe never receives
+       the pointer, so it never believes it is hovered and never draws
+       any of it. The desk can also be dragged straight across a clip
+       now, which it could not be before. */
+    .ytframe iframe { pointer-events: none; }
+    /* a clip is postage-stamp sized on a desk this wide, so hovering one
+       brings it up to something you can actually watch */
+    .item:has(.ytframe):hover { z-index: 70 !important; }
+    .item:has(.ytframe):hover .ytframe {
+      transform: scale(1.55);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+      border-color: rgba(var(--accent-rgb), 0.45);
+    }
+    :root[data-theme="light"] .item:has(.ytframe):hover .ytframe {
+      box-shadow: 0 26px 60px rgba(30, 60, 70, 0.3);
+    }
+
     /* a tile you can actually open */
     a.frame { cursor: pointer; }
     a.frame:hover, a.frame:focus-visible {
@@ -185,61 +206,74 @@
     .cap {
       position: absolute;
       width: max-content;
-      max-width: 300px;
+      max-width: 390px;
     }
     .cap h2 {
-      font-family: 'Cormorant Garamond', serif;
       font-weight: 600;
-      font-size: 1.42rem;
-      line-height: 1.2;
+      font-size: 1.95rem;
+      line-height: 1.16;
       letter-spacing: 0.01em;
       color: var(--ink);
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.45rem;
     }
     .cap p {
-      font-size: 0.9rem;
+      font-size: 1.04rem;
       font-weight: 400;
-      line-height: 1.45;
-      color: rgba(var(--muted-rgb), 0.72);
-      max-width: 30ch;
+      line-height: 1.5;
+      color: rgba(var(--muted-rgb), 0.74);
+      max-width: 34ch;
     }
     .cap .year {
       display: inline-block;
       font-family: 'DotempDemo', monospace;
-      font-size: 0.82rem;
-      color: rgba(var(--accent-rgb), 0.85);
-      margin-bottom: 0.3rem;
+      font-size: 1rem;
+      color: rgba(var(--accent-rgb), 0.9);
+      margin-bottom: 0.45rem;
       letter-spacing: 0.06em;
     }
     /* a handwritten aside with a little arrow, like a margin note */
+    /* An aside is words plus an arrow, and the arrow has a job: its stem
+       starts at the words and its head lands on the thing being talked
+       about. So the direction decides which side of the text it sits on,
+       not just which way the path curves. */
     .scribble {
       position: absolute;
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 1.08rem;
-      color: rgba(var(--muted-rgb), 0.7);
+      display: flex;
+      gap: 4px;
+      font-family: 'Satoshi', sans-serif;
+      font-style: normal;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: rgba(var(--muted-rgb), 0.8);
+      line-height: 1.45;
       width: max-content;
-      max-width: 240px;
-      line-height: 1.35;
     }
-    .scribble svg { display: block; margin-top: 2px; overflow: visible; }
-    .scribble path { stroke: rgba(var(--muted-rgb), 0.5); fill: none;
-                     stroke-width: 1.4; stroke-linecap: round; }
+    .scribble span { max-width: 290px; }
+    .scribble.a-right { flex-direction: row;            align-items: center }
+    .scribble.a-left  { flex-direction: row-reverse;    align-items: center }
+    .scribble.a-down  { flex-direction: column;         align-items: center }
+    .scribble.a-up    { flex-direction: column-reverse; align-items: center }
+    .scribble svg { display: block; overflow: visible; flex: none }
+    /* two passes of the same line at partial strength, the way a pencil
+       gone over twice reads, rather than one clean vector curve */
+    .scribble path { stroke: rgba(var(--muted-rgb), 0.72); fill: none;
+                     stroke-width: 4; stroke-linecap: round;
+                     stroke-linejoin: round; }
 
     /* ── the welcome note ─────────────────────────────────────── */
     /* the rhythm here is in px on purpose: the ruled lines have to land
        under the text, and a rem padding would drift with the type scale */
     .note {
       position: absolute;
-      width: 400px;
-      padding: 34px 34px 40px;
+      width: 560px;
+      padding: 44px 46px 52px;
       background: var(--card);
       border: 1px solid var(--edge);
       border-radius: 4px 4px 10px 10px;
       box-shadow: var(--shadow);
       background-image: repeating-linear-gradient(
-        to bottom, transparent 0 33px, rgba(var(--muted-rgb), 0.12) 33px 34px);
-      background-position: 0 34px;
+        to bottom, transparent 0 43px, rgba(var(--muted-rgb), 0.12) 43px 44px);
+      background-position: 0 44px;
       background-repeat: repeat;
     }
     .note::before {
@@ -251,23 +285,43 @@
       transform: rotate(-4deg);
       border-radius: 2px;
     }
+    /* Title and portrait share the top of the note as one band. Floating
+       her into the body split the paragraph into two ragged columns,
+       which is exactly what a sticky note should not look like. */
+    .note .head {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      /* Head plus this margin is 132px, three ruled lines, so the body
+         below lands back on the rules. The 104 is measured, not derived:
+         the blend mixes two font sizes on one baseline, so a two-line
+         title at line-height 44 makes line boxes of 52, not 44. */
+      margin-bottom: 28px;
+    }
     .note h1 {
-      font-family: 'Cormorant Garamond', serif;
+      flex: 1;
       font-weight: 600;
-      font-size: 1.85rem;
-      line-height: 34px;
-      margin-bottom: 34px;
+      font-size: 2.5rem;
+      line-height: 44px;
       color: var(--ink);
     }
+    .note .mug {
+      flex: none;
+      width: 134px;
+      /* she is taller than a two-line title, and the overhang top and
+         bottom is what stops her opening a hole under the heading */
+      margin: -22px -12px -20px 0;
+    }
     .note p {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.12rem;
-      line-height: 34px;
+      font-family: 'Satoshi', sans-serif;
+      font-size: 1.16rem;
+      line-height: 44px;        /* stays on the ruled lines */
       color: rgba(var(--muted-rgb), 0.82);
     }
     .note .sign {
       display: block;
       text-align: right;
+      font-family: 'Satoshi', sans-serif;
       font-style: italic;
       margin-top: 34px;
       color: rgba(var(--accent-rgb), 0.9);
@@ -277,12 +331,12 @@
     .pill {
       display: inline-flex; align-items: center; gap: 0.4rem;
       font-family:'Satoshi', sans-serif;
-      font-size: 0.88rem; font-weight: 600;
+      font-size: 1.06rem; font-weight: 600;
       color: var(--accent);
       background: rgba(var(--accent-rgb), 0.12);
       border: 1px solid rgba(var(--accent-rgb), 0.45);
       border-radius: 999px;
-      padding: 0.55rem 1.15rem;
+      padding: 0.8rem 1.6rem;
       text-decoration: none; white-space: nowrap;
       transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
     }
@@ -296,20 +350,20 @@
        rather than one tall column of text — easier to read, and it lets
        the photos sit on top of them. */
     .brief {
-      padding: 0.95rem 1.1rem 1.05rem;
+      padding: 1.35rem 1.5rem 1.45rem;
       background: var(--card);
       border: 1px solid var(--edge);
       border-radius: 10px;
       box-shadow: var(--shadow);
-      font-size: 0.86rem;
-      line-height: 1.55;
-      color: rgba(var(--muted-rgb), 0.72);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: rgba(var(--muted-rgb), 0.74);
     }
     .brief b {
       display: block;
       font-family: 'Cormorant Garamond', serif;
       font-weight: 600;
-      font-size: 1.08rem;
+      font-size: 1.42rem;
       letter-spacing: 0.01em;
       color: var(--ink);
       margin-bottom: 0.3rem;
@@ -348,43 +402,6 @@
       overflow-wrap: anywhere;
     }
 
-    /* ── the one toy you can actually play with ───────────────── */
-    .stamp-pad {
-      position: absolute;
-      width: 260px;
-      padding: 1.1rem 1.2rem 1.2rem;
-      background: var(--card);
-      border: 1px solid var(--edge);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      text-align: center;
-    }
-    .stamp-pad h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem; font-weight: 600;
-      margin-bottom: 0.15rem;
-    }
-    .stamp-pad p { font-size: 0.8rem; color: rgba(var(--muted-rgb), 0.65); margin-bottom: 0.8rem; }
-    .stamp-row { display: flex; gap: 0.45rem; justify-content: center; flex-wrap: wrap; }
-    .stamp-row button {
-      width: 42px; height: 42px;
-      font-size: 1.2rem; line-height: 1;
-      background: rgba(var(--muted-rgb), 0.07);
-      border: 1px solid var(--edge);
-      border-radius: 9px;
-      cursor: pointer;
-      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
-    }
-    .stamp-row button:hover { transform: translateY(-2px); border-color: rgba(var(--accent-rgb), 0.5); background: rgba(var(--accent-rgb), 0.1); }
-    .stamp-row button[aria-pressed="true"] { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.18); }
-    .stamped {
-      position: absolute;
-      font-size: 28px; line-height: 1;
-      pointer-events: none;
-      animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-    @keyframes pop { from { transform: scale(0.2) rotate(-18deg); opacity: 0 } to { transform: none; opacity: 1 } }
-
     /* ── fixed chrome: hint + recentre ────────────────────────── */
     .chrome {
       position: fixed;
@@ -418,38 +435,119 @@
     }
     .chrome button:hover { background: rgba(var(--accent-rgb), 0.22); border-color: var(--accent); }
 
-    /* the compass shows where you are on a desk bigger than the window */
-    .minimap {
+    /* Not a compass any more: the map is how you get around. Click it to
+       jump, drag the lit rectangle to pan, and the buttons change how much
+       desk fits in the window. */
+    .mapwrap {
       position: fixed;
       right: 18px; bottom: 18px;
-      width: 108px; height: 72px;
-      border: 1px solid var(--edge);
-      border-radius: 8px;
-      background: rgba(var(--ink-rgb), 0.05);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
       z-index: 50;
+      display: grid;
+      gap: 6px;
+      justify-items: end;
+    }
+    .minimap {
+      position: relative;
+      width: 186px;          /* height is set from the desk's aspect in JS */
+      height: 250px;
+      border: 1px solid var(--edge);
+      border-radius: 10px;
+      /* opaque. Through a blur the desk showed through the map and the
+         two layouts read as one muddy one */
+      background: var(--card);
+      box-shadow: var(--shadow);
       overflow: hidden;
+      cursor: pointer;
+      touch-action: none;
     }
     .minimap i {
       position: absolute;
       display: block;
       border: 1.5px solid var(--accent);
       background: rgba(var(--accent-rgb), 0.16);
-      border-radius: 2px;
+      border-radius: 3px;
+      cursor: grab;
     }
+    .minimap.dragging, .minimap.dragging i { cursor: grabbing; }
     .minimap b {
       position: absolute;
-      width: 3px; height: 3px;
+      width: 4px; height: 4px;
       border-radius: 50%;
-      background: rgba(var(--muted-rgb), 0.55);
+      background: rgba(var(--muted-rgb), 0.5);
+    }
+    /* a dot per thing is a blur at this size; the ones with a picture in
+       them get a little more weight so the map reads as the real layout */
+    .minimap b.big { width: 7px; height: 7px; background: rgba(var(--muted-rgb), 0.72); }
+    /* one pill, so it reads as a zoom control and not three loose chips */
+    .mapzoom {
+      display: flex; align-items: center; gap: 2px;
+      padding: 4px;
+      background: var(--card);
+      border: 1px solid var(--edge);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+    }
+    .mapzoom button {
+      width: 32px; height: 32px;
+      font: 600 17px/1 'Satoshi', sans-serif;
+      color: var(--ink);
+      background: none;
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .mapzoom button:hover:not(:disabled) { background: rgba(var(--accent-rgb), 0.14); color: var(--accent); }
+    .mapzoom button:disabled { opacity: 0.3; cursor: default; }
+    .mapzoom span {
+      font: 600 12px/1 'Satoshi', sans-serif;
+      color: rgba(var(--muted-rgb), 0.8);
+      font-variant-numeric: tabular-nums;
+      min-width: 46px; text-align: center;
+    }
+    .mapzoom .fit {
+      width: auto; padding: 0 11px;
+      font: 600 11px/1 'Satoshi', sans-serif;
+      letter-spacing: 0.04em;
+      border-left: 1px solid var(--edge);
+      border-radius: 0 999px 999px 0;
+      margin-left: 2px;
+    }
+
+    /* the map says what it is, and the rectangle says it can be moved */
+    .maplabel {
+      font: 600 10px/1 'Satoshi', sans-serif;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(var(--muted-rgb), 0.55);
+      padding-right: 3px;
+    }
+    /* every item as a real block at its real size, so the map is the
+       layout in miniature rather than a scatter of identical dots */
+    .minimap b.blk {
+      width: auto; height: auto; border-radius: 1.5px;
+      background: rgba(var(--muted-rgb), 0.3);
+    }
+    .minimap b.pic { background: rgba(var(--muted-rgb), 0.5); }
+    .minimap u {
+      position: absolute;
+      font: 600 7px/1 'Satoshi', sans-serif;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: rgba(var(--muted-rgb), 0.75);
+      text-decoration: none;
+      white-space: nowrap;
+      /* sits just inside its own block. Lifting it above put the topmost
+         project's name outside the map, where overflow clipped it */
+      transform: translate(1px, 1px);
+      pointer-events: none;
     }
 
     @media (max-width: 720px) {
       .note { width: min(320px, 82vw); }
       .chrome { font-size: 0.8rem; padding-left: 0.85rem; left: 12px; right: 12px; bottom: 12px;
                 transform: none; justify-content: space-between; }
-      .minimap { display: none; }
+      .mapwrap { display: none; }
     }
     </style>
 </head>
@@ -461,11 +559,20 @@
 </div>
 
 <div class="chrome" id="chrome">
-  <span id="hint">drag the desk to look around</span>
+  <span id="hint">scroll to move around, or drag</span>
   <button type="button" id="recentre">re<span class="px">ce</span>ntre</button>
 </div>
 
-<div class="minimap" id="minimap" aria-hidden="true"><i id="mmView"></i></div>
+<div class="mapwrap">
+    <div class="mapzoom">
+      <button type="button" id="mmOut" aria-label="zoom out">&minus;</button>
+      <span id="mmPct">100%</span>
+      <button type="button" id="mmIn" aria-label="zoom in">+</button>
+      <button type="button" id="mmFit" class="fit">fit all</button>
+    </div>
+    <span class="maplabel">map &middot; drag to move</span>
+    <div class="minimap" id="minimap" role="application" aria-label="map of the desk, drag to move around"><i id="mmView"></i></div>
+  </div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
@@ -479,141 +586,166 @@
    and add a line to ITEMS. Nothing else needs to change.
    ═══════════════════════════════════════════════════════════════ */
 
-const MEDIA = 'media/';
+/* Everything local is addressed from the site root. This document is
+   served at /playground/case.html, so a path like playground/media/x.webp
+   resolved to /playground/playground/media/x.webp and 404d, which had
+   quietly taken out every local image on the page. */
 
 /* kinds
    note     the ruled welcome note
    photo    an image in a frame            {src, w, rot, tape}
    clip     a muted looping video          {src, poster, w, rot}
    yt       an autoplaying muted YouTube   {id, w, rot}
-   slot     a dashed placeholder           {file, w, h}
    cap      a title + blurb                {title, year, body}
-   note2    a handwritten margin aside     {text, arrow}
+   note2    an aside and an arrow          {text, arrow: up|down|left|right}
    link     any of the above, clickable    add {href}
-   stamps   the little stamp toy
 */
 const ITEMS = [
 
-  /* ══ THE FIRST SCREEN ════════════════════════════════════════
-     Nothing here belongs to a live case study — those have their own
-     pages. This is only the stuff that never got one. */
+  /* Two rules fight each other here and both matter. WITHIN a project,
+     things overlap and interlock: a scrapbook page, not a gallery wall.
+     BETWEEN projects there is real air, so the eye knows where one thing
+     stops. Asides live on the OUTSIDE edge of a cluster and point back
+     in, because an arrow through the middle of a collage cuts it in half. */
 
-  { kind:'note', x:-620, y:-320, rot:-1.5, z:5,
+  /* ══ THE FIRST SCREEN ════════════════════════════════════════ */
+  { kind:'note', x:-918, y:-536, rot:-1.5, z:5, mug:'/HenChibi.png',
     title:'Welcome to my playground',
     body:'The side quests, the second-year work, the hackathon builds and the things that never became a case study.',
     sign:'\u2014 Hen' },
 
-  { kind:'photo', x:-600, y:190, w:140, rot:-9, plain:true, src:'HenChibi.png', z:3 },
-  { kind:'note2', x:-604, y:340, rot:0, arrow:'up', text:'hello.' },
-
-  { kind:'note2', x:-150, y:-300, rot:0, arrow:'right', text:'a peek behind my desk.' },
-  { kind:'slot',  x:-150, y:-215, w:240, h:175, rot:3, file:'desk-01.jpg', tape:true },
-
-  /* this one has an opaque background, so it reads as a framed little
-     portrait rather than a cut-out sticker */
-  { kind:'photo', x:230, y:-330, w:190, rot:6, tape:true, src:'HenSprite.webp', z:4 },
-  { kind:'note2', x:236, y:-80, rot:0, arrow:'up', text:'me, at 32 pixels.' },
-
-  { kind:'stamps', x:530, y:-320, rot:2, z:6 },
-  { kind:'slot',   x:500, y:110,  w:230, h:170, rot:-3, file:'desk-02.jpg' },
-  { kind:'slot',   x:880, y:-110, w:210, h:260, rot:4,  file:'sketch-01.png' },
-  { kind:'slot',   x:880, y:-330, w:300, h:180, rot:-3, file:'clip-01.mp4' },
-
-  /* ══ STARTUP CANADA TOUR ════════════════════════════════════
-     off to the right of the welcome — two photos, overlapping */
-  { kind:'cap', x:1300, y:-420, title:'Startup Canada Tour', year:'2026',
+  /* ══ STARTUP CANADA TOUR ════════════════════════════════════ */
+  { kind:'cap', x:51, y:-560, title:'Startup Canada Tour', year:'2026',
     body:'A backdrop, a lanyard that said Founder on it, and the strange afternoon that made the whole thing feel real.' },
 
-  { kind:'photo', x:1300, y:-210, w:340, rot:-3, tape:true, z:4, src:'playground/media/startup-canada-team.webp' },
-  { kind:'photo', x:1590, y:-60,  w:230, rot:5,  z:6, src:'playground/media/startup-canada-solo.webp' },
-  { kind:'note2', x:1300, y:120, rot:0, arrow:'up', text:'the stance of somebody who has never been photographed before.' },
+  { kind:'brief', x:51, y:-330, w:370, rot:-1, z:4, lead:'What it was.',
+    body:'A day of founders, a step-and-repeat banner, and a lanyard with my own title printed on it. Nothing shipped that afternoon. It was the first time the company felt like a real thing rather than a side project.' },
 
-  /* ══ SECOND YEAR \u2014 Jaguar ═══════════════════════════════════
-     down and to the left. tighter and stacked, rather than five big
-     tiles spread across half the desk */
-  { kind:'cap', x:-700, y:520, title:'Jaguar Redesign', year:'2nd year',
-    body:'Rescuing a heritage marque from its own 2024 rebrand.' },
+  { kind:'photo', x:470, y:-540, w:446, rot:-3, tape:true, z:5, src:'/playground/media/startup-canada-team.webp' },
+  { kind:'photo', x:700, y:-300, w:306, rot:5,  z:7, src:'/playground/media/startup-canada-solo.webp' },
+  { kind:'note2', x:706, y:-68, rot:0, v:1, arrow:'up', text:'the afternoon it started to feel real.' },
 
-  { kind:'photo', x:-700, y:700, w:320, rot:-2, tape:true, z:4,
-    href:'Jaguar/index.html', src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98823042_6o6EVws4bbAYLob.png' },
-  { kind:'photo', x:-455, y:762, w:205, rot:5, z:6,
-    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98774691_oOn2ZjIy4KXb65z.png' },
-  { kind:'photo', x:-300, y:700, w:240, rot:-4, z:5,
-    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98822071_h1ucDiYTJsSM1wd.png' },
-  { kind:'photo', x:-624, y:972, w:225, rot:3, z:7,
-    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98821399_vOUK29Ba9ku8bkL.png' },
-  { kind:'yt', x:-352, y:1005, w:290, rot:2, z:8, id:'byAXR21e04s' },
-  { kind:'note2', x:-20, y:975, rot:0, arrow:'left', text:'the spot we cut for it.' },
-  { kind:'slot', x:-10, y:1070, w:260, h:170, rot:2, file:'desk-03.jpg' },
+  /* ══ COMFY JAM SUMMER 2026 \u2014 Pidge's Post ════════════════════
+     Eleven of us on the itch page. The town reads as a 2x2 that leans on
+     itself; under it, each wireframe sits against the screen it became. */
+  { kind:'cap', x:-918, y:10, title:"Pidge's Post", year:'comfy jam summer 2026',
+    body:'The post office in Shell Hollow has been left in disarray. Take the job, repair the mail the last postmaster abandoned, work out who each piece belongs to, and get to know the town well enough to deliver it.',
+    built:'unreal engine \u00b7 ux design \u00b7 gameplay programming' },
 
-  /* ══ SECOND YEAR \u2014 Seniors Connect ═════════════════════════
-     off to the right. both prototypes are live and clickable */
-  { kind:'cap', x:1050, y:620, title:'Seniors Connect', year:'2nd year',
+  { kind:'brief', x:-918, y:329, w:382, rot:1, z:4, lead:'What I did.',
+    body:'Two minigames, the mail cleaning one and the bbq, plus the in-game store. Some UI alongside that: the main menu and the pause screen. One of eleven people on it, and I came out of it knowing a lot more Unreal than I went in with.' },
+  { kind:'pill', x:-918, y:648, w:255, rot:0, text:'play it on itch', href:'https://emstergrace.itch.io/pidgespost' },
+
+  { kind:'photo', x:-497, y:10, w:382, rot:-2, tape:true, z:4,
+    href:'https://emstergrace.itch.io/pidgespost', src:'/playground/media/pidge-town.webp' },
+  { kind:'photo', x:-138, y:-21, w:370, rot:3,  z:5, src:'/playground/media/pidge-street.webp' },
+  { kind:'photo', x:-469, y:166, w:364, rot:2,  z:6, src:'/playground/media/pidge-shop.webp' },
+  { kind:'photo', x:-125,  y:135, w:382, rot:-3, z:7, src:'/playground/media/pidge-beach.webp' },
+  { kind:'note2', x:299, y:238, rot:0, v:0, arrow:'left', text:'Shell Hollow: a whole summer town to get lost in.' },
+
+  { kind:'photo', x:-497, y:421, w:319, rot:-2, z:4, src:'/playground/media/pidge-wf-bag.webp' },
+  { kind:'photo', x:-212, y:449, w:319, rot:3,  z:6, src:'/playground/media/pidge-journal.webp' },
+  { kind:'note2', x:150, y:472, rot:0, v:3, arrow:'left', text:"the postman's bag: my wireframe, then the screen it became." },
+
+  { kind:'photo', x:-497, y:663, w:319, rot:2,  z:4, src:'/playground/media/pidge-wf-store.webp' },
+  { kind:'photo', x:-212, y:691, w:313, rot:-3, z:6, src:'/playground/media/pidge-store.webp' },
+  { kind:'note2', x:150, y:714, rot:0, v:1, arrow:'left', text:'the stamp stall, the same way round.' },
+
+  { kind:'photo', x:-497, y:905, w:319, rot:3,  z:4, src:'/playground/media/pidge-wf-menu.webp' },
+  { kind:'photo', x:-212, y:933, w:306, rot:-2, z:6, src:'/playground/media/pidge-wf-pause.webp' },
+  { kind:'note2', x:150, y:956, rot:0, v:4, arrow:'left', text:'the main menu and the pause screen.' },
+
+  { kind:'photo', x:-918, y:724, w:357, rot:-2, z:5, src:'/playground/media/pidge-minigame.webp' },
+  { kind:'note2', x:-918, y:966, rot:0, v:2, arrow:'up', text:'I built the mail cleaning minigame, the in-game store and the bbq.' },
+
+  /* ══ SECOND YEAR \u2014 Seniors Connect ═════════════════════════ */
+  { kind:'cap', x:1122, y:510, title:'Seniors Connect', year:'2nd year',
     body:'An app for making friends later in life. Big targets, plain words, and a flow that forgives a wrong tap.' },
 
-  { kind:'photo', x:1050, y:810, w:250, rot:3, tape:true, z:4,
-    href:'SeniorsConnect/index.html', src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98468173_RluDj3r5VQqKrFD.png' },
-  { kind:'photo', x:1248, y:766, w:205, rot:-5, z:6,
-    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98773174_6828ZbmerbM633c.png' },
-  { kind:'photo', x:1062, y:1058, w:235, rot:-4, z:5,
-    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98772952_1Y07m9cu8rUH1vd.png' },
-  { kind:'photo', x:1262, y:1028, w:175, rot:6, z:7,
-    src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98772121_bMSTZYVmf0Mm5FS.png' },
+  { kind:'brief', x:1122, y:765, w:370, rot:1, z:4, lead:'The constraint.',
+    body:'Every screen had to survive somebody who is not certain they are allowed to press anything. That rules out clever gestures, hidden menus and anything that punishes a wrong tap.' },
 
-  { kind:'yt', x:1530, y:700, w:300, rot:-2, z:3, id:'eOFAFMzizOE' },
-  { kind:'note2', x:1530, y:900, rot:0, arrow:'up', text:'the walkthrough.' },
+  { kind:'photo', x:1549, y:510, w:332, rot:3, tape:true, z:4,
+    href:'/SeniorsConnect/index.html', src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98468173_RluDj3r5VQqKrFD.png' },
+  { kind:'photo', x:1826, y:469, w:274, rot:-5, z:6, src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98773174_6828ZbmerbM633c.png' },
+  { kind:'photo', x:1566, y:823, w:313, rot:-4, z:5, src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98772952_1Y07m9cu8rUH1vd.png' },
+  { kind:'photo', x:1836, y:788, w:236, rot:6,  z:7, src:'https://f2.toyhou.se/file/f2-toyhou-se/images/98772121_bMSTZYVmf0Mm5FS.png' },
+  { kind:'note2', x:2150, y:596, rot:0, v:4, arrow:'left', text:'big targets, plain words, no punishment for a wrong tap.' },
 
-  { kind:'figma', x:1530, y:1000, w:380, h:270, rot:-3, z:4, src:'https://embed.figma.com/proto/iZfp0bnOftXJdtzhBEEB5z/Prototypes-GBDA-210?node-id=1-5&scaling=scale-down&content-scaling=fixed&page-id=1%3A3&starting-point-node-id=1%3A5&embed-host=share' },
-  { kind:'figma', x:1905, y:965,  w:220, h:320, rot:4,  z:6, src:'https://embed.figma.com/proto/iZfp0bnOftXJdtzhBEEB5z/Prototypes-GBDA-210?node-id=1-4&p=f&scaling=scale-down&content-scaling=fixed&page-id=1%3A2&starting-point-node-id=1%3A4&embed-host=share' },
-  { kind:'note2', x:1530, y:1320, rot:0, arrow:'right', text:'desktop and mobile, both live \u2014 click through them.' },
-  { kind:'pill',  x:1530, y:1410, w:250, rot:0, text:'open them full size', href:'https://www.figma.com/proto/iZfp0bnOftXJdtzhBEEB5z/Prototypes-GBDA-210?node-id=1-4&starting-point-node-id=1%3A4' },
+  { kind:'yt',    x:1122, y:1046, w:382, rot:-2, z:3, id:'eOFAFMzizOE' },
+  { kind:'note2', x:1122, y:1300, rot:0, v:0, arrow:'up', text:'the walkthrough.' },
 
-  /* ══ HACK THE NORTH 2024 \u2014 Magic Mirror ══════════════════════
-     straight down. the mark sits with its own heading, not adrift
-     somewhere near Jaguar */
-  { kind:'photo', x:-300, y:1400, w:115, rot:-7, plain:true, z:6, src:'playground/media/htn-logo.webp' },
+  { kind:'figma', x:1549, y:1184, w:484, h:344, rot:-3, z:4, src:'https://embed.figma.com/proto/iZfp0bnOftXJdtzhBEEB5z/Prototypes-GBDA-210?node-id=1-5&scaling=scale-down&content-scaling=fixed&page-id=1%3A3&starting-point-node-id=1%3A5&embed-host=share' },
+  { kind:'figma', x:2068, y:1146, w:280, h:408, rot:4,  z:6, src:'https://embed.figma.com/proto/iZfp0bnOftXJdtzhBEEB5z/Prototypes-GBDA-210?node-id=1-4&p=f&scaling=scale-down&content-scaling=fixed&page-id=1%3A2&starting-point-node-id=1%3A4&embed-host=share' },
+  { kind:'note2', x:1549, y:1580, rot:0, v:3, arrow:'up', text:'desktop and mobile, both live, click through them.' },
+  { kind:'pill',  x:1549, y:1730, w:319, rot:0, text:'open them full size', href:'https://www.figma.com/proto/iZfp0bnOftXJdtzhBEEB5z/Prototypes-GBDA-210?node-id=1-4&starting-point-node-id=1%3A4' },
 
-  { kind:'cap', x:-300, y:1555, title:'Magic Mirror', year:'hack the north 2024',
+  /* ══ HACK THE NORTH 2024 \u2014 Magic Mirror ══════════════════════ */
+  { kind:'photo', x:-1064, y:1912, w:128, rot:-7, plain:true, z:6, src:'/playground/media/htn-logo.webp' },
+
+  { kind:'cap', x:-918, y:1928, title:'Magic Mirror', year:'hack the north 2024',
     body:'Say goodbye to cursed garments. A virtual fitting room for the gap between what a product photo promises and what turns up in the parcel.',
     built:'react \u00b7 fastapi \u00b7 stable diffusion \u00b7 cohere \u00b7 shopify api' },
 
-  { kind:'brief', x:-300, y:1800, w:280, rot:-1, z:4, lead:'The problem.',
+  { kind:'brief', x:-918, y:2300, w:370, rot:-1, z:4, lead:'The problem.',
     body:'You cannot try clothes on through a screen, so you buy the wrong thing, send it back, and everyone loses.' },
-  { kind:'brief', x:30, y:1745, w:265, rot:2, z:6, lead:'The goal.',
+  { kind:'brief', x:-512, y:2262, w:347, rot:2,  z:6, lead:'The goal.',
     body:'See the garment on yourself before you pay, and read what the reviews actually say without wading through four hundred of them.' },
-  { kind:'brief', x:-300, y:2010, w:330, rot:1, z:5, lead:'Why it is neat.',
+  { kind:'brief', x:-918, y:2556, w:408, rot:1,  z:5, lead:'Why it is neat.',
     body:'Stable Diffusion segments you out of your own photo and paints the garment back in; Cohere boils a wall of reviews down to the few sentences that would change your mind. Getting generation from hours to minutes was most of the weekend.' },
 
-  { kind:'photo', x:360, y:1900, w:330, rot:-3, tape:true, z:7, src:'playground/media/htn-team.webp' },
-  { kind:'photo', x:430, y:2185, w:300, rot:4, z:8, src:'playground/media/htn-accepted.webp' },
-  { kind:'note2', x:360, y:2360, rot:0, arrow:'up', text:'the email that started it.' },
+  { kind:'photo', x:-520, y:1900, w:408, rot:-3, tape:true, z:7, src:'/playground/media/htn-team.webp' },
+  { kind:'photo', x:-95, y:1988, w:370, rot:4,  z:8, src:'/playground/media/htn-accepted.webp' },
+  { kind:'note2', x:300, y:2062, rot:0, v:2, arrow:'left', text:'the email that started it.' },
 
-  { kind:'yt',   x:-300, y:2270, w:380, rot:-2, z:3, id:'V5Z46uc8aEM' },
-  { kind:'pill', x:-300, y:2520, w:230, rot:0, text:'read the writeup', href:'https://devpost.com/software/magic-mirror-4g1vko' },
-  { kind:'slot', x:110,  y:2500, w:220, h:165, rot:5,  file:'mirror-01.jpg' },
+  { kind:'yt',   x:-90, y:2330, w:452, rot:-2, z:3, id:'V5Z46uc8aEM' },
+  { kind:'pill', x:-918, y:2860, w:293, rot:0, text:'read the writeup', href:'https://devpost.com/software/magic-mirror-4g1vko' },
 
-  /* ══ FIGBUILD 2026 \u2014 Aporia ═════════════════════════════════
-     down and to the right */
-  { kind:'photo', x:1000, y:1720, w:80, rot:7, plain:true, z:6, src:'playground/media/figma.svg' },
+  /* ══ FIGBUILD 2026 \u2014 Aporia ═════════════════════════════════ */
+  { kind:'photo', x:1010, y:2648, w:89, rot:7, plain:true, z:6, src:'/playground/media/figma.svg' },
 
-  { kind:'cap', x:1000, y:1850, title:'Aporia', year:'figbuild 2026',
+  { kind:'cap', x:1122, y:2652, title:'Aporia', year:'figbuild 2026',
     body:'You constantly have things stuck on the tip of your tongue. You cannot see it, cannot measure it, and cannot resolve what you cannot perceive.',
     built:'react \u00b7 typescript \u00b7 tailwind \u00b7 framer motion \u00b7 radix \u00b7 figma' },
 
-  { kind:'brief', x:1000, y:2090, w:285, rot:1, z:4, lead:'The problem.',
+  { kind:'brief', x:1122, y:2962, w:370, rot:1,  z:4, lead:'The problem.',
     body:'Unfinished conversations and half-answered questions keep running in the background. They cost you attention all day and never announce themselves.' },
-  { kind:'brief', x:1330, y:2040, w:265, rot:-2, z:6, lead:'The goal.',
-    body:'Make the open loops visible. The glasses notice the signals \u2014 how you phrase a thing, a micro-expression, a physiological tell \u2014 and log them quietly instead of interrupting.' },
-  { kind:'brief', x:1000, y:2310, w:330, rot:-1, z:5, lead:'Why it is neat.',
+  { kind:'brief', x:1556, y:3128, w:347, rot:-2, z:6, lead:'The goal.',
+    body:'Make the open loops visible. The glasses notice the signals, how you phrase a thing, a micro-expression, a physiological tell, and log them quietly instead of interrupting.' },
+  { kind:'brief', x:1122, y:3238, w:421, rot:-1, z:5, lead:'Why it is neat.',
     body:'The loops surface as a constellation you steer with your eyes: a gravity-well map where each unresolved thing is a node you pull toward clarity, process, or letting go. On-device only, and built to be put down rather than depended on.' },
 
-  { kind:'photo', x:1660, y:1760, w:300, rot:3, tape:true, z:5, src:'playground/media/aporia-collage.webp' },
-  { kind:'photo', x:1620, y:2200, w:270, rot:-4, z:7, src:'playground/media/aporia-team.webp' },
-  { kind:'note2', x:1620, y:2620, rot:0, arrow:'up', text:'the Figma Breakers, four of us, two days.' },
+  { kind:'photo', x:1556, y:2616, w:357, rot:3,  tape:true, z:5, src:'/playground/media/aporia-collage.webp' },
+  { kind:'photo', x:1900, y:2700, w:319, rot:-4, z:7, src:'/playground/media/aporia-team.webp' },
+  { kind:'note2', x:1915, y:3134, rot:0, v:1, arrow:'up', text:'the Figma Breakers, four of us, two days.' },
 
-  { kind:'yt',   x:1000, y:2580, w:390, rot:2, z:3, id:'c0SbD2D0-JM' },
-  { kind:'pill', x:1000, y:2840, w:230, rot:0, text:'read the writeup', href:'https://devpost.com/software/aporia' },
-  { kind:'slot', x:1430, y:2820, w:220, h:165, rot:-4, file:'aporia-01.jpg' },
+  { kind:'yt',   x:1560, y:3430, w:452, rot:2, z:3, id:'c0SbD2D0-JM' },
+  { kind:'pill', x:1122, y:3560, w:293, rot:0, text:'read the writeup', href:'https://devpost.com/software/aporia' },
+
+  /* ══ uXPERIENCE \u2014 EndoQuest ══════════════════════════════════
+     No screenshots for this one yet, so it is a text cluster: three
+     briefs leaning on each other rather than a stack. */
+  { kind:'cap', x:-918, y:3458, title:'EndoQuest', year:'uxperience \u00b7 semifinalist',
+    body:'Endometriosis takes seven to ten years to diagnose, and most of that delay is not medical. A narrative RPG that screens for it, and hands you the paperwork to be believed.',
+    built:'react \u00b7 typescript \u00b7 node \u00b7 openai \u00b7 snowflake \u00b7 rag' },
+
+  { kind:'brief', x:-918, y:3789, w:370, rot:-1, z:4, lead:'The problem.',
+    body:'Seven to ten years to a diagnosis, and the delay is mostly dismissal: being told the pain is normal, often enough that you stop bringing it up.' },
+  { kind:'brief', x:-517, y:3741, w:350, rot:2,  z:6, lead:'The goal.',
+    body:'Make a screening you would actually finish. You fight personified versions of the barriers, the Doubt Weaver and the Ache Beneath, and the combat verbs are the assessment: probe, soothe, observe, resist.' },
+  { kind:'brief', x:-918, y:4088, w:421, rot:1,  z:5, lead:'Why it is neat.',
+    body:'It ends in three documents rather than a score: a journal that tells you that you were not imagining it, a clinical summary a doctor can read in a minute, and a benefits navigator pointing at services that match your symptoms.' },
+
+  { kind:'note2', x:-452, y:4095, rot:0, v:3, arrow:'left', text:'four of us, and the weirdness was the point.' },
+  { kind:'pill', x:-918, y:4415, w:293, rot:0, text:'read the writeup', href:'https://devpost.com/software/endoquest-the-missing-map' },
+
+  /* ══ ART ══════════════════════════════════════════════════════
+     Not a project. The drawing that happens anyway. */
+  { kind:'cap', x:1122, y:3880, title:'Art', year:'nobody is paying me for this',
+    body:'The drawing I do when there is no brief and no deadline, which in practice means D&D characters I am about to inflict on a table.' },
+
+  { kind:'photo', x:1560, y:3856, w:470, rot:-2, tape:true, z:5, src:'/playground/media/dnd-warlock.gif' },
+  { kind:'note2', x:2072, y:3960, rot:0, v:3, arrow:'left', text:'a homebrew warlock of mine. Frankenstein, but make it a patron problem.' },
 ];
 
 
@@ -644,10 +776,47 @@ function hydrate() {
   }
 }
 
+/* Five different arrows, not one gesture reused. A loop, a swoosh, an
+   arc over the top, a wave and a dip, so two asides near each other
+   never look like the same stamp twice.
+
+   Every stem starts at the LEFT EDGE ON THE MID-LINE of its box, and the
+   aside centres the arrow against its text, so the line joins the middle
+   of the paragraph rather than trailing off the last line.
+
+   Only the right-facing five are drawn by hand; left is those mirrored
+   and up/down are them turned a quarter turn, computed rather than
+   redrawn, so the same stem rule holds in every direction. */
+const ARROW_S = 0.62;   /* how big an arrow is painted, relative to its drawing */
 const ARROWS = {
-  right: 'M2 14 C 34 12, 62 8, 84 2 M74 0 L86 2 L79 11',
-  left:  'M86 14 C 54 12, 26 8, 4 2 M14 0 L2 2 L9 11',
-  up:    'M8 30 C 10 18, 18 8, 34 3 M24 0 L36 3 L30 13',
+  right: { w:110, h:64, v:[
+    /* loop */ { d:'M3 32 C 14 34, 24 33, 33 28 C 21 21, 23 7, 37 9 C 49 11, 45 25, 31 29 C 49 23, 74 14, 96 7', hd:'M83 3 L100 6 L87 19' },
+    /* swoosh */ { d:'M3 32 C 22 36, 44 34, 62 26 C 76 20, 88 13, 98 7', hd:'M85 3 L102 6 L90 19' },
+    /* overarc */ { d:'M3 32 C 8 12, 28 2, 50 7 C 70 12, 85 21, 96 33', hd:'M84 23 L99 35 L82 41' },
+    /* wave */ { d:'M3 32 C 13 21, 23 40, 35 30 C 46 21, 53 38, 65 29 C 75 22, 85 25, 96 21', hd:'M84 14 L100 20 L86 31' },
+    /* dip */ { d:'M3 28 C 15 38, 28 45, 42 40 C 56 35, 60 21, 73 14 C 81 10, 89 8, 97 6', hd:'M85 2 L101 5 L89 18' },
+  ]},
+  left: { w:110, h:64, v:[
+    /* loop */ { d:'M107 32 C 96 34, 86 33, 77 28 C 89 21, 87 7, 73 9 C 61 11, 65 25, 79 29 C 61 23, 36 14, 14 7', hd:'M27 3 L10 6 L23 19' },
+    /* swoosh */ { d:'M107 32 C 88 36, 66 34, 48 26 C 34 20, 22 13, 12 7', hd:'M25 3 L8 6 L20 19' },
+    /* overarc */ { d:'M107 32 C 102 12, 82 2, 60 7 C 40 12, 25 21, 14 33', hd:'M26 23 L11 35 L28 41' },
+    /* wave */ { d:'M107 32 C 97 21, 87 40, 75 30 C 64 21, 57 38, 45 29 C 35 22, 25 25, 14 21', hd:'M26 14 L10 20 L24 31' },
+    /* dip */ { d:'M107 28 C 95 38, 82 45, 68 40 C 54 35, 50 21, 37 14 C 29 10, 21 8, 13 6', hd:'M25 2 L9 5 L21 18' },
+  ]},
+  down: { w:64, h:110, v:[
+    /* loop */ { d:'M32 3 C 30 14, 31 24, 36 33 C 43 21, 57 23, 55 37 C 53 49, 39 45, 35 31 C 41 49, 50 74, 57 96', hd:'M61 83 L58 100 L45 87' },
+    /* swoosh */ { d:'M32 3 C 28 22, 30 44, 38 62 C 44 76, 51 88, 57 98', hd:'M61 85 L58 102 L45 90' },
+    /* overarc */ { d:'M32 3 C 52 8, 62 28, 57 50 C 52 70, 43 85, 31 96', hd:'M41 84 L29 99 L23 82' },
+    /* wave */ { d:'M32 3 C 43 13, 24 23, 34 35 C 43 46, 26 53, 35 65 C 42 75, 39 85, 43 96', hd:'M50 84 L44 100 L33 86' },
+    /* dip */ { d:'M36 3 C 26 15, 19 28, 24 42 C 29 56, 43 60, 50 73 C 54 81, 56 89, 58 97', hd:'M62 85 L59 101 L46 89' },
+  ]},
+  up: { w:64, h:110, v:[
+    /* loop */ { d:'M32 107 C 34 96, 33 86, 28 77 C 21 89, 7 87, 9 73 C 11 61, 25 65, 29 79 C 23 61, 14 36, 7 14', hd:'M3 27 L6 10 L19 23' },
+    /* swoosh */ { d:'M32 107 C 36 88, 34 66, 26 48 C 20 34, 13 22, 7 12', hd:'M3 25 L6 8 L19 20' },
+    /* overarc */ { d:'M32 107 C 12 102, 2 82, 7 60 C 12 40, 21 25, 33 14', hd:'M23 26 L35 11 L41 28' },
+    /* wave */ { d:'M32 107 C 21 97, 40 87, 30 75 C 21 64, 38 57, 29 45 C 22 35, 25 25, 21 14', hd:'M14 26 L20 10 L31 24' },
+    /* dip */ { d:'M28 107 C 38 95, 45 82, 40 68 C 35 54, 21 50, 14 37 C 10 29, 8 21, 6 13', hd:'M2 25 L5 9 L18 21' },
+  ]},
 };
 
 function el(tag, cls, html) {
@@ -679,16 +848,24 @@ function build(it, i) {
   wrap.style.left = it.x + 'px';
   wrap.style.top  = it.y + 'px';
   if (it.rot) wrap.style.rotate = it.rot + 'deg';
-  // things on a desk sit on top of each other; z says which is on top
-  if (it.z) wrap.style.zIndex = it.z;
+  /* Things on a desk sit on top of each other; z says which is on top.
+     But the overlap is decoration, and decoration does not get to cover
+     something a reader needs: a title, a tech stack, a link to go and
+     play the thing. Those sit above every photo no matter what the
+     item table says, so a later nudge to a collage cannot bury them. */
+  const ABOVE_THE_COLLAGE = { cap:40, pill:40, note:40, brief:30 };
+  wrap.style.zIndex = ABOVE_THE_COLLAGE[it.kind] || it.z || '';
   // staggered so the desk assembles rather than flashing in
   wrap.style.animationDelay = Math.min(i * 28, 900) + 'ms';
 
   if (it.kind === 'note') {
     const n = el('div', 'note');
-    n.innerHTML = `<h1>${esc(it.title)}</h1><p>${esc(it.body)}</p>
-                   <p>Drag the desk around and have a poke.</p>
-                   <span class="sign">${esc(it.sign)}</span>`;
+    n.innerHTML = `<div class="head"><h1>${esc(it.title)}</h1>` +
+      (it.mug ? `<img class="mug" src="${it.mug}" alt="" draggable="false">` : '') +
+      `</div>
+       <p>${esc(it.body)}</p>
+       <p>Scroll to move around, or click and drag.</p>
+       <span class="sign">${esc(it.sign)}</span>`;
     wrap.appendChild(n);
   }
 
@@ -725,10 +902,18 @@ function build(it, i) {
   }
 
   else if (it.kind === 'note2') {
-    const n = el('div', 'scribble');
-    n.innerHTML = `${esc(it.text)}
-      <svg width="88" height="${it.arrow === 'up' ? 32 : 16}" viewBox="0 0 88 ${it.arrow === 'up' ? 32 : 16}"
-           aria-hidden="true"><path d="${ARROWS[it.arrow] || ARROWS.right}"/></svg>`;
+    const dir = ARROWS[it.arrow] ? it.arrow : 'right';
+    const a = ARROWS[dir];
+    /* v picks which of the five; without one, walk them by position so
+       neighbouring asides still differ */
+    const v = a.v[(it.v != null ? it.v : i) % a.v.length];
+    const n = el('div', 'scribble a-' + dir);
+    /* ARROW_S shrinks the painted box while the viewBox stays, so one
+       number moves every arrow closer to what it points at */
+    n.innerHTML = `<span>${esc(it.text)}</span>
+      <svg width="${Math.round(a.w * ARROW_S)}" height="${Math.round(a.h * ARROW_S)}"
+           viewBox="0 0 ${a.w} ${a.h}" aria-hidden="true">
+        <path d="${v.d}"/><path d="${v.hd}"/></svg>`;
     wrap.appendChild(n);
   }
 
@@ -760,102 +945,87 @@ function build(it, i) {
     lazies.push(wrap);
   }
 
-  else if (it.kind === 'slot') {
-    const n = el('div', 'slot');
-    n.style.width = it.w + 'px';
-    n.style.height = it.h + 'px';
-    if (it.tape) n.classList.add('taped');
-    n.innerHTML = `drop in<code>${esc(it.file)}</code>`;
-    wrap.appendChild(n);
-    // if the file does turn up, swap the placeholder for the real thing.
-    // nothing fires if it 404s, so the dashed outline simply stays.
-    const swap = html => {
-      const f = frame({ w: it.w, tape: it.tape }, html);
-      wrap.replaceChild(f, n);
-    };
-    if (/\.(mp4|webm|mov)$/i.test(it.file)) {
-      const probe = document.createElement('video');
-      probe.muted = true;
-      probe.preload = 'metadata';
-      probe.addEventListener('loadeddata', () => swap(
-        `<video src="${MEDIA + it.file}" autoplay muted loop playsinline
-                preload="none" disablepictureinpicture></video>`), { once: true });
-      probe.src = MEDIA + it.file;
-    } else {
-      const probe = new Image();
-      probe.onload = () => swap(`<img src="${MEDIA + it.file}" alt="" draggable="false">`);
-      probe.src = MEDIA + it.file;
-    }
-  }
-
-  else if (it.kind === 'stamps') {
-    wrap.appendChild(stampPad());
-  }
-
   world.appendChild(wrap);
-}
-
-/* the one thing on the desk you can play with: pick a stamp, then
-   stamp the paper. it is pointless, which is the point. */
-function stampPad() {
-  const pad = el('div', 'stamp-pad');
-  pad.innerHTML = `<h3>Stamp the desk</h3>
-    <p>Pick one, then press anywhere on the paper.</p>
-    <div class="stamp-row">
-      ${['✦','❤','☕','✿','★','◈'].map((g, i) =>
-        `<button type="button" data-g="${g}" aria-pressed="${i === 0}">${g}</button>`).join('')}
-    </div>`;
-  const btns = [...pad.querySelectorAll('button')];
-  let active = '✦';
-  btns.forEach(b => b.addEventListener('click', e => {
-    e.stopPropagation();
-    active = b.dataset.g;
-    btns.forEach(o => o.setAttribute('aria-pressed', o === b));
-  }));
-  // pressing the paper (not a thing on it) leaves a mark
-  desk.addEventListener('click', e => {
-    if (dragged) return;                       // a pan is not a stamp
-    if (e.target.closest('.frame, .note, .stamp-pad, .cap, .chrome, .slot')) return;
-    const p = toWorld(e.clientX, e.clientY);
-    const s = el('span', 'stamped', active);
-    s.style.left = (p.x - 14) + 'px';
-    s.style.top  = (p.y - 14) + 'px';
-    s.style.rotate = (Math.random() * 30 - 15) + 'deg';
-    world.appendChild(s);
-  });
-  return pad;
 }
 
 ITEMS.forEach(build);
 
-/* ── panning ───────────────────────────────────────────────── */
-let tx = 0, ty = 0, dragged = false;
+/* ── the pixel blend ───────────────────────────────────────────
+   The house title treatment: runs of three characters in the pixel face,
+   then two in the italic, alternating. Same RUNS as the case studies, so
+   a title here reads as the same voice as a title there. Non-ASCII is
+   left alone; the pixel face has no glyph for it. */
+const RUNS = [3, 2];
+function fontMix(el) {
+  const text = el.textContent;
+  let html = '', runIdx = 0, runCount = 0, usePx = true;
+  for (let i = 0; i < text.length; i++) {
+    const cp = text.codePointAt(i);
+    if (cp > 127) { html += String.fromCodePoint(cp); if (cp > 0xFFFF) i++; continue; }
+    const c = text[i];
+    if (c === ' ') { html += ' '; continue; }
+    html += `<span class="${usePx ? 'px' : 'di'}">${esc(c)}</span>`;
+    if (++runCount >= RUNS[runIdx % 2]) { usePx = !usePx; runIdx++; runCount = 0; }
+  }
+  el.innerHTML = html;
+}
+document.querySelectorAll('.note h1, .cap h2').forEach(fontMix);
+
+/* ── panning and zoom ──────────────────────────────────────────
+   The world is translated AND scaled, so every conversion between the
+   window and the desk has to divide by the zoom. Miss one and the map,
+   the drag and the lazy loader all disagree about where things are. */
+/* ZBASE is the scale the desk opens at, and it is what the readout calls
+   100%. The internal number is a raw CSS scale; nobody sees it. Zooming
+   in goes to three times the opening view, which is enough to read a
+   wireframe label. */
+const ZBASE = 0.8, ZMIN = ZBASE * 0.3, ZMAX = ZBASE * 3;
+let tx = 0, ty = 0, zoom = ZBASE, dragged = false;
 
 /* The desk is a curated thing, not an infinite void — keep the window
    inside it so you can never drift off into blank graph paper and lose
    your way back. */
 function clamp() {
   if (!bounds) return;
-  const lo = innerWidth  - bounds.x2, hi = -bounds.x1;
-  const lo2 = innerHeight - bounds.y2, hi2 = -bounds.y1;
+  const lo = innerWidth  - bounds.x2 * zoom, hi = -bounds.x1 * zoom;
+  const lo2 = innerHeight - bounds.y2 * zoom, hi2 = -bounds.y1 * zoom;
   // if the desk is smaller than the window in an axis, centre it instead
   tx = lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, tx));
   ty = lo2 > hi2 ? (lo2 + hi2) / 2 : Math.min(hi2, Math.max(lo2, ty));
 }
 function apply() {
   clamp();
-  world.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+  world.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${zoom})`;
   hydrate();
   drawMap();
 }
 function toWorld(clientX, clientY) {
-  return { x: clientX - tx, y: clientY - ty };
+  return { x: (clientX - tx) / zoom, y: (clientY - ty) / zoom };
+}
+/* zoom about a fixed point on the screen, so the thing under the cursor
+   (or the middle of the window) stays where it is */
+function setZoom(z, ax, ay) {
+  const next = Math.min(ZMAX, Math.max(ZMIN, z));
+  if (next === zoom) return;
+  const cx = ax == null ? innerWidth / 2 : ax;
+  const cy = ay == null ? innerHeight / 2 : ay;
+  const before = toWorld(cx, cy);
+  zoom = next;
+  tx = cx - before.x * zoom;
+  ty = cy - before.y * zoom;
+  apply();
+  showZoom();
+}
+function showZoom() {
+  mmPct.textContent = Math.round(zoom / ZBASE * 100) + '%';
+  mmIn.disabled  = zoom >= ZMAX - 1e-6;
+  mmOut.disabled = zoom <= ZMIN + 1e-6;
 }
 function centre() {
   // put the welcome note near the top left of the window, with a margin
   const home = ITEMS.find(i => i.kind === 'note') || { x: 0, y: 0 };
-  tx = -home.x + Math.min(90, innerWidth * 0.06);
-  ty = -home.y + Math.min(70, innerHeight * 0.08);
+  tx = -home.x * zoom + Math.min(90, innerWidth * 0.06);
+  ty = -home.y * zoom + Math.min(70, innerHeight * 0.08);
   apply();
 }
 
@@ -884,13 +1054,19 @@ function endDrag(e) {
   try { desk.releasePointerCapture(pid); } catch (err) {}
   pid = null;
   // `dragged` stays true until the next pointerdown, so the click that
-  // follows this drag can see it and skip stamping
+  // follows this drag can see it and ignore it
 }
 desk.addEventListener('pointerup', endDrag);
 desk.addEventListener('pointercancel', endDrag);
 
-// the wheel pans rather than scrolls — shift swaps the axis, as usual
+// the wheel pans rather than scrolls — shift swaps the axis, as usual,
+// and ctrl or cmd zooms about the cursor the way a map does
 desk.addEventListener('wheel', e => {
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    setZoom(zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12), e.clientX, e.clientY);
+    return;
+  }
   e.preventDefault();
   if (e.shiftKey) { tx -= e.deltaY + e.deltaX; }
   else { tx -= e.deltaX; ty -= e.deltaY; }
@@ -945,24 +1121,97 @@ function measure() {
 
   // one dot per thing, so the map reads as a real layout
   mm.querySelectorAll('b').forEach(b => b.remove());
+  /* The map is drawn to the desk's own proportions. It used to be a fixed
+     108x72 box over a world twice as tall as it is wide, which squashed
+     everything and is most of why it did not read as a map. */
+  mm.style.height = Math.round(mm.clientWidth * bounds.h / bounds.w) + 'px';
+
+  const PIC = { photo:1, yt:1, figma:1 };
+  mm.querySelectorAll('u').forEach(u => u.remove());
   ITEMS.forEach(it => {
-    const b = el('b');
-    b.style.left = ((it.x - bounds.x1) / bounds.w * 100) + '%';
-    b.style.top  = ((it.y - bounds.y1) / bounds.h * 100) + '%';
+    const w = it.w || (it.kind === 'note' ? 560 : 300);
+    const h = it.h || (it.kind === 'note' ? 430 : w * 0.62);
+    const b = el('b', 'blk' + (PIC[it.kind] ? ' pic' : ''));
+    b.style.left   = ((it.x - bounds.x1) / bounds.w * 100) + '%';
+    b.style.top    = ((it.y - bounds.y1) / bounds.h * 100) + '%';
+    b.style.width  = (w / bounds.w * 100) + '%';
+    b.style.height = (h / bounds.h * 100) + '%';
     mm.insertBefore(b, mmView);
+    /* and each project says its own name, which is what turns a diagram
+       into something you can navigate by */
+    if (it.kind === 'cap') {
+      const u = el('u', '', esc(it.title));
+      u.style.left = ((it.x - bounds.x1) / bounds.w * 100) + '%';
+      u.style.top  = ((it.y - bounds.y1) / bounds.h * 100) + '%';
+      mm.insertBefore(u, mmView);
+    }
   });
 }
 function drawMap() {
   if (!bounds) return;
   // the window, expressed in world coordinates, drawn on the map
-  const vx = -tx, vy = -ty;
+  const vx = -tx / zoom, vy = -ty / zoom;
   mmView.style.left   = ((vx - bounds.x1) / bounds.w * 100) + '%';
   mmView.style.top    = ((vy - bounds.y1) / bounds.h * 100) + '%';
-  mmView.style.width  = (innerWidth  / bounds.w * 100) + '%';
-  mmView.style.height = (innerHeight / bounds.h * 100) + '%';
+  mmView.style.width  = (innerWidth  / zoom / bounds.w * 100) + '%';
+  mmView.style.height = (innerHeight / zoom / bounds.h * 100) + '%';
 }
+
+/* ── the map as a way to get around ────────────────────────────
+   Press anywhere on it to jump there, or take hold of the lit rectangle
+   and drag. Both end up in the same place: work out the world point the
+   pointer is over, and put the middle of the window on it. */
+const mmPct = document.getElementById('mmPct');
+const mmIn  = document.getElementById('mmIn');
+const mmOut = document.getElementById('mmOut');
+function mapGoto(e, centreOnPointer) {
+  const r = mm.getBoundingClientRect();
+  const fx = (e.clientX - r.left) / r.width;
+  const fy = (e.clientY - r.top) / r.height;
+  const wx = bounds.x1 + fx * bounds.w;
+  const wy = bounds.y1 + fy * bounds.h;
+  tx = innerWidth / 2 - wx * zoom;
+  ty = innerHeight / 2 - wy * zoom;
+  apply();
+}
+let mmDrag = false;
+mm.addEventListener('pointerdown', e => {
+  mmDrag = true;
+  mm.classList.add('dragging');
+  /* the jump happens FIRST. setPointerCapture throws on a pointer id the
+     browser does not recognise, and when it sat above this line that
+     exception took the pan down with it. Capture is a nicety; moving is
+     the point. */
+  mapGoto(e);
+  try { mm.setPointerCapture(e.pointerId); } catch (err) {}
+  e.preventDefault();
+  e.stopPropagation();
+});
+mm.addEventListener('pointermove', e => { if (mmDrag) mapGoto(e); });
+const mmEnd = e => {
+  if (!mmDrag) return;
+  mmDrag = false;
+  mm.classList.remove('dragging');
+  try { mm.releasePointerCapture(e.pointerId); } catch (err) {}
+};
+mm.addEventListener('pointerup', mmEnd);
+mm.addEventListener('pointercancel', mmEnd);
+/* the map sits over the desk, so its own wheel must not also pan it */
+mm.addEventListener('wheel', e => e.stopPropagation(), { passive: true });
+
+mmIn.addEventListener('click',  () => setZoom(zoom * 1.25));
+mmOut.addEventListener('click', () => setZoom(zoom / 1.25));
+document.getElementById('mmFit').addEventListener('click', () => {
+  /* the whole desk in the window, which is the one view the map cannot
+     show you by dragging */
+  setZoom(Math.min(innerWidth / bounds.w, innerHeight / bounds.h) * 0.94);
+  tx = innerWidth / 2 - (bounds.x1 + bounds.w / 2) * zoom;
+  ty = innerHeight / 2 - (bounds.y1 + bounds.h / 2) * zoom;
+  apply();
+});
 measure();
 centre();
+showZoom();
 addEventListener('resize', () => { apply(); });
 // images settle at their real height a moment after they decode, which can
 // bring a neighbour into range
@@ -991,7 +1240,7 @@ addEventListener('load', hydrate);
   addEventListener('mousedown',  () => post({ type: 'iframeDown' }));
   addEventListener('mouseup',    () => post({ type: 'iframeUp' }));
   addEventListener('mouseleave', () => post({ type: 'iframeLeave' }));
-  const HOVER = 'a, button, .frame, .note, .stamp-pad';
+  const HOVER = 'a, button, .frame, .note';
   addEventListener('mouseover', e => { if (e.target.closest(HOVER)) post({ type: 'iframeHover', on: true }); });
   addEventListener('mouseout',  e => { if (e.target.closest(HOVER)) post({ type: 'iframeHover', on: false }); });
 })();
