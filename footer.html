@@ -7,53 +7,95 @@
   <link rel="icon" type="image/png" href="/HenLogo.png" />
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap');
+    /* Satoshi, same as the rest of the site. This file is opened on its
+       own as well as injected, so it carries its own @font-face rather
+       than relying on the shell's; absolute paths, because the footer is
+       pulled into routes several directories deep. */
+    @font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-300.woff2') format('woff2');font-weight:300;font-display:swap}
+    @font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-400.woff2') format('woff2');font-weight:400;font-display:swap}
+    @font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-500.woff2') format('woff2');font-weight:500;font-display:swap}
+    @font-face{font-family:'Satoshi';src:url('/fonts/Satoshi-700.woff2') format('woff2');font-weight:700;font-display:swap}
 
     :root{
       --fg:#f1faee;
       --outline:rgba(168,218,220,0.18);
+      /* ft- prefixed on purpose: the shell already owns --accent and sets
+         it per scene, and this stylesheet is injected into that page. */
+      --ft-accent:#a8dadc;
+      --ft-bg:#0f1419;
 
       /* Tighter scene so the “back to top” sits close */
-      --stage-w: 980;
-      --stage-h: 175; /* was 240 */
+      /* Scaled up as one piece when the social row came out. Everything
+         on the stage is a percentage of these two, so moving both by the
+         same factor (980x175 -> 1300x232) makes the art bigger without
+         disturbing a single position. */
+      --stage-w: 1300;
+      --stage-h: 300;
 
       /* Hen */
       --hen-left: 40%;
       --hen-bottom: 0%;
-      --hen-w: 11.25%;
+      --hen-w: 15.5%;
 
       /* Bubble: tiny nudge LEFT, and a bit higher to eat blank space */
-      --bubble-left-base: 46%;
-      --bubble-w: 17%;
+      --bubble-left-base: 49.5%;
+      --bubble-w: 12.5%;
       /* previously + (0.6 * width) + ~0.5% ; now slide left ~0.4% */
       --bubble-left: calc(var(--bubble-left-base) + (0.4 * var(--bubble-w)) - 0.4%);
-      --bubble-bottom: 44%; /* was 38% */
+      --bubble-bottom: 52%;
 
       /* GIF: to the RIGHT of Hen, centered correctly, under the bubble */
-      --sword-w: 17%;
+      --sword-w: 5%;
       /* center = hen left + hen width + gap + (gif width / 2) */
-      --sword-left: calc(var(--hen-left) + var(--hen-w) + 7.5% + (var(--sword-w) / 2));
+      /* the gap closed from 7.5% to 3%: with the orb finally sized off the
+         stage rather than off its own gif, the old spacing left it
+         stranded out on its own, and 1.5% brings it in beside her */
+      --sword-left: calc(var(--hen-left) + var(--hen-w) + 1.5% + (var(--sword-w) / 2));
       --sword-bottom: 11.5%;
     }
 
+    /* Colours only. The footer knew one set of them, so in light mode it
+       kept painting near-white text and a pale cyan arrow onto the pale
+       background the shell swaps underneath it: both were there, just
+       invisible. The geometry above stays in plain :root, or the whole
+       stage collapses on any page that is not in light mode. */
+    :root[data-theme="light"]{
+      --fg:#12181f;
+      --outline:rgba(18,24,31,0.12);
+      --ft-accent:#2b7a82;
+      --ft-bg:#eef4f6;
+    }
+
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;color:var(--fg);font-family:'Montserrat',-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Ubuntu,'Helvetica Neue',Arial,sans-serif}
+    /* Only the reset stays global. The colour and the face belong on the
+       footer itself: this stylesheet is injected into the shell's head,
+       where an html,body rule lands on the whole site and, arriving last,
+       outranks the shell's own body rule. It was quietly setting every
+       page's body font to Montserrat. */
+    html,body{margin:0;padding:0}
 
     /* Footer shell (minimal spacing above the scene) */
     footer.hen-footer{
+      color:var(--fg);
+      font-family:'Satoshi',-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Ubuntu,'Helvetica Neue',Arial,sans-serif;
       width:100%;
       display:grid;
       place-items:center;
       gap:.02rem;                 /* almost zero gap */
       padding:.25rem 1rem 1.35rem;/* tighter top padding */
       border-top:1px solid var(--outline);
-      background:#0f1419;
+      background:var(--ft-bg);
       scroll-margin-top: 80px;
     }
 
     .dangerous-stage{
       position:relative;
-      width:min(var(--stage-w)*1px, 96vw);
+      /* 100% matters as much as the other two: in the shell this footer
+         sits in a column beside the rail, about 1080px wide, and a stage
+         asking for 1300 overflowed it to the right and threw the art
+         128px off centre. Standalone it had the whole viewport, so it
+         looked fine and the fault only showed where it is actually used. */
+      width:min(var(--stage-w)*1px, 96vw, 100%);
       aspect-ratio: var(--stage-w) / var(--stage-h);
       margin-inline:auto;
       isolation:isolate;
@@ -63,23 +105,23 @@
 
     /* Hen. She is four animated webps now rather than one still frame:
        an idle that loops, and three flourishes that play over the top of
-       it now and then. Two stacked layers so the swap can cross fade;
-       the flourishes were cut from separate takes, so their first and
-       last frames do not line up exactly with the idle pose and a hard
-       cut shows as a twitch. 180ms of overlap hides it. */
+       it now and then. Two stacked layers, but no cross fade: all four
+       were cut to begin and end on the one standing pose the three takes
+       share, so the swap has nothing to hide. */
     .hen-sprite{
       position:absolute; left:var(--hen-left); bottom:var(--hen-bottom);
       width:var(--hen-w); line-height:0;
       filter:drop-shadow(0 2px 0 rgba(0,0,0,.2));
+      /* on the wrapper, so the idle and all three flourishes mirror
+         together and stay registered with each other */
+      transform:scaleX(-1);
     }
     .hen-sprite .base{ display:block; width:100%; height:auto }
     .hen-sprite .flourish{
       position:absolute; inset:0; width:100%; height:auto;
       opacity:0; pointer-events:none;
     }
-    .hen-sprite .base, .hen-sprite .flourish{ transition:opacity 180ms linear }
     .hen-sprite .flourish.on{ opacity:1 }
-    .hen-sprite .base.under{ opacity:0 }
     /* this art is drawn, not pixel art: the stage's blanket pixelated
        rule turns her edges into staircases */
     .hen-sprite img{ image-rendering:auto }
@@ -97,10 +139,17 @@
     .sword-btn{
       position:absolute; left:var(--sword-left); bottom:var(--sword-bottom);
       transform:translate(-50%,0); /* center on computed left */
-      cursor:pointer; background:transparent; border:0; padding:0
+      cursor:pointer; background:transparent; border:0; padding:0;
+      /* The width belongs HERE, on the box whose containing block is the
+         stage. It used to sit on the img inside, where a percentage
+         resolves against this button instead, and this button is
+         shrink-to-fit around that same img: 17% of the gif's own 288px,
+         so the orb rendered at 49px no matter what the stage did. It
+         never scaled with anything. */
+      width:var(--sword-w);
     }
     .sword-btn img{
-      width:var(--sword-w); height:auto; display:block;
+      width:100%; height:auto; display:block;
       filter:drop-shadow(0 4px 12px rgba(69,123,157,.45));
       transition:transform 160ms ease,filter 160ms ease
     }
@@ -109,31 +158,19 @@
       filter:drop-shadow(0 6px 16px rgba(42,157,143,.55))
     }
 
-    /* Socials */
-    .social-links{display:flex;gap:1.25rem;align-items:center;justify-content:center;margin-top:.2rem;flex-wrap:wrap}
-    .social-icon{
-      width:52px;height:52px;border-radius:50%;
-      background:rgba(168,218,220,0.1); border:2px solid rgba(168,218,220,0.3);
-      display:flex;align-items:center;justify-content:center; position:relative; overflow:hidden;transition:all .3s ease; backdrop-filter:blur(10px)
-    }
-    .social-icon::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent,rgba(168,218,220,.2),transparent);transition:left .5s}
-    .social-icon:hover{transform:translateY(-3px) scale(1.05);border-color:rgba(168,218,220,.6);background:rgba(168,218,220,.2);box-shadow:0 8px 25px rgba(168,218,220,.3)}
-    .social-icon:hover::before{left:100%}
-    .social-icon svg{width:22px;height:22px;stroke:#a8dadc;transition:all .3s ease;z-index:1}
-    .social-icon:hover svg{stroke:#f1faee;transform:scale(1.1)}
-    /* this file's styles are injected into the shell, and .social-tooltip
-       is also the rail's class name, so the blur landed on five rail
-       tooltips that are opacity:0 until hovered. A backdrop-filter is a
-       compositing layer whether or not you can see through it, so the
-       glass waits for the hover now. */
+    /* The footer's own social buttons are gone, but this rule stays.
+       This file's styles are injected into the shell, and .social-tooltip
+       is also the rail's class name there, so deleting it would restyle
+       five tooltips that have nothing to do with the footer. The hover
+       rule that used to carry the blur went with the buttons: a
+       backdrop-filter is a compositing layer whether or not you can see
+       through it, and it was landing on all five while they sat at
+       opacity 0. */
     .social-tooltip{position:absolute;bottom:120%;left:50%;transform:translateX(-50%);padding:.3rem .5rem;border-radius:.5rem;font-size:.8rem;background:rgba(15,20,25,.8);color:#f1faee;opacity:0;pointer-events:none;transition:all .2s ease;border:1px solid rgba(168,218,220,.4);z-index:100;font-weight:500}
-    .social-icon:hover .social-tooltip{opacity:1;transform:translateX(-50%) translateY(-5px);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
 
     .credit{text-align:center;opacity:.8;font-size:.95rem;margin:.2rem 0 0}
 
     @media (max-width:640px){
-      .social-links{gap:1rem}
-      .social-icon{width:56px;height:56px}
       .credit{font-size:.9rem}
     }
 
@@ -147,7 +184,7 @@
     .to-top-btn .arrow-wrap{ width:18px; height:18px; display:grid; place-items:center; }
     /* Lucide swaps <i> for <svg>; spin the svg around its true center */
     .to-top-btn .arrow-wrap svg{
-      width:18px; height:18px; stroke:#a8dadc;
+      width:18px; height:18px; stroke:var(--ft-accent);
       transform-origin:center;
       transform-box:fill-box;
       animation: topSpin 8s linear infinite;
@@ -179,17 +216,6 @@
       </button>
     </div>
 
-    <div class="social-links">
-      <button class="social-icon" onclick="window.open('https://www.linkedin.com/in/henriettavanniekerk','_blank')" aria-label="LinkedIn">
-        <i data-lucide="linkedin"></i><div class="social-tooltip">LinkedIn</div>
-      </button>
-      <button class="social-icon" onclick="window.open('https://github.com/henliz','_blank')" aria-label="GitHub">
-        <i data-lucide="github"></i><div class="social-tooltip">GitHub</div>
-      </button>
-      <button class="social-icon" onclick="window.open('mailto:hen@skrimp.ai','_blank')" aria-label="Email">
-        <i data-lucide="mail"></i><div class="social-tooltip">Email</div>
-      </button>
-    </div>
 
     <p class="credit"><br>built by Hen with lots of ❤ and copious amounts of ☕</p>
   </footer>

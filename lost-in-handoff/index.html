@@ -1,0 +1,1319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Fragmented Handoff · Henriëtta van Niekerk</title>
+<style>
+  :root{
+    color-scheme:light;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    --bg:#f6eeda;
+    --surface:#fffdf6;
+    --ink:#1a1410;
+    --ink-soft:#73614a;
+    --line:#e6d9b3;
+    --accent:#b5362a;
+    --halftone-grad: linear-gradient(90deg, #f6eeda 0%, #f0bb3e 38%, #dd7a35 68%, #b5362a 100%);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Source Sans 3', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow:hidden;
+  }
+  .display{font-family:'Archivo Black', 'Arial Black', sans-serif; text-transform:uppercase;}
+
+  .halftone-strip{
+    position:fixed; top:0; left:0; right:0; height:7px; z-index:30; pointer-events:none;
+    background:
+      radial-gradient(circle, rgba(0,0,0,0.16) 1px, transparent 1.3px) 0 0/6px 6px,
+      var(--halftone-grad);
+  }
+
+  header{
+    position:fixed; top:calc(7px + env(safe-area-inset-top, 0px)); left:0; right:0; z-index:20;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    padding:16px 16px 0; pointer-events:none;
+  }
+  .title-block{
+    pointer-events:auto; background:var(--surface); border:1px solid var(--line);
+    border-radius:4px; padding:10px 16px; max-width:min(600px, 64vw);
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  }
+  .kicker-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
+  .kicker{ font-size:0.66rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); }
+  .crumb{
+    text-decoration:none; font-size:0.66rem; font-weight:700;
+    letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-soft);
+  }
+  .crumb:hover{color:var(--accent);}
+  .title-block h1{
+    font-size:clamp(1.3rem, 2.4vw, 1.9rem); margin:0 0 7px; letter-spacing:-0.01em;
+    line-height:0.95; text-wrap:balance; padding-bottom:7px; border-bottom:2px solid var(--accent);
+  }
+  .title-block p{ margin:0; font-size:0.78rem; color:var(--ink-soft); line-height:1.4; }
+
+  .toolbar{ pointer-events:auto; display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+  .toolbar button{
+    background:var(--surface); border:1px solid var(--line); color:var(--ink); border-radius:8px;
+    padding:8px 12px; font-size:0.76rem; font-weight:600; cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06); white-space:nowrap;
+  }
+  .toolbar button:hover{border-color:var(--accent);}
+
+  .hint{
+    position:fixed; bottom:calc(14px + env(safe-area-inset-bottom, 0px)); left:16px; z-index:20;
+    font-size:0.68rem; color:var(--ink-soft); background:var(--surface); border:1px solid var(--line);
+    border-radius:8px; padding:6px 10px;
+  }
+
+  .legend{
+    position:fixed; right:16px; top:64px; z-index:20;
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:10px 14px; font-size:0.68rem; color:var(--ink-soft);
+    max-width:230px; max-height:calc(100vh - 90px); overflow-y:auto;
+    box-shadow:0 2px 10px rgba(0,0,0,0.06);
+  }
+  .legend .row{ display:flex; align-items:center; gap:7px; margin:3px 0; }
+  .legend .sw{ width:11px; height:11px; border-radius:50%; flex:none; }
+  .legend .sw.lever{ border-radius:4px; border:1.5px solid; background:transparent; box-shadow:0 0 0 3px rgba(221,122,53,0.35); }
+  .legend .divider{ border-top:1px solid var(--line); margin:7px 0 5px; padding-top:5px; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; font-size:0.62rem; }
+  @media (max-width:760px){ .legend{ display:none; } }
+
+  .detail-panel{
+    position:fixed; top:0; right:0; bottom:0; z-index:40;
+    width:min(380px, 92vw);
+    background:var(--surface); border-left:1px solid var(--line);
+    box-shadow:-6px 0 28px rgba(0,0,0,0.16);
+    transform:translateX(100%); transition:transform 0.26s ease;
+    overflow-y:auto; padding:18px 22px 36px;
+  }
+  .detail-panel.open{ transform:translateX(0); }
+  .detail-panel .detail-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .detail-cat{
+    display:inline-block; font-size:0.66rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px;
+  }
+  .detail-close{
+    background:none; border:1px solid var(--line); color:var(--ink-soft); width:28px; height:28px;
+    border-radius:50%; font-size:1rem; line-height:1; cursor:pointer;
+  }
+  .detail-close:hover{ border-color:var(--accent); color:var(--accent); }
+  .detail-panel h2{
+    font-family:'Archivo Black', 'Arial Black', sans-serif; font-size:1.05rem; font-weight:400; margin:4px 0 14px; line-height:1.3;
+  }
+  .detail-panel ul{ margin:0; padding-left:1.1rem; }
+  .detail-panel li{ margin:0 0 0.7rem; font-size:0.86rem; line-height:1.5; color:var(--ink); }
+  .detail-panel li.cite{ color:var(--ink-soft); font-size:0.78rem; }
+  .detail-empty{ font-size:0.82rem; color:var(--ink-soft); }
+  @media (max-width:640px){
+    .detail-panel{ top:auto; height:min(70vh, 560px); width:100%; border-left:none; border-top:1px solid var(--line);
+      transform:translateY(100%); border-radius:16px 16px 0 0; }
+    .detail-panel.open{ transform:translateY(0); }
+  }
+
+  #map-wrap{ position:absolute; inset:0; }
+  #map{ width:100%; height:100%; display:block; cursor:grab; }
+  #map.grabbing{ cursor:grabbing; }
+
+  .bubble-text{ font-family:'Source Sans 3', -apple-system, sans-serif; paint-order:stroke; }
+  .node-circle, .node-rect{ cursor:pointer; }
+  #map g, #map path{ transition:opacity 0.22s ease; }
+
+  @media (max-width:640px){
+    .title-block{max-width:80vw; padding:8px 12px;}
+    .title-block p{display:none;}
+    .toolbar button{padding:7px 9px; font-size:0.7rem;}
+  }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Source+Sans+3:wght@400;600;700;800&display=swap">
+</head>
+<body>
+
+<div class="halftone-strip"></div>
+
+<header>
+  <div class="title-block">
+    <div class="kicker-row">
+      <span class="kicker">Research Proposal</span>
+      <a class="crumb" href="/">&larr; henliz.github.io</a>
+    </div>
+    <h1 class="display">The Fragmented Handoff</h1>
+    <p>A systems map of the causal drivers behind patient-information loss across the fire &rarr; paramedic &rarr; hospital &rarr; pharmacy chain. Group 5, GBDA 402. Drag the canvas, scroll to zoom, click a node for sources.</p>
+  </div>
+  <div class="toolbar"><button id="btn-fit">Fit view</button><button id="btn-json">Copy JSON</button></div>
+</header>
+
+<div class="hint">Drag the canvas &middot; scroll/pinch to zoom &middot; click a node for sources &amp; detail</div>
+<div class="legend" id="legend"></div>
+
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-top">
+    <span class="detail-cat" id="detailCat"></span>
+    <button class="detail-close" id="detailClose" aria-label="Close">&times;</button>
+  </div>
+  <h2 id="detailTitle"></h2>
+  <ul id="detailBody"></ul>
+</div>
+
+<div id="map-wrap"><svg id="map"></svg></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  // Warm red/orange/yellow family carries most of the map, matching the
+  // halftone proposal art; blue is reserved for exactly two categories
+  // (evidence, regulatory) so it reads as a deliberate accent, not noise.
+  var CATS = {
+    core:       { label: "Core problem",              color: "#fdf3dc", text: "#1a1410" },
+    belief:     { label: "Mental model (belief)",      color: "#2b2420", text: "#f6eeda" },
+    actors:     { label: "Chain of actors",            color: "#e8822f", text: "#2c1405" },
+    causes:     { label: "Root causes",                color: "#f0bb3e", text: "#2c2004" },
+    evidence:   { label: "Evidence of information loss",color: "#3d7ea6", text: "#ffffff" },
+    regulatory: { label: "Regulatory & legal",          color: "#2b4a6b", text: "#ffffff" },
+    patient:    { label: "Patient / system impacts",    color: "#b5362a", text: "#ffffff" },
+    responder:  { label: "Responder impacts",           color: "#d9512f", text: "#ffffff" },
+    priorart:   { label: "Existing responses",          color: "#c08a2e", text: "#2c2004" },
+    lever:      { label: "Levers of change",            color: "#fbf2dc", text: "#2c2004" }
+  };
+
+  var CAT_ANGLE = { belief:300, actors:200, causes:250, evidence:92, regulatory:18, patient:335, responder:58, priorart:168 };
+
+  // Node `type` is the iceberg/rubric layer (Actor, Pattern, Structure, Event,
+  // Belief), kept separate from `cat` (which only ever drives fill color).
+  // `isEvent` nodes render as small diamonds, not circles: a one-time,
+  // specific instance is a different KIND of claim than an ongoing pattern
+  // or structure, and should look like one.
+  var NODES = [
+    { id:"core", label:"Information lost at handoff", cat:"core", r:66 },
+
+    { id:"liability_belief", label:"Belief: protecting agency liability matters more than continuity of care", cat:"belief", r:44, type:"Belief" },
+
+    { id:"dispatch",  label:"Dispatch",                         cat:"actors", r:30, type:"Actor" },
+    { id:"fire",      label:"Fire first response",               cat:"actors", r:42, type:"Actor" },
+    { id:"paramedics",label:"Paramedics",                        cat:"actors", r:40, type:"Actor" },
+    { id:"hospital",  label:"Hospital / ED intake",               cat:"actors", r:36, type:"Actor" },
+    { id:"ed_physicians", label:"ED physicians & intake nurses",  cat:"actors", r:32, type:"Actor" },
+    { id:"pharmacy",  label:"Pharmacy & medication reconciliation",cat:"actors", r:40, type:"Actor", scope:"downstream" },
+    { id:"family",    label:"Family & bystanders",                cat:"actors", r:28, type:"Actor" },
+
+    { id:"legal_structural", label:"No cross-custody shared record",     cat:"causes", r:38, type:"Structure" },
+    { id:"training_gap",     label:"Training gap: no shared mnemonic",  cat:"causes", r:38, type:"Structure" },
+    { id:"organizational",   label:"Volunteer roster, no fixed crew",    cat:"causes", r:34, type:"Structure" },
+    { id:"handoff_window",   label:"~70-second handoff window",         cat:"causes", r:32, type:"Pattern" },
+    { id:"self_rating_bias", label:"Self-assessment bias",              cat:"causes", r:34, type:"Pattern" },
+    { id:"workarounds",      label:"Paper, gloves & memory as workarounds", cat:"causes", r:40, type:"Pattern" },
+    { id:"prehos_collapse",  label:"Prehos ePCR vendor collapse (2026)", cat:"causes", r:24, type:"Event", isEvent:true },
+    { id:"regulatory_caution", label:"Agencies grow cautious, document less informally", cat:"causes", r:34, type:"Pattern" },
+
+    { id:"research_gap",       label:"Fire→paramedic: the unmeasured link within scene→hospital",     cat:"evidence", r:58, conf:"gap", highlight:true, type:"Structure" },
+    { id:"paramedic_ed_loss",  label:"Prehospital-to-ED handoff information loss (~70% received)",  cat:"evidence", r:38, conf:"solid", type:"Pattern" },
+    { id:"admission_pharmacy", label:"Unintended medication discrepancies at hospital admission", cat:"evidence", r:40, conf:"solid", type:"Pattern", scope:"downstream" },
+    { id:"informal_evidence",  label:"Informal / Reddit evidence, unverified",cat:"evidence", r:28, conf:"dotted", type:"Pattern" },
+
+    { id:"phipa_mfippa",     label:"PHIPA vs. MFIPPA/FIPPA divide",     cat:"regulatory", r:38, conf:"solid", type:"Structure" },
+    { id:"privacy_penalties",label:"Privacy Commissioner penalties (2024+)", cat:"regulatory", r:32, conf:"solid", type:"Structure" },
+    { id:"inquest",          label:"2018 Coroner's inquest",            cat:"regulatory", r:22, conf:"solid", type:"Event", isEvent:true },
+    { id:"doc_standards_v4", label:"Documentation Standards v4.0",      cat:"regulatory", r:32, conf:"solid", type:"Structure" },
+    { id:"regulators",       label:"MOH / Ontario IPC / provincial legislature", cat:"regulatory", r:36, conf:"solid", type:"Structure" },
+
+    { id:"patient_harm",     label:"Patient harm (~7.5% of admissions)", cat:"patient", r:42, conf:"solid", type:"Pattern" },
+    { id:"legal_exposure",   label:"Legal & privacy exposure",           cat:"patient", r:34, conf:"dashed", type:"Structure" },
+    { id:"riskanalytica_cost",label:"RiskAnalytica/CPSI: ~$2.75B/yr (modelled)", cat:"patient", r:32, conf:"dotted", type:"Pattern" },
+    { id:"crico_cost",       label:"CRICO: 30% of malpractice claims (measured, US)", cat:"patient", r:32, conf:"jurisdiction", type:"Pattern" },
+    { id:"hohl_risk",        label:"Ambulance arrival = highest-risk patient", cat:"patient", r:32, conf:"solid", type:"Pattern" },
+    { id:"hamilton_breach",  label:"Hamilton Paramedic Service breach (2024)", cat:"patient", r:20, conf:"solid", type:"Event", isEvent:true },
+    { id:"misdirected_transmissions", label:"Misdirected patient-record transmissions across agencies", cat:"patient", r:34, conf:"solid", type:"Pattern" },
+    { id:"hopkins_kay",      label:"Civil liability exposure for health-data custodians",    cat:"patient", r:34, conf:"solid", type:"Structure" },
+
+    { id:"responder_harm",label:"Responder harm: PTSD, moral injury", cat:"responder", r:40, conf:"solid", type:"Pattern" },
+    { id:"career_risk",   label:"Career & certification risk",         cat:"responder", r:32, conf:"dashed", type:"Structure" },
+
+    { id:"seattle",   label:"Seattle scene-camera policy",    cat:"priorart", r:26, type:"Structure" },
+    { id:"clipboard", label:"Medic Clipboard / ImageTrend",   cat:"priorart", r:26, type:"Structure" },
+    { id:"maryhill",  label:"Mary Hill training review",      cat:"priorart", r:24, type:"Structure" },
+
+    { id:"lev_record",   label:"Record structure crossing custody", cat:"lever", isLever:true, target:"legal_structural", primary:true },
+    { id:"lev_capture",  label:"Frictionless scene capture (~70s)", cat:"lever", isLever:true, target:"workarounds" },
+    { id:"lev_mnemonic", label:"Shared handoff mnemonic",           cat:"lever", isLever:true, target:"training_gap" },
+    { id:"lev_medrec",   label:"Med-rec extended to the scene",     cat:"lever", isLever:true, target:"admission_pharmacy", scope:"downstream" },
+    { id:"lev_interop",  label:"Interoperable multi-agency comms",  cat:"lever", isLever:true, target:"inquest" }
+  ];
+
+  var EDGES = [
+    ["dispatch","fire"], ["family","fire"], ["fire","paramedics"], ["paramedics","hospital"],
+    ["hospital","ed_physicians"], ["ed_physicians","pharmacy"],
+
+    ["fire","core"], ["paramedics","core"], ["ed_physicians","core"], ["pharmacy","core"],
+
+    ["legal_structural","core"], ["legal_structural","pharmacy"],
+    ["training_gap","research_gap"], ["training_gap","core"],
+    ["organizational","fire"],
+    ["handoff_window","core"], ["handoff_window","fire"], ["handoff_window","paramedics"],
+    ["self_rating_bias","paramedic_ed_loss"], ["self_rating_bias","core"],
+    ["workarounds","fire"], ["workarounds","paramedics"], ["workarounds","core"],
+    ["prehos_collapse","paramedics"], ["prehos_collapse","core"],
+
+    // the mental model underneath: why the structural fixes never happen
+    ["liability_belief","legal_structural"], ["liability_belief","phipa_mfippa"],
+
+    ["research_gap","core"], ["research_gap","patient_harm"],
+    ["paramedic_ed_loss","patient_harm"],
+    ["admission_pharmacy","patient_harm"], ["pharmacy","admission_pharmacy"],
+    ["informal_evidence","research_gap"],
+    // the inferred comparison itself is the uncertain claim, not just the node
+    ["paramedic_ed_loss","research_gap"],
+
+    ["core","patient_harm"], ["core","responder_harm"], ["core","legal_exposure"],
+    ["core","riskanalytica_cost"], ["core","crico_cost"],
+
+    ["patient_harm","legal_exposure"], ["patient_harm","riskanalytica_cost"], ["patient_harm","crico_cost"],
+    ["crico_cost","inquest"],
+    ["responder_harm","self_rating_bias"],
+    ["legal_exposure","workarounds"],
+    ["hohl_risk","patient_harm"], ["ed_physicians","hohl_risk"],
+    ["hamilton_breach","misdirected_transmissions","illustrates"], ["misdirected_transmissions","legal_exposure"],
+    ["hopkins_kay","legal_exposure"],
+
+    ["workarounds","career_risk"], ["doc_standards_v4","career_risk"], ["career_risk","responder_harm"],
+
+    ["phipa_mfippa","legal_structural"], ["privacy_penalties","legal_exposure"], ["doc_standards_v4","paramedics"],
+    ["paramedics","training_gap"],
+
+    // the inquest named the fix seven years ago; the regulators it was
+    // addressed to are the other half of why the custody divide still holds
+    ["inquest","regulators"], ["regulators","legal_structural"],
+
+    ["seattle","workarounds"], ["clipboard","prehos_collapse"], ["maryhill","training_gap"],
+
+    // R1 "workaround normalization": tolerated as good enough, so no
+    // institutional pressure fixes training, so reliance on the workaround
+    // continues. A true two-node cycle, not just two more spokes.
+    ["workarounds","training_gap"], ["training_gap","workarounds"],
+    // R2 "vendor fragility": no shared record pushes agencies to single-
+    // purpose tools, thin market collapses the vendor, that collapse pushes
+    // everyone back to paper, and staying siloed looks like the safe choice.
+    ["legal_structural","prehos_collapse"], ["prehos_collapse","workarounds"], ["workarounds","legal_structural"],
+    // R3 "regulatory caution paradox" (balancing): penalties make agencies
+    // more cautious about informal capture, so less gets documented, so more
+    // gets misdirected, which brings more scrutiny and more penalties, the
+    // cycle restarting. The enforcement meant to fix this can itself choke
+    // off the informal documentation that was partially working.
+    ["privacy_penalties","regulatory_caution"], ["regulatory_caution","workarounds"],
+    ["workarounds","misdirected_transmissions"], ["misdirected_transmissions","privacy_penalties"],
+
+    ["lev_record","legal_structural",true], ["lev_capture","workarounds",true], ["lev_mnemonic","training_gap",true],
+    ["lev_medrec","admission_pharmacy",true], ["lev_interop","inquest",true],
+
+    // the other 4 levers all depend on the record structure existing first
+    ["lev_capture","lev_record","dependency"], ["lev_mnemonic","lev_record","dependency"],
+    ["lev_medrec","lev_record","dependency"], ["lev_interop","lev_record","dependency"]
+  ].map(function(e){
+    var special = e[2];
+    return {
+      source: e[0], target: e[1],
+      dashed: special === true,
+      illustrates: special === "illustrates",
+      dependency: special === "dependency"
+    };
+  });
+
+  // The one edge that matters most: the actual research gap feeding straight
+  // into the core problem. Rendered thicker and fully opaque so it reads as
+  // the spine of the map, not just one more line among many.
+  // Loop membership groups edges into the feedback cycles above (for both
+  // line styling and the one label chip drawn per loop, not per edge).
+  // Power edges carry a short "why," not just "that," matching specific
+  // dynamics of influence the rubric asks for. Questionable marks the one
+  // edge that is itself an inference, not a sourced fact.
+  var LOOP_EDGES = {
+    "workarounds>training_gap": "R1", "training_gap>workarounds": "R1",
+    "legal_structural>prehos_collapse": "R2", "prehos_collapse>workarounds": "R2", "workarounds>legal_structural": "R2",
+    "privacy_penalties>regulatory_caution": "R3", "regulatory_caution>workarounds": "R3",
+    "workarounds>misdirected_transmissions": "R3", "misdirected_transmissions>privacy_penalties": "R3"
+  };
+  // The legal_structural -> prehos_collapse power dynamic is already carried
+  // by the R2 loop's own label and detail panel, so it isn't repeated as a
+  // second floating chip on the same crowded edge. Same logic for R3's edges.
+  var POWER_EDGES = {
+    "phipa_mfippa>legal_structural": "Sets rules, not interoperability",
+    "paramedics>training_gap": "Funds its own training, not fire's",
+    "clipboard>prehos_collapse": "Each agency funds its own vendor, no shared contract spreads the risk",
+    "liability_belief>legal_structural": "Shapes which custody rules agencies lobby for, not just which exist",
+    "lev_record>legal_structural": "Needs every agency to give up some autonomy over its own records",
+    "regulators>legal_structural": "Named this fix in 2018; no systemic action since"
+  };
+  var LOOPS = [
+    { id:"R1", label:"R1 — Workaround normalization", members:["workarounds","training_gap"] },
+    { id:"R2", label:"R2 — Vendor fragility", members:["legal_structural","prehos_collapse","workarounds"] },
+    { id:"R3", label:"R3 — Regulatory caution paradox (balancing)", members:["privacy_penalties","regulatory_caution","workarounds","misdirected_transmissions"] }
+  ];
+  EDGES.forEach(function(e){
+    var key = e.source + ">" + e.target;
+    if(e.source === "research_gap" && e.target === "core") e.hero = true;
+    if(e.source === "regulators" && e.target === "legal_structural") e.hero = true;
+    if(e.source === "paramedic_ed_loss" && e.target === "research_gap") e.questionable = true;
+    if(LOOP_EDGES[key]) e.loop = LOOP_EDGES[key];
+    if(POWER_EDGES[key]) e.power = POWER_EDGES[key];
+  });
+
+  // Per-node sources/detail, shown in the side panel on click. Keeps the map
+  // itself readable while still carrying every citation from my research.
+  var DETAILS = {
+    core: [
+      "Finalized research question (Group 5, GBDA 402): first responders, paramedics and firefighters across Canada experience uncertainty about whether scene findings, medications and patient status have reached the next person when a patient is handed off from the scene to the hospital, because information moves through verbal reports, improvised notes and tools that each serve only one agency or one province, with no way to confirm what was received, leading to lost patient history, medication errors and delayed treatment, with the greatest risk to patients who cannot speak for themselves.",
+      "Scope boundary: the primary research question is the scene to hospital handoff across first responders (dispatch, fire, paramedics, hospital/ED intake). Hospital to pharmacy is downstream: it's here for what's at stake, not as part of the uncertainty this RQ is actually studying.",
+      "Why this counts as a health problem, not just a \"fire\" problem: most Ontario fire calls are medical, not fire-related. Tiered-response firefighters are trained to at least Emergency Medical Responder level, and the information at stake is health information, governed by PHIPA.",
+      "Scope: Ontario's tiered-response model, where fire is frequently first on scene and often stays to work the patient alongside paramedics rather than clearing immediately."
+    ],
+    liability_belief: [
+      "The belief underneath the structures above: every agency protects its own liability exposure first, and treats continuity of care as someone else's problem to solve once the patient is out of its hands.",
+      "This is the deepest layer, not just another cause. PHIPA vs. MFIPPA/FIPPA and \"no cross-custody shared record\" are the policy expressions of this belief, not independent accidents. Nobody has to be acting in bad faith for this to hold: each agency is behaving rationally given what it is actually measured and sued on.",
+      "That's why fixing the policy alone won't hold: a new rule crossing custody still has to survive contact with this belief, or agencies will find a new way to protect their own liability around it."
+    ],
+    dispatch: [
+      "Waterloo region fire dispatch operates separately from provincial ambulance dispatch, so fire often arrives before paramedics. (Gallagher interview)",
+      "Members can go straight to scene from school or work with a trauma bag, rather than returning to the hall first.",
+      "Dispatch gives limited information pre-arrival. Responders mentally prepare for worst case, and reflection happens after, not during."
+    ],
+    fire: [
+      "Woolwich Fire Dept, Mary Hill Station: 14 yrs experience, about 22 to 24 members, roughly 100 calls a year. (Gallagher)",
+      "Part-time on-call, paid while working/training, not purely volunteer, with no fixed shift roster.",
+      "Trained to at least Emergency Medical Responder level.",
+      "Captain delegates roles on arrival: driver stays with truck, others hands-on with patient, captain keeps safety oversight.",
+      "Captain keeps a handwritten notepad: vitals, name, date of birth, scene findings, collected items like a phone or wallet.",
+      "Majority of calls: false alarms, medical distress, car accidents, with fewer fires and serious collisions than in the past (stricter codes, safer cars)."
+    ],
+    paramedics: [
+      "Arrive after fire in Waterloo region's dispatch structure, then assess the scene and decide whether fire stays to assist (lifting, extrication, multiple patients).",
+      "Governed by PHIPA as health information custodians.",
+      "Subject to Ontario Ambulance Documentation Standards v4.0 (in force Sept 2, 2025): reports must be \"suitable for use as evidence,\" completed by end of shift, operators must have a PHIPA-compliant photography/video policy.",
+      "Receive handoff information verbally and via fire's handwritten notes, then carry the record onward to hospital."
+    ],
+    hospital: [
+      "Receives the patient and whatever information survived the chain from scene through fire and paramedics. The institutional endpoint of the primary RQ: this is where I need to know whether scene findings actually arrived.",
+      "The specific people who receive the handoff, ED physicians and intake nurses, are modelled as their own node (\"ED physicians & intake nurses\") rather than folded in here, because right now I have zero first-person account from that side. See that node for what evidence exists and what's still missing."
+    ],
+    ed_physicians: [
+      "This node exists specifically because, as of now, every piece of hospital-side evidence on this map is secondhand: survey data and paramedic self-reports about EDs, not an account from someone who actually receives the handoff.",
+      "Only 30% of ED managers believe their medication-history process is adequate for all admissions, and only 23% of ED pharmacy teams feel adequately staffed to comply. (2015 national Canadian survey, Canadian Journal of Hospital Pharmacy)",
+      "ED and paramedic staff both rate their own handoff accuracy far higher than trained observers do. (Panchal et al. 2015: OR 13.1 EMS self-rating, OR 20.2 ED self-rating, both p<0.001, across 1,091 observed transfers)",
+      "Lining up an ER physician or intake nurse interview is the single biggest evidence gap broadening the RQ to scene→hospital exposed. Once that happens, this is where the first-person account goes, the same way the Gallagher interview anchors the fire side right now."
+    ],
+    pharmacy: [
+      "Downstream of the primary RQ: this node is here for what's at stake once a patient reaches pharmacy, not as part of the scene-to-hospital uncertainty the RQ is actually studying.",
+      "The natural pharmacy touchpoint is medication reconciliation at hospital intake: confirming what a patient actually takes, catching interactions.",
+      "Cornish et al. 2005 (Sunnybrook, Toronto): 53.6% of admitted patients had at least one unintended medication discrepancy. The most common error (46.4%) was a regular medication simply omitted.",
+      "Reconciliation intercepts roughly 75% of variances before harm, when it is actually performed. (ISMP Canada Getting Started Kit)",
+      "If fire photographed or noted medication bottles at the scene, there is no guarantee that detail ever reaches this step."
+    ],
+    family: [
+      "Present during what Gallagher calls \"controlled chaos.\"",
+      "More experienced firefighters often manage and care for family while others attend to the patient, an informal division of labour that shapes who collects what information and when."
+    ],
+    legal_structural: [
+      "The PHIPA vs. MFIPPA/FIPPA custody divide: information created under one statute has no built mechanism to cross into the other.",
+      "No jurisdiction has built a cross-custody shared record spanning fire and paramedics.",
+      "Existing ePCR and photo tools are each built for a single legal custodian's workflow, not a custody transfer."
+    ],
+    training_gap: [
+      "Handoff reporting \"is not commonly taught in school\" (JEMS trade literature). Responders learn it informally, on scene, from whoever trained them.",
+      "No standardized handoff mnemonic in Ontario's tiered response, unlike the military-derived MIST/ATMIST frameworks used in some other systems."
+    ],
+    organizational: [
+      "Volunteer departments have no fixed roster. Crews don't know in advance who will respond, whether a qualified driver is available, or who has the strongest medical experience. (Gallagher)",
+      "Career crews know their assignments and colleagues' strengths at the start of every shift; volunteer crews work out roles as people arrive.",
+      "Shared-care periods: fire doesn't automatically clear once paramedics arrive, so information has to keep flowing accurately through an ongoing window, not transfer once and stop."
+    ],
+    handoff_window: [
+      "Handoffs are extremely short, median duration 66 to 76 seconds in cited EMS studies, too little time for a complete transfer under any format.",
+      "A time-budget constraint, distinct from self-rating bias: even a perfectly trained, perfectly motivated responder has seconds, not minutes, to transfer a complex patient history. The fix here is speed, not an outside check."
+    ],
+    self_rating_bias: [
+      "Self-assessment bias: both EMS and ED staff rate their own handoffs far better than trained observers do. (Panchal et al. 2015: OR 13.1 for EMS self-rating, OR 20.2 for ED self-rating, both p<0.001, across 1,091 observed transfers)",
+      "A perception constraint, distinct from the time-budget one: the people closest to the handoff are the least reliable judges of how well it went. This is the case for an outside check, not just more time."
+    ],
+    workarounds: [
+      "Scrap paper and gloves are real, documented workarounds. One JEMS account describes an EMT retrieving \"a glove he was wearing during the call, with the vital signs written on the back.\"",
+      "A UK study (Wilson et al., BMC Emergency Medicine) confirms paramedics \"have developed pragmatic workarounds (writing on gloves or scrap paper)\" that \"can conflict with policy\" and are \"easily lost.\"",
+      "The single most common way information is recorded and transferred during handover is simply memory, not notes. (Critcomms national study, Scotland, n=190); 48% of respondents found it difficult or very difficult to find time to prepare for handover.",
+      "Personal phones are used for scene photos with no guaranteed, auditable path into the patient chart."
+    ],
+    prehos_collapse: [
+      "Prehos, an Ontario paramedic ePCR tool, collapsed in 2026. The vendor owed roughly $10 million to creditors, and about 22 paramedic services were given roughly a month's notice.",
+      "Even at full strength it only worked on the paramedic side and never touched the fire-to-paramedic gap or the PHIPA/MFIPPA divide.",
+      "A behavioral workaround (paper, gloves, memory) and a market failure (a vendor disappearing) are different problems. Different levers fix them."
+    ],
+    regulatory_caution: [
+      "As PHIPA penalties get real (administrative monetary penalties since January 1, 2024, the first one issued in 2025), agencies and individual responders have a rational reason to get more cautious about informal capture, not less: an unofficial photo or note is also unofficial evidence against you if something goes wrong.",
+      "That caution doesn't make the underlying need to document go away. It just pushes documentation further underground, which is the opposite of what the penalties were meant to achieve.",
+      "This is a pattern, not a single decision anyone made on purpose: it's what happens when enforcement lands on the people closest to the workaround, instead of on the absence of a legitimate alternative."
+    ],
+    research_gap: [
+      "This is one specific sub-link inside the broader scene-to-hospital chain the RQ covers, not a redefinition of the RQ itself. The rest of the chain has real measurement behind it (paramedic→ED, admission→pharmacy); this particular handoff doesn't yet, which is exactly why it's the open question, not the whole question.",
+      "No formal, peer-reviewed study isolates information loss specifically at the firefighter-to-paramedic link yet. The closest adjacent published work looks at ambulance-to-specialist-team handover (Critcomms, Scotland), not fire-to-medic specifically.",
+      "What I've heard directly says this is real, not hypothetical: the Gallagher interview and conversations at the stakeholder cafe both confirm this is a lived problem on the ground, not something I'm guessing at.",
+      "Seattle Fire Department's own scene-camera policy is further confirmation. A fire service elsewhere already recognized this exact gap was worth solving, which is why I'm treating it as my actual research focus rather than a side note.",
+      "Two live interpretations I still need to test, not assume: either this is a genuine blind spot, or some duplication is tolerated by design because paramedics re-assess regardless. Only the first strongly justifies building a full handoff tool.",
+      "Honest evidence assessment: the structural layer is strong (a protocol-defined, mandated transfer-of-care step). The problem-family layer is strong too, but measured one link downstream of this one. The specific fire-to-paramedic layer is thin: no formal isolated measurement exists yet, and the informal online evidence is still unverified. That's next on my list, not a reason to doubt the problem."
+    ],
+    paramedic_ed_loss: [
+      "Carter et al. 2009 (Prehospital Emergency Care, Yale, 96 trauma handovers): only 69.6% of transmitted elements were received at all, and 72.9% were documented on the average chart. Prehospital hypotension was received only 10 of 28 times it was sent, Glasgow Coma Scale 10 of 22, pulse rate 13 of 49.",
+      "Evans et al. 2010 (Australia): 75% of handed-over data items documented.",
+      "A 2020 systematic review (American Journal of Emergency Medicine, 60 studies) names \"information degradation,\" poor recall, and lack of standardization as core EMS-to-ED handover barriers."
+    ],
+    admission_pharmacy: [
+      "Downstream of the primary RQ: good what's-at-stake material, not part of the scene-to-hospital uncertainty itself.",
+      "This pattern node combines two Cornish et al. 2005 (Sunnybrook, Toronto) findings that belong together, not as separate data points: 53.6% of patients had at least one unintended medication discrepancy at admission (38.6% could cause moderate to severe harm), and the single most common error, 46.4% of all discrepancies, was a regular medication simply omitted from the record.",
+      "The omitted-medication slice is the most actionable part: a first responder who saw the pill bottles on scene had exactly the information that would have prevented it.",
+      "Tam et al. 2005 (CMAJ systematic review): over a quarter of hospital prescribing errors are attributable to incomplete admission medication histories.",
+      "Reconciliation intercepts roughly 75% of variances before harm, when it is actually performed. (ISMP Canada Getting Started Kit)"
+    ],
+    informal_evidence: [
+      "I looked for practitioner venting on r/ems, r/firefighting, and EMS1/JEMS comment sections, but couldn't verify it through automated search yet. That's a gap I still need to close by hand, not evidence the discussion doesn't exist."
+    ],
+    phipa_mfippa: [
+      "PHIPA governs paramedics; MFIPPA/FIPPA governs fire and police, two regimes never designed to hand information to each other.",
+      "Toronto Paramedic Services explicitly identifies itself as a PHIPA custodian, having previously operated under MFIPPA. Fire services have not made that shift.",
+      "Ontario's Information and Privacy Commissioner has held real administrative-penalty power since January 1, 2024."
+    ],
+    privacy_penalties: [
+      "PHIPA administrative monetary penalties in force since January 1, 2024: up to $50,000 for individuals, $500,000 for organizations.",
+      "First penalty issued in 2025 (PHIPA Decision 298): $5,000 personally plus $7,500 to the clinic, specifically for the absence of documented privacy-governance measures.",
+      "Prosecution exposure reaches $200,000 and up to one year in prison for an individual, $1,000,000 for an organization; courts may award up to $10,000 for mental anguish."
+    ],
+    inquest: [
+      "2018 Ontario coroner's inquest (from the 2013 Lake Wanapitei boating deaths and the 2014 asthma death of Kathryn Missen) produced 27 recommendations: 19 to the provincial government, 8 to municipalities.",
+      "Includes a call for an interoperable radio channel across fire, police and EMS during multi-agency response. It addresses communication at the dispatch level, not the bedside patient-information handoff.",
+      "The 19 provincial recommendations went to the regulators who could actually act on them. See \"MOH / Ontario IPC / provincial legislature\" for what happened to them."
+    ],
+    regulators: [
+      "The Ministry of Health, Ontario's Information and Privacy Commissioner, and the provincial legislature: the three bodies the 2018 inquest's 19 provincial recommendations were actually addressed to.",
+      "Seven years on, none of them has mandated a cross-custody shared record. The IPC's own penalty powers (since January 1, 2024) regulate how PHIPA custodians handle data they already hold; they don't touch the PHIPA/MFIPPA custody divide itself.",
+      "This is a structural gap, not a personnel one: no single regulator owns the fire-to-paramedic custody crossing, so no single regulator is positioned to mandate fixing it. That's a big part of why \"no cross-custody shared record\" has held for this long."
+    ],
+    doc_standards_v4: [
+      "Ontario Ambulance Documentation Standards v4.0 (in force Sept 2, 2025): paramedic reports must be \"suitable for use as evidence\" and completed by end of shift.",
+      "Operators must have a PHIPA-compliant photography/video policy, a concrete, specific regulatory pressure on paramedics as one actor, distinct from the general PHIPA/MFIPPA custody split.",
+      "Raises the bar directly against informal workarounds. The same scrap-paper and glove notes that keep the handoff working at all are now the ones most exposed to scrutiny."
+    ],
+    patient_harm: [
+      "Canadian Adverse Events Study (Baker et al. 2004, CMAJ): adverse events occur in 7.5% of admissions, roughly 185,000 nationally per year, close to 70,000 potentially preventable, with 36.9% of adverse events judged preventable.",
+      "CIHI: harm occurs in about 1 of every 17 hospitalizations in 2024 to 25, roughly 153,000 stays.",
+      "More than 1 in 9 Canadian ED visits are medication-related, and nearly 70% are preventable. (Zed, Hohl et al., CMAJ 2008)"
+    ],
+    hohl_risk: [
+      "Patients who arrive by ambulance are, per a validated Canadian ED decision rule (Hohl et al.), both the most likely to have a medication problem and the least able to report their own history.",
+      "This is the mechanism, not just the headline. It explains why patient harm concentrates in the ambulance-arrival population specifically, rather than just asserting that harm happens."
+    ],
+    legal_exposure: [
+      "Two distinct exposure tracks feed this node: PHIPA's own administrative-penalty regime (see Privacy Commissioner penalties), and civil liability when a specific breach or misuse is identified.",
+      "The concrete instances are kept as their own nodes, Hamilton Paramedic Service breach (2024) and Hopkins v. Kay / Jones v. Tsige, because a regulatory fine and a civil suit are different risks to design against."
+    ],
+    hamilton_breach: [
+      "A single, dated event, shown small and diamond-shaped on purpose: Hamilton Paramedic Service (2024), 162 patients' health records sent to the wrong hospitals over four years, by 124 different paramedics.",
+      "This is one instance illustrating the broader pattern, not the pattern itself. Click \"Misdirected patient-record transmissions across agencies\" (the node it points into) for the causal story."
+    ],
+    misdirected_transmissions: [
+      "The pattern the Hamilton event is one documented instance of: patient records crossing agency boundaries with no shared, confirmed-receipt system, so misdirection is caught by accident (an audit) rather than by design.",
+      "Caused by human error with no cross-agency audit trail: exactly the kind of failure a confirmed-receipt system would catch immediately instead of four years later.",
+      "This is what feeds legal and privacy exposure: not the single 2024 incident, but the structural absence of any mechanism that would catch this kind of error sooner."
+    ],
+    hopkins_kay: [
+      "Civil liability exposure for health-data custodians, the legal rule this case created: PHIPA does not bar a class action for intrusion upon seclusion.",
+      "Hopkins v. Kay (2015, Ontario Court of Appeal) arose from roughly 280 wrongfully accessed records at Peterborough Regional. Jones v. Tsige sets damages up to $20,000 per person for this tort.",
+      "A separate exposure track from PHIPA's own administrative penalties: civil liability, triggered by misuse, not by a regulator's own enforcement action."
+    ],
+    riskanalytica_cost: [
+      "RiskAnalytica/CPSI modelled projection (not a measured figure): about 400,000 patient-safety incidents a year in Canada, roughly $6,800 each, about $2.75 billion a year.",
+      "Flagged here deliberately as a model, not a measurement. Useful for scale, not for precision."
+    ],
+    crico_cost: [
+      "CRICO (US malpractice data): communication failures contributed to 30% of 23,658 claims filed 2009 to 2013, including 1,744 deaths and $1.7 billion in costs.",
+      "A 2025 ten-year follow-up confirms the 30% share has held.",
+      "CIHI: roughly $685 million in associated hospital costs from patient harm in 2014 to 15 data alone, excluding physician fees and readmissions."
+    ],
+    responder_harm: [
+      "Carleton et al. 2018 (Canadian Journal of Psychiatry, n=5,813 Canadian public safety personnel): 44.5% screen positive for at least one mental disorder vs. 10.1% of the general population; PTSD 23.2%, depression 26.4%.",
+      "Moral injury signal: historically only about 24% of EMS providers felt ED staff paid adequate attention to their handoff, while roughly three-quarters of ED physicians felt vital information was at least sometimes missing (cited in Goldberg et al. 2017), a plausible contributor to moral injury, not a proven causal chain."
+    ],
+    career_risk: [
+      "Ontario paramedics are certified by base-hospital medical directors; \"clinical decertification for falsification of medical records\" is a named disciplinary category.",
+      "Documentation Standards v4.0 raises the bar directly against informal workarounds. The same scrap-paper and glove notes that keep the handoff working at all are the ones now most exposed.",
+      "So the tooling gap isn't just inefficient. For the responder filling it in with whatever's at hand, it's a live professional-liability risk, not only a burnout one."
+    ],
+    seattle: [
+      "Seattle Fire Department \"Emergency Scene Cameras\" policy, an NFPA best practice letting first responders share scene photos with the Medic One physician.",
+      "Direct precedent for fire-captured evidence feeding paramedic care, scoped to photos only. It's also part of why I'm confident this problem is real elsewhere, not just at Mary Hill."
+    ],
+    clipboard: [
+      "Medic Clipboard (in-field scene/injury photo capture with secure handoff) and ImageTrend Elite Rescue (fire plus EMS records with encrypted handoff), both built for one agency's workflow, not a PHIPA/MFIPPA crossing.",
+      "US patents describing a firefighter photographing a patient, scene or medicine list and initiating handoff to EMS, evidence the problem is recognized enough to attract intellectual property, not that it is solved."
+    ],
+    maryhill: [
+      "Mary Hill biweekly training-night review of recent calls: a real but informal, single-station feedback loop that doesn't propagate structured information forward to paramedics or hospital.",
+      "My fieldwork so far: I've completed the Gallagher interview (Woolwich Fire Dept., Mary Hill Station, 14 years), and I'm visiting the Mary Hill training night on Oct 5, 7 to 10pm, to tour the station and observe a review of recent calls."
+    ],
+    lev_record: [
+      "The primary leverage point on this map, marked with the gold bullseye ring: a record structure that crosses PHIPA and MFIPPA/FIPPA custody without re-collection. The one thing no existing tool, commercial or municipal, currently solves.",
+      "The other four levers all depend on this one existing first. Frictionless capture, a shared mnemonic, scene-to-pharmacy med-rec and interoperable comms are each worth doing on their own, but none of them survive contact with the custody divide without a record structure that can legally cross it. That's why they point into this node on the map, not the reverse."
+    ],
+    lev_capture: ["Frictionless scene capture that fits inside a roughly 70-second handoff window, not a form to fill out mid-crisis. Depends on the record structure existing to have somewhere legally valid to go."],
+    lev_mnemonic: ["Structured training or a shared handoff mnemonic adapted for fire-to-paramedic specifically, closing the \"not commonly taught\" gap without waiting on any technology. Still needs the record structure to make the captured information actually travel."],
+    lev_medrec: ["Downstream of the primary RQ, same as the pharmacy nodes it targets. Extending medication-reconciliation logic backward to the scene, so pill-bottle evidence a firefighter saw survives intact to the pharmacy step. Only works end to end once the record itself can cross custody."],
+    lev_interop: ["Interoperable multi-agency communication that answers the 2018 coroner's inquest recommendation at the bedside level, not only at the dispatch radio level. Communication without a shared record structure is still just a better phone call."],
+
+    R1: [
+      "Workaround normalization, a reinforcing loop: paper, gloves and memory get treated as good enough because they mostly work, so there's no institutional pressure to fund a shared tool or shared training, so the training gap persists, so responders keep relying on paper, gloves and memory.",
+      "This is why \"just train people better\" doesn't fix itself over time: every time the workaround gets the patient through, it quietly proves the system doesn't need to change."
+    ],
+    R2: [
+      "Vendor fragility, a reinforcing loop: no cross-custody shared record means each agency buys its own single-purpose tool, which keeps the market thin and single-agency, which is exactly the kind of vendor (Prehos) that collapses, which pushes everyone back to paper and gloves, which reinforces the case for staying siloed instead of building shared infrastructure.",
+      "The Prehos collapse (2026) isn't a random vendor failure. It's what this loop predicts: a tool built for one custodian's workflow, sold into a market too thin to sustain it, because nobody has built the shared infrastructure that would let one vendor serve everyone."
+    ],
+    R3: [
+      "Regulatory caution paradox, a balancing loop: rising PHIPA penalties make agencies and responders more cautious about informal capture, so less gets documented even informally, so more information is lost at handoff, so more records end up misdirected across agencies, which brings more regulatory scrutiny and more penalties, restarting the cycle.",
+      "Called \"balancing\" rather than \"reinforcing\" because the mechanism works against itself: the enforcement meant to fix sloppy documentation can itself suppress the informal documentation that was partially working, unless it's paired with a legitimate shared-record alternative. That's the case for the primary lever (record structure crossing custody) over enforcement alone."
+    ]
+  };
+
+  function hexToRgb(hex){
+    var m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+    return m ? [parseInt(m[1],16),parseInt(m[2],16),parseInt(m[3],16)] : [136,143,152];
+  }
+  function rgba(hex,a){ var c=hexToRgb(hex); return "rgba("+c[0]+","+c[1]+","+c[2]+","+a+")"; }
+  // Edges need to read as dark lines on a cream background regardless of how
+  // light the source category's own fill is (core's fill is near-white) so
+  // shade every edge color toward black before using it as a stroke.
+  function edgeShade(hex,a){
+    var c = hexToRgb(hex);
+    var k = 0.52;
+    return "rgba("+Math.round(c[0]*(1-k))+","+Math.round(c[1]*(1-k))+","+Math.round(c[2]*(1-k))+","+a+")";
+  }
+  // actors (orange) and causes (yellow) shade to near-identical dark browns
+  // under the generic formula above, so those two categories get hand-picked
+  // edge colors instead, pushed further apart in hue than a flat 52% darken
+  // of their own fill would ever land.
+  var EDGE_COLOR_OVERRIDE = { actors:"#8a3f12", causes:"#5c4a06", priorart:"#7a5c18" };
+  function catEdgeStroke(cat, a){
+    if(EDGE_COLOR_OVERRIDE[cat]) return rgba(EDGE_COLOR_OVERRIDE[cat], a);
+    return edgeShade(CATS[cat].color, a);
+  }
+
+  // build legend
+  var legendEl = document.getElementById("legend");
+  var SVGNS = "http://www.w3.org/2000/svg";
+  Object.keys(CATS).forEach(function(k){
+    var cat = CATS[k];
+    var row = document.createElement("div");
+    row.className = "row";
+    var sw = document.createElement("span");
+    sw.className = "sw" + (k === "lever" ? " lever" : "");
+    if(k === "lever"){ sw.style.borderColor = "#dd7a35"; }
+    else { sw.style.background = cat.color; }
+    row.appendChild(sw);
+    var t = document.createElement("span");
+    t.textContent = cat.label;
+    row.appendChild(t);
+    legendEl.appendChild(row);
+  });
+
+  var shapeDiv = document.createElement("div");
+  shapeDiv.className = "divider";
+  shapeDiv.textContent = "Node shape";
+  legendEl.appendChild(shapeDiv);
+  (function(){
+    var row1 = document.createElement("div"); row1.className = "row";
+    var c1 = document.createElement("span"); c1.className = "sw"; c1.style.background = "#8a7a63";
+    row1.appendChild(c1);
+    var t1 = document.createElement("span"); t1.textContent = "Actor, Pattern, or Structure (see detail panel)";
+    row1.appendChild(t1); legendEl.appendChild(row1);
+
+    var row2 = document.createElement("div"); row2.className = "row";
+    var svg2 = document.createElementNS(SVGNS, "svg");
+    svg2.setAttribute("width", 14); svg2.setAttribute("height", 14); svg2.style.flex = "none";
+    var poly = document.createElementNS(SVGNS, "polygon");
+    poly.setAttribute("points", "7,1 13,7 7,13 1,7");
+    poly.setAttribute("fill", "#8a7a63");
+    svg2.appendChild(poly); row2.appendChild(svg2);
+    var t2 = document.createElement("span"); t2.textContent = "Event: one dated instance, illustrates a pattern";
+    row2.appendChild(t2); legendEl.appendChild(row2);
+  })();
+
+  var edgeDiv = document.createElement("div");
+  edgeDiv.className = "divider";
+  edgeDiv.textContent = "Edges";
+  legendEl.appendChild(edgeDiv);
+  [
+    { dash:null,       color:"#5a4430", label:"Causes" },
+    { dash:"1 4",      color:"#3d7ea6", label:"Provides evidence for" },
+    { dash:"2 5",      color:"#dd7a35", label:"Lever addresses this cause" },
+    { dash:"4 4",      color:"rgba(0,0,0,0.4)", label:"Secondary lever depends on primary" },
+    { dash:"2 4",      color:"rgba(0,0,0,0.45)", label:"Event illustrates this pattern (not causal)" },
+    { dash:null,       color:"#c9830a", width:3.4, label:"R1 loop — click its badge to trace it, fade the rest" },
+    { dash:null,       color:"#a8341c", width:3.4, label:"R2 loop — click its badge to trace it, fade the rest" },
+    { dash:null,       color:"#6b4a8a", width:3.4, label:"R3 loop (balancing) — click its badge to trace it" },
+    { dash:"1 3 5 3",  color:"#b03a18", label:"Inferred relationship, not a sourced fact" }
+  ].forEach(function(c){
+    var row = document.createElement("div");
+    row.className = "row";
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", 20); svg.setAttribute("height", 10);
+    svg.style.flex = "none";
+    var line = document.createElementNS(SVGNS, "line");
+    line.setAttribute("x1", 1); line.setAttribute("y1", 5); line.setAttribute("x2", 19); line.setAttribute("y2", 5);
+    line.setAttribute("stroke", c.color || "var(--ink-soft)");
+    line.setAttribute("stroke-width", c.width || 1.8);
+    if(c.dash) line.setAttribute("stroke-dasharray", c.dash);
+    svg.appendChild(line);
+    row.appendChild(svg);
+    var t = document.createElement("span");
+    t.textContent = c.label;
+    row.appendChild(t);
+    legendEl.appendChild(row);
+  });
+
+  var confDiv = document.createElement("div");
+  confDiv.className = "divider";
+  confDiv.textContent = "Evidence confidence (border, evidence/impact/legal only)";
+  legendEl.appendChild(confDiv);
+  [
+    { dash:null,        label:"Measured directly for this link" },
+    { dash:"6 4",        label:"One link downstream, or an aggregated/derived claim" },
+    { dash:"1.4 6",      label:"Modelled / projected, or unverified" },
+    { dash:"8 3 2 3",    label:"Measured, but a different jurisdiction standing in" },
+    { dash:"9 5", color:"#6b2f12", width:2.6, label:"No formal measurement exists anywhere yet (the open RQ)" }
+  ].forEach(function(c){
+    var row = document.createElement("div");
+    row.className = "row";
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", 14); svg.setAttribute("height", 14);
+    svg.style.flex = "none";
+    var circle = document.createElementNS(SVGNS, "circle");
+    circle.setAttribute("cx", 7); circle.setAttribute("cy", 7); circle.setAttribute("r", 5.5);
+    circle.setAttribute("fill", "none");
+    circle.setAttribute("stroke", c.color || "var(--ink-soft)");
+    circle.setAttribute("stroke-width", c.width || 1.8);
+    if(c.dash) circle.setAttribute("stroke-dasharray", c.dash);
+    svg.appendChild(circle);
+    row.appendChild(svg);
+    var t = document.createElement("span");
+    t.textContent = c.label;
+    row.appendChild(t);
+    legendEl.appendChild(row);
+  });
+
+  var spotDiv = document.createElement("div");
+  spotDiv.className = "divider";
+  spotDiv.textContent = "Spotlight";
+  legendEl.appendChild(spotDiv);
+  (function(){
+    var row = document.createElement("div");
+    row.className = "row";
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("width", 14); svg.setAttribute("height", 14);
+    svg.style.flex = "none";
+    var circle = document.createElementNS(SVGNS, "circle");
+    circle.setAttribute("cx", 7); circle.setAttribute("cy", 7); circle.setAttribute("r", 5.5);
+    circle.setAttribute("fill", "none");
+    circle.setAttribute("stroke", "#f2b705");
+    circle.setAttribute("stroke-width", 1.8);
+    circle.setAttribute("stroke-dasharray", "1 4");
+    svg.appendChild(circle);
+    row.appendChild(svg);
+    var t = document.createElement("span");
+    t.textContent = "The research question, or the primary leverage point";
+    row.appendChild(t);
+    legendEl.appendChild(row);
+  })();
+
+  document.fonts.ready.then(buildMap).catch(buildMap);
+
+  function buildMap(){
+    var byId = {};
+    NODES.forEach(function(n){ byId[n.id] = n; });
+
+    // measure + wrap labels
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    NODES.forEach(function(n){
+      var isLever = !!n.isLever;
+      var fontSize = n.id === "core" ? 14 : (isLever ? 11 : 11.5);
+      var fontWeight = n.id === "core" ? 800 : (isLever ? 600 : 700);
+      var maxWidth = n.id === "core" ? 110 : (n.r ? n.r * 1.7 : 120);
+      if(isLever) maxWidth = 118;
+      ctx.font = fontWeight + " " + fontSize + "px 'Source Sans 3', sans-serif";
+      var words = n.label.split(/\s+/), lines = [], cur = "";
+      words.forEach(function(w){
+        var test = cur ? cur + " " + w : w;
+        if(ctx.measureText(test).width > maxWidth && cur){ lines.push(cur); cur = w; }
+        else { cur = test; }
+      });
+      if(cur) lines.push(cur);
+      var lineHeight = fontSize * 1.32;
+      var textW = 0;
+      lines.forEach(function(l){ textW = Math.max(textW, ctx.measureText(l).width); });
+      n._lines = lines; n._fontSize = fontSize; n._fontWeight = fontWeight; n._lineHeight = lineHeight;
+      if(isLever){
+        n._w = Math.max(textW + 24, 90);
+        n._h = Math.max(lines.length * lineHeight + 18, fontSize + 18);
+      } else {
+        n.r = Math.max(n.r, textW / 1.7, (lines.length * lineHeight) / 1.55);
+      }
+    });
+
+    // initial angular placement per category, to bias (not fix) the force layout
+    var byCat = {};
+    NODES.forEach(function(n){ if(n.cat !== "core" && !n.isLever){ (byCat[n.cat] = byCat[n.cat] || []).push(n); } });
+    var R = 355;
+    Object.keys(byCat).forEach(function(cat){
+      var arr = byCat[cat], base = CAT_ANGLE[cat], step = 16;
+      arr.forEach(function(n, i){
+        var ang = (base + (i - (arr.length - 1) / 2) * step) * Math.PI / 180;
+        n._tx = R * Math.cos(ang); n._ty = R * Math.sin(ang);
+        n.x = n._tx; n.y = n._ty;
+      });
+    });
+    NODES.forEach(function(n){
+      if(n.id === "core"){ n.x = 0; n.y = 0; n.fx = 0; n.fy = 0; }
+      if(n.isLever){
+        var t = byId[n.target];
+        var ang = Math.atan2(t._ty || 0, t._tx || 0);
+        var LR = R + 185;
+        n._tx = LR * Math.cos(ang); n._ty = LR * Math.sin(ang);
+        n.x = n._tx; n.y = n._ty;
+      }
+    });
+
+    var sim = d3.forceSimulation(NODES)
+      .force("link", d3.forceLink(EDGES).id(function(d){ return d.id; })
+        .distance(function(l){ return l.dashed ? 130 : 210; })
+        .strength(function(l){ return l.dashed ? 0.24 : 0.24; }))
+      .force("charge", d3.forceManyBody().strength(-480))
+      .force("collide", d3.forceCollide().radius(function(d){ return (d.isLever ? Math.max(d._w,d._h)/2 : d.r) + 30; }))
+      .force("x", d3.forceX(function(d){ return d._tx || 0; }).strength(0.05))
+      .force("y", d3.forceY(function(d){ return d._ty || 0; }).strength(0.05))
+      .stop();
+
+    for(var i = 0; i < 500; i++){ sim.tick(); }
+
+    // A general force layout optimizes for legibility across the WHOLE
+    // graph, not for making any one loop look like a visible ring — that's
+    // why Prehos drifted away from its own R2 loop-mates. So after the first
+    // settle, pin each loop's member nodes into an actual circular
+    // arrangement, then let everything else resettle around that fixed ring.
+    // A node shared by two loops (here, "workarounds" is in all of R1/R2/R3)
+    // keeps whichever position the first loop gave it; a later loop arranges
+    // only its OWN not-yet-pinned members around THEIR OWN centroid, rather
+    // than letting the inherited member's (possibly distant) position drag
+    // the whole ring's center toward it — that skew is what put R3's label
+    // on top of "Misdirected patient-record transmissions" the first time.
+    var loopPinned = {};
+    var loopRingMembers = {}; // loopId -> ids actually placed fresh by that loop, for label centroids below
+    LOOPS.forEach(function(loopDef){
+      var members = loopDef.members.map(function(id){ return byId[id]; }).filter(Boolean);
+      if(members.length < 2) return;
+      var toPlace = members.filter(function(m){ return !loopPinned[m.id]; });
+      if(!toPlace.length) return;
+      var basis = toPlace.length >= 2 ? toPlace : members;
+      var cx = basis.reduce(function(s,m){ return s+m.x; },0)/basis.length;
+      var cy = basis.reduce(function(s,m){ return s+m.y; },0)/basis.length;
+      var ringR = 55 + toPlace.length*26;
+      var n = toPlace.length;
+      toPlace.forEach(function(m,i){
+        var ang = -Math.PI/2 + (i/n)*2*Math.PI;
+        m.fx = cx + ringR*Math.cos(ang);
+        m.fy = cy + ringR*Math.sin(ang);
+      });
+      loopRingMembers[loopDef.id] = toPlace.map(function(m){ return m.id; });
+      members.forEach(function(m){ loopPinned[m.id] = true; });
+    });
+    for(var j = 0; j < 300; j++){ sim.tick(); }
+
+    var svg = d3.select("#map");
+    var svgEl = document.getElementById("map");
+    var g = svg.append("g").attr("class", "viewport");
+    var linkG = g.append("g");
+    var nodeG = g.append("g");
+
+    svg.append("defs").append("marker")
+      .attr("id", "arrow").attr("viewBox", "0 0 10 10").attr("refX", 9).attr("refY", 5)
+      .attr("markerWidth", 6.5).attr("markerHeight", 6.5).attr("orient", "auto-start-reverse")
+      .append("path").attr("d", "M0,0 L10,5 L0,10 z").attr("fill", "context-stroke");
+
+    // Edge semantics, in priority order: illustrates (an Event citing the
+    // Pattern it's one instance of, not a causal claim) > dependency (a
+    // secondary lever needs the primary one first) > questionable (the one
+    // relationship that's itself an inference) > loop (part of a named
+    // feedback cycle) > lever (addresses a cause) > evidence (provides
+    // evidence for) > cause (the default, plain causal arrow).
+    // Each loop gets its own accent color (not one shared brown) so a reader
+    // can follow a single colored thread around its ring without clicking.
+    var LOOP_COLOR = "#8a4a1e";
+    var LOOP_COLORS = { R1:"#c9830a", R2:"#a8341c", R3:"#6b4a8a" };
+    function edgeKind(l){
+      if(l.illustrates) return "illustrates";
+      if(l.dependency) return "dependency";
+      if(l.questionable) return "questionable";
+      if(l.loop) return "loop";
+      if(l.dashed) return "lever";
+      if(l.source.cat === "evidence") return "evidence";
+      return "cause";
+    }
+    var link = linkG.selectAll("path")
+      .data(EDGES)
+      .join("path")
+      .attr("fill", "none")
+      .attr("stroke", function(l){
+        if(l.hero) return catEdgeStroke(l.source.cat, 1);
+        var k = edgeKind(l);
+        if(k === "illustrates") return "rgba(0,0,0,0.4)";
+        if(k === "dependency") return "rgba(0,0,0,0.38)";
+        if(k === "questionable") return "rgba(176,58,24,0.85)";
+        if(k === "loop") return LOOP_COLORS[l.loop] || LOOP_COLOR;
+        if(k === "lever") return catEdgeStroke(l.source.cat, 0.85);
+        if(k === "evidence") return catEdgeStroke(l.source.cat, 0.7);
+        return catEdgeStroke(l.source.cat, 0.8);
+      })
+      .attr("stroke-width", function(l){
+        if(l.hero) return 5.5;
+        var k = edgeKind(l);
+        if(k === "illustrates" || k === "dependency") return 1.3;
+        if(k === "loop") return 3.4;
+        if(k === "questionable") return 2;
+        return k === "lever" ? 2 : (k === "evidence" ? 2 : 2.4);
+      })
+      .attr("stroke-dasharray", function(l){
+        if(l.hero) return null;
+        var k = edgeKind(l);
+        if(k === "illustrates") return "2 4";
+        if(k === "dependency") return "4 4";
+        if(k === "questionable") return "1 3 5 3";
+        if(k === "lever") return "2 5";
+        if(k === "evidence") return "1 4";
+        return null;
+      })
+      .attr("marker-end", function(l){ return l.illustrates ? null : "url(#arrow)"; });
+
+    // One label chip per power edge (why, not just that) and per
+    // questionable edge, placed at the edge's own midpoint once node
+    // positions are final.
+    var labelG = g.append("g");
+    var allLabelChips = []; // {grp, loopId} — used to fade non-matching chips when a loop is highlighted
+    function edgeMidpoint(l){
+      return { x:(l.source.x+l.target.x)/2, y:(l.source.y+l.target.y)/2 };
+    }
+    // Shared collision dodge for any floating label: a midpoint or centroid
+    // can land right on top of a node that has nothing to do with the label
+    // (just a neighbor that settled nearby), so nudge away from whatever's
+    // in the way instead of hand-tuning a fixed offset per label.
+    var placedLabelPositions = []; // so labels dodge each OTHER too, not just nodes
+    function nudgeFromNodes(x, y, excludeNodes){
+      for(var iter = 0; iter < 14; iter++){
+        var bx = null, by = null;
+        NODES.forEach(function(d){
+          if(bx !== null || excludeNodes.indexOf(d) >= 0) return;
+          var rr = d.isLever ? Math.max(d._w,d._h)/2 : d.r;
+          if(Math.hypot(d.x-x, d.y-y) < rr+44){ bx = d.x; by = d.y; }
+        });
+        if(bx === null){
+          placedLabelPositions.forEach(function(p){
+            if(bx !== null) return;
+            if(Math.hypot(p.x-x, p.y-y) < 95){ bx = p.x; by = p.y; }
+          });
+        }
+        if(bx === null) break;
+        var dx = x-bx, dy = y-by, dl = Math.hypot(dx,dy)||1;
+        x += dx/dl*32; y += dy/dl*32;
+      }
+      placedLabelPositions.push({ x:x, y:y });
+      return { x:x, y:y };
+    }
+    function addInlineLabel(x, y, text, color, loopId, edgeRef){
+      var padX = 6, fontSize = 8.6;
+      var tmp = labelG.append("text").attr("font-size", fontSize).attr("font-weight", 700).text(text);
+      var w = tmp.node().getBBox().width; tmp.remove();
+      var grp = labelG.append("g").attr("transform", "translate("+x+","+y+")");
+      grp.append("rect")
+        .attr("x", -w/2-padX).attr("y", -9).attr("width", w+padX*2).attr("height", 18).attr("rx", 9)
+        .attr("fill", "#fffdf6").attr("stroke", color).attr("stroke-width", 1.1);
+      grp.append("text").attr("text-anchor","middle").attr("dy","0.32em")
+        .attr("font-size", fontSize).attr("font-weight", 700).attr("fill", color).text(text);
+      allLabelChips.push({ grp: grp, loopId: loopId || null, edgeRef: edgeRef || null });
+      return grp;
+    }
+
+    // Forcing a clean geometric ring out of a general-purpose layout is
+    // unreliable (that's the whole bug this fixes), so on top of pinning the
+    // ring shape, clicking a loop badge (or a single power/questionable
+    // label) also bolds the relevant edge(s) and fades everything else to
+    // ~15-20% opacity — the same trick Kumu and other systems-mapping tools
+    // use for exactly this problem. One shared predicate-based helper
+    // backs both "highlight a whole loop" and "highlight just this edge."
+    function applyHighlight(linkTest, nodeTest, chipTest){
+      link.style("opacity", function(l){ return !linkTest ? 1 : (linkTest(l) ? 1 : 0.15); });
+      node.style("opacity", function(d){ return !nodeTest ? 1 : (nodeTest(d) ? 1 : 0.2); });
+      allLabelChips.forEach(function(item){
+        item.grp.style("opacity", !chipTest ? 1 : (chipTest(item) ? 1 : 0.2));
+      });
+    }
+    function setLoopHighlight(loopId){
+      if(loopId === null){ applyHighlight(null, null, null); return; }
+      var ld = LOOPS.filter(function(x){ return x.id === loopId; })[0];
+      applyHighlight(
+        function(l){ return l.loop === loopId; },
+        function(d){ return ld && ld.members.indexOf(d.id) >= 0; },
+        function(item){ return item.loopId === loopId; }
+      );
+    }
+    function setEdgeHighlight(edge){
+      if(edge === null){ applyHighlight(null, null, null); return; }
+      applyHighlight(
+        function(l){ return l === edge; },
+        function(d){ return d.id === edge.source.id || d.id === edge.target.id; },
+        function(item){ return item.edgeRef === edge; }
+      );
+    }
+
+    // Distance from a node's center to its own boundary, along a given unit
+    // direction (ux,uy): exact for circles, and a proper ray/rectangle
+    // intersection for the lever boxes (an earlier Math.max(w,h)/2 circle
+    // approximation left visible gaps whenever a line met a box along its
+    // shorter, vertical, side).
+    function edgeDistance(d, ux, uy){
+      if(d.isLever){
+        var hw = d._w/2, hh = d._h/2;
+        var tx = ux !== 0 ? hw/Math.abs(ux) : Infinity;
+        var ty = uy !== 0 ? hh/Math.abs(uy) : Infinity;
+        return Math.min(tx, ty);
+      }
+      return d.r;
+    }
+    function linkPath(l){
+      var x1=l.source.x, y1=l.source.y, x2=l.target.x, y2=l.target.y;
+      var dx=x2-x1, dy=y2-y1, dist=Math.hypot(dx,dy)||1;
+      var ux=dx/dist, uy=dy/dist;
+      var r1=edgeDistance(l.source, ux, uy)+2, r2=edgeDistance(l.target, -ux, -uy)+6;
+      var sx=x1+ux*r1, sy=y1+uy*r1, ex=x2-ux*r2, ey=y2-uy*r2;
+      var dr = Math.hypot(ex-sx, ey-sy) * 1.5;
+      return "M"+sx+","+sy+" A"+dr+","+dr+" 0 0 1 "+ex+","+ey;
+    }
+
+    var node = nodeG.selectAll("g")
+      .data(NODES)
+      .join("g")
+      .attr("transform", function(d){ return "translate("+d.x+","+d.y+")"; });
+
+    // Spotlight ring for the one node that is the actual thesis of this map:
+    // the fire-to-paramedic link nobody has measured yet. A distinct bright
+    // color (not black/gray like the confidence borders, not any category
+    // fill) so it can never be mistaken for the confidence encoding below.
+    node.filter(function(d){ return d.highlight; }).append("circle")
+      .attr("class", "node-spotlight")
+      .attr("r", function(d){ return d.r + 10; })
+      .attr("fill", "none")
+      .attr("stroke", "#f2b705")
+      .attr("stroke-width", 3)
+      .attr("stroke-dasharray", "1 6")
+      .attr("stroke-linecap", "round");
+
+    // Shared border logic for both circles and diamonds: evidence confidence
+    // ONLY, and only within the evidence/impact/legal clusters (nodes that
+    // carry a `conf`) — solid = measured directly, dashed = measured one
+    // link downstream or an aggregated/derived claim, dotted = modelled or
+    // unverified, dash-dot = measured but a different jurisdiction standing
+    // in, gap = no formal measurement exists anywhere yet (reserved for the
+    // actual open research question, not shared with ordinary inferred
+    // nodes like legal_exposure or career_risk).
+    function confStroke(d){
+      if(d.id === "core") return "#b5362a";
+      if(d.conf === "gap") return "#6b2f12";
+      if(d.conf && d.conf !== "solid") return "rgba(0,0,0,0.65)";
+      return "rgba(0,0,0,0.25)";
+    }
+    function confWidth(d){
+      if(d.id === "core") return 3.5;
+      if(d.conf === "gap") return 3.4;
+      return d.conf ? 2.5 : 1;
+    }
+    function confDash(d){
+      if(d.conf === "dashed") return "6 4";
+      if(d.conf === "dotted") return "1.4 6";
+      if(d.conf === "jurisdiction") return "8 3 2 3";
+      if(d.conf === "gap") return "9 5";
+      return null;
+    }
+
+    // Fill = category (set elsewhere).
+    node.filter(function(d){ return !d.isLever && !d.isEvent; }).append("circle")
+      .attr("class", "node-circle")
+      .attr("r", function(d){ return d.r; })
+      .attr("fill", function(d){ return CATS[d.cat].color; })
+      .attr("stroke", confStroke)
+      .attr("stroke-width", confWidth)
+      .attr("stroke-dasharray", confDash);
+
+    // Event-type nodes (a specific, dated instance — not an ongoing pattern
+    // or structure) render smaller and diamond-shaped, a shape difference
+    // rather than one more border variant, so "this is one example of" never
+    // gets confused with "this is the pattern itself."
+    node.filter(function(d){ return d.isEvent; }).append("rect")
+      .attr("class", "node-diamond")
+      .attr("x", function(d){ return -d.r/Math.SQRT2; }).attr("y", function(d){ return -d.r/Math.SQRT2; })
+      .attr("width", function(d){ return d.r*Math.SQRT2; }).attr("height", function(d){ return d.r*Math.SQRT2; })
+      .attr("rx", 4)
+      .attr("transform", "rotate(45)")
+      .attr("fill", function(d){ return CATS[d.cat].color; })
+      .attr("stroke", confStroke)
+      .attr("stroke-width", confWidth)
+      .attr("stroke-dasharray", confDash);
+
+    // Levers of change are a different KIND of thing (a proposal, not a
+    // fact), so they get a shape difference (rounded rect, not circle) plus
+    // a soft color-matched halo, never a dashed border: dashing is reserved
+    // for the evidence-confidence encoding above, and reusing it here would
+    // make a lever and a mid-confidence evidence node look identical.
+    var leverSel = node.filter(function(d){ return d.isLever; });
+    leverSel.append("rect")
+      .attr("class", "node-rect-halo")
+      .attr("x", function(d){ return -d._w/2 - 5; })
+      .attr("y", function(d){ return -d._h/2 - 5; })
+      .attr("width", function(d){ return d._w + 10; })
+      .attr("height", function(d){ return d._h + 10; })
+      .attr("rx", 14)
+      .attr("fill", "none")
+      .attr("stroke", "rgba(221,122,53,0.4)")
+      .attr("stroke-width", 5);
+    leverSel.append("rect")
+      .attr("class", "node-rect")
+      .attr("x", function(d){ return -d._w/2; })
+      .attr("y", function(d){ return -d._h/2; })
+      .attr("width", function(d){ return d._w; })
+      .attr("height", function(d){ return d._h; })
+      .attr("rx", 10)
+      .attr("fill", CATS.lever.color)
+      .attr("stroke", "#dd7a35")
+      .attr("stroke-width", 1.5);
+
+    // The primary leverage point gets a gold bullseye, same visual family as
+    // the research-question spotlight: these are the two nodes on the map
+    // that matter more than their neighbors, and both say so the same way.
+    node.filter(function(d){ return d.primary; }).append("rect")
+      .attr("class", "node-bullseye")
+      .attr("x", function(d){ return -d._w/2 - 9; }).attr("y", function(d){ return -d._h/2 - 9; })
+      .attr("width", function(d){ return d._w + 18; }).attr("height", function(d){ return d._h + 18; })
+      .attr("rx", 16)
+      .attr("fill", "none")
+      .attr("stroke", "#f2b705")
+      .attr("stroke-width", 3)
+      .attr("stroke-dasharray", "1 6")
+      .attr("stroke-linecap", "round");
+
+    node.each(function(d){
+      var textEl = d3.select(this).append("text")
+        .attr("class", "bubble-text")
+        .attr("text-anchor", "middle")
+        .attr("font-size", d._fontSize)
+        .attr("font-weight", d._fontWeight)
+        .attr("fill", d.isLever ? CATS.lever.text : CATS[d.cat].text);
+      var n = d._lines.length;
+      d._lines.forEach(function(line, i){
+        textEl.append("tspan").attr("x", 0).attr("y", (i-(n-1)/2)*d._lineHeight).attr("dy","0.32em").text(line);
+      });
+    });
+
+    function tick(){
+      link.attr("d", linkPath);
+      node.attr("transform", function(d){ return "translate("+d.x+","+d.y+")"; });
+    }
+    tick();
+
+    // Nodes are fixed once the layout settles, with no drag, so a click
+    // always means "show me the sources," never risks being mistaken for a drag.
+    var detailPanel = document.getElementById("detailPanel");
+    var detailCat = document.getElementById("detailCat");
+    var detailTitle = document.getElementById("detailTitle");
+    var detailBody = document.getElementById("detailBody");
+
+    function openDetail(d){
+      var catInfo = d.cat ? CATS[d.cat] : { label: d.catLabel || "Feedback loop", color: LOOP_COLOR, text: "#fffdf6" };
+      detailCat.textContent = catInfo.label;
+      detailCat.style.background = catInfo.color;
+      detailCat.style.color = catInfo.text;
+      detailTitle.textContent = d.label;
+      detailBody.innerHTML = "";
+      var items = DETAILS[d.id];
+      if(items && items.length){
+        items.forEach(function(text){
+          var li = document.createElement("li");
+          li.textContent = text;
+          detailBody.appendChild(li);
+        });
+      } else {
+        var li = document.createElement("li");
+        li.className = "detail-empty";
+        li.textContent = "No additional sources recorded for this node yet.";
+        detailBody.appendChild(li);
+      }
+      detailPanel.classList.add("open");
+    }
+    function closeDetail(){ detailPanel.classList.remove("open"); }
+    document.getElementById("detailClose").addEventListener("click", function(){ setLoopHighlight(null); closeDetail(); });
+    document.addEventListener("keydown", function(ev){ if(ev.key === "Escape"){ setLoopHighlight(null); closeDetail(); } });
+    // Clicking empty canvas (not a node, not a label) clears any active loop highlight.
+    svg.on("click", function(ev){ if(ev.target === svgEl){ setLoopHighlight(null); closeDetail(); } });
+
+    // Power/questionable edge labels, and one label per feedback loop (at
+    // the loop's own centroid, not per edge), drawn once positions are final.
+    EDGES.forEach(function(l){
+      if(l.power){
+        var mp = nudgeFromNodes(edgeMidpoint(l).x, edgeMidpoint(l).y, [l.source, l.target]);
+        var powerGrp = addInlineLabel(mp.x, mp.y, l.power, "#5a4430", null, l);
+        powerGrp.style("cursor","pointer").on("click", function(ev){
+          ev.stopPropagation();
+          setEdgeHighlight(l);
+          openDetail(l.source);
+        });
+      }
+      if(l.questionable){
+        var mq0 = edgeMidpoint(l);
+        var mq = nudgeFromNodes(mq0.x, mq0.y + 16, [l.source, l.target]);
+        var qGrp = addInlineLabel(mq.x, mq.y, "inferred comparison, not confirmed", "#b03a18", null, l);
+        qGrp.style("cursor","pointer").on("click", function(ev){
+          ev.stopPropagation();
+          setEdgeHighlight(l);
+          openDetail(l.target);
+        });
+      }
+    });
+
+    LOOPS.forEach(function(loopDef){
+      // Use only the members THIS loop actually arranged into a fresh ring
+      // (loopRingMembers), not every member of the loop — a member inherited
+      // from an earlier loop can sit far away, and including it would drag
+      // the label off-center and on top of one of the loop's own nodes.
+      var ringIds = loopRingMembers[loopDef.id];
+      var ptIds = (ringIds && ringIds.length) ? ringIds : loopDef.members;
+      var pts = ptIds.map(function(id){ return byId[id]; }).filter(Boolean);
+      if(!pts.length) return;
+      var cx0 = pts.reduce(function(s,p){ return s+p.x; },0)/pts.length;
+      var cy0 = pts.reduce(function(s,p){ return s+p.y; },0)/pts.length;
+      // The centroid can still happen to land on some unrelated node that
+      // just settled nearby (not a loop member, just a neighbor) — nudge
+      // away from whatever's in the way rather than hand-tuning per loop.
+      var nudged = nudgeFromNodes(cx0, cy0, pts);
+      var cx = nudged.x, cy = nudged.y;
+      var color = LOOP_COLORS[loopDef.id] || LOOP_COLOR;
+      var grp = addInlineLabel(cx, cy, "↻ " + loopDef.label, color, loopDef.id);
+      grp.style("cursor","pointer").on("click", function(ev){
+        ev.stopPropagation();
+        setLoopHighlight(loopDef.id);
+        openDetail({ id: loopDef.id, label: loopDef.label, cat: null, catLabel: "Feedback loop" });
+      });
+    });
+
+    node.on("click", function(ev, d){ ev.stopPropagation(); setLoopHighlight(null); openDetail(d); });
+
+    var zoom = d3.zoom().scaleExtent([0.15,3]).on("zoom", function(ev){ g.attr("transform", ev.transform); });
+    svg.call(zoom);
+
+    function fit(animate){
+      var x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+      NODES.forEach(function(d){
+        var hw = d.isLever ? d._w/2 : d.r, hh = d.isLever ? d._h/2 : d.r;
+        x0=Math.min(x0,d.x-hw); x1=Math.max(x1,d.x+hw);
+        y0=Math.min(y0,d.y-hh); y1=Math.max(y1,d.y+hh);
+      });
+      var vw=svgEl.clientWidth, vh=svgEl.clientHeight;
+      var topMargin = vw > 760 ? 110 : 0, rightMargin = vw > 760 ? 300 : 0;
+      var fw = Math.max(vw - rightMargin, 200), fh = Math.max(vh - topMargin, 200);
+      var bw=x1-x0, bh=y1-y0;
+      var scale=Math.min(fw/bw, fh/bh)*0.90;
+      var tx=fw/2 - scale*(x0+bw/2), ty=topMargin + fh/2 - scale*(y0+bh/2);
+      var t=d3.zoomIdentity.translate(tx,ty).scale(scale);
+      if(animate){ svg.transition().duration(500).call(zoom.transform,t); } else { svg.call(zoom.transform,t); }
+    }
+    fit(false);
+    document.getElementById("btn-fit").addEventListener("click", function(){ fit(true); });
+    window.addEventListener("resize", function(){ fit(false); });
+
+    // Exports the whole map as plain JSON, including every node's click-in
+    // sources and each loop's full narrative, so someone can paste the
+    // entire thing into an LLM instead of re-typing what's on screen.
+    document.getElementById("btn-json").addEventListener("click", function(){
+      var btn = this;
+      var exportNodes = NODES.map(function(n){
+        return {
+          id: n.id,
+          label: n.label,
+          category: n.cat,
+          categoryLabel: CATS[n.cat] ? CATS[n.cat].label : null,
+          type: n.type || null,
+          isLever: !!n.isLever,
+          isEvent: !!n.isEvent,
+          isPrimaryLever: !!n.primary,
+          isResearchQuestion: !!n.highlight,
+          confidence: n.conf || null,
+          scope: n.scope || "primary",
+          leverTarget: n.isLever ? n.target : null,
+          sources: DETAILS[n.id] || []
+        };
+      });
+      var exportEdges = EDGES.map(function(e){
+        var srcId = typeof e.source === "object" ? e.source.id : e.source;
+        var tgtId = typeof e.target === "object" ? e.target.id : e.target;
+        var srcCat = typeof e.source === "object" ? e.source.cat : null;
+        var kind = e.illustrates ? "illustrates" : e.dependency ? "lever-depends-on-primary-lever"
+          : e.dashed ? "lever-addresses-cause" : e.loop ? "feedback-loop"
+          : (srcCat === "evidence") ? "provides-evidence-for" : "causes";
+        return {
+          source: srcId, target: tgtId, kind: kind,
+          loop: e.loop || null,
+          powerDynamic: e.power || null,
+          questionable: !!e.questionable,
+          isCoreThesisEdge: !!e.hero
+        };
+      });
+      var exportLoops = LOOPS.map(function(l){
+        return { id: l.id, label: l.label, members: l.members, narrative: DETAILS[l.id] || [] };
+      });
+      var exportCategories = {};
+      Object.keys(CATS).forEach(function(k){ exportCategories[k] = CATS[k].label; });
+
+      var payload = {
+        title: "The Fragmented Handoff",
+        description: "Systems map of the causal drivers behind patient-information loss across the fire, paramedic, hospital, pharmacy handoff chain. Group 5, GBDA 402.",
+        categories: exportCategories,
+        nodes: exportNodes,
+        edges: exportEdges,
+        feedbackLoops: exportLoops
+      };
+      var text = JSON.stringify(payload, null, 2);
+
+      function flash(label){
+        var original = "Copy JSON";
+        btn.textContent = label;
+        setTimeout(function(){ btn.textContent = original; }, 1600);
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){ flash("Copied!"); }).catch(function(){
+          window.prompt("Copy this JSON:", text);
+          flash("Copy JSON");
+        });
+      } else {
+        window.prompt("Copy this JSON:", text);
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
