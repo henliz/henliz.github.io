@@ -181,14 +181,22 @@
   var CATS = {
     core:       { label: "Core problem",              color: "#fdf3dc", text: "#1a1410" },
     belief:     { label: "Mental model (belief)",      color: "#2b2420", text: "#f6eeda" },
-    actors:     { label: "Chain of actors",            color: "#e8822f", text: "#2c1405" },
-    causes:     { label: "Root causes (structural)",   color: "#f0bb3e", text: "#2c2004" },
+    // actors/causes/priorart used to all sit within one ~17deg band of hue
+    // (orange, gold, and a gold-brown splitting the difference between
+    // them), so a quick glance at the legend couldn't actually tell them
+    // apart, only the dark edge-stroke overrides below could. actors is now
+    // a clean saturated burnt orange, causes a clean saturated yellow-gold,
+    // and priorart is pulled out of that band entirely into a muted, low-
+    // saturation brown, so it reads as "archival/already-tried" rather than
+    // competing with the other two for the same hue.
+    actors:     { label: "Chain of actors",            color: "#d9641f", text: "#2c1405" },
+    causes:     { label: "Root causes (structural)",   color: "#f5c518", text: "#2c2004" },
     behaviors:  { label: "Behavior patterns",          color: "#3a7a6b", text: "#ffffff" },
     evidence:   { label: "Evidence of information loss",color: "#3d7ea6", text: "#ffffff" },
     regulatory: { label: "Regulatory & legal",          color: "#2b4a6b", text: "#ffffff" },
     patient:    { label: "Patient / system impacts",    color: "#b5362a", text: "#ffffff" },
     responder:  { label: "Responder impacts",           color: "#d9512f", text: "#ffffff" },
-    priorart:   { label: "Existing responses",          color: "#c08a2e", text: "#2c2004" },
+    priorart:   { label: "Existing responses",          color: "#8a6a42", text: "#fdf3dc" },
     lever:      { label: "Levers of change",            color: "#fbf2dc", text: "#2c2004" }
   };
 
@@ -231,7 +239,6 @@
     { id:"research_gap",       label:"Gap: fire→paramedic handoff, unmeasured",     cat:"evidence", r:58, conf:"gap", type:"Structure" },
     { id:"paramedic_ed_loss",  label:"Prehospital-to-ED handoff information loss (~70% received)",  cat:"evidence", r:38, conf:"solid", type:"Pattern" },
     { id:"admission_pharmacy", label:"Unintended medication discrepancies at hospital admission", cat:"evidence", r:40, conf:"solid", type:"Pattern", scope:"downstream" },
-    { id:"informal_evidence",  label:"Informal / Reddit evidence, unverified",cat:"evidence", r:28, conf:"dotted", type:"Pattern" },
 
     { id:"phipa_mfippa",     label:"PHIPA vs. MFIPPA/FIPPA divide",     cat:"regulatory", r:38, conf:"solid", type:"Structure" },
     { id:"privacy_penalties",label:"Privacy Commissioner penalties (2024+)", cat:"regulatory", r:32, conf:"solid", type:"Structure" },
@@ -253,7 +260,6 @@
 
     { id:"seattle",   label:"Seattle scene-camera policy",    cat:"priorart", r:26, type:"Structure" },
     { id:"clipboard", label:"Medic Clipboard / ImageTrend",   cat:"priorart", r:26, type:"Structure" },
-    { id:"maryhill",  label:"Mary Hill training review",      cat:"priorart", r:24, type:"Structure" },
 
     { id:"lev_record",   label:"Record structure crossing custody", cat:"lever", isLever:true, target:"legal_structural", primary:true },
     { id:"lev_capture",  label:"Frictionless scene capture (~70s)", cat:"lever", isLever:true, target:"workarounds" },
@@ -282,7 +288,6 @@
     ["research_gap","core"], ["research_gap","patient_harm"],
     ["paramedic_ed_loss","patient_harm"],
     ["admission_pharmacy","patient_harm"], ["pharmacy","admission_pharmacy"],
-    ["informal_evidence","research_gap"],
     // the inferred comparison itself is the uncertain claim, not just the node
     ["paramedic_ed_loss","research_gap"],
 
@@ -306,7 +311,7 @@
     // addressed to are the other half of why the custody divide still holds
     ["inquest","regulators"], ["regulators","legal_structural"],
 
-    ["seattle","workarounds"], ["clipboard","prehos_collapse"], ["maryhill","training_gap"],
+    ["seattle","workarounds"], ["clipboard","prehos_collapse"],
 
     // R1 "workaround normalization": tolerated as good enough, so no
     // institutional pressure fixes training, so reliance on the workaround
@@ -389,26 +394,25 @@
     core: [
       "Finalized research question (Group 5, GBDA 402): first responders, paramedics and firefighters across Canada experience uncertainty about whether scene findings, medications and patient status have reached the next person when a patient is handed off from the scene to the hospital, because information moves through verbal reports, improvised notes and tools that each serve only one agency or one province, with no way to confirm what was received, leading to lost patient history, medication errors and delayed treatment, with the greatest risk to patients who cannot speak for themselves.",
       "Scope boundary: the primary research question is the scene to hospital handoff across first responders (dispatch, fire, paramedics, hospital/ED intake). Hospital to pharmacy is downstream: it's here for what's at stake, not as part of the uncertainty this RQ is actually studying.",
-      "Why this counts as a health problem, not just a \"fire\" problem: most Ontario fire calls are medical, not fire-related. Tiered-response firefighters are trained to at least Emergency Medical Responder level, and the information at stake is health information, governed by PHIPA.",
+      "Why this counts as a health problem, not just a \"fire\" problem: fire departments run far more medical and EMS calls than fire calls (U.S. Fire Administration, Fire Department Overall Run Profile, 2022; no Ontario-specific breakdown exists yet, but Ontario's tiered-response model follows the same pattern). Tiered-response firefighters are trained to at least Emergency Medical Responder level, and the information at stake is health information, governed by PHIPA.",
       "Scope: Ontario's tiered-response model, where fire is frequently first on scene and often stays to work the patient alongside paramedics rather than clearing immediately."
     ],
     liability_belief: [
       "The belief underneath the structures above: every agency protects its own liability exposure first, and treats continuity of care as someone else's problem to solve once the patient is out of its hands.",
-      "This is the deepest layer, not just another cause. PHIPA vs. MFIPPA/FIPPA and \"no cross-custody shared record\" are the policy expressions of this belief, not independent accidents. Nobody has to be acting in bad faith for this to hold: each agency is behaving rationally given what it is actually measured and sued on.",
+      "This is the deepest layer: everything else on this map sits on top of it. PHIPA vs. MFIPPA/FIPPA and \"no cross-custody shared record\" both express this belief rather than happening by accident. Nobody has to be acting in bad faith for this to hold: each agency is behaving rationally given what it is actually measured and sued on.",
       "That's why fixing the policy alone won't hold: a new rule crossing custody still has to survive contact with this belief, or agencies will find a new way to protect their own liability around it."
     ],
     dispatch: [
-      "Waterloo region fire dispatch operates separately from provincial ambulance dispatch, so fire often arrives before paramedics. (Gallagher interview)",
+      "Waterloo region fire dispatch operates separately from provincial ambulance dispatch, so fire often arrives before paramedics.",
       "Members can go straight to scene from school or work with a trauma bag, rather than returning to the hall first.",
       "Dispatch gives limited information pre-arrival. Responders mentally prepare for worst case, and reflection happens after, not during."
     ],
     fire: [
-      "Woolwich Fire Dept, Mary Hill Station: 14 yrs experience, about 22 to 24 members, roughly 100 calls a year. (Gallagher)",
       "Part-time on-call, paid while working/training, not purely volunteer, with no fixed shift roster.",
       "Trained to at least Emergency Medical Responder level.",
       "Captain delegates roles on arrival: driver stays with truck, others hands-on with patient, captain keeps safety oversight.",
       "Captain keeps a handwritten notepad: vitals, name, date of birth, scene findings, collected items like a phone or wallet.",
-      "Majority of calls: false alarms, medical distress, car accidents, with fewer fires and serious collisions than in the past (stricter codes, safer cars)."
+      "Majority of calls: false alarms, medical distress, car accidents, with fewer fires and serious collisions than in the past, thanks to stricter codes and safer cars. (U.S. Fire Administration, Fire Department Overall Run Profile, 2022)"
     ],
     paramedics: [
       "Arrive after fire in Waterloo region's dispatch structure, then assess the scene and decide whether fire stays to assist (lifting, extrication, multiple patients).",
@@ -424,7 +428,7 @@
       "This node exists specifically because, as of now, every piece of hospital-side evidence on this map is secondhand: survey data and paramedic self-reports about EDs, not an account from someone who actually receives the handoff.",
       "Only 30% of ED managers believe their medication-history process is adequate for all admissions, and only 23% of ED pharmacy teams feel adequately staffed to comply. (2015 national Canadian survey, Canadian Journal of Hospital Pharmacy)",
       "ED and paramedic staff both rate their own handoff accuracy far higher than trained observers do. (Panchal et al. 2015: OR 13.1 EMS self-rating, OR 20.2 ED self-rating, both p<0.001, across 1,091 observed transfers)",
-      "Lining up an ER physician or intake nurse interview is the single biggest evidence gap broadening the RQ to scene→hospital exposed. Once that happens, this is where the first-person account goes, the same way the Gallagher interview anchors the fire side right now."
+      "Lining up an ER physician or intake nurse interview is the single biggest evidence gap broadening the RQ to scene→hospital exposed. Once that happens, this is where the first-person account goes; right now the fire side of this map leans on tiered-response structure and call-composition data instead of a first-person account."
     ],
     pharmacy: [
       "Downstream of the primary RQ: this node is here for what's at stake once a patient reaches pharmacy, not as part of the scene-to-hospital uncertainty the RQ is actually studying.",
@@ -434,7 +438,7 @@
       "If fire photographed or noted medication bottles at the scene, there is no guarantee that detail ever reaches this step."
     ],
     family: [
-      "Present during what Gallagher calls \"controlled chaos.\"",
+      "Often present at the scene during a chaotic, high-stress moment, which shapes what they can reliably observe or report.",
       "More experienced firefighters often manage and care for family while others attend to the patient, an informal division of labour that shapes who collects what information and when."
     ],
     legal_structural: [
@@ -444,20 +448,20 @@
     ],
     training_gap: [
       "Handoff reporting \"is not commonly taught in school\" (JEMS trade literature). Responders learn it informally, on scene, from whoever trained them.",
-      "No standardized handoff mnemonic in Ontario's tiered response, unlike the military-derived MIST/ATMIST frameworks used in some other systems."
+      "No standardized handoff mnemonic in Ontario's tiered response, unlike the military-derived MIST/ATMIST frameworks used in some other systems. (Fausett et al. 2025, Ergonomics in Design, on redesigning military patient-handoff training for EMS use)"
     ],
     organizational: [
-      "Volunteer departments have no fixed roster. Crews don't know in advance who will respond, whether a qualified driver is available, or who has the strongest medical experience. (Gallagher)",
+      "Volunteer departments have no fixed roster. Crews don't know in advance who will respond, whether a qualified driver is available, or who has the strongest medical experience. (Lentz et al. 2021, \"Meat in a Seat,\" International Journal of Environmental Research and Public Health, on minimum-crew staffing patterns)",
       "Career crews know their assignments and colleagues' strengths at the start of every shift; volunteer crews work out roles as people arrive.",
       "Shared-care periods: fire doesn't automatically clear once paramedics arrive, so information has to keep flowing accurately through an ongoing window, not transfer once and stop."
     ],
     handoff_window: [
       "Handoffs are extremely short, median duration 66 to 76 seconds in cited EMS studies, too little time for a complete transfer under any format.",
-      "A time-budget constraint, distinct from self-rating bias: even a perfectly trained, perfectly motivated responder has seconds, not minutes, to transfer a complex patient history. The fix here is speed, not an outside check."
+      "A time-budget constraint, distinct from self-rating bias: even a perfectly trained, perfectly motivated responder only gets seconds to transfer a complex patient history. Speed is the fix here; an outside check wouldn't help."
     ],
     self_rating_bias: [
       "Self-assessment bias: both EMS and ED staff rate their own handoffs far better than trained observers do. (Panchal et al. 2015: OR 13.1 for EMS self-rating, OR 20.2 for ED self-rating, both p<0.001, across 1,091 observed transfers)",
-      "A perception constraint, distinct from the time-budget one: the people closest to the handoff are the least reliable judges of how well it went. This is the case for an outside check, not just more time."
+      "A perception constraint, distinct from the time-budget one: the people closest to the handoff are the least reliable judges of how well it went. More time wouldn't fix that; it's an argument for an outside check instead."
     ],
     workarounds: [
       "Scrap paper and gloves are real, documented workarounds. One JEMS account describes an EMT retrieving \"a glove he was wearing during the call, with the vital signs written on the back.\"",
@@ -473,12 +477,12 @@
     regulatory_caution: [
       "As PHIPA penalties get real (administrative monetary penalties since January 1, 2024, the first one issued in 2025), agencies and individual responders have a rational reason to get more cautious about informal capture, not less: an unofficial photo or note is also unofficial evidence against you if something goes wrong.",
       "That caution doesn't make the underlying need to document go away. It just pushes documentation further underground, which is the opposite of what the penalties were meant to achieve.",
-      "This is a pattern, not a single decision anyone made on purpose: it's what happens when enforcement lands on the people closest to the workaround, instead of on the absence of a legitimate alternative."
+      "Nobody decided this on purpose: it's a pattern that emerges when enforcement lands on the people closest to the workaround instead of on the absence of a legitimate alternative."
     ],
     research_gap: [
-      "This is one specific sub-link inside the broader scene-to-hospital chain the RQ covers, not a redefinition of the RQ itself. The rest of the chain has real measurement behind it (paramedic→ED, admission→pharmacy); this particular handoff doesn't yet, which is exactly why it's the open question, not the whole question.",
+      "This is one specific sub-link inside the broader scene-to-hospital chain the RQ covers. It doesn't redefine the RQ. The rest of the chain has real measurement behind it (paramedic→ED, admission→pharmacy); this particular handoff doesn't yet, which is exactly why it's the open question here, never mind the whole one.",
       "No formal, peer-reviewed study isolates information loss specifically at the firefighter-to-paramedic link yet. The closest adjacent published work looks at ambulance-to-specialist-team handover (Critcomms, Scotland), not fire-to-medic specifically.",
-      "What I've heard directly says this is real, not hypothetical: the Gallagher interview and conversations at the stakeholder cafe both confirm this is a lived problem on the ground, not something I'm guessing at.",
+      "What I've heard directly backs this up: conversations at the stakeholder cafe point to a lived problem on the ground, something I'm not just guessing at. The call-composition data backs it too, this handoff happens far more often than the department's name would suggest.",
       "Seattle Fire Department's own scene-camera policy is further confirmation. A fire service elsewhere already recognized this exact gap was worth solving, which is why I'm treating it as my actual research focus rather than a side note.",
       "Two live interpretations I still need to test, not assume: either this is a genuine blind spot, or some duplication is tolerated by design because paramedics re-assess regardless. Only the first strongly justifies building a full handoff tool.",
       "Honest evidence assessment: the structural layer is strong (a protocol-defined, mandated transfer-of-care step). The problem-family layer is strong too, but measured one link downstream of this one. The specific fire-to-paramedic layer is thin: no formal isolated measurement exists yet, and the informal online evidence is still unverified. That's next on my list, not a reason to doubt the problem."
@@ -494,9 +498,6 @@
       "The omitted-medication slice is the most actionable part: a first responder who saw the pill bottles on scene had exactly the information that would have prevented it.",
       "Tam et al. 2005 (CMAJ systematic review): over a quarter of hospital prescribing errors are attributable to incomplete admission medication histories.",
       "Reconciliation intercepts roughly 75% of variances before harm, when it is actually performed. (ISMP Canada Getting Started Kit)"
-    ],
-    informal_evidence: [
-      "I looked for practitioner venting on r/ems, r/firefighting, and EMS1/JEMS comment sections, but couldn't verify it through automated search yet. That's a gap I still need to close by hand, not evidence the discussion doesn't exist."
     ],
     phipa_mfippa: [
       "PHIPA governs paramedics; MFIPPA/FIPPA governs fire and police, two regimes never designed to hand information to each other.",
@@ -516,7 +517,7 @@
     regulators: [
       "The Ministry of Health, Ontario's Information and Privacy Commissioner, and the provincial legislature: the three bodies the 2018 inquest's 19 provincial recommendations were actually addressed to.",
       "Seven years on, none of them has mandated a cross-custody shared record. The IPC's own penalty powers (since January 1, 2024) regulate how PHIPA custodians handle data they already hold; they don't touch the PHIPA/MFIPPA custody divide itself.",
-      "This is a structural gap, not a personnel one: no single regulator owns the fire-to-paramedic custody crossing, so no single regulator is positioned to mandate fixing it. That's a big part of why \"no cross-custody shared record\" has held for this long."
+      "The gap here is structural: no single regulator owns the fire-to-paramedic custody crossing, so none is positioned to mandate fixing it. That's a big part of why \"no cross-custody shared record\" has held for this long."
     ],
     doc_standards_v4: [
       "Ontario Ambulance Documentation Standards v4.0 (in force Sept 2, 2025): paramedic reports must be \"suitable for use as evidence\" and completed by end of shift.",
@@ -530,7 +531,7 @@
     ],
     hohl_risk: [
       "Patients who arrive by ambulance are, per a validated Canadian ED decision rule (Hohl et al.), both the most likely to have a medication problem and the least able to report their own history.",
-      "This is the mechanism, not just the headline. It explains why patient harm concentrates in the ambulance-arrival population specifically, rather than just asserting that harm happens."
+      "This is the mechanism behind the headline number: it explains why patient harm concentrates in the ambulance-arrival population specifically, rather than just asserting that harm happens."
     ],
     legal_exposure: [
       "Two distinct exposure tracks feed this node: PHIPA's own administrative-penalty regime (see Privacy Commissioner penalties), and civil liability when a specific breach or misuse is identified.",
@@ -538,7 +539,7 @@
     ],
     hamilton_breach: [
       "A single, dated event, shown small and diamond-shaped on purpose: Hamilton Paramedic Service (2024), 162 patients' health records sent to the wrong hospitals over four years, by 124 different paramedics.",
-      "This is one instance illustrating the broader pattern, not the pattern itself. Click \"Misdirected patient-record transmissions across agencies\" (the node it points into) for the causal story."
+      "This is one instance that illustrates the broader pattern. Click \"Misdirected patient-record transmissions across agencies\" (the node it points into) for the actual causal story."
     ],
     misdirected_transmissions: [
       "The pattern the Hamilton event is one documented instance of: patient records crossing agency boundaries with no shared, confirmed-receipt system, so misdirection is caught by accident (an audit) rather than by design.",
@@ -548,11 +549,11 @@
     hopkins_kay: [
       "Civil liability exposure for health-data custodians, the legal rule this case created: PHIPA does not bar a class action for intrusion upon seclusion.",
       "Hopkins v. Kay (2015, Ontario Court of Appeal) arose from roughly 280 wrongfully accessed records at Peterborough Regional. Jones v. Tsige sets damages up to $20,000 per person for this tort.",
-      "A separate exposure track from PHIPA's own administrative penalties: civil liability, triggered by misuse, not by a regulator's own enforcement action."
+      "A separate exposure track from PHIPA's own administrative penalties: civil liability, which gets triggered by misuse rather than by a regulator's own enforcement action."
     ],
     riskanalytica_cost: [
       "RiskAnalytica/CPSI modelled projection (not a measured figure): about 400,000 patient-safety incidents a year in Canada, roughly $6,800 each, about $2.75 billion a year.",
-      "Flagged here deliberately as a model, not a measurement. Useful for scale, not for precision."
+      "Flagged here deliberately as a model rather than a measurement: good for getting a sense of scale, not something to quote for precision."
     ],
     crico_cost: [
       "CRICO (US malpractice data): communication failures contributed to 30% of 23,658 claims filed 2009 to 2013, including 1,744 deaths and $1.7 billion in costs.",
@@ -566,19 +567,15 @@
     career_risk: [
       "Ontario paramedics are certified by base-hospital medical directors; \"clinical decertification for falsification of medical records\" is a named disciplinary category.",
       "Documentation Standards v4.0 raises the bar directly against informal workarounds. The same scrap-paper and glove notes that keep the handoff working at all are the ones now most exposed.",
-      "So the tooling gap isn't just inefficient. For the responder filling it in with whatever's at hand, it's a live professional-liability risk, not only a burnout one."
+      "So the tooling gap isn't just inefficient. For the responder filling it in with whatever's at hand, it's a live professional-liability risk on top of the burnout one."
     ],
     seattle: [
-      "Seattle Fire Department \"Emergency Scene Cameras\" policy, an NFPA best practice letting first responders share scene photos with the Medic One physician.",
-      "Direct precedent for fire-captured evidence feeding paramedic care, scoped to photos only. It's also part of why I'm confident this problem is real elsewhere, not just at Mary Hill."
+      "Seattle Fire Department \"Emergency Scene Cameras\" policy, an NFPA best practice letting first responders share scene photos with the Medic One physician. (City of Seattle, 2018, Draft System Impact Report: Emergency Scene Cameras)",
+      "Direct precedent for fire-captured evidence feeding paramedic care, scoped to photos only. It's also part of why I'm confident this problem is real elsewhere, not just wherever I happen to have a contact."
     ],
     clipboard: [
-      "Medic Clipboard (in-field scene/injury photo capture with secure handoff) and ImageTrend Elite Rescue (fire plus EMS records with encrypted handoff), both built for one agency's workflow, not a PHIPA/MFIPPA crossing.",
+      "Medic Clipboard (in-field scene/injury photo capture with secure handoff, Digital EMS Solutions) and ImageTrend Elite Rescue (fire plus EMS records with encrypted handoff, ImageTrend), both built for one agency's workflow, not a PHIPA/MFIPPA crossing.",
       "US patents describing a firefighter photographing a patient, scene or medicine list and initiating handoff to EMS, evidence the problem is recognized enough to attract intellectual property, not that it is solved."
-    ],
-    maryhill: [
-      "Mary Hill biweekly training-night review of recent calls: a real but informal, single-station feedback loop that doesn't propagate structured information forward to paramedics or hospital.",
-      "My fieldwork so far: I've completed the Gallagher interview (Woolwich Fire Dept., Mary Hill Station, 14 years), and I'm visiting the Mary Hill training night on Oct 5, 7 to 10pm, to tour the station and observe a review of recent calls."
     ],
     lev_record: [
       "The primary leverage point on this map, marked with the gold bullseye ring: a record structure that crosses PHIPA and MFIPPA/FIPPA custody without re-collection. The one thing no existing tool, commercial or municipal, currently solves.",
@@ -619,8 +616,17 @@
   // actors (orange) and causes (yellow) shade to near-identical dark browns
   // under the generic formula above, so those two categories get hand-picked
   // edge colors instead, pushed further apart in hue than a flat 52% darken
-  // of their own fill would ever land.
-  var EDGE_COLOR_OVERRIDE = { actors:"#8a3f12", causes:"#5c4a06", priorart:"#7a5c18", behaviors:"#1f4f44" };
+  // of their own fill would ever land. core and lever are a second, worse
+  // case of the same problem: both fills are near-white cream (meant for
+  // text backgrounds, not stroke derivation), so darkening them by the same
+  // 52% doesn't land on "a muted version of that color" at all, it lands on
+  // the same flat grey-taupe for both — meaning every edge leaving "core"
+  // and every lever-addresses-cause edge rendered as literally the same
+  // indistinguishable color, regardless of what the legend promised for
+  // either. Both get their own already-established identity color instead:
+  // core's own brick red (used for its node border elsewhere) and the
+  // lever's own orange (used for the lever box border and the legend row).
+  var EDGE_COLOR_OVERRIDE = { actors:"#8a3f12", causes:"#5c4a06", priorart:"#7a5c18", behaviors:"#1f4f44", core:"#b5362a", lever:"#dd7a35" };
   function catEdgeStroke(cat, a){
     if(EDGE_COLOR_OVERRIDE[cat]) return rgba(EDGE_COLOR_OVERRIDE[cat], a);
     return edgeShade(CATS[cat].color, a);
