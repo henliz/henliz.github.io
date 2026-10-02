@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>The Fragmented Handoff · Henriëtta van Niekerk</title>
+<title>Lost in Handoff · Henriëtta van Niekerk</title>
 <style>
   :root{
     color-scheme:light;
@@ -43,9 +43,14 @@
   }
   .title-block{
     pointer-events:auto; background:var(--surface); border:1px solid var(--line);
-    border-radius:4px; padding:10px 16px; max-width:min(600px, 64vw);
+    border-radius:4px; padding:10px 16px; max-width:min(380px, 58vw);
     box-shadow:0 2px 10px rgba(0,0,0,0.08);
   }
+  .title-hero{
+    display:block; width:220px; height:auto; margin:-26px 0 4px;
+    position:relative; z-index:2; pointer-events:none;
+  }
+  @media (max-width:640px){ .title-hero{ display:none; } }
   .kicker-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
   .kicker{ font-size:0.66rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); }
   .crumb{
@@ -144,8 +149,9 @@
       <span class="kicker">Research Proposal</span>
       <a class="crumb" href="/">&larr; henliz.github.io</a>
     </div>
-    <h1 class="display">The Fragmented Handoff</h1>
-    <p>A systems map of the causal drivers behind patient-information loss across the fire &rarr; paramedic &rarr; hospital &rarr; pharmacy chain. Group 5, GBDA 402. Drag the canvas, scroll to zoom, click a node for sources.</p>
+    <h1 class="display">Lost in Handoff</h1>
+    <img class="title-hero" src="img/firefighters.png" alt="">
+    <p>A systems map of the causal drivers behind patient-information loss at the scene-to-hospital handoff, across first responders: dispatch, fire, and paramedics, handing off to hospital ED intake. Group 5, GBDA 402. Drag the canvas, scroll to zoom, click a node for sources.</p>
   </div>
   <div class="toolbar"><button id="btn-fit">Fit view</button><button id="btn-json">Copy JSON</button></div>
 </header>
@@ -176,7 +182,8 @@
     core:       { label: "Core problem",              color: "#fdf3dc", text: "#1a1410" },
     belief:     { label: "Mental model (belief)",      color: "#2b2420", text: "#f6eeda" },
     actors:     { label: "Chain of actors",            color: "#e8822f", text: "#2c1405" },
-    causes:     { label: "Root causes",                color: "#f0bb3e", text: "#2c2004" },
+    causes:     { label: "Root causes (structural)",   color: "#f0bb3e", text: "#2c2004" },
+    behaviors:  { label: "Behavior patterns",          color: "#3a7a6b", text: "#ffffff" },
     evidence:   { label: "Evidence of information loss",color: "#3d7ea6", text: "#ffffff" },
     regulatory: { label: "Regulatory & legal",          color: "#2b4a6b", text: "#ffffff" },
     patient:    { label: "Patient / system impacts",    color: "#b5362a", text: "#ffffff" },
@@ -185,7 +192,14 @@
     lever:      { label: "Levers of change",            color: "#fbf2dc", text: "#2c2004" }
   };
 
-  var CAT_ANGLE = { belief:300, actors:200, causes:250, evidence:92, regulatory:18, patient:335, responder:58, priorart:168 };
+  // "causes" used to hold 8 nodes: structural facts (no shared record, the
+  // training gap) and recurring behaviors (self-rating bias, workarounds)
+  // tangled together as one same-colored, one-angular-wedge mass, which was
+  // a big part of why the map's middle was unreadable. Splitting them by
+  // the behavior/structure distinction the node "type" field already drew
+  // gives each half its own color AND its own wedge, instead of 8 same-hue
+  // nodes fighting for one spot.
+  var CAT_ANGLE = { belief:300, actors:200, causes:255, behaviors:205, evidence:92, regulatory:18, patient:335, responder:58, priorart:168 };
 
   // Node `type` is the iceberg/rubric layer (Actor, Pattern, Structure, Event,
   // Belief), kept separate from `cat` (which only ever drives fill color).
@@ -208,13 +222,13 @@
     { id:"legal_structural", label:"No cross-custody shared record",     cat:"causes", r:38, type:"Structure" },
     { id:"training_gap",     label:"Training gap: no shared mnemonic",  cat:"causes", r:38, type:"Structure" },
     { id:"organizational",   label:"Volunteer roster, no fixed crew",    cat:"causes", r:34, type:"Structure" },
-    { id:"handoff_window",   label:"~70-second handoff window",         cat:"causes", r:32, type:"Pattern" },
-    { id:"self_rating_bias", label:"Self-assessment bias",              cat:"causes", r:34, type:"Pattern" },
-    { id:"workarounds",      label:"Paper, gloves & memory as workarounds", cat:"causes", r:40, type:"Pattern" },
     { id:"prehos_collapse",  label:"Prehos ePCR vendor collapse (2026)", cat:"causes", r:24, type:"Event", isEvent:true },
-    { id:"regulatory_caution", label:"Agencies grow cautious, document less informally", cat:"causes", r:34, type:"Pattern" },
+    { id:"handoff_window",   label:"~70-second handoff window",         cat:"behaviors", r:32, type:"Pattern" },
+    { id:"self_rating_bias", label:"Self-assessment bias",              cat:"behaviors", r:34, type:"Pattern" },
+    { id:"workarounds",      label:"Paper, gloves & memory as workarounds", cat:"behaviors", r:40, type:"Pattern" },
+    { id:"regulatory_caution", label:"Agencies grow cautious, document less informally", cat:"behaviors", r:34, type:"Pattern" },
 
-    { id:"research_gap",       label:"Fire→paramedic: the unmeasured link within scene→hospital",     cat:"evidence", r:58, conf:"gap", highlight:true, type:"Structure" },
+    { id:"research_gap",       label:"Gap: fire→paramedic handoff, unmeasured",     cat:"evidence", r:58, conf:"gap", type:"Structure" },
     { id:"paramedic_ed_loss",  label:"Prehospital-to-ED handoff information loss (~70% received)",  cat:"evidence", r:38, conf:"solid", type:"Pattern" },
     { id:"admission_pharmacy", label:"Unintended medication discrepancies at hospital admission", cat:"evidence", r:40, conf:"solid", type:"Pattern", scope:"downstream" },
     { id:"informal_evidence",  label:"Informal / Reddit evidence, unverified",cat:"evidence", r:28, conf:"dotted", type:"Pattern" },
@@ -346,9 +360,9 @@
   var POWER_EDGES = {
     "phipa_mfippa>legal_structural": "Sets rules, not interoperability",
     "paramedics>training_gap": "Funds its own training, not fire's",
-    "clipboard>prehos_collapse": "Each agency funds its own vendor, no shared contract spreads the risk",
-    "liability_belief>legal_structural": "Shapes which custody rules agencies lobby for, not just which exist",
-    "lev_record>legal_structural": "Needs every agency to give up some autonomy over its own records",
+    "clipboard>prehos_collapse": "Single-agency vendor, no shared contract",
+    "liability_belief>legal_structural": "Shapes which rules agencies lobby for",
+    "lev_record>legal_structural": "Needs every agency to cede some record autonomy",
     "regulators>legal_structural": "Named this fix in 2018; no systemic action since"
   };
   var LOOPS = [
@@ -358,8 +372,12 @@
   ];
   EDGES.forEach(function(e){
     var key = e.source + ">" + e.target;
+    // Only the actual research question gets the oversized "spotlight"
+    // stroke. regulators->legal_structural used to get the same treatment
+    // for being the other core-thesis edge, but two different 5.5px-wide
+    // edges on screen just reads as "why is this one randomly huge" — its
+    // own power-dynamic label already carries that explanation.
     if(e.source === "research_gap" && e.target === "core") e.hero = true;
-    if(e.source === "regulators" && e.target === "legal_structural") e.hero = true;
     if(e.source === "paramedic_ed_loss" && e.target === "research_gap") e.questionable = true;
     if(LOOP_EDGES[key]) e.loop = LOOP_EDGES[key];
     if(POWER_EDGES[key]) e.power = POWER_EDGES[key];
@@ -602,7 +620,7 @@
   // under the generic formula above, so those two categories get hand-picked
   // edge colors instead, pushed further apart in hue than a flat 52% darken
   // of their own fill would ever land.
-  var EDGE_COLOR_OVERRIDE = { actors:"#8a3f12", causes:"#5c4a06", priorart:"#7a5c18" };
+  var EDGE_COLOR_OVERRIDE = { actors:"#8a3f12", causes:"#5c4a06", priorart:"#7a5c18", behaviors:"#1f4f44" };
   function catEdgeStroke(cat, a){
     if(EDGE_COLOR_OVERRIDE[cat]) return rgba(EDGE_COLOR_OVERRIDE[cat], a);
     return edgeShade(CATS[cat].color, a);
@@ -690,7 +708,7 @@
     { dash:"6 4",        label:"One link downstream, or an aggregated/derived claim" },
     { dash:"1.4 6",      label:"Modelled / projected, or unverified" },
     { dash:"8 3 2 3",    label:"Measured, but a different jurisdiction standing in" },
-    { dash:"9 5", color:"#6b2f12", width:2.6, label:"No formal measurement exists anywhere yet (the open RQ)" }
+    { dash:"9 5", color:"#6b2f12", width:2.6, label:"No formal measurement exists anywhere yet (the identified gap)" }
   ].forEach(function(c){
     var row = document.createElement("div");
     row.className = "row";
@@ -730,7 +748,7 @@
     svg.appendChild(circle);
     row.appendChild(svg);
     var t = document.createElement("span");
-    t.textContent = "The research question, or the primary leverage point";
+    t.textContent = "The primary leverage point";
     row.appendChild(t);
     legendEl.appendChild(row);
   })();
@@ -773,9 +791,13 @@
     // initial angular placement per category, to bias (not fix) the force layout
     var byCat = {};
     NODES.forEach(function(n){ if(n.cat !== "core" && !n.isLever){ (byCat[n.cat] = byCat[n.cat] || []).push(n); } });
-    var R = 355;
+    var R = 400;
     Object.keys(byCat).forEach(function(cat){
-      var arr = byCat[cat], base = CAT_ANGLE[cat], step = 16;
+      // "causes" carries the R1/R2 loop hub (workarounds, training_gap,
+      // legal_structural, prehos_collapse) plus several unrelated nodes, all
+      // pulled toward one 16deg-apart arc — wider spacing here specifically
+      // gives that hub room before the ring-pinning pass even runs.
+      var arr = byCat[cat], base = CAT_ANGLE[cat], step = ((cat === "causes" || cat === "behaviors") ? 19 : 16);
       arr.forEach(function(n, i){
         var ang = (base + (i - (arr.length - 1) / 2) * step) * Math.PI / 180;
         n._tx = R * Math.cos(ang); n._ty = R * Math.sin(ang);
@@ -795,15 +817,52 @@
 
     var sim = d3.forceSimulation(NODES)
       .force("link", d3.forceLink(EDGES).id(function(d){ return d.id; })
-        .distance(function(l){ return l.dashed ? 130 : 210; })
-        .strength(function(l){ return l.dashed ? 0.24 : 0.24; }))
-      .force("charge", d3.forceManyBody().strength(-480))
-      .force("collide", d3.forceCollide().radius(function(d){ return (d.isLever ? Math.max(d._w,d._h)/2 : d.r) + 30; }))
-      .force("x", d3.forceX(function(d){ return d._tx || 0; }).strength(0.05))
-      .force("y", d3.forceY(function(d){ return d._ty || 0; }).strength(0.05))
+        // "core" alone has 16 direct neighbors, so they still crowd each
+        // other even when every individual link is well spaced: giving
+        // core's own edges a bigger target distance spreads that ring out
+        // over more circumference, instead of bunching along one side.
+        //
+        // The 4 secondary levers each have TWO link constraints pulling on
+        // them: their own "addresses this cause" edge (short, dashed) and a
+        // "depends on the primary lever" edge to lev_record. That second
+        // one used to pull as hard as a normal solid edge, which is how a
+        // lever ended up 500-700px from the cause it's actually supposed to
+        // sit next to — it was fighting its own target to stay near
+        // lev_record instead. It only needs to be a loose visual hint, not
+        // a real competing anchor.
+        .distance(function(l){
+          if(l.dependency) return 120;
+          if(l.dashed) return 100;
+          if(l.source.id === "core" || l.target.id === "core") return 340;
+          return 270;
+        })
+        .strength(function(l){
+          if(l.dependency) return 0.03;
+          return l.dashed ? 0.6 : 0.16;
+        }))
+      .force("charge", d3.forceManyBody().strength(function(d){ return d.isLever ? -260 : -780; }))
+      // Levers get a much smaller collision buffer than everything else:
+      // the generic +44 is sized for keeping ordinary nodes legible apart,
+      // but a lever's whole point is to sit snug against its own target, so
+      // that same buffer was itself part of why one couldn't get close.
+      .force("collide", d3.forceCollide().radius(function(d){ return d.isLever ? Math.max(d._w,d._h)/2 + 14 : d.r + 44; }))
+      // A lever's _tx/_ty is a direction computed ONCE, from its target's
+      // pre-settle seed position, before the simulation has moved anything
+      // — and d3's forceX/forceY only READ their target accessor once too
+      // (at initialize, not per tick), so it's not "pulling toward the
+      // target's current spot," it's pulling toward a direction frozen at
+      // the very start. That fights the lever's own link edge once the
+      // target has since settled somewhere else, which is exactly how a
+      // lever ended up 500px+ from the cause it's supposed to sit next to.
+      // Zeroing the STRENGTH for levers (not the target) is what actually
+      // disables this, since strength is the only one of the two that
+      // staying frozen doesn't matter for; their link edge, which tracks
+      // the target's real live position every tick, anchors them instead.
+      .force("x", d3.forceX(function(d){ return d._tx || 0; }).strength(function(d){ return d.isLever ? 0 : 0.05; }))
+      .force("y", d3.forceY(function(d){ return d._ty || 0; }).strength(function(d){ return d.isLever ? 0 : 0.05; }))
       .stop();
 
-    for(var i = 0; i < 500; i++){ sim.tick(); }
+    for(var i = 0; i < 700; i++){ sim.tick(); }
 
     // A general force layout optimizes for legibility across the WHOLE
     // graph, not for making any one loop look like a visible ring — that's
@@ -818,6 +877,15 @@
     // on top of "Misdirected patient-record transmissions" the first time.
     var loopPinned = {};
     var loopRingMembers = {}; // loopId -> ids actually placed fresh by that loop, for label centroids below
+    var loopRingGeometry = {}; // loopId -> {cx,cy,ringR}, so the label can sit just OUTSIDE the ring
+    // A ring's centroid comes from wherever its members happened to settle,
+    // which can land close enough to "core" (fixed, large) or an earlier
+    // loop's ring that pinning members onto the circle drops one of them
+    // inside that other node, a fixed-vs-fixed overlap the collision force
+    // can never undo. So push the centroid itself away from every such
+    // obstacle until the WHOLE ring circle clears it, before placing members.
+    var coreNode = byId["core"];
+    var ringObstacles = [{ cx: coreNode.x, cy: coreNode.y, r: coreNode.r + 20 }];
     LOOPS.forEach(function(loopDef){
       var members = loopDef.members.map(function(id){ return byId[id]; }).filter(Boolean);
       if(members.length < 2) return;
@@ -826,17 +894,49 @@
       var basis = toPlace.length >= 2 ? toPlace : members;
       var cx = basis.reduce(function(s,m){ return s+m.x; },0)/basis.length;
       var cy = basis.reduce(function(s,m){ return s+m.y; },0)/basis.length;
-      var ringR = 55 + toPlace.length*26;
+      var ringR = 85 + toPlace.length*26;
+      // The push-out only has to clear "ringR" (the ring's bare center-to-
+      // member distance), but the member that actually lands at the closest
+      // point still has its OWN radius on top of that — missing that is
+      // exactly how "core" and "Prehos ePCR vendor collapse" ended up only
+      // ~40px apart edge-to-edge despite every other pair sitting at 70px+.
+      var maxMemberR = 0;
+      toPlace.forEach(function(m){
+        var mr = m.isLever ? Math.max(m._w,m._h)/2 : m.r;
+        if(mr > maxMemberR) maxMemberR = mr;
+      });
+      ringObstacles.forEach(function(ob){
+        var dist = Math.hypot(cx-ob.cx, cy-ob.cy);
+        var needed = ob.r + ringR + maxMemberR + 36;
+        if(dist < needed){
+          if(dist < 1){ cx = ob.cx + needed; cy = ob.cy; dist = needed; }
+          var factor = needed/dist;
+          cx = ob.cx + (cx-ob.cx)*factor;
+          cy = ob.cy + (cy-ob.cy)*factor;
+        }
+      });
       var n = toPlace.length;
       toPlace.forEach(function(m,i){
         var ang = -Math.PI/2 + (i/n)*2*Math.PI;
         m.fx = cx + ringR*Math.cos(ang);
         m.fy = cy + ringR*Math.sin(ang);
       });
+      ringObstacles.push({ cx:cx, cy:cy, r:ringR + maxMemberR });
       loopRingMembers[loopDef.id] = toPlace.map(function(m){ return m.id; });
+      loopRingGeometry[loopDef.id] = { cx:cx, cy:cy, ringR:ringR };
       members.forEach(function(m){ loopPinned[m.id] = true; });
     });
-    for(var j = 0; j < 300; j++){ sim.tick(); }
+    // d3's alpha (the simulation's "temperature") decays every tick from the
+    // very first loop above, so by tick 700 it's already ~1e-7 — forces are
+    // still technically applied, but multiplied by a number that small they
+    // do nothing. Without resetting it here, this whole second settle pass
+    // was running on a frozen simulation: the ring-pinning constraints
+    // (fx/fy, which bypass alpha) still worked, but everything meant to
+    // react to them — including every lever and link-distance tweak above —
+    // physically could not move. That's a big part of why those tweaks kept
+    // producing almost no visible change.
+    sim.alpha(1);
+    for(var j = 0; j < 400; j++){ sim.tick(); }
 
     var svg = d3.select("#map");
     var svgEl = document.getElementById("map");
@@ -911,42 +1011,104 @@
     function edgeMidpoint(l){
       return { x:(l.source.x+l.target.x)/2, y:(l.source.y+l.target.y)/2 };
     }
-    // Shared collision dodge for any floating label: a midpoint or centroid
-    // can land right on top of a node that has nothing to do with the label
-    // (just a neighbor that settled nearby), so nudge away from whatever's
-    // in the way instead of hand-tuning a fixed offset per label.
-    var placedLabelPositions = []; // so labels dodge each OTHER too, not just nodes
-    function nudgeFromNodes(x, y, excludeNodes){
-      for(var iter = 0; iter < 14; iter++){
-        var bx = null, by = null;
-        NODES.forEach(function(d){
-          if(bx !== null || excludeNodes.indexOf(d) >= 0) return;
-          var rr = d.isLever ? Math.max(d._w,d._h)/2 : d.r;
-          if(Math.hypot(d.x-x, d.y-y) < rr+44){ bx = d.x; by = d.y; }
-        });
-        if(bx === null){
-          placedLabelPositions.forEach(function(p){
-            if(bx !== null) return;
-            if(Math.hypot(p.x-x, p.y-y) < 95){ bx = p.x; by = p.y; }
-          });
+    // Hard collision guarantee for every floating label: each chip's full
+    // footprint (half-diagonal of its actual wrapped box, computed from real
+    // text, not a guess) is kept as a bounding circle, and every node/chip
+    // placed so far is checked against it on every pass. A pass that moves
+    // anything repeats, so a chip can't settle somewhere it still overlaps,
+    // it can only stop once nothing is touching it.
+    var placedLabelCircles = []; // {x,y,rad} — real chips placed so far, so later ones dodge them too
+    function resolveLabelPosition(x0, y0, rad, maxDist){
+      // Summed, damped relaxation: every violated obstacle contributes a
+      // corrective vector scaled to its own penetration depth, all of them
+      // are added together, and the chip takes one damped step along that
+      // combined direction. Pushing at full strength against one obstacle
+      // at a time (the previous approach) can ping-pong forever between two
+      // obstacles on opposite sides; summing first and only taking a
+      // fraction of the result converges instead of oscillating, the same
+      // way force-directed layouts settle.
+      //
+      // Left unbounded, this can walk a chip clear across the map to find
+      // open space, which "resolves" the overlap but leaves the label
+      // nowhere near the edge or node it's actually labeling. So the chip is
+      // only allowed to wander maxDist from its real anchor (the edge
+      // midpoint, or the loop ring); if it would go further, it's clamped
+      // back onto that boundary and keeps searching from there instead —
+      // trading a little residual tightness for staying recognizably next
+      // to what it's labeling.
+      var x = x0, y = y0;
+      for(var iter = 0; iter < 800; iter++){
+        var fx = 0, fy = 0, any = false;
+        for(var i = 0; i < NODES.length; i++){
+          var d = NODES[i];
+          var rr = (d.isLever ? Math.hypot(d._w,d._h)/2 : d.r) + 10;
+          var dx = x-d.x, dy = y-d.y, dl = Math.hypot(dx,dy) || 0.001;
+          var minDist = rr + rad;
+          if(dl < minDist){
+            var push = (minDist - dl) + 1;
+            fx += dx/dl*push; fy += dy/dl*push;
+            any = true;
+          }
         }
-        if(bx === null) break;
-        var dx = x-bx, dy = y-by, dl = Math.hypot(dx,dy)||1;
-        x += dx/dl*32; y += dy/dl*32;
+        for(var j = 0; j < placedLabelCircles.length; j++){
+          var p = placedLabelCircles[j];
+          var pdx = x-p.x, pdy = y-p.y, pdl = Math.hypot(pdx,pdy) || 0.001;
+          var pMin = p.rad + rad;
+          if(pdl < pMin){
+            var ppush = (pMin - pdl) + 1;
+            fx += pdx/pdl*ppush; fy += pdy/pdl*ppush;
+            any = true;
+          }
+        }
+        if(!any) break;
+        // A touch of rotation on top of the summed vector, cycling rather
+        // than growing without bound, so a perfectly symmetric deadlock
+        // (equal pulls from both sides cancelling out) still breaks loose.
+        var spin = (iter % 30) * 0.06;
+        var cs = Math.cos(spin), sn = Math.sin(spin);
+        var rfx = fx*cs - fy*sn, rfy = fx*sn + fy*cs;
+        x += rfx*0.55; y += rfy*0.55;
+        var ddx = x-x0, ddy = y-y0, dd = Math.hypot(ddx,ddy);
+        if(dd > maxDist){ x = x0 + ddx/dd*maxDist; y = y0 + ddy/dd*maxDist; }
       }
-      placedLabelPositions.push({ x:x, y:y });
+      placedLabelCircles.push({ x:x, y:y, rad:rad });
       return { x:x, y:y };
     }
-    function addInlineLabel(x, y, text, color, loopId, edgeRef){
-      var padX = 6, fontSize = 8.6;
-      var tmp = labelG.append("text").attr("font-size", fontSize).attr("font-weight", 700).text(text);
-      var w = tmp.node().getBBox().width; tmp.remove();
+    // Chips wrap to multiple short lines instead of one long pill — shorter
+    // footprint, easier to tuck into open space, easier to read at a glance.
+    // A chip is never allowed to overlap any node, including its own
+    // source/target: it starts at the edge's midpoint (or the loop ring's
+    // edge) and gets pushed clear of whatever that lands on or near.
+    function addInlineLabel(x0, y0, text, color, loopId, edgeRef, maxDist){
+      var padX = 8, padY = 7, fontSize = 8.6, lineHeight = fontSize*1.4, maxWidth = 112;
+      var meas = labelG.append("text").attr("font-size", fontSize).attr("font-weight", 700);
+      var words = text.split(/\s+/), lines = [], cur = "";
+      words.forEach(function(w){
+        var test = cur ? cur+" "+w : w;
+        meas.text(test);
+        if(meas.node().getBBox().width > maxWidth && cur){ lines.push(cur); cur = w; }
+        else { cur = test; }
+      });
+      if(cur) lines.push(cur);
+      var boxW = 0;
+      lines.forEach(function(ln){ meas.text(ln); boxW = Math.max(boxW, meas.node().getBBox().width); });
+      meas.remove();
+      boxW += padX*2;
+      var boxH = lines.length*lineHeight + padY*2;
+      var rad = Math.hypot(boxW, boxH)/2 + 3;
+      var placed = resolveLabelPosition(x0, y0, rad, maxDist || 120);
+      var x = placed.x, y = placed.y;
       var grp = labelG.append("g").attr("transform", "translate("+x+","+y+")");
       grp.append("rect")
-        .attr("x", -w/2-padX).attr("y", -9).attr("width", w+padX*2).attr("height", 18).attr("rx", 9)
+        .attr("x", -boxW/2).attr("y", -boxH/2).attr("width", boxW).attr("height", boxH).attr("rx", 9)
         .attr("fill", "#fffdf6").attr("stroke", color).attr("stroke-width", 1.1);
-      grp.append("text").attr("text-anchor","middle").attr("dy","0.32em")
-        .attr("font-size", fontSize).attr("font-weight", 700).attr("fill", color).text(text);
+      var txt = grp.append("text").attr("text-anchor","middle")
+        .attr("font-size", fontSize).attr("font-weight", 700).attr("fill", color);
+      var n = lines.length;
+      lines.forEach(function(ln,i){
+        txt.append("tspan").attr("x",0).attr("y",(i-(n-1)/2)*lineHeight).attr("dy","0.32em").text(ln);
+      });
+      grp._boxW = boxW; grp._boxH = boxH;
       allLabelChips.push({ grp: grp, loopId: loopId || null, edgeRef: edgeRef || null });
       return grp;
     }
@@ -997,14 +1159,54 @@
       }
       return d.r;
     }
+    // Real systems maps never route a line through or under a node — lines
+    // crossing each other is fine, a line crossing a bubble is not. So edges
+    // are straight by default (cleaner than a uniform arc) and only bend
+    // when something is actually in the way, around THAT obstacle specifically.
+    var pairCounts = {};
+    EDGES.forEach(function(e){
+      var key = [e.source.id, e.target.id].sort().join("|");
+      pairCounts[key] = (pairCounts[key] || 0) + 1;
+    });
     function linkPath(l){
       var x1=l.source.x, y1=l.source.y, x2=l.target.x, y2=l.target.y;
       var dx=x2-x1, dy=y2-y1, dist=Math.hypot(dx,dy)||1;
       var ux=dx/dist, uy=dy/dist;
       var r1=edgeDistance(l.source, ux, uy)+2, r2=edgeDistance(l.target, -ux, -uy)+6;
       var sx=x1+ux*r1, sy=y1+uy*r1, ex=x2-ux*r2, ey=y2-uy*r2;
-      var dr = Math.hypot(ex-sx, ey-sy) * 1.5;
-      return "M"+sx+","+sy+" A"+dr+","+dr+" 0 0 1 "+ex+","+ey;
+      var segLen = Math.hypot(ex-sx, ey-sy) || 1;
+      var dux = (ex-sx)/segLen, duy = (ey-sy)/segLen;
+      var px = -duy, py = dux;
+
+      // Two opposite-direction edges between the same pair (R1's loop) would
+      // otherwise sit exactly on top of each other with no obstacle to push
+      // them apart, so force a small, consistent, opposite-sign curve here.
+      var pairKey = [l.source.id, l.target.id].sort().join("|");
+      if(pairCounts[pairKey] >= 2){
+        var sign = l.source.id < l.target.id ? 1 : -1;
+        var bmx = (sx+ex)/2 + px*18*sign, bmy = (sy+ey)/2 + py*18*sign;
+        return "M"+sx+","+sy+" Q"+bmx+","+bmy+" "+ex+","+ey;
+      }
+
+      // Find the node that intrudes deepest into the straight path (if any)
+      // and bend just enough, to that one side, to clear it.
+      var worst = null, worstPen = 0, worstT = 0.5;
+      NODES.forEach(function(d){
+        if(d === l.source || d === l.target) return;
+        var rr = (d.isLever ? Math.max(d._w,d._h)/2 : d.r) + 11;
+        var t = Math.max(0.12, Math.min(0.88, ((d.x-sx)*dux + (d.y-sy)*duy)/segLen));
+        var cx = sx+dux*segLen*t, cy = sy+duy*segLen*t;
+        var pen = rr - Math.hypot(d.x-cx, d.y-cy);
+        if(pen > worstPen){ worstPen = pen; worst = d; worstT = t; }
+      });
+
+      if(!worst){ return "M"+sx+","+sy+" L"+ex+","+ey; }
+
+      var side = ((worst.x-sx)*px + (worst.y-sy)*py) >= 0 ? 1 : -1;
+      var bend = (worstPen + 14) * 2.3;
+      var mx = sx+dux*segLen*worstT - px*bend*side;
+      var my = sy+duy*segLen*worstT - py*bend*side;
+      return "M"+sx+","+sy+" Q"+mx+","+my+" "+ex+","+ey;
     }
 
     var node = nodeG.selectAll("g")
@@ -1012,18 +1214,6 @@
       .join("g")
       .attr("transform", function(d){ return "translate("+d.x+","+d.y+")"; });
 
-    // Spotlight ring for the one node that is the actual thesis of this map:
-    // the fire-to-paramedic link nobody has measured yet. A distinct bright
-    // color (not black/gray like the confidence borders, not any category
-    // fill) so it can never be mistaken for the confidence encoding below.
-    node.filter(function(d){ return d.highlight; }).append("circle")
-      .attr("class", "node-spotlight")
-      .attr("r", function(d){ return d.r + 10; })
-      .attr("fill", "none")
-      .attr("stroke", "#f2b705")
-      .attr("stroke-width", 3)
-      .attr("stroke-dasharray", "1 6")
-      .attr("stroke-linecap", "round");
 
     // Shared border logic for both circles and diamonds: evidence confidence
     // ONLY, and only within the evidence/impact/legal clusters (nodes that
@@ -1031,8 +1221,8 @@
     // link downstream or an aggregated/derived claim, dotted = modelled or
     // unverified, dash-dot = measured but a different jurisdiction standing
     // in, gap = no formal measurement exists anywhere yet (reserved for the
-    // actual open research question, not shared with ordinary inferred
-    // nodes like legal_exposure or career_risk).
+    // one identified evidence gap, not shared with ordinary inferred nodes
+    // like legal_exposure or career_risk).
     function confStroke(d){
       if(d.id === "core") return "#b5362a";
       if(d.conf === "gap") return "#6b2f12";
@@ -1103,9 +1293,10 @@
       .attr("stroke", "#dd7a35")
       .attr("stroke-width", 1.5);
 
-    // The primary leverage point gets a gold bullseye, same visual family as
-    // the research-question spotlight: these are the two nodes on the map
-    // that matter more than their neighbors, and both say so the same way.
+    // The one proposed fix that matters most gets a gold bullseye ring —
+    // its own distinct marker, not shared with the evidence-gap node below
+    // (that one is a finding, not a leverage point, and only needs its own
+    // "gap" confidence border to say so).
     node.filter(function(d){ return d.primary; }).append("rect")
       .attr("class", "node-bullseye")
       .attr("x", function(d){ return -d._w/2 - 9; }).attr("y", function(d){ return -d._h/2 - 9; })
@@ -1175,7 +1366,7 @@
     // the loop's own centroid, not per edge), drawn once positions are final.
     EDGES.forEach(function(l){
       if(l.power){
-        var mp = nudgeFromNodes(edgeMidpoint(l).x, edgeMidpoint(l).y, [l.source, l.target]);
+        var mp = edgeMidpoint(l);
         var powerGrp = addInlineLabel(mp.x, mp.y, l.power, "#5a4430", null, l);
         powerGrp.style("cursor","pointer").on("click", function(ev){
           ev.stopPropagation();
@@ -1185,8 +1376,7 @@
       }
       if(l.questionable){
         var mq0 = edgeMidpoint(l);
-        var mq = nudgeFromNodes(mq0.x, mq0.y + 16, [l.source, l.target]);
-        var qGrp = addInlineLabel(mq.x, mq.y, "inferred comparison, not confirmed", "#b03a18", null, l);
+        var qGrp = addInlineLabel(mq0.x, mq0.y + 16, "inferred comparison, not confirmed", "#b03a18", null, l);
         qGrp.style("cursor","pointer").on("click", function(ev){
           ev.stopPropagation();
           setEdgeHighlight(l);
@@ -1196,23 +1386,37 @@
     });
 
     LOOPS.forEach(function(loopDef){
-      // Use only the members THIS loop actually arranged into a fresh ring
-      // (loopRingMembers), not every member of the loop — a member inherited
-      // from an earlier loop can sit far away, and including it would drag
-      // the label off-center and on top of one of the loop's own nodes.
+      // A tight 2-3 node ring (107-133px radius) rarely has a clear spot
+      // INSIDE it for a ~130px-wide chip — so start the label just past the
+      // ring's own edge, in the ring's outward direction (away from the
+      // map's center), rather than trying to squeeze it among 2-3 nodes that
+      // are each only ~100-200px apart. Then nudge only has to handle
+      // whatever unrelated node happens to be out that way, not the ring itself.
+      var geo = loopRingGeometry[loopDef.id];
       var ringIds = loopRingMembers[loopDef.id];
-      var ptIds = (ringIds && ringIds.length) ? ringIds : loopDef.members;
-      var pts = ptIds.map(function(id){ return byId[id]; }).filter(Boolean);
+      var pts = (ringIds && ringIds.length ? ringIds : loopDef.members).map(function(id){ return byId[id]; }).filter(Boolean);
       if(!pts.length) return;
-      var cx0 = pts.reduce(function(s,p){ return s+p.x; },0)/pts.length;
-      var cy0 = pts.reduce(function(s,p){ return s+p.y; },0)/pts.length;
-      // The centroid can still happen to land on some unrelated node that
-      // just settled nearby (not a loop member, just a neighbor) — nudge
-      // away from whatever's in the way rather than hand-tuning per loop.
-      var nudged = nudgeFromNodes(cx0, cy0, pts);
-      var cx = nudged.x, cy = nudged.y;
+      var cx0, cy0;
+      if(geo){
+        // R1 and R2 share "workarounds," so their ring centers sit close
+        // together and both point the same "outward from the map center"
+        // direction — fanning them apart by a fixed angle (rather than
+        // retuning a generic distance that affects every loop) is the
+        // simplest fix for these two specific, always-adjacent badges.
+        var LOOP_ANGLE_BIAS = { R1:-0.9, R2:0.9, R3:0 };
+        var oang = Math.atan2(geo.cy, geo.cx) + (LOOP_ANGLE_BIAS[loopDef.id] || 0);
+        var odx = Math.cos(oang), ody = Math.sin(oang);
+        cx0 = geo.cx + odx*(geo.ringR+90);
+        cy0 = geo.cy + ody*(geo.ringR+90);
+      } else {
+        cx0 = pts.reduce(function(s,p){ return s+p.x; },0)/pts.length;
+        cy0 = pts.reduce(function(s,p){ return s+p.y; },0)/pts.length;
+      }
       var color = LOOP_COLORS[loopDef.id] || LOOP_COLOR;
-      var grp = addInlineLabel(cx, cy, "↻ " + loopDef.label, color, loopDef.id);
+      // This seed point is already placed deliberately (just outside the
+      // ring, fanned away from any sibling loop) — it shouldn't need much
+      // further pushing, so it gets a tighter leash than a generic chip.
+      var grp = addInlineLabel(cx0, cy0, "↻ " + loopDef.label, color, loopDef.id, null, 70);
       grp.style("cursor","pointer").on("click", function(ev){
         ev.stopPropagation();
         setLoopHighlight(loopDef.id);
@@ -1260,7 +1464,7 @@
           isLever: !!n.isLever,
           isEvent: !!n.isEvent,
           isPrimaryLever: !!n.primary,
-          isResearchQuestion: !!n.highlight,
+          isIdentifiedGap: n.conf === "gap",
           confidence: n.conf || null,
           scope: n.scope || "primary",
           leverTarget: n.isLever ? n.target : null,
@@ -1289,8 +1493,8 @@
       Object.keys(CATS).forEach(function(k){ exportCategories[k] = CATS[k].label; });
 
       var payload = {
-        title: "The Fragmented Handoff",
-        description: "Systems map of the causal drivers behind patient-information loss across the fire, paramedic, hospital, pharmacy handoff chain. Group 5, GBDA 402.",
+        title: "Lost in Handoff",
+        description: "Systems map of the causal drivers behind patient-information loss at the scene-to-hospital handoff, across first responders: dispatch, fire, and paramedics, handing off to hospital ED intake. Hospital to pharmacy is downstream context, not part of the studied link. Group 5, GBDA 402.",
         categories: exportCategories,
         nodes: exportNodes,
         edges: exportEdges,
