@@ -510,25 +510,11 @@
     .px{font-family:'DotempDemo',monospace !important;font-style:normal !important;font-size:.9em}
   .di{font-family:'Didot','Cormorant Garamond',serif !important;font-style:italic !important;font-weight:700}
 
-  
-  /* the single WebGL surface every tile scissors into */
-  /* One canvas over the grid, clipped at runtime to the tiles' rounded rects
-     (see updateClip). Without the clip a square scissor leaks into the corners
-     and the gutters. */
-  /* the canvas covers the content card (not the viewport) so models are
-     clipped by its rounded right edge instead of bleeding into the gutter */
-  /* canvas is a replaced element: insets alone leave it at its intrinsic
-     300x150, so the size has to be stated outright */
-  /* Sits exactly over the content card, pinned to the viewport. The size is
-     spelled out rather than left to insets: a canvas is a replaced element,
-     so width:auto resolves to its drawing-buffer attribute, not to the box
-     its insets describe — which sized it to twice the card. */
-  #gl{position:fixed;
-      top:var(--gap); left:var(--sb-w);
-      width:calc(100vw - var(--sb-w) - var(--gap));
-      height:calc(100dvh - var(--gap) * 2);
-      display:block;pointer-events:none;z-index:2;
-      border-radius:0 22px 22px 0}
+  /* each tile's copy of the shared renderer's frame (see tileOut). it's
+     inside the tile so it scrolls with it and the tile's overflow clips it.
+     sits over the dom scene and scrim, under the hover video and shimmer */
+  .tile-gl{position:absolute;inset:0;width:100%;height:100%;display:block;
+           z-index:2;pointer-events:none;border-radius:inherit}
 
   /* top padding clears the site's floating nav pill when this is iframed
    into index.html; harmless standalone. */
@@ -1844,7 +1830,7 @@
 
         /* The content card — the page's other rounded panel. Normal flow
            (not fixed), so the existing window scroll, Lenis and the
-           tile-clipped #gl canvas all keep working untouched. */
+           per-tile model canvases all keep working untouched. */
         .content-card {
             position: fixed;
             top: var(--gap); right: var(--gap); bottom: var(--gap);
@@ -2332,14 +2318,11 @@
             display: block;
             background: transparent;
         }
-        /* with a translucent pane, the work page behind it would read
-           through — hide it while a case is open. visibility (not display)
-           keeps its layout and the scroll position closeCase restores. */
-        /* The canvas sits outside the card now, so hiding the card no longer
-           hides it: without this it kept painting models over the top of
-           About and every case study. */
-        :root[data-pane-open] .content-card,
-        :root[data-pane-open] #gl { visibility: hidden; }
+        /* the pane is see-through so the homepage would show under every case
+           study. hide it while one's open. visibility not display, so the
+           layout and scroll spot closeCase goes back to stay put. the model
+           canvases live inside the tiles now so they hide with the card too */
+        :root[data-pane-open] .content-card { visibility: hidden; }
 
         /* The hidden card's tiles keep their compositing layers even with
            visibility:hidden, and each frosted one still costs a re-read and
@@ -2399,12 +2382,6 @@
                 left: var(--gap);
                 border-radius: 22px;
                 border-left: 1px solid rgba(var(--muted-rgb),0.08);
-            }
-            #gl {
-                top: var(--gap); left: var(--gap);
-                width: calc(100vw - var(--gap) * 2);
-                height: calc(100dvh - var(--gap) * 2);
-                border-radius: 22px;
             }
             .sidebar { width: min(330px, 86vw); }
             .sidebar { border-radius: 22px; border-right: 1px solid rgba(var(--muted-rgb),0.14); }
@@ -3239,7 +3216,6 @@
 .sidebar{ border-radius:12px 0 0 12px !important; }
 .content-card{ border-radius:0 12px 12px 0 !important; }
 .case-pane{ border-radius:0 12px 12px 0 !important; }
-#gl{ border-radius:0 12px 12px 0 !important; }
 .tile-video, .tile-scrim{ border-radius:inherit !important; }
 
 /* ── phones: one tile per row ────────────────────────────────────────────
@@ -3462,16 +3438,6 @@
             <iframe class="case-frame" id="caseFrame" title="Case study" src="about:blank"></iframe>
         </div>
 
-        <!-- The models canvas lives outside the scroller on purpose. Inside it,
-             #contentCard's backdrop-filter made itself the containing block for
-             a position:fixed child, so "fixed" pinned the canvas to the card's
-             scrolled CONTENT and it had to be counter-translated by scrollTop
-             on every frame to stay put. That counter-transform is written on
-             the main thread while the page scrolls on the compositor, so any
-             hitch showed up as the models sliding out of their tiles — the
-             bounce on phones. Out here it is genuinely fixed to the viewport,
-             sized to the card, and never moves. -->
-        <canvas id="gl"></canvas>
 
         <main class="content-card" id="contentCard">
         <div class="content-inner">
@@ -4546,12 +4512,17 @@ const SLOTS = {
   'MyAuntie':'t-auntie', 'Equinox':'t-equinox',
 };
 
-/* ── one renderer for every tile ────────────────────────────────────────
-   Six WebGL contexts would blow the browser's cap and cost six draw loops.
-   Instead: one canvas pinned over the grid, and each frame we set the
-   scissor + viewport to a tile's rect and render that tile's own scene.
-   Tiles that scroll out of view are skipped entirely.                    */
-const canvas = document.getElementById('gl');
+/* one renderer for every tile
+   six webgl contexts would hit the browser's cap and mean six draw loops, so
+   one hidden renderer draws each tile's scene in turn and copies the frame
+   into a little 2d canvas that lives INSIDE that tile.
+   it used to be one big canvas pinned over the grid and cut to each tile's
+   box. fine on desktop since lenis scrolls in the same frame loop, but on a
+   phone touch scroll runs on its own thread, so the tiles moved a frame
+   before the canvas did and the models slid right out of their boxes. a
+   canvas inside the tile just scrolls with it, and the tile's
+   overflow:hidden does the clipping for free. offscreen tiles get skipped */
+const canvas = document.createElement('canvas');
 /* What the device can comfortably do. A phone at devicePixelRatio 3 was
    being asked for nine times the pixels of a 1x screen, with MSAA on top,
    across two full-size renderers — which is most of why the site crawled on
@@ -5302,51 +5273,15 @@ function frameContent(v){
   v.framed = true;
 }
 
-/* ── keep the canvas inside the boxes ──────────────────────────────────
-   A scissor rect is square, so on its own it leaks into each tile's rounded
-   corners and, while scrolling, into the gutters. Clipping the canvas to a
-   path made of the tiles' rounded rects is exact. Rebuilt only when the
-   geometry actually moves, not every frame. */
-let clipKey = '';
-function roundedRectPath(x,y,w,h,r){
-  r = Math.min(r, w/2, h/2);
-  return `M${x+r},${y}h${w-2*r}a${r},${r} 0 0 1 ${r},${r}`
-       + `v${h-2*r}a${r},${r} 0 0 1 ${-r},${r}`
-       + `h${-(w-2*r)}a${r},${r} 0 0 1 ${-r},${-r}`
-       + `v${-(h-2*r)}a${r},${r} 0 0 1 ${r},${-r}z`;
-}
-
-/* The award ribbon's strip across a tile's top-right corner, as a subpath to
-   subtract from the canvas clip (see updateClip). The band is DOM, inside the
-   cell so it scrolls with the page — but the shared canvas paints over every
-   tile, so the only way the ribbon survives is for the canvas not to be there.
-   Cutting just the strip (not the whole corner) keeps the tile's corner tip
-   visible above the band, which is what a real ribbon looks like.
-   Numbers mirror AWARD_D / AWARD_T in the CSS. */
-// Mirrors the .award CSS: Trove's CardBadge geometry times k.
-const AW_K = 1.45, AW_BOX = 96, AW_OFF = 4, AW_W = 150, AW_TOP = 22, AW_H = 22,
-      AW_RIGHT = 32, AW_BLEED = 2;
-
-/* Called once a frame. It used to take its own rect of the canvas and of
-   every tile, and ask getComputedStyle for each tile's border radius — a
-   style recalc per tile per frame, for a number that never changes. It now
-   reuses the rects the frame already read and caches the radius. */
-function updateClip(c){
-  const parts = [];
-  let keyBits = '';
-  if (!c) c = canvas.getBoundingClientRect();   // card origin
-  for (const v of views){
-    const r = v._r || (v._r = v.el.getBoundingClientRect());
-    if (r.width === 0) continue;
-    const x = r.left - c.left, y = r.top - c.top;
-    const rad = v._rad || (v._rad = parseFloat(getComputedStyle(v.el).borderRadius) || 18);
-    parts.push(roundedRectPath(x, y, r.width, r.height, rad));
-    keyBits += `${Math.round(x)},${Math.round(y)},${Math.round(r.width)},${Math.round(r.height)};`;
-  }
-  if (keyBits === clipKey) return;
-  clipKey = keyBits;
-  // evenodd so the award subpaths read as holes rather than additions
-  canvas.style.clipPath = `path(evenodd, '${parts.join('')}')`;
+/* makes (once) and hands back the tile's own 2d canvas. layer order inside
+   the tile: dom scene .tf z0, scrim z1, this z2, hover video z3 */
+function tileOut(v){
+  if (v.out) return v.out;
+  const cv = document.createElement('canvas');
+  cv.className = 'tile-gl';
+  cv.setAttribute('aria-hidden', 'true');
+  v.el.appendChild(cv);
+  return (v.out = { cv, ctx: cv.getContext('2d') });
 }
 
 // GLTF loads are async and a station can hold several, so re-measure for a
@@ -5363,17 +5298,19 @@ let pmx = 0, pmy = 0;
 addEventListener('pointermove', e => { pmx = e.clientX; pmy = e.clientY; });
 
 function resize(){
-  // the canvas is sized to the content card now, not the viewport.
+  // the hidden buffer only ever holds one tile at a time, so it just needs
+  // to fit the biggest one
   // height matters as much as width — checking only width left the drawing
   // buffer stale and the models squashed.
-  const w = canvas.clientWidth, h = canvas.clientHeight;
+  let w = 1, h = 1;
+  for (const v of views){ w = Math.max(w, v.el.clientWidth); h = Math.max(h, v.el.clientHeight); }
   const pr = renderer.getPixelRatio();
-  if (canvas.width !== Math.round(w * pr) || canvas.height !== Math.round(h * pr)) {
+  if (canvas.width < Math.round(w * pr) || canvas.height < Math.round(h * pr)
+   || canvas.width > Math.round(w * pr) * 1.5 || canvas.height > Math.round(h * pr) * 1.5) {
     renderer.setSize(w, h, false);
-    for (const v of views) v._rad = 0;   // radius is fluid; re-measure once
   }
 }
-addEventListener('resize', () => { resize(); clipKey = ''; }); resize();
+addEventListener('resize', resize); resize();
 
 // tile scenes are fogged to the page background, so retint on theme change
 function applyFogTheme(mode) {
@@ -5404,7 +5341,7 @@ let _raf = 0, _idle = false;
 function anyVisible(){
   // a pane covers the work grid entirely; drawing under it is wasted work
   if (document.documentElement.hasAttribute('data-pane-open')) return false;
-  const H = renderer.domElement.clientHeight;
+  const H = innerHeight;
   for (const v of views){
     const r = v.el.getBoundingClientRect();
     if (r.width && r.bottom > -200 && r.top < H + 200) return true;
@@ -5436,12 +5373,9 @@ function renderFrame(){
     // nothing on screen: hand the frames back until something scrolls in.
     // (never from the reduced-motion path — that one must not start a loop)
     if (!_idle && !window.__gfx.still){
-      /* Wipe before sleeping. The canvas is pinned to the viewport now, so a
-         frame left on it does not scroll away with the tiles it belongs to —
-         it just sits there over the background until something wakes the
-         loop, which is why models appeared to detach and blink back. */
+      // each tile keeps its last frame and scrolls away with it, so
+      // there's nothing to wipe before sleeping
       _idle = true;
-      renderer.setScissorTest(false); renderer.clear(); renderer.setScissorTest(true);
       sleep();
       setTimeout(function poll(){
         if (_raf) return;
@@ -5453,21 +5387,13 @@ function renderFrame(){
   _idle = false;
   const dt = Math.min(clock.getDelta(), .05);
   const t = clock.getElapsedTime();
-  const H = renderer.domElement.clientHeight;
+  const H = innerHeight;
+  const pr = renderer.getPixelRatio();
+  const bufH = canvas.height;
 
-  /* One read pass. Nothing is written to the canvas before it, so this does
-     not force a layout the way the old write-then-read did. */
-  const cRect = canvas.getBoundingClientRect();
+  /* read every rect first before writing anything, so the browser only has
+     to do layout once instead of the old write then read thrash */
   for (const v of views) v._r = v.el.getBoundingClientRect();
-  updateClip(cRect);
-
-  /* Wipe the frame first. Each render only clears its own scissor box, and
-     now that the canvas is pinned to the viewport rather than scrolling with
-     the content, anything a tile painted last frame stays exactly where it
-     was — so a scroll smeared old models across the tiles below. */
-  renderer.setScissorTest(false);
-  renderer.clear();
-  renderer.setScissorTest(true);
 
   for (const v of views){
     const r = v._r;
@@ -5502,25 +5428,9 @@ function renderFrame(){
       });
     }
 
-    // the caption lives outside the box, so the model gets the whole tile.
-    // rects are viewport-relative; the canvas covers the card, so shift.
-    /* #contentCard carries a backdrop-filter, which makes it the containing
-       block for position:fixed descendants. The canvas is inside it, so
-       "fixed" pins it to the card's SCROLLED CONTENT rather than to its
-       visible box, and it slides away as you scroll: at scrollTop 520 its
-       top sat at -497 instead of 23. Everything below the first row then
-       fell outside the canvas and got clipped to a sliver, which is why the
-       Underdark and the nursery lost their models. Push it back by exactly
-       the scroll offset and the rect maths below is correct again. */
-    const artLeft = r.left - cRect.left, artW = r.width;
-    const artTop  = r.top  - cRect.top,  artH = r.height;
-    // clip the art box to the visible part of the scroller
-    const visTop = Math.max(0, artTop);
-    const visBot = Math.min(H, artTop + artH);
-    const visH   = visBot - visTop;
-    if (visH <= 0) continue;
-
     if (v.cover) continue;          // flat image tile, nothing to draw here
+    // the caption lives outside the box, so the model gets the whole tile
+    const artW = r.width, artH = r.height;
     const aspect2 = artW / artH;
     v.camera.aspect = aspect2;
     // FIT/framing was tuned against a ~1.25 box. When the tile runs wider and
@@ -5542,15 +5452,17 @@ function renderFrame(){
       v.camera.position.z = v.fit * (aspect2 < 1.1 ? 1.18 : 1) * (1 - v.hover * .05) * boxShrink;
     }
     v.camera.updateProjectionMatrix();
-    // keep the framing anchored to the full art box while only drawing the
-    // visible slice, so a half-scrolled tile doesn't squash its model
-    v.camera.setViewOffset(artW, artH, 0, visTop - artTop, artW, visH);
 
-    const bottom = H - visBot;
-    renderer.setViewport(artLeft, bottom, artW, visH);
-    renderer.setScissor (artLeft, bottom, artW, visH);
+    // draw the tile into the bottom left of the buffer then copy it over
+    // right away, same task, so we don't need preserveDrawingBuffer
+    renderer.setViewport(0, 0, artW, artH);
+    renderer.setScissor (0, 0, artW, artH);
     renderer.render(v.scene, v.camera);
-    v.camera.clearViewOffset();
+    const { cv, ctx } = tileOut(v);
+    const pw = Math.round(artW * pr), ph = Math.round(artH * pr);
+    if (cv.width !== pw || cv.height !== ph){ cv.width = pw; cv.height = ph; }
+    else ctx.clearRect(0, 0, pw, ph);
+    ctx.drawImage(canvas, 0, bufH - ph, pw, ph, 0, 0, pw, ph);
   }
 }
 if (window.__gfx.still){
