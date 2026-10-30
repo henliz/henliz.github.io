@@ -23,8 +23,9 @@
     <meta property="og:description" content="Résumé for Henriëtta van Niekerk, design engineer. Founder of Skrimp, CTO of Path to Menzoberranzan.">
     <meta property="og:url" content="https://henliz.github.io/resume/">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="icon" type="image/png" href="/HenLogo.png">
-    <link rel="shortcut icon" type="image/png" href="/HenLogo.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <style>
 /* Satoshi, self-hosted. Replaces Montserrat and Montserrat Alternates:
    squared bowls and tight apertures agree with DotempDemo's staircase where
@@ -912,8 +913,8 @@
        she falls through the sky while the page loads: clouds keep rising
        past her (that's what reads as falling) and she kicks 1, 1.5, 2 one
        way, same as the north star. when the first screen of tiles is ready
-       a cloud deck rushes up in front of her, she drops into it, it splits
-       open as she goes through and the sky fades, so you land on the page.
+       those same clouds part to the sides as she drops through the middle,
+       and the sky fades out under them, so you land on the page.
        scrolling up past the top plays it again (see the script) */
     #scene-overlay {
       position: fixed; inset: 0; z-index: 5000; overflow: hidden;
@@ -924,11 +925,9 @@
     .intro-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #9fd0ea 0%, #c8e5f3 50%, #eaf6fb 100%); }
     :root[data-theme="dark"] .intro-sky { background: linear-gradient(180deg, #0c1824 0%, #16283a 60%, #1d3349 100%); }
 
-    /* the handoff overlaps the ending: once the deck has swallowed her the
-       sky and the little clouds fade out underneath it, so the page is
-       already there when the halves split open */
-    #scene-overlay.parting .intro-sky,
-    #scene-overlay.parting .intro-cloud { opacity: 0; transition: opacity .45s ease .55s; }
+    /* the handoff overlaps the ending: the sky starts fading out while the
+       clouds are still parting, so the page is already there as they open */
+    #scene-overlay.parting .intro-sky { opacity: 0; transition: opacity .5s ease .3s; }
 
     /* clouds rising past her, each its own size, speed, depth and start */
     .intro-cloud {
@@ -938,7 +937,19 @@
       animation: introRise var(--t, 5s) linear var(--d, 0s) infinite;
     }
     .intro-cloud.far { background-image: url('/field/clouds-far.webp'); aspect-ratio: 1100 / 150; filter: blur(.5px); }
-    .intro-cloud.front { z-index: 2; filter: blur(1.5px); }
+    /* the big soft cumulus masses (/sky/cloud-a/b/c). they rise all the way
+       off the top (-100% of their own height) since they're tall */
+    .intro-cloud.ca { background-image: url('/sky/cloud-a.webp'); aspect-ratio: 1259 / 533; }
+    .intro-cloud.cb { background-image: url('/sky/cloud-b.webp'); aspect-ratio: 1015 / 314; }
+    .intro-cloud.cc { background-image: url('/sky/cloud-c.webp'); aspect-ratio: 1352 / 533; }
+    .intro-cloud.ca, .intro-cloud.cb, .intro-cloud.cc { animation-name: introRiseBig; }
+    @keyframes introRiseBig { from { transform: translateY(105vh); } to { transform: translateY(-100%); } }
+    /* the ones between her and you are a touch soft, like they're close */
+    .intro-cloud.front { z-index: 2; filter: blur(1px); }
+    #scene-overlay.parting .intro-cloud {
+      translate: calc(var(--s, 1) * 75vw) 0; opacity: 0;
+      transition: translate 1s cubic-bezier(.55,0,.3,1), opacity .4s ease .55s;
+    }
     @keyframes introRise { from { transform: translateY(110vh); } to { transform: translateY(-40vh); } }
 
     /* her, bobbing in the middle. frames are swapped by the script */
@@ -954,25 +965,6 @@
     @keyframes introDrop { from { transform: translateY(-75vh) rotate(-10deg); } to { transform: none; } }
     @keyframes introBob { from { transform: translateY(-8px) rotate(-3deg); } to { transform: translateY(8px) rotate(3deg); } }
 
-    /* the cloud deck she falls through: two dense halves that overlap in
-       the middle, waiting below the screen. each is several cloud images
-       stacked over a soft white mist so it reads as a real wall of cloud */
-    .intro-bank {
-      position: absolute; bottom: -18vh; z-index: 3; width: 80vw; height: 84vh;
-      background:
-        url('/field/clouds-near.webp') 10% 12% / 70% auto no-repeat,
-        url('/field/clouds-near.webp') 75% 30% / 85% auto no-repeat,
-        url('/field/clouds-far.webp') 30% 60% / 90% auto no-repeat,
-        url('/field/clouds-near.webp') 0% 85% / 100% auto no-repeat,
-        radial-gradient(80% 72% at 50% 66%, #fff, #fff 52%, rgba(255,255,255,.88) 68%, rgba(255,255,255,0) 92%);
-      /* feather the box so the mist never shows a hard rectangular edge */
-      -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
-              mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%);
-    }
-    :root[data-theme="dark"] .intro-bank { filter: brightness(.82) saturate(.8); }
-    .intro-bank.l { left: -12vw; transform: translateY(80vh); }
-    .intro-bank.r { right: -12vw; transform: translateY(80vh) scaleX(-1); }
-
     .intro-bar {
       position: absolute; left: 50%; bottom: 28px; translate: -50% 0; z-index: 4;
       width: 112px; height: 2px; border-radius: 2px; overflow: hidden; background: rgba(255,255,255,.45);
@@ -982,31 +974,11 @@
       transform: scaleX(.08); transform-origin: left; transition: transform .35s cubic-bezier(.23,1,.32,1);
     }
 
-    /* going through: the deck rushes up to meet her, she drops into it,
-       then the halves split off to the sides as she falls out the bottom */
-    #scene-overlay.parting .intro-bank.l { animation: deckL 1.35s cubic-bezier(.45,0,.3,1) forwards; }
-    #scene-overlay.parting .intro-bank.r { animation: deckR 1.35s cubic-bezier(.45,0,.3,1) forwards; }
-    @keyframes deckL {
-      0%   { transform: translateY(80vh); }
-      38%  { transform: translateY(-8vh); }
-      55%  { transform: translate(-4vw, -10vh); }
-      100% { transform: translate(-85vw, -14vh); }
-    }
-    @keyframes deckR {
-      0%   { transform: translateY(80vh) scaleX(-1); }
-      38%  { transform: translateY(-8vh) scaleX(-1); }
-      55%  { transform: translate(4vw, -10vh) scaleX(-1); }
-      100% { transform: translate(85vw, -14vh) scaleX(-1); }
-    }
+    /* she drops through the gap the clouds leave */
     #scene-overlay.parting .intro-fall {
-      animation: introOut 1.25s linear forwards;
+      animation: introOut 1.05s cubic-bezier(.5,0,.8,.45) forwards;
     }
-    /* sinks into the deck while it rises over her, then drops out below */
-    @keyframes introOut {
-      0%   { transform: none; animation-timing-function: cubic-bezier(.4,0,.6,1); }
-      45%  { transform: translateY(14vh) rotate(5deg); animation-timing-function: cubic-bezier(.5,0,.9,.4); }
-      100% { transform: translateY(110vh) rotate(14deg); }
-    }
+    @keyframes introOut { from { transform: none; } to { transform: translateY(105vh) rotate(14deg); } }
     #scene-overlay.parting .intro-bar { opacity: 0; transition: opacity .3s; }
     #scene-overlay.hidden * { animation-play-state: paused !important; }
 
@@ -1882,6 +1854,54 @@
             transform: scale(1.04);
         }
 
+        /* her head above the name. the wink is stacked on top and faded in
+           on hover so the swap is instant (both images are already loaded),
+           and a little speech bubble pops out to her right */
+        .rail-hen {
+            position: relative; display: block; align-self: flex-start;
+            width: clamp(42px, 6.4vh, 58px); aspect-ratio: 220 / 201;
+            margin-bottom: clamp(.15rem, .6vh, .4rem);
+        }
+        .rail-hen img {
+            position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+            filter: drop-shadow(0 6px 14px rgba(20, 40, 60, .22));
+            transition: transform .3s cubic-bezier(.34, 1.4, .64, 1);
+        }
+        .rail-hen .hen-wink { opacity: 0; }
+        .rail-hen:hover .hen-wink, .rail-hen:focus-visible .hen-wink { opacity: 1; }
+        .rail-hen:hover .hen-face, .rail-hen:focus-visible .hen-face { opacity: 0; }
+        .rail-hen:hover img, .rail-hen:focus-visible img { transform: rotate(-6deg) scale(1.05); }
+        .hen-bubble {
+            position: absolute; left: calc(100% + 12px); top: 50%;
+            translate: 0 -50%;
+            background: rgba(5, 9, 15, 0.96); color: rgba(240, 242, 240, 0.85);
+            border: 1px solid rgba(var(--muted-rgb), 0.18);
+            font-family: 'Satoshi', sans-serif; font-size: .8rem; font-weight: 500;
+            line-height: 1.3; width: max-content; max-width: 9.5rem;
+            padding: .45rem .75rem; border-radius: 14px;
+            pointer-events: none; z-index: 50;
+            opacity: 0; transform: scale(.85); transform-origin: left center;
+            transition: opacity .18s ease, transform .25s cubic-bezier(.34, 1.4, .64, 1);
+        }
+        /* the little tail pointing back at her */
+        .hen-bubble::before {
+            content: ''; position: absolute; right: 100%; top: 50%;
+            margin-top: -6px; margin-right: -1px;
+            border: 6px solid transparent; border-right-color: inherit;
+        }
+        .hen-bubble::after {
+            content: ''; position: absolute; right: 100%; top: 50%;
+            margin-top: -5px; margin-right: -2px;
+            border: 5px solid transparent; border-right-color: rgba(5, 9, 15, 0.96);
+        }
+        .rail-hen:hover .hen-bubble, .rail-hen:focus-visible .hen-bubble { opacity: 1; transform: none; }
+        :root[data-theme="light"] .hen-bubble { background: rgba(255,255,255,0.98); color: var(--ink-soft); border-color: var(--line); }
+        :root[data-theme="light"] .hen-bubble::after { border-right-color: rgba(255,255,255,0.98); }
+        @media (prefers-reduced-motion: reduce) {
+            .rail-hen img, .hen-bubble { transition: opacity .15s ease; }
+            .rail-hen:hover img, .rail-hen:focus-visible img { transform: none; }
+        }
+
         /* ── rail: back home ─────────────────────────────
            only exists while a pane is open — the logo alone is a
            weak exit, so a case study gets a labelled way out sat
@@ -1903,10 +1923,10 @@
             display: flex;
             align-items: center;
             gap: clamp(0.4rem, 1.2vh, 0.66rem);
-            /* the surname's own line box sits high against a square mark, so
-               drop it to share a centre line with it and give the first name
-               room to breathe above */
-            margin-top: clamp(0.3rem, 1.25vh, 0.62rem);
+            /* the mark used to sit beside the surname and needed this row
+               dropped to share its centre line. the mark lives above the
+               name now, so it only needs a hair of space */
+            margin-top: clamp(0.1rem, 0.5vh, 0.3rem);
             margin-bottom: clamp(0.1rem, 0.5vh, 0.26rem);
         }
         .name-row .rail-logo { margin-bottom: 0; }
@@ -1939,9 +1959,11 @@
         }
         .rail-back:hover .rail-back-arrow { transform: translateX(-2px); }
         :root[data-pane-open]:not([data-rail-plain]) .rail-back { display: inline-flex; }
-        /* the mark normally rides the surname, and the intro hides in case
-           mode — so case mode gets its own, left of the way out, tinted by the
-           open study's --logo-filter like every other rail accent */
+        /* the intro (and her head above the name) hides in case mode, so
+           case mode gets its own head, left of the way out. no tint here,
+           the per study --logo-filter would turn her skin funny colours.
+           she still winks on hover, just no speech bubble (that's a
+           homepage only thing) */
         .rail-logo--case { display: none; }
         :root[data-pane-open]:not([data-rail-plain]) .rail-logo--case {
             display: block;
@@ -1950,6 +1972,16 @@
             width: clamp(36px, 5.8vh, 46px); height: clamp(36px, 5.8vh, 46px);
             margin: 0;
         }
+        /* switch the tint off at the source: every logo filter rule reads
+           --logo-filter, so blanking it here beats them all */
+        .rail-logo--case { --logo-filter: none; }
+        .rail-logo--case img { position: absolute; inset: 0; }
+        .rail-logo--case .hen-wink { opacity: 0; }
+        .rail-logo--case:hover .hen-wink, .rail-logo--case:focus-visible .hen-wink { opacity: 1; }
+        .rail-logo--case:hover .hen-face, .rail-logo--case:focus-visible .hen-face { opacity: 0; }
+        /* the about / resume / playground panes keep the home rail, head and
+           all, but the "looking for roles" bubble stays on the homepage */
+        :root[data-pane-open] .hen-bubble { display: none; }
 
         /* ── rail: case mode (name + contents) ───────────── */
         /* the hero intro steps aside so the study you are reading owns
@@ -3451,18 +3483,54 @@ body::after{
   .ns-hen{ width:clamp(130px, 34vw, 190px); right:6%; }
 }
 
-/* rail walker: chibi her walking on the spot, feet on the divider line
-   above lets conspire. 16 finished frames (168x255 each) in one sheet;
-   stepping the background from 0 to 16/15 of its width lands on each frame */
-.rail-walk{ position:relative; height:calc(112px + .3rem); margin-top:auto; pointer-events:none; flex:0 0 auto; }
-.rail-walk + .sb-foot{ margin-top:0 !important; }
+/* rail walker: chibi her pacing back and forth on the divider line above
+   lets conspire. 16 finished frames (168x255 each) in one sheet; stepping
+   the background from 0 to 16/15 of its width lands on each frame.
+   she's drawn facing right, so the walk back is just her mirrored.
+
+   she's also the rail's give: her strip shrinks before anything else does
+   (huge flex-shrink), so on a short laptop screen she gets smaller instead
+   of the rail scrolling, and if there's barely any room she just steps out.
+   sizes come from container units (cqh/cqw) so her width and how far she
+   walks always match whatever height she ended up with. she's a bit taller
+   than her strip (--reach) and stands up into the empty air under the nav,
+   which costs the rail no height */
+.rail-walk{ position:relative; flex:0 1000 calc(112px + .3rem); min-height:0; max-height:calc(112px + .3rem);
+  margin-top:auto; pointer-events:none; container-type:size; }
+:root:not([data-pane-open]) .rail-walk + .sb-foot{ margin-top:0 !important; }
+/* homepage only, never inside a case study (or about / resume) */
+:root[data-pane-open] .rail-walk{ display:none; }
 .walker{
-  position:absolute; left:.5rem; bottom:-2px; height:112px; aspect-ratio:168 / 255;
+  --reach: 22px;
+  --h: calc(100cqh - .3rem + var(--reach));
+  --w: calc(var(--h) * 168 / 255);
+  position:absolute; left:0; bottom:-2px; height:var(--h); width:var(--w);
   background:url('/sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat;
-  animation:chibiWalk .96s steps(16) infinite;
+  animation:
+    chibiWalk .96s steps(16) infinite,
+    chibiPace 11s linear infinite,
+    chibiFace 11s step-end infinite;
 }
 @keyframes chibiWalk{ to{ background-position:calc(100% * 16 / 15) 0; } }
-@media (prefers-reduced-motion: reduce){ .walker{ animation:none; } }
+/* across to the far side, then back the same way */
+@keyframes chibiPace{
+  0%, 100% { translate: .25rem 0; }
+  50%      { translate: calc(100cqw - var(--w) - .25rem) 0; }
+}
+@keyframes chibiFace{ 0% { scale: 1 1; } 50% { scale: -1 1; } }
+@container (max-height: 54px){ .walker{ display:none; } }
+
+/* short laptop screens (1366x768 and friends): the rail was only ever a
+   few px too tall, so tighten the spacing that has slack instead of
+   letting it scroll. text sizes don't change, just the air around them */
+@media (min-width: 921px) and (max-height: 740px){
+  .sb-group{ margin-top:.45rem; padding-top:.55rem; padding-bottom:.1rem; }
+  .sb-link{ padding-top:.2rem; padding-bottom:.2rem; }
+  .sb-foot{ padding-top:.65rem; }
+  .sidebar .btn-cta-secondary{ padding-top:.55rem; padding-bottom:.55rem; }
+  .rail-pitch{ margin-bottom:.3rem; }
+}
+@media (prefers-reduced-motion: reduce){ .walker{ animation:none; translate:.25rem 0; } }
 </style>
 </head>
 <body>
@@ -3627,8 +3695,9 @@ body::after{
 
             <!-- logo mark, plus the way out of a case study -->
             <div class="rail-head">
-                <a class="rail-logo rail-logo--case" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk — home">
-                    <img src="/HenLogo.png" alt="">
+                <a class="rail-logo rail-logo--case" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk, home">
+                    <img class="hen-face" src="/sky/henhead.webp" alt="" width="220" height="201">
+                    <img class="hen-wink" src="/sky/henwink.webp" alt="" width="220" height="201">
                 </a>
                 <button class="rail-back" id="railBack" type="button">
                     <span class="rail-back-arrow">&larr;</span> back home
@@ -3644,13 +3713,17 @@ body::after{
             </div>
 
             <div class="rail-intro">
+                <!-- her head above the name. hover (or focus) and she winks
+                     and says she's looking for roles -->
+                <a class="rail-hen" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk, home. looking for winter 2027 roles">
+                    <img class="hen-face" src="/sky/henhead.webp" alt="" width="220" height="201">
+                    <img class="hen-wink" src="/sky/henwink.webp" alt="" width="220" height="201">
+                    <span class="hen-bubble" aria-hidden="true">looking for winter 2027 roles &#10024;</span>
+                </a>
                 <h1 class="display-name">
                     <span class="name-first" aria-label="Henriëtta">Henri<span class="uml">e</span>tta</span>
                     <span class="name-row">
                         <span class="name-last">van Niekerk</span>
-                        <a class="rail-logo" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk — home">
-                            <img src="/HenLogo.png" alt="">
-                        </a>
                     </span>
                 </h1>
 
@@ -3675,7 +3748,7 @@ body::after{
                 <a class="sb-link" href="/playground/"  data-pane="playground"><span class="sb-n">06</span>playground</a>
             </nav>
 
-            <!-- chibi her walking on the spot above lets conspire. a puppet
+            <!-- chibi her pacing back and forth above lets conspire. a puppet
                  built from her own drawings: one steady body, and every arm
                  and leg picked from a library of all 8 drawn frames to match
                  a clean walk cycle, then nudged at the joint. 16 frames -->
@@ -4559,15 +4632,14 @@ body::after{
          it plays again -->
     <div id="scene-overlay" role="status" aria-label="Loading">
       <div class="intro-sky"></div>
-      <div class="intro-cloud far" style="--x:4vw;--w:56vw;--t:6.5s;--d:-1.2s;--o:.7"></div>
-      <div class="intro-cloud far" style="--x:56vw;--w:48vw;--t:7.5s;--d:-4.6s;--o:.65"></div>
-      <div class="intro-cloud far" style="--x:26vw;--w:44vw;--t:5.6s;--d:-3.4s;--o:.75"></div>
-      <div class="intro-cloud far" style="--x:-14vw;--w:40vw;--t:6s;--d:-5.2s;--o:.6"></div>
-      <div class="intro-cloud far" style="--x:72vw;--w:40vw;--t:5.2s;--d:-2.2s;--o:.7"></div>
-      <div class="intro-cloud" style="--x:-10vw;--w:64vw;--t:4.2s;--d:-2.8s"></div>
-      <div class="intro-cloud" style="--x:48vw;--w:70vw;--t:4.8s;--d:-.6s"></div>
-      <div class="intro-cloud" style="--x:18vw;--w:60vw;--t:4.5s;--d:-1.9s;--o:.85"></div>
-      <div class="intro-cloud" style="--x:64vw;--w:56vw;--t:3.9s;--d:-3.3s;--o:.85"></div>
+      <div class="intro-cloud far" style="--x:4vw;--w:56vw;--t:6.5s;--d:-1.2s;--o:.6;--s:-1"></div>
+      <div class="intro-cloud far" style="--x:56vw;--w:48vw;--t:7.5s;--d:-4.6s;--o:.55;--s:1"></div>
+      <div class="intro-cloud far" style="--x:-14vw;--w:40vw;--t:6s;--d:-5.2s;--o:.5;--s:-1"></div>
+      <div class="intro-cloud cb" style="--x:58vw;--w:44vw;--t:7s;--d:-1s;--o:.8;--s:1"></div>
+      <div class="intro-cloud ca" style="--x:-12vw;--w:56vw;--t:6.4s;--d:-3.6s;--o:.85;--s:-1"></div>
+      <div class="intro-cloud cc" style="--x:30vw;--w:52vw;--t:7.6s;--d:-5.8s;--o:.75;--s:1"></div>
+      <div class="intro-cloud cb" style="--x:-6vw;--w:40vw;--t:6.8s;--d:-6.4s;--o:.8;--s:-1"></div>
+      <div class="intro-cloud ca" style="--x:62vw;--w:50vw;--t:6.2s;--d:-4.4s;--o:.85;--s:1"></div>
       <div class="intro-fall">
         <img class="on" src="/sky/hen-fall-1.webp" alt="">
         <img src="/sky/hen-fall-1s.webp" alt="">
@@ -4575,12 +4647,10 @@ body::after{
         <img src="/sky/hen-fall-2s.webp" alt="">
         <img src="/sky/hen-fall-2.webp" alt="">
       </div>
-      <div class="intro-cloud front" style="--x:-22vw;--w:62vw;--t:3.2s;--d:-1.4s;--o:.85"></div>
-      <div class="intro-cloud front" style="--x:66vw;--w:60vw;--t:3.5s;--d:-.3s;--o:.85"></div>
-      <div class="intro-cloud front" style="--x:20vw;--w:62vw;--t:5.4s;--d:-2.6s;--o:.55"></div>
-      <div class="intro-bank l"></div>
-      <div class="intro-bank r"></div>
-        <div class="intro-bar"><i id="overlay-bar"></i></div>
+      <div class="intro-cloud cc front" style="--x:-30vw;--w:68vw;--t:4.6s;--d:-1.6s;--s:-1"></div>
+      <div class="intro-cloud ca front" style="--x:64vw;--w:66vw;--t:5s;--d:-3.8s;--s:1"></div>
+      <div class="intro-cloud cb front" style="--x:16vw;--w:46vw;--t:5.6s;--d:-.4s;--o:.8;--s:-1"></div>
+      <div class="intro-bar"><i id="overlay-bar"></i></div>
     </div>
 
     <script>
@@ -4622,7 +4692,7 @@ body::after{
             overlay.classList.add('hidden');
             overlay.setAttribute('aria-hidden', 'true');
             open = false;
-          }, 1000);
+          }, 850);
         }
         function maybePart() { if (ready && minDone) part(); }
 
