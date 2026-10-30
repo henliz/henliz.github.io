@@ -531,14 +531,14 @@
      "endorsements" (.sec-title, defined with the press styles) */
   .work-head{max-width:min(1320px, 100%);margin:0 auto;box-sizing:border-box;
              padding-inline:clamp(18px,2.2vw,44px)}
-  .work-head .work-title{padding-top:clamp(28px,4.4vh,56px);margin-bottom:0}
+  .work-head .work-title{padding-top:clamp(8px,1.6vh,20px);margin-bottom:0}
   /* on desktop the intro lives in the rail, this slot only fills on a phone */
   .work-intro{display:none}
   @media (max-width: 920px){
     .work-intro{display:block;padding:3.4rem 0 1.2rem}
     .work-intro .display-name{margin-bottom:.9rem;line-height:.94}
-    .work-intro .name-first{font-size:clamp(2.7rem,13vw,3.8rem)}
-    .work-intro .name-last{font-size:clamp(1.55rem,7.2vw,2.2rem);letter-spacing:.05em}
+    .work-intro .name-first{font-size:clamp(2.3rem,11vw,3.2rem)}
+    .work-intro .name-last{font-size:clamp(1.35rem,6.2vw,1.9rem);letter-spacing:.05em}
     .work-intro .rail-pitch{font-size:1.02rem;max-width:34ch}
     .work-intro .tagline{font-size:.96rem;width:100%;max-width:34ch;margin-bottom:0;line-height:1.38}
     /* the tooltip is a hover thing, on touch it just sits on top of the name */
@@ -2131,11 +2131,11 @@
         /* pixel letters have square edges, so no optical nudging needed,
            everything just lines up on the left */
         .sidebar .name-first {
-            font-size: clamp(1.9rem, 6.4vh, 3.75rem);
+            font-size: clamp(1.6rem, 5.2vh, 3rem);
             letter-spacing: 0;
         }
         .sidebar .name-last  {
-            font-size: clamp(1.2rem, 3.55vh, 2.05rem);
+            font-size: clamp(1.05rem, 3vh, 1.7rem);
             letter-spacing: 0.02em;
         }
 
@@ -3313,6 +3313,15 @@ body::after{
 :root[data-theme="light"] .ns-tag-coord{ background:rgba(42,157,143,.14); color:#1d6b62; border-color:rgba(42,157,143,.28); }
 :root[data-theme="light"] .ns-tag-const{ background:rgba(69,123,157,.14); color:#2f5874; border-color:rgba(69,123,157,.28); }
 :root[data-theme="light"] .ns-tag-user { background:rgba(231,111,81,.14); color:#a5432a; border-color:rgba(231,111,81,.30); }
+
+/* the pixel font has no ë, so the browser was swapping in some other font
+   for that one letter. this is a pixel e with two of the font's own pixel
+   periods sat on top, so the dots land on the same grid as everything else */
+.uml{ position:relative; display:inline-block; }
+.uml::before{
+  content:'..'; position:absolute; left:50%; top:-.62em;
+  transform:translateX(-50%); letter-spacing:.02em; pointer-events:none;
+}
 </style>
 </head>
 <body>
@@ -3439,7 +3448,7 @@ body::after{
 
             <div class="rail-intro">
                 <h1 class="display-name">
-                    <span class="name-first">Henriëtta</span>
+                    <span class="name-first" aria-label="Henriëtta">Henri<span class="uml">e</span>tta</span>
                     <span class="name-row">
                         <span class="name-last">van Niekerk</span>
                         <a class="rail-logo" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk — home">
@@ -3461,7 +3470,7 @@ body::after{
             </div>
 
             <nav class="sb-group">
-                <a class="sb-link" href="#projects"     data-scroll="#projects">my work</a>
+                <a class="sb-link" href="#projects"     data-scroll="#projects">featured work</a>
                 <a class="sb-link" href="#northstar"    data-scroll="#northstar">north star</a>
                 <a class="sb-link" href="#endorsements" data-scroll="#endorsements">endorsements</a>
                 <a class="sb-link" href="/about/"       data-pane="about">about me</a>
@@ -3644,7 +3653,7 @@ body::after{
                   <p>Real problems don&rsquo;t arrive in optimal conditions. They arrive at 11pm. In week three, when half the team has dropped off. Mid pain flare, the one you&rsquo;ve learned not to mention. Most software is designed for someone rested and uninterrupted. I&rsquo;m interested in the other version.</p>
                   <p class="ns-pull">The measure of a system isn&rsquo;t how it performs when everything goes right. It&rsquo;s what it does for the person who&rsquo;s already overwhelmed.</p>
                   <div class="ns-prose-rule"></div>
-                  <p>I got here by caring too much about things finishing. A mod that ships without a salary. A meal plan for a household that just got a diagnosis. A postpartum resource that has to work three weeks into no sleep. The constraint is never technical. It&rsquo;s human.</p>
+                  <p>I got here because I can&rsquo;t leave a thing half built. A mod that ships without a salary. A meal plan for a household that just got a diagnosis. A postpartum resource that has to work three weeks into no sleep. The constraint is never technical. It&rsquo;s human.</p>
                   <p>So my answers lean on incentives and friction more than polish. What does the system reward? What does it make easy, and what does it quietly teach people to expect?</p>
                   <div class="ns-prose-rule"></div>
                   <p>The work isn&rsquo;t done when it ships. It&rsquo;s done when it stays useful.</p>
