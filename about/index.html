@@ -1858,7 +1858,7 @@
            and a little speech bubble pops out to her right */
         .rail-hen {
             position: relative; display: block; align-self: flex-start;
-            width: clamp(40px, 6vh, 54px); aspect-ratio: 220 / 234;
+            width: clamp(42px, 6.4vh, 58px); aspect-ratio: 220 / 201;
             margin-bottom: clamp(.15rem, .6vh, .4rem);
         }
         .rail-hen img {
@@ -3479,15 +3479,19 @@ body::after{
    (huge flex-shrink), so on a short laptop screen she gets smaller instead
    of the rail scrolling, and if there's barely any room she just steps out.
    sizes come from container units (cqh/cqw) so her width and how far she
-   walks always match whatever height she ended up with */
+   walks always match whatever height she ended up with. she's a bit taller
+   than her strip (--reach) and stands up into the empty air under the nav,
+   which costs the rail no height */
 .rail-walk{ position:relative; flex:0 1000 calc(112px + .3rem); min-height:0; max-height:calc(112px + .3rem);
   margin-top:auto; pointer-events:none; container-type:size; }
 :root:not([data-pane-open]) .rail-walk + .sb-foot{ margin-top:0 !important; }
 /* homepage only, never inside a case study (or about / resume) */
 :root[data-pane-open] .rail-walk{ display:none; }
 .walker{
-  --w: calc((100cqh - .3rem) * 168 / 255);
-  position:absolute; left:0; bottom:-2px; height:calc(100cqh - .3rem); width:var(--w);
+  --reach: 22px;
+  --h: calc(100cqh - .3rem + var(--reach));
+  --w: calc(var(--h) * 168 / 255);
+  position:absolute; left:0; bottom:-2px; height:var(--h); width:var(--w);
   background:url('/sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat;
   animation:
     chibiWalk .96s steps(16) infinite,
@@ -3687,8 +3691,8 @@ body::after{
                 <!-- her head above the name. hover (or focus) and she winks
                      and says she's looking for roles -->
                 <a class="rail-hen" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk, home. looking for winter 2027 roles">
-                    <img class="hen-face" src="/sky/henhead.webp" alt="" width="220" height="234">
-                    <img class="hen-wink" src="/sky/henwink.webp" alt="" width="220" height="234">
+                    <img class="hen-face" src="/sky/henhead.webp" alt="" width="220" height="201">
+                    <img class="hen-wink" src="/sky/henwink.webp" alt="" width="220" height="201">
                     <span class="hen-bubble" aria-hidden="true">looking for winter 2027 roles &#10024;</span>
                 </a>
                 <h1 class="display-name">
