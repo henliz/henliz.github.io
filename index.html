@@ -3380,16 +3380,16 @@ body::after{
    the sky layer covers the headline part of the section and sits under the
    page, so the big pixel headline overlaps her as she falls past (magazine
    cover style). she's graded toward the sky (a touch less saturation, a
-   cool soft shadow, a faint haze) so she lives in the scene instead of
+   cool soft shadow) so she lives in the scene instead of
    being stuck on top of it */
 .northstar-section{ position:relative; isolation:isolate; }
 .northstar-section .ns-page{ position:relative; z-index:1; }
-.ns-sky{ position:absolute; top:0; right:0; width:min(52%, 640px); height:clamp(440px, 60vh, 620px); pointer-events:none; z-index:0;
+.ns-sky{ position:absolute; top:clamp(24px, 4vh, 48px); right:0; width:min(52%, 640px); height:clamp(480px, 66vh, 660px); pointer-events:none; z-index:0;
   /* she only exists inside this window: fades in as she drops into the
      section and dissolves before the table, so she never sits over the
      section above or the matrix below */
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 16%, #000 74%, transparent 100%);
-          mask-image:linear-gradient(to bottom, transparent 0, #000 16%, #000 74%, transparent 100%); }
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 8%, #000 90%, transparent 100%);
+          mask-image:linear-gradient(to bottom, transparent 0, #000 8%, #000 90%, transparent 100%); }
 .ns-sky > *{ position:absolute; will-change:translate; }
 .ns-cloud{ background-repeat:no-repeat; background-size:contain; }
 .ns-cloud--far{ right:-10%; top:0; width:130%; aspect-ratio:1100 / 150; background-image:url('./field/clouds-far.webp'); opacity:.85; }
@@ -3398,12 +3398,6 @@ body::after{
   right:12%; top:0; width:clamp(190px, 19vw, 300px); aspect-ratio:657 / 560; z-index:1;
   will-change:translate, rotate, opacity;
   filter:saturate(.84) brightness(1.03) drop-shadow(0 18px 28px rgba(40, 90, 130, .22));
-}
-.ns-hen::after{
-  /* haze: a faint wash of sky over her so she sits at the same depth as the clouds */
-  content:''; position:absolute; inset:-4%; border-radius:50%;
-  background:radial-gradient(closest-side, rgba(214,234,244,.0) 55%, rgba(214,234,244,.18));
-  pointer-events:none;
 }
 .ns-hen img{ position:absolute; inset:0; width:100%; height:100%; opacity:0; }
 .ns-hen img.on{ opacity:1; }
@@ -6206,33 +6200,37 @@ document.addEventListener('click', e => {
     flash = setTimeout(() => show(pose), 55);
   }
 
-  // her path is choreographed in SCREEN space, then converted to the
-  // section's coordinates. page scroll alone would make her drift upward.
-  // drop in from above the screen, fall slowly alongside you while the
-  // headline passes over her, then drop out the bottom
+  // her path lives inside her own window (the masked sky layer): she drops
+  // in from just above it, drifts down through the visible band while the
+  // headline passes over her, then drops out the bottom. t runs from the
+  // window's top reaching 85% down the screen to its bottom leaving 15%
   const lerp = (a, b, k) => a + (b - a) * k;
   const easeOut = k => 1 - Math.pow(1 - k, 3), easeIn = k => k * k * k;
-  function screenY(t, vh){
-    if (t < .2)  return lerp(-.5 * vh, .14 * vh, easeOut(t / .2));
-    if (t < .8)  return lerp(.14 * vh, .3 * vh, (t - .2) / .6);
-    return lerp(.3 * vh, 1.1 * vh, easeIn((t - .8) / .2));
+  // the window ends exactly where the system matrix starts, so she can
+  // never drift over the table whatever the screen size
+  const matrix = sec.querySelector('.ns-matrix-wrap');
+  function fit(){
+    const h = matrix.getBoundingClientRect().top - sky.getBoundingClientRect().top - 8;
+    if (h > 200 && Math.abs(h - sky.clientHeight) > 2) sky.style.height = h + 'px';
   }
   function frame(now){
     raf = seen && !still ? requestAnimationFrame(frame) : 0;
-    const vh = innerHeight;
-    const r = sec.getBoundingClientRect();
-    // span ends just as the system matrix comes up, so she's gone before it
-    const t = clamp((vh * .9 - r.top) / (vh * .9 + 380), 0, 1);
-    const top = r.top;                 // the sky layer sits at the section top
+    fit();
+    const vh = innerHeight, sh = sky.clientHeight, hh = hen.offsetHeight;
+    const r = sky.getBoundingClientRect();
+    const t = clamp((vh * .85 - r.top) / (vh * .7 + sh), 0, 1);
+    const top = sh * .08 + 8, bottom = sh * .9 - hh - 8;   // the clear band
+    let y;
+    if (t < .18)      y = lerp(-hh - 20, top, easeOut(t / .18));
+    else if (t < .82) y = lerp(top, bottom, (t - .18) / .64);
+    else              y = lerp(bottom, sh + 20, easeIn((t - .82) / .18));
     const bob = still ? 0 : Math.sin(now / 1400) * 7;
     const sway = still ? 0 : Math.sin(now / 2100) * 1.8;
-    const y = screenY(t, vh) - top + bob;
-    hen.style.translate = (-t * 50).toFixed(1) + 'px ' + y.toFixed(1) + 'px';
+    hen.style.translate = (-t * 50).toFixed(1) + 'px ' + (y + bob).toFixed(1) + 'px';
     hen.style.rotate = (-8 + t * 18 + sway).toFixed(2) + 'deg';
-    hen.style.opacity = clamp(Math.min(t, 1 - t) / .05, 0, 1).toFixed(3);
-    // clouds rise up the screen past her, the near layer faster
-    far.style.translate = (-t * 40).toFixed(1) + 'px ' + (lerp(.65 * vh, -.1 * vh, t) - top).toFixed(1) + 'px';
-    near.style.translate = (t * 60).toFixed(1) + 'px ' + (lerp(1.05 * vh, -.45 * vh, t) - top).toFixed(1) + 'px';
+    // clouds rise through the window past her, the near layer faster
+    far.style.translate = (-t * 40).toFixed(1) + 'px ' + lerp(sh * .7, sh * .02, t).toFixed(1) + 'px';
+    near.style.translate = (t * 60).toFixed(1) + 'px ' + lerp(sh * 1.05, -sh * .3, t).toFixed(1) + 'px';
     setPose(poseFor(t));
   }
   new IntersectionObserver(es => {
