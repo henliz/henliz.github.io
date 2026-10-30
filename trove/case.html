@@ -13,7 +13,7 @@
   <meta property="og:url" content="https://henliz.github.io/trove/">
   <meta name="twitter:card" content="summary_large_image">
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap" rel="stylesheet" />
   <style>
 /* Satoshi, self-hosted. Replaces Montserrat and Montserrat Alternates:
    squared bowls and tight apertures agree with DotempDemo's staircase where
@@ -37,7 +37,7 @@
       font-weight: normal; font-style: normal;
     }
     .px { font-family: 'DotempDemo', monospace !important; font-style: normal !important; font-weight: 400; font-size: 0.9em; }
-    .di { font-family: 'Didot', 'Cormorant Garamond', serif !important; font-style: italic !important; font-weight: 700; }
+    .di { font-family:'DotempDemo', monospace !important; font-style:normal !important; font-weight:400 !important; }
 
     :root {
       /* creamsicle, light. Three values moved darker than the original
@@ -165,10 +165,10 @@
 
     /* ---- HEADINGS ---- */
     .section-heading {
-      font-size:clamp(1.6rem,3.4vw,2.5rem); font-weight:700;
+      font-size:clamp(1.6rem,3.4vw,2.5rem); 
       color:var(--accent-deep); line-height:1.15; margin-bottom:1.2rem;
-      font-family:'Didot','Cormorant Garamond',serif !important;
-      font-style:italic !important; letter-spacing:.045em;
+      font-family:'DotempDemo', monospace !important; font-style:normal !important; font-weight:400 !important;
+      letter-spacing:.045em;
       overflow-wrap:anywhere; opacity:0;
     }
     .sub-heading {
@@ -298,7 +298,7 @@
     .outcome-item { padding:1.4rem 1.2rem; border-right:1px solid rgba(var(--ink-rgb),.07); display:flex; flex-direction:column; gap:.3rem; }
     .outcome-item:last-child { border-right:0; }
     .outcome-num {
-      font-family:'Didot','Cormorant Garamond',serif; font-style:italic; font-weight:700;
+      font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; 
       font-size:clamp(1.7rem,3vw,2.4rem); color:var(--accent-ink); line-height:1;
       margin-bottom:.45rem; letter-spacing:.03em;
     }
@@ -318,8 +318,8 @@
     .ba-row:last-child{border-bottom:none}
     .ba-row > div{padding:.78rem 1.1rem}
     .ba-label{font-size:.88rem;color:var(--ink-soft)}
-    .ba-before{text-align:right;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:1.15rem;color:var(--ink-faint)}
-    .ba-after{text-align:right;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:700;font-size:1.35rem;color:var(--accent-deep)}
+    .ba-before{text-align:right;font-family:'Bodoni Moda', serif;font-style:italic;font-size:1.15rem;color:var(--ink-faint)}
+    .ba-after{text-align:right;font-family:'Bodoni Moda', serif;font-style:italic;font-size:1.35rem;color:var(--accent-deep)}
     .note{font-size:0.84rem;color:var(--ink-faint);text-align:center;line-height:1.6}
 
     /* ---- BANNER + META HEADER ---- */
@@ -488,7 +488,7 @@
     .pull-quote {
       border-left:4px solid var(--xp);
       padding:1.1rem 1.5rem; margin:1.5rem 0;
-      font-family:'Didot','Cormorant Garamond',serif; font-style:italic;
+      font-family:'Bodoni Moda', serif; font-style:italic;
       font-size:clamp(1.1rem,1.95vw,1.4rem); line-height:1.55; color:var(--accent-deep);
       background:linear-gradient(90deg,rgba(var(--xp-rgb),.15),transparent);
       border-radius:0 14px 14px 0;
@@ -750,7 +750,7 @@
       background:var(--card); border:1px solid var(--edge); border-radius:16px;
       padding:1.1rem 1.15rem; box-shadow:var(--sh-sm);
     }
-    .metric b { display:block; font-family:'Didot','Cormorant Garamond',serif; font-style:italic; font-weight:700; font-size:1.7rem; color:var(--accent-ink); line-height:1; margin-bottom:.45rem; }
+    .metric b { display:block; font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; font-size:1.7rem; color:var(--accent-ink); line-height:1; margin-bottom:.45rem; }
     .metric span { font-size:0.84rem; color:var(--ink-soft); line-height:1.45; display:block; }
 
     /* timeline */
@@ -1221,7 +1221,7 @@ figure{
           <div class="tot-matrix" id="totMatrix"></div>
           </div>
           </div>
-          <p class="tot-hint">Every cell is composited live by the real <span class="px">placeFit()</span> from the codebase, running on the real anchors over the real art. &rarr;&nbsp; Scroll sideways for the other nine poses.</p>
+          <p class="tot-hint">Every cell is composited live by the real placeFit() from the codebase, running on the real anchors over the real art. &rarr;&nbsp; Scroll sideways for the other nine poses.</p>
           </div>
           <p class="cap">Four outfits across all fourteen poses. Fifty six combinations, none of them drawn.</p>
           <p>Every product with a mascot has worked out that a creature who misses you is worth a few points of retention. That is part of it. It is not the end of it. What you unlock, you unlocked by playing something, and what you played is the only thing Trove knows about you, so you can look at him and learn something about your own month without a sentence being asserted at you.</p>
@@ -1341,7 +1341,6 @@ figure{
     // --- heading scramble + font-mix (house signature) ---
     (function(){
       const CHARSET='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
-      const RUNS=[3,2];
       function rand(){return CHARSET[Math.floor(Math.random()*CHARSET.length)];}
 
       function scramble(el,text,dur,onDone){
@@ -1364,17 +1363,14 @@ figure{
         })(performance.now());
       }
 
-      function fontMix(el,text){
-        let html='',runIdx=0,runCount=0,usePx=true;
-        for(let i=0;i<text.length;i++){
-          const cp=text.codePointAt(i);
-          if(cp>127){html+=String.fromCodePoint(cp);if(cp>0xFFFF)i++;continue;}
-          const c=text[i];
-          if(c===' '){html+=' ';continue;}
-          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
-          if(++runCount>=RUNS[runIdx%2]){usePx=!usePx;runIdx++;runCount=0;}
-        }
-        el.innerHTML=html;
+      function fontMix(el, text){
+        // titles used to alternate pixel + didot letters (the blend). now the
+        // whole title is one clean pixel run, .di is the pixel font. a span so
+        // a heading's own font rule can't win over it
+        const s = document.createElement('span');
+        s.className = 'di';
+        s.textContent = text;
+        el.replaceChildren(s);
       }
 
       const hio=new IntersectionObserver((entries,obs)=>{

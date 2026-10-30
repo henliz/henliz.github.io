@@ -58,13 +58,17 @@
     /* when the idle last restarted, so a flourish can be timed to begin
        on the frame the idle is actually showing */
     var idleT0 = performance.now();
-    var last = -1, busy = false;
+    var last = -1, busy = false, upNext = -1;
 
-    /* Warm them once the page is done with more important things, so the
-       first flourish is not an empty square while 250KB arrives. */
-    function warm(){ MOVES.forEach(function (m) { new Image().src = m.src; }); }
-    if (window.requestIdleCallback) requestIdleCallback(warm, { timeout: 6000 });
-    else setTimeout(warm, 3000);
+    /* she decides her next move when the wait starts and only that one file
+       gets warmed during the wait. warming all three up front was ~3.5mb on
+       every page load, even for people who never scroll to the footer */
+    function pick(){
+      var i; do { i = Math.floor(Math.random() * MOVES.length); }
+      while (MOVES.length > 1 && i === last);
+      new Image().src = MOVES[i].src;
+      return i;
+    }
 
     /* She is nearly still between gestures, because the footage gives no
        lively idle that also returns to the shared pose. So the gaps are
@@ -76,6 +80,7 @@
        frame every flourish opens on, so the swap happens at the one
        moment the two images are identical. */
     function next(){
+      if (upNext < 0) upNext = pick();
       var wait = 3500 + Math.random() * 5000;
       var since = performance.now() + wait - idleT0;
       setTimeout(play, wait + (IDLE_MS - (since % IDLE_MS)) % IDLE_MS);
@@ -84,9 +89,8 @@
     function play() {
       if (busy || document.hidden || calm.matches) return next();
       busy = true;
-      var i; do { i = Math.floor(Math.random() * MOVES.length); }
-      while (MOVES.length > 1 && i === last);
-      last = i;
+      var i = upNext < 0 ? pick() : upNext;
+      last = i; upNext = -1;
 
       /* A fresh element every time. Pointing src at a one-shot webp the
          browser already has cached does not rewind it, so the second

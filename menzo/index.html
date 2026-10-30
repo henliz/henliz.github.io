@@ -42,8 +42,10 @@
        default font size keeps that increase (WCAG 1.4.4). */
     html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
 
-        @import url('https://fonts.googleapis.com/css2?display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Inter:opsz,wght@14..32,200;14..32,300;14..32,400;14..32,500;14..32,600&display=swap');
+        /* the whole type system is 3 fonts. the pixel font is the brand voice
+           (name, nav, labels), bodoni moda for the big serif moments,
+           satoshi for reading + ui. didot used to sit under the pixel blend
+           but windows doesn't ship it so pc people got times new roman */
         @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap');
 
         @font-face {
@@ -60,9 +62,7 @@
             font-size: 0.88em;
         }
         .di {
-            font-family: 'Didot', serif;
-            font-style: italic;
-            font-weight: 700;
+            font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
         }
 
         * {
@@ -92,6 +92,8 @@
         /* Custom Cursor - Only show on desktop */
         .custom-cursor {
             position: fixed;
+            /* parked at 0,0, the js moves it with the translate property */
+            left: 0; top: 0;
             width: 18px;
             height: 18px;
             background: rgba(var(--rail-accent-rgb), 0.15);
@@ -240,7 +242,7 @@
         .navbar .logo {
             text-decoration: none;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
             display: flex;
             align-items: center;
         }
@@ -248,7 +250,7 @@
         .navbar .logo img {
             height: 40px;
             width: auto;
-            transition: all 0.3s ease;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
         }
 
         .navbar .logo:hover img {
@@ -263,13 +265,11 @@
         }
 
         .navbar .nav-links a {
-            font-family: 'Didot', serif;
-            font-style: italic;
-            font-weight: 700;
+            font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
             font-size: 0.95rem;
             color: var(--ink);
             text-decoration: none;
-            transition: all 0.3s;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
             position: relative;
         }
 
@@ -345,7 +345,7 @@
             cursor: pointer;
             padding: 0.5rem;
             border-radius: 8px;
-            transition: all 0.3s ease;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
             background: rgba(var(--muted-rgb),0.1);
         }
 
@@ -358,7 +358,7 @@
             height: 3px;
             background: var(--muted);
             margin: 3px 0;
-            transition: all 0.3s ease;
+            transition: transform .3s cubic-bezier(.23,1,.32,1), opacity .2s ease;
             border-radius: 2px;
         }
 
@@ -403,16 +403,14 @@
         }
 
         .mobile-menu ul li a {
-            font-family: 'Didot', serif;
-            font-style: italic;
-            font-weight: 700;
+            font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
             color: var(--ink);
             text-decoration: none;
             font-size: 1.2rem;
             display: block;
             padding: 1rem 0;
             border-bottom: 1px solid rgba(var(--muted-rgb),0.1);
-            transition: all 0.3s ease;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
         }
 
         .mobile-menu ul li a:hover {
@@ -431,7 +429,7 @@
             z-index: 998;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
         }
 
         .overlay.active {
@@ -462,8 +460,7 @@
         }
 
         .section h2 {
-            font-family: 'Didot', serif;
-            font-style: italic;
+            font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
             font-size: 3rem;
             text-align: center;
             margin-bottom: 3rem;
@@ -471,7 +468,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            font-weight: 700;
         }
 
        /* Unify behavior: viewport-sized, no internal scroll */
@@ -508,27 +504,13 @@
 /* ── bento ───────────────────────────────────────────────────────────── */
 
     .px{font-family:'DotempDemo',monospace !important;font-style:normal !important;font-size:.9em}
-  .di{font-family:'Didot','Cormorant Garamond',serif !important;font-style:italic !important;font-weight:700}
+  .di{font-family:'DotempDemo', monospace !important; font-style:normal !important; font-weight:400 !important;}
 
-  
-  /* the single WebGL surface every tile scissors into */
-  /* One canvas over the grid, clipped at runtime to the tiles' rounded rects
-     (see updateClip). Without the clip a square scissor leaks into the corners
-     and the gutters. */
-  /* the canvas covers the content card (not the viewport) so models are
-     clipped by its rounded right edge instead of bleeding into the gutter */
-  /* canvas is a replaced element: insets alone leave it at its intrinsic
-     300x150, so the size has to be stated outright */
-  /* Sits exactly over the content card, pinned to the viewport. The size is
-     spelled out rather than left to insets: a canvas is a replaced element,
-     so width:auto resolves to its drawing-buffer attribute, not to the box
-     its insets describe — which sized it to twice the card. */
-  #gl{position:fixed;
-      top:var(--gap); left:var(--sb-w);
-      width:calc(100vw - var(--sb-w) - var(--gap));
-      height:calc(100dvh - var(--gap) * 2);
-      display:block;pointer-events:none;z-index:2;
-      border-radius:0 22px 22px 0}
+  /* each tile's copy of the shared renderer's frame (see tileOut). it's
+     inside the tile so it scrolls with it and the tile's overflow clips it.
+     sits over the dom scene and scrim, under the hover video and shimmer */
+  .tile-gl{position:absolute;inset:0;width:100%;height:100%;display:block;
+           z-index:2;pointer-events:none;border-radius:inherit}
 
   /* top padding clears the site's floating nav pill when this is iframed
    into index.html; harmless standalone. */
@@ -536,7 +518,7 @@
 
   .bento-head{max-width:1180px;margin:0 auto clamp(14px,2.4vh,26px);display:flex;align-items:flex-end;justify-content:flex-end;gap:1rem;flex-wrap:wrap}
   .bento-head h2{
-    font-family:'Didot','Cormorant Garamond',serif;font-style:italic;font-weight:700;
+    font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
     font-size:clamp(1.5rem,3.4vw,2.4rem);letter-spacing:.04em;
     background:linear-gradient(45deg,#f1faee,#a8dadc,#66fcf1,#2a9d8f,#457b9d);
     background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
@@ -545,6 +527,23 @@
   @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
   .bento-head p{font-size:0.84rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(var(--muted-rgb),.78);font-weight:600}
 
+  /* every landing section opens on the same big pixel title as
+     "endorsements" (.sec-title, defined with the press styles) */
+  .work-head{max-width:min(1320px, 100%);margin:0 auto;box-sizing:border-box;
+             padding-inline:clamp(18px,2.2vw,44px)}
+  .work-head .work-title{padding-top:clamp(8px,1.6vh,20px);margin-bottom:0}
+  /* on desktop the intro lives in the rail, this slot only fills on a phone */
+  .work-intro{display:none}
+  @media (max-width: 920px){
+    .work-intro{display:block;padding:3.4rem 0 1.2rem}
+    .work-intro .display-name{margin-bottom:.9rem;line-height:.94}
+    .work-intro .name-first{font-size:clamp(2.3rem,11vw,3.2rem)}
+    .work-intro .name-last{font-size:clamp(1.35rem,6.2vw,1.9rem);letter-spacing:.05em}
+    .work-intro .rail-pitch{font-size:1.02rem;max-width:34ch}
+    .work-intro .tagline{font-size:.96rem;width:100%;max-width:34ch;margin-bottom:0;line-height:1.38}
+    /* the tooltip is a hover thing, on touch it just sits on top of the name */
+    .work-intro .tagline-tooltip{display:none}
+  }
   .bento-grid{
     /* box-sizing keeps the inline padding inside the max-width, so the grid
        never touches the card's edges. the top padding drops the whole set of
@@ -561,13 +560,14 @@
   /* each cell is a box plus its caption underneath, so the box is all model */
   /* defaults live on the cell so a station's theme block can override them */
   .cell{display:flex;flex-direction:column;gap:.6rem;min-width:0;position:relative;
-        --sa:102,252,241;--sa2:168,218,220}
-  /* four equal boxes, then Equinox across the bottom. One grid row each and a
-     fixed aspect on the box, so every tile is exactly the same height however
-     many lines its caption runs to. */
-  .t-trove, .t-skrimp, .t-menzo, .t-auntie {grid-column:span 2}
-  .t-equinox {grid-column:span 4}
-  .t-equinox .tile{aspect-ratio:auto;min-height:clamp(280px,38vh,420px)}
+        --sa:102,252,241;--sa2:168,218,220;
+        transition:opacity .5s cubic-bezier(.23,1,.32,1), translate .5s cubic-bezier(.23,1,.32,1)}
+  /* hidden until everything in it has loaded and drawn (see tile reveal) */
+  .cell:not(.is-ready){opacity:0;translate:0 10px}
+  /* six equal boxes, two per row. fixed aspect on the box so every tile is
+     the exact same height however many lines its caption runs to. (equinox
+     used to be the wide one across the bottom, the sixth tile evened it out) */
+  .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox, .t-handoff {grid-column:span 2}
 
   .tile{
     position:relative;flex:none;border-radius:20px;overflow:hidden;cursor:pointer;
@@ -576,7 +576,7 @@
     backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
     border:1px solid rgba(var(--muted-rgb),.14);
     box-shadow:0 8px 32px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05);
-    transition:transform .5s cubic-bezier(.4,0,.2,1),border-color .5s ease,box-shadow .5s ease,background .5s ease;
+    transition:transform .25s cubic-bezier(.23,1,.32,1),border-color .2s ease,box-shadow .25s cubic-bezier(.23,1,.32,1),background .2s ease,scale .12s cubic-bezier(.23,1,.32,1);
     display:block;text-decoration:none;color:inherit;
   }
   .tile::before{
@@ -586,7 +586,6 @@
   }
   .cell:hover .tile::before{left:100%}
   .cell:hover .tile{
-    transform:translateY(-5px);
     border-color:rgba(var(--sa),.42);
     background:rgba(15,20,25,.4);
     box-shadow:0 22px 60px rgba(0,0,0,.4), 0 0 40px rgba(var(--sa),.13), inset 0 1px 0 rgba(255,255,255,.08);
@@ -772,7 +771,7 @@
             border: 1px solid rgba(42, 157, 143, 0.3);
             color: var(--muted);
             font-weight: 500;
-            transition: all 0.3s;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
         }
 
         .skill-tag:hover {
@@ -799,7 +798,7 @@
             border-radius: 15px;
             color: var(--ink);
             text-decoration: none;
-            transition: all 0.3s;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
             font-weight: 500;
             border: 1px solid rgba(var(--muted-rgb),0.2);
         }
@@ -909,89 +908,110 @@
 
         @media screen and (max-width: 600px) {
         }
-    /* === 3D scene loading overlay === */
-    @keyframes overlayGradient {
-      0%   { background-position: 0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    @keyframes gifFloat {
-      0%, 100% { transform: translateY(0px); }
-      50%       { transform: translateY(-8px); }
-    }
+    /* the intro / loading screen
+       she falls through the sky while the page loads: clouds keep rising
+       past her (that's what reads as falling) and she kicks 1, 1.5, 2 one
+       way, same as the north star. when the first screen of tiles is ready
+       a cloud deck rushes up in front of her, she drops into it, it splits
+       open as she goes through and the sky fades, so you land on the page.
+       scrolling up past the top plays it again (see the script) */
     #scene-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 5000;
-      background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
-      background-size: 400% 400%;
-      animation: overlayGradient 20s ease infinite;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.8s ease, visibility 0.8s ease;
+      position: fixed; inset: 0; z-index: 5000; overflow: hidden;
+      transition: opacity .35s ease, visibility 0s linear .35s;
     }
-    #scene-overlay.hidden {
-      opacity: 0;
-      visibility: hidden;
-      /* opacity and visibility hide it, they do not switch it off. The
-         gradient kept animating for the life of the page: a full-viewport
-         background-position animation, which is not a compositor property,
-         so it repainted 1433x715 every frame behind everything else. The
-         card inside it kept a blur(35px) backdrop-filter alive too, and
-         the opacity:0 makes this element a backdrop root, which is its own
-         render surface. All of it invisible, none of it free. */
-      animation: none;
-      pointer-events: none;
+    #scene-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    #scene-overlay:not(.hidden) { transition: opacity .3s ease, visibility 0s; }
+    .intro-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #9fd0ea 0%, #c8e5f3 50%, #eaf6fb 100%); }
+    :root[data-theme="dark"] .intro-sky { background: linear-gradient(180deg, #0c1824 0%, #16283a 60%, #1d3349 100%); }
+
+    /* the handoff overlaps the ending: once the deck has swallowed her the
+       sky and the little clouds fade out underneath it, so the page is
+       already there when the halves split open */
+    #scene-overlay.parting .intro-sky,
+    #scene-overlay.parting .intro-cloud { opacity: 0; transition: opacity .45s ease .55s; }
+
+    /* clouds rising past her, each its own size, speed, depth and start */
+    .intro-cloud {
+      position: absolute; left: var(--x); width: var(--w); aspect-ratio: 1100 / 280;
+      background: url('/field/clouds-near.webp') center / contain no-repeat;
+      opacity: var(--o, .9); top: 0; will-change: transform;
+      animation: introRise var(--t, 5s) linear var(--d, 0s) infinite;
     }
-    #scene-overlay.hidden *,
-    #scene-overlay.hidden::before,
-    #scene-overlay.hidden::after {
-      animation: none !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
+    .intro-cloud.far { background-image: url('/field/clouds-far.webp'); aspect-ratio: 1100 / 150; filter: blur(.5px); }
+    .intro-cloud.front { z-index: 2; filter: blur(1.5px); }
+    @keyframes introRise { from { transform: translateY(110vh); } to { transform: translateY(-40vh); } }
+
+    /* her, bobbing in the middle. frames are swapped by the script */
+    .intro-fall {
+      position: absolute; left: 50%; top: 44%; z-index: 2;
+      width: clamp(240px, 32vw, 470px); aspect-ratio: 657 / 560;
+      translate: -50% -50%;
+      animation: introDrop .9s cubic-bezier(.22,1,.36,1) both, introBob 2.4s ease-in-out .9s infinite alternate;
+      filter: drop-shadow(0 18px 28px rgba(40, 90, 130, .2));
     }
-    .scene-overlay-card {
-      text-align: center;
-      background: rgba(15, 20, 25, 0.15);
-      backdrop-filter: blur(35px);
-      border-radius: 32px;
-      padding: 3rem 2.5rem;
-      border: 1px solid rgba(var(--muted-rgb),0.2);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      max-width: 380px;
-      width: 90%;
+    .intro-fall img { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+    .intro-fall img.on { opacity: 1; }
+    @keyframes introDrop { from { transform: translateY(-75vh) rotate(-10deg); } to { transform: none; } }
+    @keyframes introBob { from { transform: translateY(-8px) rotate(-3deg); } to { transform: translateY(8px) rotate(3deg); } }
+
+    /* the cloud deck she falls through: two dense halves that overlap in
+       the middle, waiting below the screen. each is several cloud images
+       stacked over a soft white mist so it reads as a real wall of cloud */
+    .intro-bank {
+      position: absolute; bottom: -18vh; z-index: 3; width: 80vw; height: 84vh;
+      background:
+        url('/field/clouds-near.webp') 10% 12% / 70% auto no-repeat,
+        url('/field/clouds-near.webp') 75% 30% / 85% auto no-repeat,
+        url('/field/clouds-far.webp') 30% 60% / 90% auto no-repeat,
+        url('/field/clouds-near.webp') 0% 85% / 100% auto no-repeat,
+        radial-gradient(80% 72% at 50% 66%, #fff, #fff 52%, rgba(255,255,255,.88) 68%, rgba(255,255,255,0) 92%);
+      /* feather the box so the mist never shows a hard rectangular edge */
+      -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
+              mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%);
     }
-    .scene-overlay-gif {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid rgba(var(--muted-rgb),0.4);
-      box-shadow: 0 0 30px rgba(42, 157, 143, 0.3);
-      animation: gifFloat 4s ease-in-out infinite;
-      object-fit: cover;
-      background: rgba(var(--muted-rgb),0.1);
+    :root[data-theme="dark"] .intro-bank { filter: brightness(.82) saturate(.8); }
+    .intro-bank.l { left: -12vw; transform: translateY(80vh); }
+    .intro-bank.r { right: -12vw; transform: translateY(80vh) scaleX(-1); }
+
+    .intro-bar {
+      position: absolute; left: 50%; bottom: 28px; translate: -50% 0; z-index: 4;
+      width: 112px; height: 2px; border-radius: 2px; overflow: hidden; background: rgba(255,255,255,.45);
     }
-    .scene-overlay-title {
-      font-family: 'Didot', serif;
-      font-style: italic;
-      font-size: 1.6rem;
-      font-weight: 400;
-      background: linear-gradient(45deg, #f1faee, #a8dadc, #66fcf1);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: overlayGradient 6s ease infinite;
-      margin-top: 1.25rem;
-      margin-bottom: 0.5rem;
+    .intro-bar i {
+      display: block; height: 100%; width: 100%; background: rgba(var(--rail-accent-rgb, 42,157,143), .9);
+      transform: scaleX(.08); transform-origin: left; transition: transform .35s cubic-bezier(.23,1,.32,1);
     }
-    .scene-overlay-msg {
-      font-family: 'Satoshi', sans-serif;
-      color: var(--muted);
-      font-size: 1rem;
-      opacity: 0.9;
-      font-style: italic;
+
+    /* going through: the deck rushes up to meet her, she drops into it,
+       then the halves split off to the sides as she falls out the bottom */
+    #scene-overlay.parting .intro-bank.l { animation: deckL 1.35s cubic-bezier(.45,0,.3,1) forwards; }
+    #scene-overlay.parting .intro-bank.r { animation: deckR 1.35s cubic-bezier(.45,0,.3,1) forwards; }
+    @keyframes deckL {
+      0%   { transform: translateY(80vh); }
+      38%  { transform: translateY(-8vh); }
+      55%  { transform: translate(-4vw, -10vh); }
+      100% { transform: translate(-85vw, -14vh); }
+    }
+    @keyframes deckR {
+      0%   { transform: translateY(80vh) scaleX(-1); }
+      38%  { transform: translateY(-8vh) scaleX(-1); }
+      55%  { transform: translate(4vw, -10vh) scaleX(-1); }
+      100% { transform: translate(85vw, -14vh) scaleX(-1); }
+    }
+    #scene-overlay.parting .intro-fall {
+      animation: introOut 1.25s linear forwards;
+    }
+    /* sinks into the deck while it rises over her, then drops out below */
+    @keyframes introOut {
+      0%   { transform: none; animation-timing-function: cubic-bezier(.4,0,.6,1); }
+      45%  { transform: translateY(14vh) rotate(5deg); animation-timing-function: cubic-bezier(.5,0,.9,.4); }
+      100% { transform: translateY(110vh) rotate(14deg); }
+    }
+    #scene-overlay.parting .intro-bar { opacity: 0; transition: opacity .3s; }
+    #scene-overlay.hidden * { animation-play-state: paused !important; }
+
+    @media (prefers-reduced-motion: reduce) {
+      #scene-overlay *, #scene-overlay { animation: none !important; transition: opacity .3s ease !important; }
     }
 
     .testimonials-section { display: none; }
@@ -1008,34 +1028,21 @@
       margin: 0 auto;
       padding: 0 2.5rem;
     }
-    .pe-masthead {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      margin-bottom: 4rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid rgba(var(--muted-rgb),0.15);
-    }
-    .pe-rule { flex: 1; height: 1px; background: rgba(var(--muted-rgb),0.15); }
-    .pe-tag {
-      font-size: 0.78rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: rgba(var(--muted-rgb),.74);
-      white-space: nowrap;
-      font-weight: 500;
-      font-family: 'Satoshi', sans-serif;
-    }
+    /* section titles: a touch of negative tracking at display size */
+    .sec-title { margin-top: 0; }
     .pe-body {
       display: grid;
       grid-template-columns: 5fr 7fr;
       gap: 4rem;
       align-items: start;
     }
+    /* section titles are the pixel font, same voice as the name. pixel
+       letters are already spaced on a grid so no tightening like a serif */
+    .sec-title,
     .pe-track-label {
-      font-family: ‘Bodoni Moda’, serif;
-      font-style: italic;
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-family: 'DotempDemo', monospace;
+      font-style: normal;
+      font-size: clamp(1.7rem, 3.2vw, 2.6rem);
       font-weight: 400;
       color: var(--ink);
       margin-bottom: 2rem;
@@ -1088,15 +1095,15 @@
       color: rgba(var(--muted-rgb),.78);
     }
     .pe-quote {
-      font-family: ‘Bodoni Moda’, serif;
+      font-family: 'Bodoni Moda', serif;
       font-style: italic;
       font-size: clamp(0.875rem, 1.3vw, 1rem);
       line-height: 1.7;
       color: rgba(var(--ink-rgb),0.9);
       margin: 0;
     }
-    .pe-quote::before { content: ‘\201C’; }
-    .pe-quote::after  { content: ‘\201D’; }
+    .pe-quote::before { content: '\201C'; }
+    .pe-quote::after  { content: '\201D'; }
     .pe-source {
       font-family: 'Satoshi', sans-serif;
       font-size: 0.78rem;
@@ -1126,7 +1133,7 @@
     .pe-press-item:first-child { border-top: 1px solid rgba(var(--muted-rgb),0.07); }
     .pe-press-item:hover { background: rgba(var(--muted-rgb),0.03); padding-left: 0.5rem; }
     .pe-press-date {
-      font-family: ‘DotempDemo’, monospace;
+      font-family: 'DotempDemo', monospace;
       font-size: 0.78rem;
       color: rgba(var(--muted-rgb),.68);
       white-space: nowrap;
@@ -1216,7 +1223,7 @@
       position:absolute; inset:0; display:grid; place-items:center;
       padding:clamp(8px,2.2vw,18px);
       text-align:center;
-      font-family:'Press Start 2P', monospace;
+      font-family:'DotempDemo', monospace;
       font-size:clamp(11px,2.4vw,17px);
       line-height:1.35;
       color:#102027;
@@ -1258,12 +1265,8 @@
     /* ===== North Star inline section ===== */
     .ns-page { max-width: 1120px; margin: 0 auto; padding: 5rem 2.5rem 7rem; }
 
-    .ns-masthead { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 4.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(var(--muted-rgb),0.18); }
-    .ns-masthead-rule { flex: 1; height: 1px; background: rgba(var(--muted-rgb),0.18); }
-    .ns-masthead-tag { font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(var(--muted-rgb),.72); white-space: nowrap; font-weight: 500; }
-
     .ns-headline-block { margin-bottom: 5rem; }
-    .ns-kicker { font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(var(--muted-rgb),.76); margin-bottom: 1.1rem; font-weight: 500; }
+    .ns-title { margin-bottom: 1.4rem; }
 
     @keyframes nsHeadlineScramble {
       0%   { text-shadow: 6px 0 rgba(var(--rail-accent-rgb), 0.55), -6px 0 rgba(42,157,143,0.55); }
@@ -1273,15 +1276,10 @@
       55%  { clip-path: inset(0 0 0 0); }
       100% { text-shadow: 6px 0 rgba(var(--rail-accent-rgb), 0.55), -6px 0 rgba(42,157,143,0.55); }
     }
-    @keyframes nsHeadlineSettle {
-      0%, 100% { text-shadow: 1px 0 rgba(var(--rail-accent-rgb), 0.12), -1px 0 rgba(42,157,143,0.12); }
-      50%       { text-shadow: 2px 0 rgba(var(--rail-accent-rgb), 0.22), -2px 0 rgba(42,157,143,0.22); }
-    }
     @keyframes nsFadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 
-    .ns-headline { font-family: 'Bodoni Moda', serif; font-style: italic; font-size: clamp(2.6rem, 5.2vw, 4.6rem); font-weight: 400; line-height: 1.08; color: var(--ink); max-width: 880px; letter-spacing: -0.025em; opacity: 0; }
+    .ns-headline { font-family: 'DotempDemo', monospace; font-style: normal; font-size: clamp(2.4rem, 4.8vw, 4.2rem); font-weight: 400; line-height: 1.1; color: var(--ink); max-width: 900px; letter-spacing: 0; opacity: 0; }
     .ns-headline.scrambling { animation: nsHeadlineScramble 0.7s ease-in-out infinite; }
-    .ns-headline.settled    { animation: nsHeadlineSettle 4s ease-in-out infinite; }
 
     .ns-section-label { font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(var(--muted-rgb),.74); font-weight: 500; margin-bottom: 1.5rem; }
 
@@ -1293,7 +1291,7 @@
     .ns-matrix-table tbody tr { border-bottom: 1px solid rgba(var(--muted-rgb),0.08); transition: background 0.2s ease; }
     .ns-matrix-table tbody tr:hover { background: rgba(var(--muted-rgb),0.04); }
     .ns-matrix-table tbody td { padding: 0.85rem 1rem; vertical-align: top; color: rgba(var(--ink-rgb),0.78); font-weight: 300; line-height: 1.5; }
-    .ns-matrix-table tbody td:first-child { font-family: 'Bodoni Moda', serif; font-style: italic; color: var(--ink); font-weight: 400; font-size: 0.9rem; white-space: nowrap; padding-right: 1.5rem; }
+    .ns-matrix-table tbody td:first-child { font-family: 'DotempDemo', monospace; font-style: normal; color: var(--ink); font-weight: 400; font-size: 0.9rem; white-space: nowrap; padding-right: 1.5rem; }
 
     .ns-chaos-tag { display: inline-block; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; font-family: 'Satoshi', sans-serif; padding: 0.18rem 0.55rem; border-radius: 3px; margin: 0.1rem 0.15rem 0.1rem 0; }
     .ns-tag-coord { background: rgba(42,157,143,0.18); color: rgba(var(--rail-accent-rgb), 0.75); border: 1px solid rgba(42,157,143,0.25); }
@@ -1308,7 +1306,7 @@
     .ns-chaos-card.const::before { background: linear-gradient(90deg, rgba(var(--muted-rgb),0.5), transparent); }
     .ns-chaos-card.user::before  { background: linear-gradient(90deg, rgba(231,111,81,0.4),  transparent); }
     .ns-chaos-num { font-family: 'DotempDemo', monospace; font-size: 0.78rem; letter-spacing: 0.15em; color: rgba(var(--muted-rgb),.66); margin-bottom: 0.75rem; }
-    .ns-chaos-name { font-family: 'Bodoni Moda', serif; font-style: italic; font-size: 1.15rem; font-weight: 400; color: var(--ink); margin-bottom: 0.6rem; }
+    .ns-chaos-name { font-family: 'DotempDemo', monospace; font-style: normal; font-size: 1.15rem; font-weight: 400; color: var(--ink); margin-bottom: 0.6rem; }
     .ns-chaos-desc { font-size: 0.84rem; line-height: 1.65; color: rgba(var(--ink-rgb),.80); font-weight: 300; margin-bottom: 1rem; }
     .ns-chaos-examples { font-size: 0.78rem; letter-spacing: 0.05em; color: rgba(var(--muted-rgb),.74); font-weight: 500; text-transform: uppercase; }
 
@@ -1318,7 +1316,7 @@
     .ns-col-right { padding-left: 3.5rem; }
     .ns-manifesto { display: flex; flex-direction: column; gap: 1.75rem; }
     .ns-manifesto p { font-size: 0.875rem; line-height: 1.95; color: rgba(var(--ink-rgb),0.82); font-weight: 300; letter-spacing: 0.012em; }
-    .ns-manifesto p:first-child::first-letter { font-family: 'Bodoni Moda', serif; font-size: 3.6em; font-style: italic; float: left; line-height: 0.72; margin: 0.06em 0.09em 0 0; color: var(--muted); }
+    .ns-manifesto p:first-child::first-letter { font-family: 'DotempDemo', monospace; font-size: 3.6em; font-style: normal; float: left; line-height: 0.72; margin: 0.06em 0.09em 0 0; color: var(--muted); }
     .ns-pull { font-family: 'Bodoni Moda', serif; font-style: italic; font-size: 1.1rem; font-weight: 400; color: rgba(var(--ink-rgb),0.88); line-height: 1.5; padding-left: 1.25rem; border-left: 2px solid rgba(var(--muted-rgb),0.28); letter-spacing: -0.01em; }
     .ns-prose-rule { width: 100%; height: 1px; background: rgba(var(--muted-rgb),0.1); margin: 0.2rem 0; }
     .ns-sidebar-facts { display: flex; flex-direction: column; gap: 1.6rem; }
@@ -1329,7 +1327,7 @@
     .ns-principle { background: var(--panel); padding: 1.75rem 1.5rem; transition: background 0.3s ease; }
     .ns-principle:hover { background: rgba(var(--muted-rgb),0.03); }
     .ns-principle-n { font-family: 'DotempDemo', monospace; font-size: 0.78rem; letter-spacing: 0.15em; color: rgba(var(--muted-rgb),.66); margin-bottom: 0.6rem; }
-    .ns-principle-title { font-family: 'Bodoni Moda', serif; font-style: italic; font-size: 1rem; font-weight: 400; color: var(--ink); margin-bottom: 0.65rem; line-height: 1.25; }
+    .ns-principle-title { font-family: 'DotempDemo', monospace; font-style: normal; font-size: 1rem; font-weight: 400; color: var(--ink); margin-bottom: 0.65rem; line-height: 1.25; }
     .ns-principle-desc { font-size: 0.84rem; line-height: 1.65; color: rgba(var(--ink-rgb),.78); font-weight: 300; }
 
     @media (max-width: 900px) {
@@ -1400,21 +1398,15 @@
         }
         .name-first {
             display: block;
-            font-family: 'Didot', serif;
+            font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
             font-size: clamp(3.8rem, 7.2vw, 8.8rem);
-            font-weight: 700;
-            font-style: italic;
             color: var(--ink);
-            letter-spacing: -0.025em;
+            letter-spacing: 0;
         }
-        /* extra breathing room for specific Didot chars in the name */
-        .name-ls { letter-spacing: 0.03em; margin-left: 0.06em; }
         .name-last {
             display: block;
-            font-family: 'Didot', serif;
+            font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
             font-size: clamp(2.2rem, 4.2vw, 5.4rem);
-            font-weight: 700;
-            font-style: italic;
             color: rgba(240, 242, 240, 0.58);
             letter-spacing: 0.06em;
         }
@@ -1796,7 +1788,7 @@
                contact button. They had drifted to five slightly different
                clamps, which is exactly the sort of difference you feel
                without being able to name. */
-            --rail-text: clamp(0.86rem, 2.15vh, 1.1rem);
+            --rail-text: clamp(0.8rem, 1.9vh, 0.98rem);
             --gap: 22px;            /* outer margin — lets the sky show */
             --rail-w: clamp(296px, 20.5vw, 344px);
             --rail-gutter: 16px;
@@ -1844,7 +1836,7 @@
 
         /* The content card — the page's other rounded panel. Normal flow
            (not fixed), so the existing window scroll, Lenis and the
-           tile-clipped #gl canvas all keep working untouched. */
+           per-tile model canvases all keep working untouched. */
         .content-card {
             position: fixed;
             top: var(--gap); right: var(--gap); bottom: var(--gap);
@@ -2191,17 +2183,15 @@
 
         /* ── rail: name ──────────────────────────────────── */
         .sidebar .display-name { margin-bottom: clamp(0.3rem, 0.9vh, 0.65rem); line-height: 0.94; }
-        /* Didot italic carries a left side bearing, so the H's ink sits about
-           0.105em inside its box while "van Niekerk" overhangs its own by
-           0.029em, and the logo PNG has 3.4% transparent padding. Measured all
-           three and pulled each back to the same optical edge. */
+        /* pixel letters have square edges, so no optical nudging needed,
+           everything just lines up on the left */
         .sidebar .name-first {
-            font-size: clamp(1.9rem, 6.4vh, 3.75rem);
-            letter-spacing: -0.025em; margin-left: -0.03em;
+            font-size: clamp(1.6rem, 5.2vh, 3rem);
+            letter-spacing: 0;
         }
         .sidebar .name-last  {
-            font-size: clamp(1.2rem, 3.55vh, 2.05rem);
-            letter-spacing: 0.05em; margin-left: -0.02em;
+            font-size: clamp(1.05rem, 3vh, 1.7rem);
+            letter-spacing: 0.02em;
         }
 
         /* the serious line — what she actually does */
@@ -2222,8 +2212,7 @@
             max-width: 100%;
             margin-bottom: 0;
             line-height: 1.38;
-            /* holds the tallest phrase so the nav below doesn't
-               jump around while the typewriter runs */
+            /* fallback until startTypewriter measures the tallest phrase */
             min-height: 4.4em;
         }
         .sidebar .tagline-tooltip {
@@ -2239,11 +2228,15 @@
            run between the intro and the contact block and spreads itself
            through it, so the space becomes the spacing. Its rule spans the
            rail the way the footer's does. */
+        /* a compact stack under the intro, like a table of contents. it used
+           to stretch to fill the rail with the links spread evenly down it,
+           which read as six things floating. the leftover space goes below
+           and sb-foot sits at the bottom */
         .sb-group {
             display: flex; flex-direction: column;
-            flex: 1 0 auto;
-            justify-content: space-between;
-            gap: clamp(0.04rem, 0.55vh, 0.22rem);
+            flex: 0 0 auto;
+            justify-content: flex-start;
+            gap: 0;
             margin-top: clamp(0.6rem, 2vh, 1.1rem);
             padding-top: clamp(0.7rem, 2.2vh, 1.2rem);
             padding-bottom: clamp(0.2rem, 1vh, 0.6rem);
@@ -2255,7 +2248,7 @@
             font-weight: 400;
             color: rgba(240, 242, 240, 0.58);
             text-decoration: none;
-            padding: clamp(0.12rem, 0.6vh, 0.3rem) 0 clamp(0.12rem, 0.6vh, 0.3rem) 0.7rem;
+            padding: clamp(0.28rem, 0.75vh, 0.42rem) 0 clamp(0.28rem, 0.75vh, 0.42rem) 0.7rem;
             border-left: 1px solid transparent;
             transition: color 0.2s ease, border-color 0.2s ease, padding-left 0.2s ease;
             background: none;
@@ -2275,7 +2268,7 @@
 
         /* ── rail: footer (socials + contact) ────────────── */
         .sb-foot {
-            margin-top: 0;
+            margin-top: auto;     /* pinned to the bottom of the rail */
             flex: 0 0 auto;
             padding-top: 1rem;
             gap: 0.9rem;
@@ -2332,14 +2325,11 @@
             display: block;
             background: transparent;
         }
-        /* with a translucent pane, the work page behind it would read
-           through — hide it while a case is open. visibility (not display)
-           keeps its layout and the scroll position closeCase restores. */
-        /* The canvas sits outside the card now, so hiding the card no longer
-           hides it: without this it kept painting models over the top of
-           About and every case study. */
-        :root[data-pane-open] .content-card,
-        :root[data-pane-open] #gl { visibility: hidden; }
+        /* the pane is see-through so the homepage would show under every case
+           study. hide it while one's open. visibility not display, so the
+           layout and scroll spot closeCase goes back to stay put. the model
+           canvases live inside the tiles now so they hide with the card too */
+        :root[data-pane-open] .content-card { visibility: hidden; }
 
         /* The hidden card's tiles keep their compositing layers even with
            visibility:hidden, and each frosted one still costs a re-read and
@@ -2399,12 +2389,6 @@
                 left: var(--gap);
                 border-radius: 22px;
                 border-left: 1px solid rgba(var(--muted-rgb),0.08);
-            }
-            #gl {
-                top: var(--gap); left: var(--gap);
-                width: calc(100vw - var(--gap) * 2);
-                height: calc(100dvh - var(--gap) * 2);
-                border-radius: 22px;
             }
             .sidebar { width: min(330px, 86vw); }
             .sidebar { border-radius: 22px; border-right: 1px solid rgba(var(--muted-rgb),0.14); }
@@ -2759,9 +2743,7 @@
     :root[data-theme="light"] .ns-chaos-name,
     :root[data-theme="light"] .ns-principle-title,
     :root[data-theme="light"] .ns-matrix-table tbody td:first-child { color: var(--ink); }
-    :root[data-theme="light"] .ns-kicker,
-    :root[data-theme="light"] .ns-section-label,
-    :root[data-theme="light"] .ns-masthead-tag { color: var(--accent); }
+    :root[data-theme="light"] .ns-section-label { color: var(--accent); }
     :root[data-theme="light"] .ns-matrix-table thead th { color: var(--accent); border-bottom-color: var(--accent-dim); }
     :root[data-theme="light"] .ns-matrix-table tbody td { color: var(--ink-soft); }
     :root[data-theme="light"] .ns-manifesto p,
@@ -2769,10 +2751,10 @@
     :root[data-theme="light"] .ns-principle-body { color: var(--ink-soft); }
     :root[data-theme="light"] .ns-pull { color: var(--ink); border-left-color: var(--accent-dim); }
     :root[data-theme="light"] .ns-manifesto p:first-child::first-letter { color: var(--accent); }
-    :root[data-theme="light"] .ns-masthead-rule { background: var(--line); }
 
     /* ── endorsements / press ── */
     :root[data-theme="light"] .pe-quote,
+    :root[data-theme="light"] .sec-title,
     :root[data-theme="light"] .pe-track-label,
     :root[data-theme="light"] .pe-press-headline { color: var(--ink); }
     :root[data-theme="light"] .pe-role,
@@ -2780,9 +2762,6 @@
     :root[data-theme="light"] .pe-source { color: var(--accent); }
 
     /* ── loading overlay ── */
-    :root[data-theme="light"] #scene-overlay { background: #dbe7ec; }
-    :root[data-theme="light"] .scene-overlay-card { background: rgba(255,255,255,0.8); border-color: var(--line); }
-    :root[data-theme="light"] .scene-overlay-msg { color: var(--ink-soft); }
 
     /* footer.html is injected at runtime and brings its own dark fill */
     :root[data-theme="light"] footer.hen-footer {
@@ -3165,14 +3144,14 @@
 .tile{ border:none !important; }
 .cell:hover .tile{ border-color:transparent !important; }
 .cell[data-scene] .tile::before{ animation:none !important; }
-.cell:hover .tile{ transform:translateY(-4px); box-shadow:0 26px 64px rgba(20,40,60,.18) !important; }
+.cell:hover .tile{ box-shadow:0 26px 64px rgba(20,40,60,.18) !important; }
 
 
 /* The title carries the tile, so it gets the weight. Not the pixel face:
    DotempDemo is an accent, and a ten-word tagline set entirely in it stops
    being legible and starts reading as a game menu. */
 .tile-name{
-  font-size:clamp(1.06rem,1.58vw,1.34rem) !important;
+  font-size:clamp(.98rem,1.38vw,1.18rem) !important;
   line-height:1.3 !important;
   font-weight:700 !important;
   letter-spacing:-.018em !important;
@@ -3192,7 +3171,7 @@
   align-items:center;
 }
 .tile-tags > span{
-  font-size:.6rem !important;
+  font-size:.7rem !important;
   font-weight:600 !important;
   letter-spacing:.11em !important;
   text-transform:uppercase !important;
@@ -3231,16 +3210,48 @@
   padding-top:clamp(28px,4vh,56px) !important;
 }
 
-/* ── corners, sharpened ──────────────────────────────────────────────────
-   Roughly halved. A soft radius reads friendly; a tight one reads considered.
-   Pills stay pills, and the phone mockups keep their real device radius —
-   that one describes an object rather than styling a box. */
-.tile{ border-radius:10px !important; }
-.sidebar{ border-radius:12px 0 0 12px !important; }
-.content-card{ border-radius:0 12px 12px 0 !important; }
-.case-pane{ border-radius:0 12px 12px 0 !important; }
-#gl{ border-radius:0 12px 12px 0 !important; }
+/* corners
+   one scale for the whole site: 14 for the big panels, 10 for tiles and
+   cards, 6 for small chips and rows, pills stay pills. the phone mockups
+   keep their real device radius since that's describing an object.
+   desktop: rail and card butt together so the inside edges are square.
+   phone: they're separate floating panels so all four corners round (this
+   used to stay half square on phones because of the !important here) */
+:root{ --r-lg:14px; --r-md:10px; --r-sm:6px; }
+.tile{ border-radius:var(--r-md) !important; }
+.sidebar{ border-radius:var(--r-lg) 0 0 var(--r-lg) !important; }
+.content-card, .case-pane{ border-radius:0 var(--r-lg) var(--r-lg) 0 !important; }
 .tile-video, .tile-scrim{ border-radius:inherit !important; }
+.pe-endorse-card{ border-radius:var(--r-md) !important; }
+.pe-press-item{ border-radius:var(--r-sm) !important; }
+.tile-tags > span, .ns-chaos-tag{ border-radius:var(--r-sm) !important; }
+@media (max-width: 920px){
+  .sidebar, .content-card, .case-pane{ border-radius:var(--r-lg) !important; }
+  .case-pane{ left:var(--gap) !important; }
+  /* the drawer's links were stretched to fill the whole height so they
+     floated way apart. now they stack up top as proper 44px tap rows and
+     the lets conspire row sits at the bottom */
+  .sb-group{ flex:0 0 auto !important; justify-content:flex-start !important; gap:0 !important; }
+  .sb-group .sb-link{ padding-block:.7rem !important; font-size:1.05rem; }
+  .sb-foot{ margin-top:auto; }
+}
+
+/* page grid
+   every landing section shares one content width and one side padding, so
+   the left edge stays put as you scroll. featured work, north star and
+   endorsements used to sit at 3 different left edges (1320/1120/1080 wide
+   with different padding each) */
+:root{ --page-max:1320px; --page-pad:clamp(18px,2.2vw,44px); }
+@media (max-width: 920px){ :root{ --page-pad:clamp(14px,4vw,26px); } }
+.work-head, .bento-grid, .ns-page, .pe-page{
+  max-width:var(--page-max) !important;
+  padding-inline:var(--page-pad) !important;
+  margin-inline:auto;
+  box-sizing:border-box;
+}
+/* the work section's wrapper had 26px of its own on top, that's what
+   pushed featured work in further than everything else */
+#wrap{ padding-inline:0 !important; }
 
 /* ── phones: one tile per row ────────────────────────────────────────────
    The four-up grid kept its columns all the way down, so on a phone each
@@ -3254,13 +3265,204 @@
     row-gap: clamp(44px, 6vh, 72px) !important;
     padding-inline: clamp(14px, 4vw, 26px) !important;
   }
-  .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox{
+  .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox, .t-handoff{
     grid-column: 1 / -1 !important;
   }
-  /* Equinox was the wide one across the bottom; at one column it is the
-     same shape as the rest */
-  .t-equinox .tile{ aspect-ratio: 5 / 3 !important; min-height: 0 !important; }
 }
+
+/* small text
+   all the tiny labels, tags, dates and outlets used to be spaced out grey
+   all caps, which reads loud and cheap. now they're just satoshi, as
+   written (lowercase), medium weight, a hair of tracking so they stay
+   legible small. the big personality lives in the pixel titles instead.
+   !important since the tile tags already use it */
+.ns-section-label, .ns-sidebar-label, .ns-chaos-examples, .ns-chaos-tag,
+.ns-matrix-table thead th, .pe-source, .pe-press-outlet, .pe-press-date,
+.rail-case-kicker, .tile-tags > span, .tile-video--soon span, .bento-head p{
+  font-family:'Satoshi', sans-serif !important;
+  font-style:normal !important;
+  font-weight:500 !important;
+  text-transform:none !important;
+  letter-spacing:.01em !important;
+}
+
+/* press feedback
+   nothing on the site reacted to being clicked. now buttons and tiles dip a
+   tiny bit on press, on the `scale` property so it stacks with their hover
+   lift (transform) instead of fighting it. transitions repeated from each
+   button's own rule with scale tacked on the end */
+.btn-cta-primary   { transition: background .2s ease, transform .15s ease, box-shadow .2s ease, scale .12s cubic-bezier(.23,1,.32,1); }
+.btn-cta-northstar { transition: border-color .2s ease, color .2s ease, transform .15s ease, background .2s ease, scale .12s cubic-bezier(.23,1,.32,1); }
+.theme-toggle, .social-btn { transition: background .2s ease, border-color .2s ease, transform .15s ease, scale .12s cubic-bezier(.23,1,.32,1); }
+.rail-back { transition: border-color .2s ease, background .2s ease, scale .12s cubic-bezier(.23,1,.32,1); }
+.btn-cta-primary:active, .btn-cta-northstar:active, .theme-toggle:active,
+.social-btn:active, .rail-back:active { scale: .97; }
+.cell:active .tile { scale: .985; }
+
+/* materials
+   why it felt flat: the glass card was pale blue on a pale blue sky with no
+   shadow and a DARK hairline edge, so it read as a tinted rectangle, and the
+   tiles had one big black blur and an invisible edge. real glass catches
+   light on its edges and sits above what's behind it. so:
+   - panels: bright specular top edge + light hairline, layered soft shadow
+   - tiles: a gloss that fades down from the top edge, a light rim, and a
+     stacked shadow (tight contact + soft ambient) instead of one black blob
+   - grain: a barely there noise over everything so gradients read as a
+     material instead of plastic */
+.sidebar, .content-card{
+  border-color:rgba(255,255,255,.62) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -1px 0 rgba(18,24,31,.05),
+    0 1px 2px rgba(20,40,60,.06),
+    0 10px 24px -8px rgba(20,40,60,.14),
+    0 32px 70px -20px rgba(20,40,60,.26) !important;
+}
+:root[data-theme="dark"] .sidebar, :root[data-theme="dark"] .content-card{
+  border-color:rgba(255,255,255,.09) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 1px 2px rgba(0,0,0,.3),
+    0 32px 70px -20px rgba(0,0,0,.6) !important;
+}
+.tile{
+  box-shadow:
+    0 1px 1px rgba(20,40,60,.10),
+    0 3px 6px -1px rgba(20,40,60,.10),
+    0 14px 32px -10px rgba(20,40,60,.30) !important;
+}
+.cell:hover .tile{
+  box-shadow:
+    0 1px 1px rgba(20,40,60,.08),
+    0 6px 12px -2px rgba(20,40,60,.10),
+    0 28px 56px -14px rgba(20,40,60,.34) !important;
+}
+.tile-sheen{
+  position:absolute; inset:0; z-index:4; pointer-events:none; border-radius:inherit;
+  background:linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.04) 22%, rgba(255,255,255,0) 45%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.42), inset 0 0 0 1px rgba(255,255,255,.12);
+  opacity:.85; transition:opacity .25s ease;
+}
+.cell:hover .tile-sheen{ opacity:1; }
+body::after{
+  content:''; position:fixed; inset:0; z-index:9000; pointer-events:none;
+  opacity:.045; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px 160px;
+}
+:root[data-theme="dark"] body::after{ mix-blend-mode:screen; opacity:.035; }
+
+/* coming soon tiles: the label is always on, a crisp pill in the corner
+   instead of a dim plate that only showed on hover */
+.tile.is-soon .tile-video--soon{
+  opacity:1; background:none; backdrop-filter:none; -webkit-backdrop-filter:none;
+  place-items:end end; padding:14px;
+}
+.tile.is-soon .tile-video--soon span{
+  background:rgba(255,255,255,.94); color:#12181f; border:0;
+  font-size:.86rem; font-weight:600 !important; padding:.45rem .95rem;
+  box-shadow:0 1px 2px rgba(0,0,0,.12), 0 6px 18px -4px rgba(0,0,0,.25);
+}
+
+/* the table only ever scrolls sideways on a narrow screen. overflow-x:auto
+   quietly made it scroll vertically too, so it had its own little scrollbar */
+.ns-matrix-scroll{ overflow-y:hidden; }
+/* the chaos chips were tuned for dark mode only, so in light mode the pink
+   user state one was peach text on pale glass. real contrast here */
+:root[data-theme="light"] .ns-tag-coord{ background:rgba(42,157,143,.14); color:#1d6b62; border-color:rgba(42,157,143,.28); }
+:root[data-theme="light"] .ns-tag-const{ background:rgba(69,123,157,.14); color:#2f5874; border-color:rgba(69,123,157,.28); }
+:root[data-theme="light"] .ns-tag-user { background:rgba(231,111,81,.14); color:#a5432a; border-color:rgba(231,111,81,.30); }
+
+/* the pixel font has no ë, so the browser was swapping in some other font
+   for that one letter. this is a pixel e with two of the font's own pixel
+   periods sat on top, so the dots land on the same grid as everything else */
+.uml{ position:relative; display:inline-block; }
+.uml::before{
+  content:'..'; position:absolute; left:50%; top:-.62em;
+  transform:translateX(-50%); letter-spacing:.02em; pointer-events:none;
+}
+
+/* editorial pass
+   - captions are just the punchy line (it's the headline again, no project
+     name + year row, that read juvenile), then stat + tags
+   - numbers on the nav and section titles, a live waterloo clock
+   - no hover lift (the hover up thing is an ai tell) */
+.tile-stat{ margin-top:.5rem !important; font-size:.9rem !important; color:rgba(var(--ink-rgb), .55) !important; }
+.tile-tags{ margin-top:.85rem !important; }
+
+.sb-n, .sec-n{ font-family:'DotempDemo', monospace; font-style:normal; color:rgba(var(--ink-rgb), .38); }
+.sb-n{ font-size:.82em; margin-right:.7em; }
+.sec-n{ font-size:.38em; vertical-align:super; margin-right:.45em; letter-spacing:.02em; }
+
+.work-titlebar{ display:flex; align-items:baseline; justify-content:space-between; gap:1rem; }
+.local-time{
+  font-family:'Satoshi', sans-serif; font-size:.78rem; font-weight:500;
+  color:rgba(var(--ink-rgb), .5); white-space:nowrap; margin:0;
+}
+.local-time time{ font-family:'DotempDemo', monospace; font-size:1.05em; color:rgba(var(--ink-rgb), .72); margin-left:.35em; }
+
+/* magazine layout
+   every project gets the shape that suits it instead of six identical
+   boxes: tall for the phone ones, wide for the banner ones. on desktop the
+   grid runs on tiny 8px rows and each cell spans however many its real
+   height needs (set in js, see packGrid), so a tile slots in under
+   whichever column is shorter like a magazine spread. phones keep one
+   column at the original shape */
+@media (min-width: 921px){
+  .bento-grid{ grid-auto-rows:8px !important; row-gap:0 !important; }
+  .bento-grid .cell{ align-self:start; padding-bottom:clamp(48px, 7.5vh, 96px); }
+  .t-trove .tile{ aspect-ratio:1 / 1 !important; }
+  .t-skrimp .tile{ aspect-ratio:4 / 3 !important; }
+  .t-menzo .tile{ aspect-ratio:10 / 9 !important; }
+  .t-auntie .tile{ aspect-ratio:1 / 1 !important; }
+  .t-equinox .tile{ aspect-ratio:4 / 3 !important; }
+  .t-handoff .tile{ aspect-ratio:889 / 510 !important; }
+}
+@media (max-width: 920px){ .local-time span{ display:none; } }
+
+/* north star sky
+   the sky layer covers the headline part of the section and sits under the
+   page, so the big pixel headline overlaps her as she falls past (magazine
+   cover style). she's graded toward the sky (a touch less saturation, a
+   cool soft shadow) so she lives in the scene instead of
+   being stuck on top of it */
+.northstar-section{ position:relative; isolation:isolate; }
+.northstar-section .ns-page{ position:relative; z-index:1; }
+.ns-sky{ position:absolute; top:clamp(24px, 4vh, 48px); right:0; width:min(52%, 640px); height:clamp(480px, 66vh, 660px); pointer-events:none; z-index:0;
+  /* she only exists inside this window: fades in as she drops into the
+     section and dissolves before the table, so she never sits over the
+     section above or the matrix below */
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 8%, #000 90%, transparent 100%);
+          mask-image:linear-gradient(to bottom, transparent 0, #000 8%, #000 90%, transparent 100%); }
+.ns-sky > *{ position:absolute; will-change:translate; }
+.ns-cloud{ background-repeat:no-repeat; background-size:contain; }
+.ns-cloud--far{ right:-10%; top:0; width:130%; aspect-ratio:1100 / 150; background-image:url('/field/clouds-far.webp'); opacity:.85; }
+.ns-cloud--near{ right:-18%; top:0; width:140%; aspect-ratio:1100 / 280; background-image:url('/field/clouds-near.webp'); z-index:2; }
+.ns-hen{
+  right:12%; top:0; width:clamp(190px, 19vw, 300px); aspect-ratio:657 / 560; z-index:1;
+  will-change:translate, rotate, opacity;
+  filter:saturate(.84) brightness(1.03) drop-shadow(0 18px 28px rgba(40, 90, 130, .22));
+}
+.ns-hen img{ position:absolute; inset:0; width:100%; height:100%; opacity:0; }
+.ns-hen img.on{ opacity:1; }
+:root[data-theme="dark"] .ns-hen{ filter:saturate(.8) brightness(.92) drop-shadow(0 18px 28px rgba(0,0,0,.4)); }
+@media (max-width: 920px){
+  .ns-sky{ width:58%; height:340px; }
+  .ns-hen{ width:clamp(130px, 34vw, 190px); right:6%; }
+}
+
+/* rail walker: chibi her walking on the spot, feet on the divider line
+   above lets conspire. 16 finished frames (168x255 each) in one sheet;
+   stepping the background from 0 to 16/15 of its width lands on each frame */
+.rail-walk{ position:relative; height:calc(112px + .3rem); margin-top:auto; pointer-events:none; flex:0 0 auto; }
+.rail-walk + .sb-foot{ margin-top:0 !important; }
+.walker{
+  position:absolute; left:.5rem; bottom:-2px; height:112px; aspect-ratio:168 / 255;
+  background:url('/sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat;
+  animation:chibiWalk .96s steps(16) infinite;
+}
+@keyframes chibiWalk{ to{ background-position:calc(100% * 16 / 15) 0; } }
+@media (prefers-reduced-motion: reduce){ .walker{ animation:none; } }
 </style>
 </head>
 <body>
@@ -3438,9 +3640,9 @@
                 <img src="/HenLogo.png" alt="Henlogo">
             </a>
             <ul class="nav-links">
-                <li><a href="/resume/">Re<span class="px">sum</span>e</a></li>
-                <li><a href="#projects">W<span class="px">or</span>k</a></li>
-                <li><a href="/about/">A<span class="px">bo</span>ut</a></li>
+                <li><a href="/resume/">Resume</a></li>
+                <li><a href="#projects">Work</a></li>
+                <li><a href="/about/">About</a></li>
             </ul>
             <div class="hamburger" onclick="toggleMobileMenu()">
                 <span></span>
@@ -3452,9 +3654,9 @@
         <div class="overlay" onclick="closeMobileMenu()"></div>
         <div class="mobile-menu">
             <ul>
-                <li><a href="/resume/" onclick="closeMobileMenu()">Re<span class="px">sum</span>e</a></li>
-                <li><a href="#projects" onclick="closeMobileMenu()">W<span class="px">or</span>k</a></li>
-                <li><a href="/about/" onclick="closeMobileMenu()">A<span class="px">bo</span>ut</a></li>
+                <li><a href="/resume/" onclick="closeMobileMenu()">Resume</a></li>
+                <li><a href="#projects" onclick="closeMobileMenu()">Work</a></li>
+                <li><a href="/about/" onclick="closeMobileMenu()">About Me</a></li>
             </ul>
         </div>
 
@@ -3483,23 +3685,23 @@
             <!-- case mode: the study's name and its table of contents.
                  hidden until a pane opens, and the intro hides in its place -->
             <div class="rail-case" id="railCase" hidden>
-                <p class="rail-case-kicker" id="railCaseKicker">case st<span class="px">ud</span>y</p>
+                <p class="rail-case-kicker" id="railCaseKicker">case study</p>
                 <h2 class="rail-case-name" id="railCaseName"></h2>
                 <nav class="rail-toc" id="railToc" aria-label="Sections"></nav>
             </div>
 
             <div class="rail-intro">
                 <h1 class="display-name">
-                    <span class="name-first">H<span class="px">en</span><span class="name-ls">ri</span>ë<span class="px">tt</span><span class="name-ls">a</span></span>
+                    <span class="name-first" aria-label="Henriëtta">Henri<span class="uml">e</span>tta</span>
                     <span class="name-row">
-                        <span class="name-last">v<span class="px">an</span> Nie<span class="px">ke</span>rk</span>
+                        <span class="name-last">van Niekerk</span>
                         <a class="rail-logo" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk — home">
                             <img src="/HenLogo.png" alt="">
                         </a>
                     </span>
                 </h1>
 
-                <p class="rail-pitch">is an award-winning design engineer blending systems thinking with a love for visual craft, to build things that survive under pressure</p>
+                <p class="rail-pitch">is an award-winning design engineer who builds things that survive under pressure</p>
 
                 <!-- "and alsooo <fact>" — typewriter, with the Gilmore Girls easter egg -->
                 <div class="tagline" id="taglineMerged" onclick="handleTaglineClick()">
@@ -3512,14 +3714,19 @@
             </div>
 
             <nav class="sb-group">
-                <a class="sb-link" href="#projects"     data-scroll="#projects">my work</a>
-                <a class="sb-link" href="#northstar"    data-scroll="#northstar">north star</a>
-                <a class="sb-link" href="#endorsements" data-scroll="#endorsements">endorsements</a>
-                <a class="sb-link" href="/about/"       data-pane="about">about</a>
-                <a class="sb-link" href="/resume/"      data-pane="resume">resume</a>
-                <a class="sb-link" href="/playground/"  data-pane="playground">playground</a>
+                <a class="sb-link" href="#projects"     data-scroll="#projects"><span class="sb-n">01</span>featured work</a>
+                <a class="sb-link" href="#northstar"    data-scroll="#northstar"><span class="sb-n">02</span>north star</a>
+                <a class="sb-link" href="#endorsements" data-scroll="#endorsements"><span class="sb-n">03</span>endorsements</a>
+                <a class="sb-link" href="/about/"       data-pane="about"><span class="sb-n">04</span>about me</a>
+                <a class="sb-link" href="/resume/"      data-pane="resume"><span class="sb-n">05</span>resume</a>
+                <a class="sb-link" href="/playground/"  data-pane="playground"><span class="sb-n">06</span>playground</a>
             </nav>
 
+            <!-- chibi her walking on the spot above lets conspire. a puppet
+                 built from her own drawings: one steady body, and every arm
+                 and leg picked from a library of all 8 drawn frames to match
+                 a clean walk cycle, then nudged at the joint. 16 frames -->
+            <div class="rail-walk" aria-hidden="true"><div class="walker"></div></div>
             <div class="sb-foot">
                 <div class="sb-foot-row">
                     <!-- one pill: the label swaps for the socials on hover -->
@@ -3565,22 +3772,16 @@
             <iframe class="case-frame" id="caseFrame" title="Case study" src="about:blank"></iframe>
         </div>
 
-        <!-- The models canvas lives outside the scroller on purpose. Inside it,
-             #contentCard's backdrop-filter made itself the containing block for
-             a position:fixed child, so "fixed" pinned the canvas to the card's
-             scrolled CONTENT and it had to be counter-translated by scrollTop
-             on every frame to stay put. That counter-transform is written on
-             the main thread while the page scrolls on the compositor, so any
-             hitch showed up as the models sliding out of their tiles — the
-             bounce on phones. Out here it is genuinely fixed to the viewport,
-             sized to the card, and never moves. -->
-        <canvas id="gl"></canvas>
 
         <main class="content-card" id="contentCard">
         <div class="content-inner">
         <!-- Full-width models section -->
         <div class="models-section" id="projects">
 <div id="wrap">
+    <header class="work-head">
+      <div class="work-intro" id="workIntro"></div>
+      <div class="work-titlebar"><h2 class="sec-title work-title"><span class="sec-n">01</span>featured work</h2><p class="local-time" aria-label="local time in Waterloo"><span>waterloo, on</span> <time id="localTime"></time></p></div>
+    </header>
     <div class="bento-grid" id="grid">
       <!-- Real HTML so crawlers, AI fetchers and no-JS readers get the work.
            The tile builder clears this and renders the interactive grid. -->
@@ -3597,145 +3798,155 @@
 
         <!-- North star philosophy section -->
         <div class="northstar-section" id="northstar">
+          <!-- hen falls through the north star section as you scroll: she
+               drops in from above, passes behind the headline and drops out
+               before the table. her legs go pose 1, 1.5, 2 as she falls (a
+               smear frame flashes between each), clouds rise past her, and
+               she bobs a little the whole time so she's never frozen -->
+          <div class="ns-sky" aria-hidden="true">
+            <div class="ns-cloud ns-cloud--far" data-depth="-.25"></div>
+            <div class="ns-hen" data-depth=".35">
+              <img class="on" src="/sky/hen-fall-1.webp" alt="" decoding="async">
+              <img src="/sky/hen-fall-1s.webp" alt="" decoding="async">
+              <img src="/sky/hen-fall-15.webp" alt="" decoding="async">
+              <img src="/sky/hen-fall-2s.webp" alt="" decoding="async">
+              <img src="/sky/hen-fall-2.webp" alt="" decoding="async">
+            </div>
+            <div class="ns-cloud ns-cloud--near" data-depth=".8"></div>
+          </div>
           <main class="ns-page">
 
-            <div class="ns-masthead">
-              <div class="ns-masthead-rule"></div>
-              <span class="ns-masthead-tag">de<span class="px">si</span>gn ph<span class="px">il</span>os<span class="px">op</span>hy &ndash; <span class="px">2026</span></span>
-              <div class="ns-masthead-rule"></div>
-            </div>
-
             <div class="ns-headline-block">
-              <p class="ns-kicker">nor<span class="px">th</span> s<span class="px">ta</span>r</p>
+              <h2 class="sec-title ns-title"><span class="sec-n">02</span>north star</h2>
               <h2 class="ns-headline" id="northstarHeadline"></h2>
             </div>
 
             <div class="ns-matrix-wrap">
-              <p class="ns-section-label">the sys<span class="px">te</span>m mat<span class="px">ri</span>x</p>
+              <p class="ns-section-label">the system matrix</p>
               <div class="ns-matrix-scroll"><table class="ns-matrix-table">
                 <thead>
                   <tr>
-                    <th>pro<span class="px">jec</span>t</th>
-                    <th>the me<span class="px">ss</span></th>
-                    <th>ch<span class="px">ao</span>s ty<span class="px">pe</span>s</th>
-                    <th>sys<span class="px">te</span>m bu<span class="px">il</span>t</th>
-                    <th>out<span class="px">co</span>me</th>
+                    <th>project</th>
+                    <th>the mess</th>
+                    <th>chaos types</th>
+                    <th>system built</th>
+                    <th>outcome</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Pa<span class="px">th</span> to Men<span class="px">zo</span>ber<span class="px">ra</span>nzan</td>
-                    <td>100+ volunteers across 6 departments. No salaries. 50+ hour scope. Indefinite runway.</td>
+                    <td>Trove</td>
+                    <td>No questions allowed. Eighteen weeks. An idea proven exactly once.</td>
+                    <td><span class="ns-chaos-tag ns-tag-const">constraints</span><span class="ns-chaos-tag ns-tag-user">user state</span></td>
+                    <td>A story pipeline that plays itself start to finish before a person reads a word.</td>
+                    <td><span class="ns-outcome-pill">10k+ users</span></td>
+                  </tr>
+                  <tr>
+                    <td>Path to Menzoberranzan</td>
+                    <td>140 volunteers. Six departments. No salaries, no docs, no end date.</td>
                     <td><span class="ns-chaos-tag ns-tag-coord">coordination</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
-                    <td>Contribution pipeline, lore governance system, cross-department build coordination</td>
+                    <td>A contribution pipeline and lore governance that let strangers ship into one build.</td>
                     <td><span class="ns-outcome-pill">shipping</span></td>
                   </tr>
                   <tr>
-                    <td>Sk<span class="px">ri</span>mp</td>
-                    <td>11pm kitchens. Budgets that shift. Dietary restrictions nobody warned you about. A fridge full of things that don't obviously go together.</td>
+                    <td>Skrimp</td>
+                    <td>11pm kitchens. Budgets that move every week. A fridge full of things that don&rsquo;t go together.</td>
                     <td><span class="ns-chaos-tag ns-tag-const">constraints</span><span class="ns-chaos-tag ns-tag-user">user state</span></td>
-                    <td>Constraint-first AI meal planner — starts from what you have, not what you should have</td>
+                    <td>A planner that starts from what&rsquo;s on sale and what&rsquo;s already in the fridge.</td>
                     <td><span class="ns-outcome-pill">live</span></td>
                   </tr>
                   <tr>
-                    <td>My Au<span class="px">nt</span>ie</td>
-                    <td>Postpartum fog. Weeks of sleep deprivation. Questions too big to google at 3am.</td>
+                    <td>My Auntie</td>
+                    <td>Postpartum fog. Weeks without sleep. Questions too big to google at 3am.</td>
                     <td><span class="ns-chaos-tag ns-tag-user">user state</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
-                    <td>Resource scaffolding for overwhelmed new parents — designed for degraded cognition, not ideal cognition</td>
+                    <td>Support that arrives as a text, built for a brain running on empty.</td>
                     <td><span class="ns-outcome-pill">winner ✦</span></td>
                   </tr>
                   <tr>
-                    <td>E<span class="px">qu</span>in<span class="px">ox</span></td>
-                    <td>14 strangers. 2 weeks. A puzzle game that had to feel cohesive despite 14 different people touching every system.</td>
+                    <td>Equinox</td>
+                    <td>14 strangers. Two weeks. Every system touched by everyone.</td>
                     <td><span class="ns-chaos-tag ns-tag-coord">coordination</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
-                    <td>Player controller + interaction architecture clean enough that 14 people built on top of it without breaking each other</td>
+                    <td>A player controller clean enough that 14 people built on it without breaking each other.</td>
                     <td><span class="ns-outcome-pill">winner ✦</span></td>
-                  </tr>
-                  <tr>
-                    <td>En<span class="px">do</span>Qu<span class="px">es</span>t</td>
-                    <td>Chronic pain dismissed so often, people stop reporting it. Forms nobody finishes. A screener that had to feel like something else entirely.</td>
-                    <td><span class="ns-chaos-tag ns-tag-user">user state</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
-                    <td>Diagnostic RPG — combat mechanics as a medical screener, because people finish games</td>
-                    <td><span class="ns-outcome-pill">semifinalist</span></td>
                   </tr>
                 </tbody>
               </table></div>
             </div>
 
-            <div style="margin-bottom:2rem"><p class="ns-section-label">ch<span class="px">ao</span>s ty<span class="px">po</span>logy</p></div>
+            <div style="margin-bottom:2rem"><p class="ns-section-label">chaos typology</p></div>
             <div class="ns-chaos-grid">
               <div class="ns-chaos-card coord">
                 <p class="ns-chaos-num">01</p>
-                <p class="ns-chaos-name">Co<span class="px">or</span>din<span class="px">at</span>ion Ch<span class="px">ao</span>s</p>
-                <p class="ns-chaos-desc">Too many people working in parallel. The system has to stay coherent without a single person being able to hold the whole thing in their head at once. The design question isn't "how do we communicate?" — it's "how do we make the right thing the default thing?"</p>
+                <p class="ns-chaos-name">Coordination Chaos</p>
+                <p class="ns-chaos-desc">Too many hands, one build. Nobody can hold the whole thing in their head. So the system has to make the right move the default move.</p>
                 <p class="ns-chaos-examples">PtM &nbsp;·&nbsp; Equinox</p>
               </div>
               <div class="ns-chaos-card const">
                 <p class="ns-chaos-num">02</p>
-                <p class="ns-chaos-name">Con<span class="px">st</span>ra<span class="px">in</span>t Ch<span class="px">ao</span>s</p>
-                <p class="ns-chaos-desc">The resources — time, money, people, data — are genuinely insufficient for a naive solution. The system has to work with what actually exists, not what ideally would. Constraint-first design isn't a consolation prize; it's the only kind that survives contact with the real world.</p>
-                <p class="ns-chaos-examples">Skrimp &nbsp;·&nbsp; PtM &nbsp;·&nbsp; Equinox &nbsp;·&nbsp; MyAuntie</p>
+                <p class="ns-chaos-name">Constraint Chaos</p>
+                <p class="ns-chaos-desc">Not enough time, money, people or data for the obvious answer. So the constraint becomes the design, not the excuse.</p>
+                <p class="ns-chaos-examples">Trove &nbsp;·&nbsp; Skrimp &nbsp;·&nbsp; PtM &nbsp;·&nbsp; Equinox &nbsp;·&nbsp; MyAuntie</p>
               </div>
               <div class="ns-chaos-card user">
                 <p class="ns-chaos-num">03</p>
-                <p class="ns-chaos-name">Us<span class="px">er</span> St<span class="px">at</span>e Ch<span class="px">ao</span>s</p>
-                <p class="ns-chaos-desc">The person using your system is already overwhelmed before they open it. They're not at their best; they may never be at their best. Design for the person who is tired, in pain, grieving, or just out of bandwidth. That's most people, most of the time.</p>
-                <p class="ns-chaos-examples">MyAuntie &nbsp;·&nbsp; Skrimp</p>
+                <p class="ns-chaos-name">User State Chaos</p>
+                <p class="ns-chaos-desc">The person opening it is already running on empty. Tired, in pain, out of bandwidth. That&rsquo;s most people, most of the time, so that&rsquo;s who it&rsquo;s for.</p>
+                <p class="ns-chaos-examples">Trove &nbsp;·&nbsp; MyAuntie &nbsp;·&nbsp; Skrimp</p>
               </div>
             </div>
 
             <div class="ns-manifesto-grid">
               <div class="ns-col-left">
-                <p class="ns-section-label" style="margin-bottom:1.75rem">con<span class="px">te</span>xt</p>
+                <p class="ns-section-label" style="margin-bottom:1.75rem">context</p>
                 <div class="ns-sidebar-facts">
                   <div>
-                    <p class="ns-sidebar-label">the mea<span class="px">su</span>re</p>
-                    <p class="ns-sidebar-value">Not how a system performs when everything goes right. What it does for the person who is already overwhelmed before they open it.</p>
+                    <p class="ns-sidebar-label">the measure</p>
+                    <p class="ns-sidebar-value">Not how it runs when everything goes right. What it does for someone already overwhelmed before they open it.</p>
                   </div>
                   <div>
-                    <p class="ns-sidebar-label">the in<span class="px">si</span>ght</p>
-                    <p class="ns-sidebar-value">Incentive structures are a design material. A system rewards certain behaviors by making them easy. The question is whether those are the right behaviors.</p>
+                    <p class="ns-sidebar-label">the insight</p>
+                    <p class="ns-sidebar-value">Incentives are a design material. A system rewards whatever it makes easy, so make sure that&rsquo;s the right thing.</p>
                   </div>
                   <div>
-                    <p class="ns-sidebar-label">the co<span class="px">mm</span>itment</p>
-                    <p class="ns-sidebar-value">Leave scaffolding for whoever comes after — contributors, users, future maintainers dealing with a messier world than the one I designed for.</p>
+                    <p class="ns-sidebar-label">the commitment</p>
+                    <p class="ns-sidebar-value">Leave scaffolding for whoever comes next, in a messier world than the one I designed for.</p>
                   </div>
                 </div>
               </div>
               <div class="ns-col-right">
                 <div class="ns-manifesto">
-                  <p>Real problems don&rsquo;t arrive in optimal conditions. They arrive at 11pm when you&rsquo;re tired, or week three of a project when half the team has dropped off, or in the middle of a pain flare you&rsquo;ve learned not to mention. Most software is designed for a user in their best-case scenario — rested, focused, uninterrupted. I&rsquo;m interested in the other version.</p>
-                  <p class="ns-pull">The measure of a system isn&rsquo;t how it performs when everything goes right. It&rsquo;s what it does for the person who is already overwhelmed before they open it.</p>
+                  <p>Real problems don&rsquo;t arrive in optimal conditions. They arrive at 11pm. In week three, when half the team has dropped off. Mid pain flare, the one you&rsquo;ve learned not to mention. Most software is designed for someone rested and uninterrupted. I&rsquo;m interested in the other version.</p>
+                  <p class="ns-pull">The measure of a system isn&rsquo;t how it performs when everything goes right. It&rsquo;s what it does for the person who&rsquo;s already overwhelmed.</p>
                   <div class="ns-prose-rule"></div>
-                  <p>I came to this through a specific kind of attention — the kind you develop when you care too much about things finishing. A mod that has to ship without a salary. A meal plan that has to work for a household that just got a diagnosis. A postpartum resource that has to be usable when you haven&rsquo;t slept properly in three weeks. In every case, the constraint isn&rsquo;t technical. It&rsquo;s human.</p>
-                  <p>My answer tends to involve incentive structures and friction management more than visual polish. I think about what a system <em>rewards</em> — what behaviour it makes easy, what it makes hard, what it quietly teaches users to expect. A good system is a set of affordances that stay legible under pressure. That&rsquo;s harder than it sounds, and I think it&rsquo;s the thing worth practicing.</p>
+                  <p>I got here because I can&rsquo;t leave a thing half built. A mod that ships without a salary. A meal plan for a household that just got a diagnosis. A postpartum resource that has to work three weeks into no sleep. The constraint is never technical. It&rsquo;s human.</p>
+                  <p>So my answers lean on incentives and friction more than polish. What does the system reward? What does it make easy, and what does it quietly teach people to expect?</p>
                   <div class="ns-prose-rule"></div>
-                  <p>I try to leave scaffolding for whoever comes after me — contributors, users, future maintainers who will be dealing with a messier world than the one I designed for. The work isn&rsquo;t done when it ships. It&rsquo;s done when it stays useful.</p>
+                  <p>The work isn&rsquo;t done when it ships. It&rsquo;s done when it stays useful.</p>
                 </div>
               </div>
             </div>
 
-            <p class="ns-section-label" style="margin-bottom:1.5rem">de<span class="px">si</span>gn pr<span class="px">in</span>ciples</p>
+            <p class="ns-section-label" style="margin-bottom:1.5rem">design principles</p>
             <div class="ns-principles-row">
               <div class="ns-principle">
                 <p class="ns-principle-n">01</p>
-                <p class="ns-principle-title">De<span class="px">si</span>gn for Deg<span class="px">ra</span>ded Cog<span class="px">ni</span>t<span class="px">io</span>n</p>
-                <p class="ns-principle-desc">Your user's best-case state is a ceiling, not a floor. The system should work for whoever actually shows up.</p>
+                <p class="ns-principle-title">Design for the Worst Day</p>
+                <p class="ns-principle-desc">Your user&rsquo;s best day is the ceiling, not the floor. Build for whoever actually shows up.</p>
               </div>
               <div class="ns-principle">
                 <p class="ns-principle-n">02</p>
-                <p class="ns-principle-title">Con<span class="px">st</span>ra<span class="px">in</span>ts are the De<span class="px">si</span>gn</p>
-                <p class="ns-principle-desc">What a system can&rsquo;t do tells you what it values. Start from real limits, not ideal conditions.</p>
+                <p class="ns-principle-title">Constraints are the Design</p>
+                <p class="ns-principle-desc">What a system refuses to do tells you what it values. Start from the real limits.</p>
               </div>
               <div class="ns-principle">
                 <p class="ns-principle-n">03</p>
-                <p class="ns-principle-title">In<span class="px">ce</span>nt<span class="px">iv</span>e Str<span class="px">uc</span>tures are a Ma<span class="px">te</span>rial</p>
-                <p class="ns-principle-desc">Every interface teaches users something. Design the lesson intentionally — make the right thing the easy thing.</p>
+                <p class="ns-principle-title">Incentives are a Material</p>
+                <p class="ns-principle-desc">Every interface teaches people something. Make the right thing the easy thing.</p>
               </div>
               <div class="ns-principle">
                 <p class="ns-principle-n">04</p>
-                <p class="ns-principle-title">Bu<span class="px">il</span>d for Wh<span class="px">oe</span>ver Co<span class="px">me</span>s Ne<span class="px">xt</span></p>
-                <p class="ns-principle-desc">Leave scaffolding. The work isn&rsquo;t done when it ships — it&rsquo;s done when it stays useful in a messier world than the one you designed for.</p>
+                <p class="ns-principle-title">Leave Scaffolding</p>
+                <p class="ns-principle-desc">It isn&rsquo;t done when it ships. It&rsquo;s done when the next person can keep it alive.</p>
               </div>
             </div>
 
@@ -3746,17 +3957,11 @@
         <section class="pe-section" id="endorsements">
           <div class="pe-page">
 
-            <div class="pe-masthead">
-              <div class="pe-rule"></div>
-              <span class="pe-tag">press &amp; en<span class="px">dor</span>se<span class="px">men</span>ts</span>
-              <div class="pe-rule"></div>
-            </div>
-
             <div class="pe-body">
 
               <!-- Left: Endorsements -->
               <div>
-                <p class="pe-track-label">en<span class="px">dor</span>se<span class="px">men</span>ts</p>
+                <p class="pe-track-label"><span class="sec-n">03</span>endorsements</p>
                 <!-- Avatars are local files or the .pe-avatar-init monogram, never
                      a hotlink. LinkedIn's media URLs carry a signed ?e= expiry and
                      two of these had been 403ing since March. Drop a square webp in
@@ -3779,7 +3984,8 @@
 
                   <div class="pe-endorse-card">
                     <div class="pe-card-header">
-                      <div class="pe-avatar-init" aria-hidden="true">KT</div>
+                      <img class="pe-avatar" src="/endorsements/krysta-traianovski.webp" alt="Krysta Traianovski"
+                           width="48" height="48" loading="lazy" decoding="async" />
                       <div class="pe-attrib">
                         <span class="pe-name">Krysta Traianovski</span>
                         <span class="pe-role">Associate Director of Founder Development @ Velocity</span>
@@ -4041,26 +4247,21 @@
             const cursor = document.getElementById('cursor');
             let mouseX = 0;
             let mouseY = 0;
-            let animationId;
 
-            // Smooth cursor movement with requestAnimationFrame
+            // moves on the `translate` property, which is compositor only,
+            // instead of left/top which made the browser do layout every move.
+            // and it moves right in the event, not on the next frame: chrome
+            // already lines mousemove up with frames, so the old rAF hop just
+            // made the ring trail your hand by an extra frame
             function updateCursor() {
-                cursor.style.left = mouseX + 'px';
-                cursor.style.top = mouseY + 'px';
+                cursor.style.translate = mouseX + 'px ' + mouseY + 'px';
             }
 
-            // Track mouse movement with throttling
             document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
                 cursor.style.opacity = '1';
-
-                if (!animationId) {
-                    animationId = requestAnimationFrame(() => {
-                        updateCursor();
-                        animationId = null;
-                    });
-                }
+                updateCursor();
             });
 
             // Click animation
@@ -4161,8 +4362,7 @@
                     const rect = frame.getBoundingClientRect();
                     mouseX = rect.left + d.x;
                     mouseY = rect.top + d.y;
-                    cursor.style.left = mouseX + 'px';
-                    cursor.style.top  = mouseY + 'px';
+                    updateCursor();
                     cursor.style.opacity = '1';
                 }
                 if (d.type === 'iframeDown')  cursor.classList.add('clicking');
@@ -4401,60 +4601,132 @@
     })();
     </script>
 
-    <!-- 3D scene loading overlay: waits for hero + models to be fully rendered -->
-    <div id="scene-overlay">
-      <div class="scene-overlay-card">
-        <img
-          src="/loading.gif"
-          alt=""
-          class="scene-overlay-gif"
-          onerror="this.style.display='none'"
-        >
-        <p class="scene-overlay-title">Loading Magic...</p>
-        <p class="scene-overlay-msg" id="overlay-msg">Warming up the 3D scenes ✨</p>
+    <!-- the intro: she falls through the sky while the page loads, then the
+         clouds part and you land on the page. scroll up past the top and
+         it plays again -->
+    <div id="scene-overlay" role="status" aria-label="Loading">
+      <div class="intro-sky"></div>
+      <div class="intro-cloud far" style="--x:4vw;--w:56vw;--t:6.5s;--d:-1.2s;--o:.7"></div>
+      <div class="intro-cloud far" style="--x:56vw;--w:48vw;--t:7.5s;--d:-4.6s;--o:.65"></div>
+      <div class="intro-cloud far" style="--x:26vw;--w:44vw;--t:5.6s;--d:-3.4s;--o:.75"></div>
+      <div class="intro-cloud far" style="--x:-14vw;--w:40vw;--t:6s;--d:-5.2s;--o:.6"></div>
+      <div class="intro-cloud far" style="--x:72vw;--w:40vw;--t:5.2s;--d:-2.2s;--o:.7"></div>
+      <div class="intro-cloud" style="--x:-10vw;--w:64vw;--t:4.2s;--d:-2.8s"></div>
+      <div class="intro-cloud" style="--x:48vw;--w:70vw;--t:4.8s;--d:-.6s"></div>
+      <div class="intro-cloud" style="--x:18vw;--w:60vw;--t:4.5s;--d:-1.9s;--o:.85"></div>
+      <div class="intro-cloud" style="--x:64vw;--w:56vw;--t:3.9s;--d:-3.3s;--o:.85"></div>
+      <div class="intro-fall">
+        <img class="on" src="/sky/hen-fall-1.webp" alt="">
+        <img src="/sky/hen-fall-1s.webp" alt="">
+        <img src="/sky/hen-fall-15.webp" alt="">
+        <img src="/sky/hen-fall-2s.webp" alt="">
+        <img src="/sky/hen-fall-2.webp" alt="">
       </div>
+      <div class="intro-cloud front" style="--x:-22vw;--w:62vw;--t:3.2s;--d:-1.4s;--o:.85"></div>
+      <div class="intro-cloud front" style="--x:66vw;--w:60vw;--t:3.5s;--d:-.3s;--o:.85"></div>
+      <div class="intro-cloud front" style="--x:20vw;--w:62vw;--t:5.4s;--d:-2.6s;--o:.55"></div>
+      <div class="intro-bank l"></div>
+      <div class="intro-bank r"></div>
+        <div class="intro-bar"><i id="overlay-bar"></i></div>
     </div>
 
     <script>
       (function () {
-        const overlay  = document.getElementById('scene-overlay');
-        const msgEl    = document.getElementById('overlay-msg');
-        let heroReady   = false;
-        let modelsReady = false;
-        let dismissed   = false;
+        const overlay = document.getElementById('scene-overlay');
+        const bar     = document.getElementById('overlay-bar');
+        const fall    = overlay.querySelector('.intro-fall');
+        const frames  = [...fall.querySelectorAll('img')];
+        const calm    = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const MIN_MS  = calm ? 0 : 1600;        // always long enough to see her fall
+        let ready = false, minDone = false, open = true;
 
-        const messages = [
-          'Warming up the 3D scenes ✨',
-          'Loading pixels with love 💖',
-          'Summoning digital nostalgia 🌈',
-          'Calibrating liquid glass 🌊',
-        ];
-        let msgIdx = 0;
-        const msgTimer = setInterval(() => {
-          msgIdx = (msgIdx + 1) % messages.length;
-          msgEl.textContent = messages[msgIdx];
-        }, 1800);
+        // her kick goes one way, like the north star: pose 1 while she
+        // falls, 1.5 once loading is underway, 2 as she drops into the
+        // clouds. a smear frame flashes between drawn poses. frames are
+        // indexed 0 = 1, 1 = smear, 2 = 1.5, 3 = smear, 4 = 2. nothing swaps
+        // until all five are decoded, so it never flashes an empty frame
+        const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
+        const decoded = Promise.all(frames.map(f => f.decode ? f.decode().catch(() => {}) : null));
+        let pose = 0, smearT = 0, midT = 0;
+        function setPose(next) {
+          if (calm || next <= pose) return;
+          decoded.then(() => {
+            if (!open || next <= pose) return;
+            show(next - 1); pose = next;
+            clearTimeout(smearT); smearT = setTimeout(() => show(pose), 55);
+          });
+        }
+        function resetPose() { clearTimeout(smearT); clearTimeout(midT); pose = 0; show(0); }
+        // 1.5 at 40% loaded, or after a beat if loading is quick
+        function startFall() { resetPose(); midT = setTimeout(() => setPose(2), 900); }
 
-        function dismiss() {
-          if (dismissed) return;
-          dismissed = true;
-          clearInterval(msgTimer);
-          msgEl.textContent = 'Ready! 🎉';
-          // Brief "ready" flash before fading
-          setTimeout(() => overlay.classList.add('hidden'), 300);
+        function part() {
+          if (!open) return;
+          bar.style.transform = 'scaleX(1)';
+          overlay.classList.add('parting');
+          setPose(2); setTimeout(() => setPose(4), 160);   // full kick on the way in
+          setTimeout(() => {
+            overlay.classList.add('hidden');
+            overlay.setAttribute('aria-hidden', 'true');
+            open = false;
+          }, 1000);
+        }
+        function maybePart() { if (ready && minDone) part(); }
+
+        // first load: part once the on screen tiles are ready (the tile
+        // module posts progress and then modelsReady), never before MIN_MS
+        window.addEventListener('message', function (e) {
+          const d = e.data || {};
+          if (d.type === 'tileProgress') {
+            bar.style.transform = 'scaleX(' + Math.max(.08, d.p) + ')';
+            if (d.p >= .4) setPose(2);
+          }
+          if (d.type === 'modelsReady') { ready = true; maybePart(); }
+        });
+        // only the homepage gets the intro. a direct link (/trove/ etc)
+        // goes straight in
+        const home = /^\/(index\.html)?$/.test(location.pathname);
+        if (!home) {
+          // no fade either, or you'd see a flash of sky on the way in
+          open = false;
+          overlay.style.transition = 'none';
+          overlay.classList.add('parting', 'hidden');
+          overlay.setAttribute('aria-hidden', 'true');
+          requestAnimationFrame(() => requestAnimationFrame(() => overlay.style.transition = ''));
+        } else {
+          setTimeout(() => { minDone = true; maybePart(); }, MIN_MS);
+          setTimeout(() => { ready = true; minDone = true; maybePart(); }, 8000);   // safety net
+          startFall();
         }
 
-        window.addEventListener('message', function (e) {
-          if (e.data && e.data.type === 'modelsReady') modelsReady = true;
-          // the hero is inline now, so the models are the only signal left
-          if (modelsReady) dismiss();
-
-        });
-
-        // Hard timeout: if signals never arrive, show the page anyway
-        // Shorter when coming from loading.html (models already cached)
-        const fromLoader = new URLSearchParams(location.search).get('loaded') === 'true';
-        setTimeout(dismiss, fromLoader ? 5000 : 12000);
+        // scroll up past the top: the clouds close back in, she falls
+        // through again, then they part. rate limited
+        let pull = 0, lastPlay = 0;
+        function replay() {
+          const now = performance.now();
+          if (open || now - lastPlay < 3500 || calm) return;
+          if (document.documentElement.hasAttribute('data-pane-open')) return;   // not over a case study
+          lastPlay = now; open = true; pull = 0;
+          overlay.removeAttribute('aria-hidden');
+          overlay.classList.remove('hidden', 'parting');
+          // restart her drop in
+          fall.style.animation = 'none'; void fall.offsetWidth; fall.style.animation = '';
+          startFall();
+          setTimeout(part, 2000);   // drop in, fall for a beat, then part
+        }
+        function atTop() {
+          const sc = window.scroller || document.getElementById('contentCard');
+          return !sc || (sc.scrollTop || 0) <= 2;
+        }
+        addEventListener('wheel', e => {
+          if (e.deltaY < 0 && atTop()) { pull += -e.deltaY; if (pull > 220) replay(); }
+          else pull = 0;
+        }, { passive: true });
+        let ty = null;
+        addEventListener('touchstart', e => { ty = atTop() ? e.touches[0].clientY : null; }, { passive: true });
+        addEventListener('touchmove', e => {
+          if (ty !== null && e.touches[0].clientY - ty > 110) { ty = null; replay(); }
+        }, { passive: true });
       })();
     </script>
 
@@ -4463,7 +4735,7 @@
 (function () {
   const CHARSET    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
   const PLAIN      = 'I build systems that keep working when the world is messy.';
-  const FINAL_HTML = 'I <span class="px">bu</span>ild <span class="px">sy</span>st<span class="px">em</span>s th<span class="px">at</span> ke<span class="px">ep</span><br>wor<span class="px">ki</span>ng wh<span class="px">en</span> the wor<span class="px">ld</span> is me<span class="px">ss</span>y.';
+  const FINAL_HTML = 'I build systems that keep working when the world is messy.';  // no forced break, the pixel face wraps on its own
   const el = document.getElementById('northstarHeadline');
   if (!el) return;
   function randChar() { return CHARSET[Math.floor(Math.random() * CHARSET.length)]; }
@@ -4524,12 +4796,13 @@ const eul = (x,y,z)=>new THREE.Euler(
     /* screen textures the station configs reference. Same values as models.html. */
     const overlayURL       = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97632992_U3fuZSZpiaGu2ex.png';
     const laptopOverlayURL = 'https://f2.toyhou.se/file/f2-toyhou-se/images/97631117_ZOQUKU7XKU7Bj2z.png';
-    const auntieOverlayURL = '/auntiephone.png';
+    const auntieOverlayURL = '/auntiephone.webp';  // half res webp, it only ever renders a couple hundred px tall on the tile phone
 
     const stations = [
       {
         name:'Trove', category:'Product Design Engineering / AI',
-        tagline:'Turning behavioural data into a personality read people actually recognise',
+        tagline:'A personality read people actually recognise, built from what they do',
+        title:'Trove', year:'2026',
         stat:'0 \u2192 10,250 users, 61.9K views, five months',
         tags:['Design engineer','LLM runtime','Web + iOS'],
         href:'/trove/',
@@ -4546,7 +4819,8 @@ const eul = (x,y,z)=>new THREE.Euler(
       },
       {
         name:'Skrimp AI', category:'Product Design / AI',
-        tagline:'Planning a week of dinners around live prices and whatever\u2019s already in the fridge',
+        tagline:'A week of dinners planned around live prices and what\u2019s already in the fridge',
+        title:'Skrimp', year:'2025–',
         video:{ kind:'file', src:'/skrimp/media/skrimp-smartload-demo.mp4' },
         stat:'$5K/yr saved per family, free always',
         tags:['Solo founder','Live flyer data','Mobile + web'],
@@ -4583,7 +4857,8 @@ const eul = (x,y,z)=>new THREE.Euler(
       },
       {
         name:'Path to Menzoberranzan', category:'Technical Direction / Game',
-        tagline:'Running a volunteer studio on an undocumented engine',
+        tagline:'A 140 person volunteer studio, shipping on an engine with no docs',
+        title:'Path to Menzoberranzan', year:'2025–',
         video:{ kind:'yt', id:'1oBlmSvi1So' },
         stat:'140+ contributors, 1,700 Patrons, 0 docs',
         tags:['CTO','Build tooling','PC'],
@@ -4595,7 +4870,8 @@ const eul = (x,y,z)=>new THREE.Euler(
       },
       {
         name:'MyAuntie', category:'UX Design / AI',
-        tagline:'Postpartum support that arrives as a text, not another app to download',
+        tagline:'Postpartum support that arrives as a text, not another app',
+        title:'MyAuntie', year:'2025',
         video:{ kind:'yt', id:'kARMZuwfmMA', start:8 },
         stat:'TechNova 2025, concept to live in 36 hours',
         tags:['36-hour build','Telephony'],
@@ -4622,7 +4898,8 @@ const eul = (x,y,z)=>new THREE.Euler(
       },
       {
         name:'Equinox', category:'Game Design / Godot',
-        tagline:'Reading \u201cOvercomplicated Screen Transitions\u201d as a design constraint, not decoration',
+        tagline:'\u201cOvercomplicated screen transitions\u201d, played as a design constraint',
+        title:'Equinox', year:'2026',
         // straight into the game. The showcase opens on a title card and the
         // main menu, which is a jarring thing for a tile to loop on. The yt
         // player seeks here on load AND on every hand-rolled loop.
@@ -4633,6 +4910,19 @@ const eul = (x,y,z)=>new THREE.Euler(
         playHref:'https://emstergrace.itch.io/equinox',
         cover:'/equinox/equinox-banner.webp', noDrag:true,
         theme:{ accent:'200, 135, 74', accent2:'232, 192, 96', scene:'equinox' },
+      },
+      {
+        // no case study yet, so no href: the tile renders as a plain div that
+        // doesn't open anything and hovering just says coming soon
+        name:'Lost in Handoff', category:'UX Research / Healthcare',
+        tagline:'What responders learn at the scene, actually reaching the hospital',
+        title:'Lost in Handoff', year:'2026',
+        video:{ kind:'soon', label:'coming soon :)' },
+        stat:'GBDA 402 research proposal, in progress',
+        tags:['Capstone','UX research','Healthcare'],
+        href:null,
+        cover:'/lostinhandoff/cover.webp', noDrag:true,
+        theme:{ accent:'196, 40, 40', accent2:'240, 140, 60', scene:'handoff' },
       },
     ];
 // how far the camera sits back per tile, tuned so each model fills its art box
@@ -4646,15 +4936,20 @@ const LIFT = { 'Trove':-0.10, 'Skrimp AI':-0.10 };
 // which grid slot each station takes, keyed by name
 const SLOTS = {
   'Trove':'t-trove', 'Skrimp AI':'t-skrimp', 'Path to Menzoberranzan':'t-menzo',
-  'MyAuntie':'t-auntie', 'Equinox':'t-equinox',
+  'MyAuntie':'t-auntie', 'Equinox':'t-equinox', 'Lost in Handoff':'t-handoff',
 };
 
-/* ── one renderer for every tile ────────────────────────────────────────
-   Six WebGL contexts would blow the browser's cap and cost six draw loops.
-   Instead: one canvas pinned over the grid, and each frame we set the
-   scissor + viewport to a tile's rect and render that tile's own scene.
-   Tiles that scroll out of view are skipped entirely.                    */
-const canvas = document.getElementById('gl');
+/* one renderer for every tile
+   six webgl contexts would hit the browser's cap and mean six draw loops, so
+   one hidden renderer draws each tile's scene in turn and copies the frame
+   into a little 2d canvas that lives INSIDE that tile.
+   it used to be one big canvas pinned over the grid and cut to each tile's
+   box. fine on desktop since lenis scrolls in the same frame loop, but on a
+   phone touch scroll runs on its own thread, so the tiles moved a frame
+   before the canvas did and the models slid right out of their boxes. a
+   canvas inside the tile just scrolls with it, and the tile's
+   overflow:hidden does the clipping for free. offscreen tiles get skipped */
+const canvas = document.createElement('canvas');
 /* What the device can comfortably do. A phone at devicePixelRatio 3 was
    being asked for nine times the pixels of a 1x screen, with MSAA on top,
    across two full-size renderers — which is most of why the site crawled on
@@ -4722,7 +5017,7 @@ const views = [];
 
 
 
-function addOverlay(model, url, sizeXY, posXYZ){
+function addOverlay(model, url, sizeXY, posXYZ, onDone){
   texLoader.load(url, tex => {
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
@@ -4733,7 +5028,8 @@ function addOverlay(model, url, sizeXY, posXYZ){
       new THREE.MeshBasicMaterial({map:tex, transparent:true})
     );
     m.position.set(...posXYZ); m.renderOrder = 10; model.add(m);
-  });
+    onDone?.();
+  }, undefined, () => onDone?.());
 }
 
 /* A clip mapped onto the model's OWN screen mesh, rather than onto a plane
@@ -4943,21 +5239,25 @@ stations.forEach((cfg,i) => {
   const v = cfg.video || {};
   const videoHtml = !v.kind ? '' :
     v.kind === 'soon'
-      ? `<div class="tile-video tile-video--soon"><span>demo video coming soon</span></div>`
+      ? `<div class="tile-video tile-video--soon"><span>${v.label || 'demo video coming soon'}</span></div>`
       : `<div class="tile-video" data-kind="${v.kind}" data-src="${v.src || v.id}" data-start="${v.start || 0}"></div>`;
 
+  // no href (a coming soon tile) = plain divs, nothing to click through to
+  const tag = cfg.href ? 'a' : 'div';
+  const to  = cfg.href ? ` href="${cfg.href}"` : '';
   cell.innerHTML =
-    `<a class="tile" href="${cfg.href}">
+    `<${tag} class="tile${cfg.href ? '' : ' is-soon'}"${to}>
        <div class="tile-scrim"></div>
        ${mascotHtml}
        ${videoHtml}
-     </a>
-     <a class="tile-cap" href="${cfg.href}">
+       <div class="tile-sheen"></div>
+     </${tag}>
+     <${tag} class="tile-cap"${to}>
        <div class="tile-name">${cfg.tagline}</div>
        <p class="tile-stat">${cfg.stat}</p>
        <div class="tile-tags">${(cfg.award ? [`<span class="is-award">\u{1F3C6} ${cfg.award}</span>`] : [])
          .concat((cfg.tags || []).map(t => `<span>${t}</span>`)).join('')}</div>
-     </a>`;
+     </${tag}>`;
   grid.appendChild(cell);
 
   /* The idle hop, ported from the landing page's mascot-stage: ONE 0.64s
@@ -5223,9 +5523,45 @@ stations.forEach((cfg,i) => {
                 drag:null, dragQuat:new THREE.Quaternion(), fit:FIT[cfg.name] ?? 6};
   views.push(view);
 
+  /* tile reveal
+     a tile stays invisible until everything in it has actually arrived: its
+     models, their decal + screen textures, and the painted scene's art. then
+     it gets drawn once (even if it's off screen) and the whole cell fades in.
+     models popping into a box you're already looking at reads cheap.
+     every load takes a hold() and calls what it returns when done or failed,
+     and there's an 8s safety net so a dead request can't hide a tile forever */
+  view.pending = 0; view.ready = false; view.shown = false;
+  const settle = () => {
+    if (view.ready) return;
+    view.ready = true;
+    if (window.__gfx.still) requestAnimationFrame(renderFrame); else wake();
+  };
+  const hold = () => {
+    view.pending++;
+    let done = false;
+    return () => { if (done) return; done = true; if (--view.pending === 0) settle(); };
+  };
+  setTimeout(settle, 8000);
+  {
+    // the dom scene's own art (css backgrounds incl ::before/::after, imgs)
+    const artDone = hold();
+    requestAnimationFrame(() => {
+      const urls = new Set();
+      cell.querySelectorAll('.tile, .tile *').forEach(n => [null, '::before', '::after'].forEach(ps => {
+        const bg = getComputedStyle(n, ps).backgroundImage;
+        if (bg && bg !== 'none') for (const m of bg.matchAll(/url\("?(.*?)"?\)/g)) urls.add(m[1]);
+      }));
+      cell.querySelectorAll('.tile img').forEach(im => im.src && urls.add(im.src));
+      Promise.all([...urls].map(u => new Promise(res => {
+        const im = new Image(); im.onload = im.onerror = res; im.src = u;
+      }))).then(artDone);
+    });
+  }
+
   // flat textured planes beside the models: the Skrimp guys, Auntie herself
   function addDecals(){
     (cfg.decals || []).forEach(dc => {
+      const rel = hold();
       texLoader.load(dc.url, tex => {
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
@@ -5236,7 +5572,8 @@ stations.forEach((cfg,i) => {
         sprite.position.set(dc.pos[0], dc.pos[1], dc.pos[2]);
         if (dc.rotY) sprite.rotation.y = dc.rotY;
         sprite.renderOrder = 12; content.add(sprite);
-      });
+        rel();
+      }, undefined, rel);
     });
   }
 
@@ -5268,6 +5605,7 @@ stations.forEach((cfg,i) => {
   } else if (Array.isArray(cfg.models)) {
     addDecals();
     cfg.models.forEach((m,j) => {
+      const rel = hold();
       loader.load(m.url, gltf => {
         const mdl = gltf.scene;
         mdl.scale.setScalar(m.scale ?? 1);
@@ -5287,20 +5625,30 @@ stations.forEach((cfg,i) => {
                                             m.screen.aspect, cell.querySelector('.tf'),
                                             m.screen.fit, m.screen.crop, m.screen.punch);
           view.onScreenVideo?.();
+          // wait for the clip's first frame too, or the phone shows a blank
+          // screen that then pops. 4s cap since an off screen tile's clip
+          // doesn't get its src until it's visible
+          const vr = hold();
+          view.screenVideo.addEventListener('loadeddata', vr, { once: true });
+          view.screenVideo.addEventListener('error', vr, { once: true });
+          setTimeout(vr, 4000);
         } else if (m.screen) {
-          addOverlay(mdl, m.screen.url, m.screen.size, m.screen.pos);
+          addOverlay(mdl, m.screen.url, m.screen.size, m.screen.pos, hold());
         }
-      });
+        rel();
+      }, undefined, rel);
     });
   } else {
+    const rel = hold();
     loader.load(cfg.model, gltf => {
       const mdl = gltf.scene;
       mdl.scale.setScalar(cfg.scale);
       mdl.rotation.copy(eul(...cfg.baseEuler));
       content.add(mdl);
       addDecals();
-      if (cfg.screen) addOverlay(mdl, cfg.screen.url, cfg.screen.size, cfg.screen.pos);
-    });
+      if (cfg.screen) addOverlay(mdl, cfg.screen.url, cfg.screen.size, cfg.screen.pos, hold());
+      rel();
+    }, undefined, rel);
   }
 
   // ---- hover + drag-to-orbit, per tile ----
@@ -5405,51 +5753,15 @@ function frameContent(v){
   v.framed = true;
 }
 
-/* ── keep the canvas inside the boxes ──────────────────────────────────
-   A scissor rect is square, so on its own it leaks into each tile's rounded
-   corners and, while scrolling, into the gutters. Clipping the canvas to a
-   path made of the tiles' rounded rects is exact. Rebuilt only when the
-   geometry actually moves, not every frame. */
-let clipKey = '';
-function roundedRectPath(x,y,w,h,r){
-  r = Math.min(r, w/2, h/2);
-  return `M${x+r},${y}h${w-2*r}a${r},${r} 0 0 1 ${r},${r}`
-       + `v${h-2*r}a${r},${r} 0 0 1 ${-r},${r}`
-       + `h${-(w-2*r)}a${r},${r} 0 0 1 ${-r},${-r}`
-       + `v${-(h-2*r)}a${r},${r} 0 0 1 ${r},${-r}z`;
-}
-
-/* The award ribbon's strip across a tile's top-right corner, as a subpath to
-   subtract from the canvas clip (see updateClip). The band is DOM, inside the
-   cell so it scrolls with the page — but the shared canvas paints over every
-   tile, so the only way the ribbon survives is for the canvas not to be there.
-   Cutting just the strip (not the whole corner) keeps the tile's corner tip
-   visible above the band, which is what a real ribbon looks like.
-   Numbers mirror AWARD_D / AWARD_T in the CSS. */
-// Mirrors the .award CSS: Trove's CardBadge geometry times k.
-const AW_K = 1.45, AW_BOX = 96, AW_OFF = 4, AW_W = 150, AW_TOP = 22, AW_H = 22,
-      AW_RIGHT = 32, AW_BLEED = 2;
-
-/* Called once a frame. It used to take its own rect of the canvas and of
-   every tile, and ask getComputedStyle for each tile's border radius — a
-   style recalc per tile per frame, for a number that never changes. It now
-   reuses the rects the frame already read and caches the radius. */
-function updateClip(c){
-  const parts = [];
-  let keyBits = '';
-  if (!c) c = canvas.getBoundingClientRect();   // card origin
-  for (const v of views){
-    const r = v._r || (v._r = v.el.getBoundingClientRect());
-    if (r.width === 0) continue;
-    const x = r.left - c.left, y = r.top - c.top;
-    const rad = v._rad || (v._rad = parseFloat(getComputedStyle(v.el).borderRadius) || 18);
-    parts.push(roundedRectPath(x, y, r.width, r.height, rad));
-    keyBits += `${Math.round(x)},${Math.round(y)},${Math.round(r.width)},${Math.round(r.height)};`;
-  }
-  if (keyBits === clipKey) return;
-  clipKey = keyBits;
-  // evenodd so the award subpaths read as holes rather than additions
-  canvas.style.clipPath = `path(evenodd, '${parts.join('')}')`;
+/* makes (once) and hands back the tile's own 2d canvas. layer order inside
+   the tile: dom scene .tf z0, scrim z1, this z2, hover video z3 */
+function tileOut(v){
+  if (v.out) return v.out;
+  const cv = document.createElement('canvas');
+  cv.className = 'tile-gl';
+  cv.setAttribute('aria-hidden', 'true');
+  v.el.appendChild(cv);
+  return (v.out = { cv, ctx: cv.getContext('2d') });
 }
 
 // GLTF loads are async and a station can hold several, so re-measure for a
@@ -5466,17 +5778,19 @@ let pmx = 0, pmy = 0;
 addEventListener('pointermove', e => { pmx = e.clientX; pmy = e.clientY; });
 
 function resize(){
-  // the canvas is sized to the content card now, not the viewport.
+  // the hidden buffer only ever holds one tile at a time, so it just needs
+  // to fit the biggest one
   // height matters as much as width — checking only width left the drawing
   // buffer stale and the models squashed.
-  const w = canvas.clientWidth, h = canvas.clientHeight;
+  let w = 1, h = 1;
+  for (const v of views){ w = Math.max(w, v.el.clientWidth); h = Math.max(h, v.el.clientHeight); }
   const pr = renderer.getPixelRatio();
-  if (canvas.width !== Math.round(w * pr) || canvas.height !== Math.round(h * pr)) {
+  if (canvas.width < Math.round(w * pr) || canvas.height < Math.round(h * pr)
+   || canvas.width > Math.round(w * pr) * 1.5 || canvas.height > Math.round(h * pr) * 1.5) {
     renderer.setSize(w, h, false);
-    for (const v of views) v._rad = 0;   // radius is fluid; re-measure once
   }
 }
-addEventListener('resize', () => { resize(); clipKey = ''; }); resize();
+addEventListener('resize', resize); resize();
 
 // tile scenes are fogged to the page background, so retint on theme change
 function applyFogTheme(mode) {
@@ -5507,12 +5821,24 @@ let _raf = 0, _idle = false;
 function anyVisible(){
   // a pane covers the work grid entirely; drawing under it is wasted work
   if (document.documentElement.hasAttribute('data-pane-open')) return false;
-  const H = renderer.domElement.clientHeight;
+  const H = innerHeight;
   for (const v of views){
+    if (v.ready && !v.shown) return true;     // owes its first draw
     const r = v.el.getBoundingClientRect();
     if (r.width && r.bottom > -200 && r.top < H + 200) return true;
   }
   return false;
+}
+
+/* the cover waits on the tiles that are on screen when the page opens */
+let firstScreen = null;
+function reveal(v){
+  v.shown = true;
+  v.cell.classList.add('is-ready');
+  if (!firstScreen) return;
+  const done = firstScreen.filter(x => x.shown).length;
+  window.postMessage({ type: 'tileProgress', p: done / firstScreen.length }, '*');
+  if (done === firstScreen.length){ firstScreen = null; window.postMessage({ type: 'modelsReady' }, '*'); }
 }
 function wake(){
   /* no document.hidden guard: the browser already throttles rAF to nothing in
@@ -5539,12 +5865,9 @@ function renderFrame(){
     // nothing on screen: hand the frames back until something scrolls in.
     // (never from the reduced-motion path — that one must not start a loop)
     if (!_idle && !window.__gfx.still){
-      /* Wipe before sleeping. The canvas is pinned to the viewport now, so a
-         frame left on it does not scroll away with the tiles it belongs to —
-         it just sits there over the background until something wakes the
-         loop, which is why models appeared to detach and blink back. */
+      // each tile keeps its last frame and scrolls away with it, so
+      // there's nothing to wipe before sleeping
       _idle = true;
-      renderer.setScissorTest(false); renderer.clear(); renderer.setScissorTest(true);
       sleep();
       setTimeout(function poll(){
         if (_raf) return;
@@ -5556,28 +5879,22 @@ function renderFrame(){
   _idle = false;
   const dt = Math.min(clock.getDelta(), .05);
   const t = clock.getElapsedTime();
-  const H = renderer.domElement.clientHeight;
+  const H = innerHeight;
+  const pr = renderer.getPixelRatio();
+  const bufH = canvas.height;
 
-  /* One read pass. Nothing is written to the canvas before it, so this does
-     not force a layout the way the old write-then-read did. */
-  const cRect = canvas.getBoundingClientRect();
+  /* read every rect first before writing anything, so the browser only has
+     to do layout once instead of the old write then read thrash */
   for (const v of views) v._r = v.el.getBoundingClientRect();
-  updateClip(cRect);
-
-  /* Wipe the frame first. Each render only clears its own scissor box, and
-     now that the canvas is pinned to the viewport rather than scrolling with
-     the content, anything a tile painted last frame stays exactly where it
-     was — so a scroll smeared old models across the tiles below. */
-  renderer.setScissorTest(false);
-  renderer.clear();
-  renderer.setScissorTest(true);
 
   for (const v of views){
     const r = v._r;
+    if (!v.ready || r.width === 0) continue;   // still loading, nothing to show
+    const first = !v.shown;                    // drawn once even off screen
     // skip anything scrolled off screen: no scissor, no draw
-    if (r.bottom < 0 || r.top > H || r.width === 0) continue;
+    if (!first && (r.bottom < 0 || r.top > H)) continue;
     // a demo clip is covering this tile — don't draw the model under it
-    if (v.el.parentElement?.classList.contains('is-video')) continue;
+    if (v.el.parentElement?.classList.contains('is-video')) { if (first) reveal(v); continue; }
 
     // Soft drift: the model sways around front-on and eases back, so you
     // always see its face. A full turn spends half its time on the back.
@@ -5605,32 +5922,18 @@ function renderFrame(){
       });
     }
 
-    // the caption lives outside the box, so the model gets the whole tile.
-    // rects are viewport-relative; the canvas covers the card, so shift.
-    /* #contentCard carries a backdrop-filter, which makes it the containing
-       block for position:fixed descendants. The canvas is inside it, so
-       "fixed" pins it to the card's SCROLLED CONTENT rather than to its
-       visible box, and it slides away as you scroll: at scrollTop 520 its
-       top sat at -497 instead of 23. Everything below the first row then
-       fell outside the canvas and got clipped to a sliver, which is why the
-       Underdark and the nursery lost their models. Push it back by exactly
-       the scroll offset and the rect maths below is correct again. */
-    const artLeft = r.left - cRect.left, artW = r.width;
-    const artTop  = r.top  - cRect.top,  artH = r.height;
-    // clip the art box to the visible part of the scroller
-    const visTop = Math.max(0, artTop);
-    const visBot = Math.min(H, artTop + artH);
-    const visH   = visBot - visTop;
-    if (visH <= 0) continue;
-
-    if (v.cover) continue;          // flat image tile, nothing to draw here
+    if (v.cover) { if (first) reveal(v); continue; }   // flat image tile, nothing to draw here
+    // the caption lives outside the box, so the model gets the whole tile
+    const artW = r.width, artH = r.height;
     const aspect2 = artW / artH;
     v.camera.aspect = aspect2;
     // FIT/framing was tuned against a ~1.25 box. When the tile runs wider and
     // shorter than that, pull the camera back by the same factor so the model
     // scales down to fit instead of being cropped top and bottom.
     // parallax tiles are meant to fill their box, so they opt out
-    const boxShrink = v.layers ? 1 : Math.max(1, aspect2 / 1.25);
+    // and the same idea the other way for the squarer magazine tiles, or a
+    // tall phone fills the whole height edge to edge
+    const boxShrink = v.layers ? 1 : Math.max(1, aspect2 / 1.25, 1.3 / aspect2);
     if (v.framed){
       // distance that just fits the box on each axis; take the tighter one
       const vFov = THREE.MathUtils.degToRad(v.camera.fov);
@@ -5645,15 +5948,18 @@ function renderFrame(){
       v.camera.position.z = v.fit * (aspect2 < 1.1 ? 1.18 : 1) * (1 - v.hover * .05) * boxShrink;
     }
     v.camera.updateProjectionMatrix();
-    // keep the framing anchored to the full art box while only drawing the
-    // visible slice, so a half-scrolled tile doesn't squash its model
-    v.camera.setViewOffset(artW, artH, 0, visTop - artTop, artW, visH);
 
-    const bottom = H - visBot;
-    renderer.setViewport(artLeft, bottom, artW, visH);
-    renderer.setScissor (artLeft, bottom, artW, visH);
+    // draw the tile into the bottom left of the buffer then copy it over
+    // right away, same task, so we don't need preserveDrawingBuffer
+    renderer.setViewport(0, 0, artW, artH);
+    renderer.setScissor (0, 0, artW, artH);
     renderer.render(v.scene, v.camera);
-    v.camera.clearViewOffset();
+    const { cv, ctx } = tileOut(v);
+    const pw = Math.round(artW * pr), ph = Math.round(artH * pr);
+    if (cv.width !== pw || cv.height !== ph){ cv.width = pw; cv.height = ph; }
+    else ctx.clearRect(0, 0, pw, ph);
+    ctx.drawImage(canvas, 0, bufH - ph, pw, ph, 0, 0, pw, ph);
+    if (first) reveal(v);
   }
 }
 if (window.__gfx.still){
@@ -5672,9 +5978,27 @@ if (window.__gfx.still){
   addEventListener('scroll', wake, { passive: true });
 }
 
-// the loading overlay waits on this; posting to ourselves keeps its listener
-// unchanged now that there is no iframe to hear from
-window.postMessage({type:'modelsReady'},'*');
+/* masonry: on desktop each cell spans as many 8px grid rows as its actual
+   height, so the two columns pack independently. runs again whenever a
+   cell changes size (font load, resize, captions wrapping differently) */
+const packMQ = matchMedia('(min-width: 921px)');
+function packGrid(){
+  for (const c of grid.children){
+    if (!packMQ.matches){ c.style.gridRowEnd = ''; continue; }
+    c.style.gridRowEnd = 'span ' + Math.ceil(c.getBoundingClientRect().height / 8);
+  }
+}
+packGrid();
+const packRO = new ResizeObserver(() => requestAnimationFrame(packGrid));
+for (const c of grid.children) packRO.observe(c);
+packMQ.addEventListener('change', packGrid);
+
+// which tiles the cover has to wait for: whatever's on screen right now
+firstScreen = views.filter(v => {
+  const r = v.cell.getBoundingClientRect();
+  return r.width && r.top < innerHeight && r.bottom > 0;
+});
+if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'modelsReady' }, '*'); }
 
 </script>
     <div id="parisModal" class="modal" role="dialog" aria-modal="true">
@@ -5712,7 +6036,7 @@ const CASES = {
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
   // which on a page with no table of contents just reads as a missing nav.
-  about:      { name: 'About',                  href: '/about/case.html',      plainRail: true },
+  about:      { name: 'About Me',               href: '/about/case.html',      plainRail: true },
   playground: { name: 'Playground',             href: '/playground/case.html', plainRail: true },
   resume:     { name: 'Résumé',   href: '/resume/case.html',     plainRail: true },
 };
@@ -6036,6 +6360,29 @@ document.addEventListener('click', e => {
                 else      tagline.classList.remove('gg-active');
             }
 
+            /* hold the tallest phrase's height so nothing under it moves
+               while it types. the old fixed em guess was a line short for the
+               9am quote (4 lines in the rail) so the whole nav kept nudging.
+               measured in one go so the test text never actually paints */
+            function reserve() {
+                if (!tagline) return;
+                const keep = el.textContent, keepGG = tagline.classList.contains('gg-active');
+                tagline.style.minHeight = '0px';
+                let max = 0;
+                phrases.forEach(p => {
+                    setGGMode(p.gg); el.textContent = p.text;
+                    max = Math.max(max, tagline.offsetHeight);
+                });
+                el.textContent = keep; setGGMode(keepGG);
+                tagline.style.minHeight = max + 'px';
+            }
+            reserve();
+            document.fonts?.ready.then(reserve);
+            let rq = 0;
+            const queue = () => { cancelAnimationFrame(rq); rq = requestAnimationFrame(reserve); };
+            addEventListener('resize', queue);
+            addEventListener('railintromove', queue);
+
             function type(phrase, cb) {
                 let i = 0; el.textContent = '';
                 setGGMode(phrase.gg);
@@ -6058,6 +6405,111 @@ document.addEventListener('click', e => {
             }
             cycle();
         }
+
+/* on a phone the rail is a drawer, so the name + pitch were stuck behind the
+   menu button and the page opened on a random tile. under the rail
+   breakpoint the actual intro nodes move into the work header (moved not
+   copied, so the typewriter and the gilmore egg keep working) and they move
+   back when it's wide again */
+(function () {
+  const intro = document.querySelector('.sidebar .rail-intro');
+  const slot  = document.getElementById('workIntro');
+  if (!intro || !slot) return;
+  const home = document.createComment('rail-intro');
+  intro.before(home);
+  const mq = matchMedia('(max-width: 920px)');
+  function place() {
+    if (mq.matches) { if (intro.parentNode !== slot) slot.appendChild(intro); }
+    else if (home.nextSibling !== intro) home.after(intro);
+    dispatchEvent(new Event('railintromove'));
+  }
+  mq.addEventListener('change', place);
+  place();
+})();
+
+/* north star sky: hen falls through the section, driven by scroll so there's
+   never a loop to reset. t runs 0 to 1 from "section top just below the
+   screen" to "headline gone off the top". everything is derived from t
+   plus a slow sine bob, so scrolling back up plays it backwards */
+(function(){
+  const sky = document.querySelector('.ns-sky');
+  if (!sky) return;
+  const sec = sky.parentElement;
+  const hen = sky.querySelector('.ns-hen');
+  const far = sky.querySelector('.ns-cloud--far');
+  const near = sky.querySelector('.ns-cloud--near');
+  const frames = [...hen.querySelectorAll('img')];   // 1, smear, 1.5, smear, 2
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let pose = 0, flash = 0, seen = false, raf = 0;
+  const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const ease = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+
+  function poseFor(t){ return t < .4 ? 0 : t < .6 ? 2 : 4; }
+  function setPose(next){
+    if (next === pose) return;
+    // a quick smear on the way between two drawn poses
+    const smear = (pose + next) / 2 | 0;
+    const via = smear % 2 ? smear : (pose < next ? pose + 1 : pose - 1);
+    pose = next;
+    show(via);
+    clearTimeout(flash);
+    flash = setTimeout(() => show(pose), 55);
+  }
+
+  // her path lives inside her own window (the masked sky layer): she drops
+  // in from just above it, drifts down through the visible band while the
+  // headline passes over her, then drops out the bottom. t runs from the
+  // window's top reaching 85% down the screen to its bottom leaving 15%
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const easeOut = k => 1 - Math.pow(1 - k, 3), easeIn = k => k * k * k;
+  // the window ends exactly where the system matrix starts, so she can
+  // never drift over the table whatever the screen size
+  const matrix = sec.querySelector('.ns-matrix-wrap');
+  function fit(){
+    const h = matrix.getBoundingClientRect().top - sky.getBoundingClientRect().top - 8;
+    if (h > 200 && Math.abs(h - sky.clientHeight) > 2) sky.style.height = h + 'px';
+  }
+  function frame(now){
+    raf = seen && !still ? requestAnimationFrame(frame) : 0;
+    fit();
+    const vh = innerHeight, sh = sky.clientHeight, hh = hen.offsetHeight;
+    const r = sky.getBoundingClientRect();
+    const t = clamp((vh * .85 - r.top) / (vh * .7 + sh), 0, 1);
+    const top = sh * .08 + 8, bottom = sh * .9 - hh - 8;   // the clear band
+    let y;
+    if (t < .18)      y = lerp(-hh - 20, top, easeOut(t / .18));
+    else if (t < .82) y = lerp(top, bottom, (t - .18) / .64);
+    else              y = lerp(bottom, sh + 20, easeIn((t - .82) / .18));
+    const bob = still ? 0 : Math.sin(now / 1400) * 7;
+    const sway = still ? 0 : Math.sin(now / 2100) * 1.8;
+    hen.style.translate = (-t * 50).toFixed(1) + 'px ' + (y + bob).toFixed(1) + 'px';
+    hen.style.rotate = (-8 + t * 18 + sway).toFixed(2) + 'deg';
+    // clouds rise through the window past her, the near layer faster
+    far.style.translate = (-t * 40).toFixed(1) + 'px ' + lerp(sh * .7, sh * .02, t).toFixed(1) + 'px';
+    near.style.translate = (t * 60).toFixed(1) + 'px ' + lerp(sh * 1.05, -sh * .3, t).toFixed(1) + 'px';
+    setPose(poseFor(t));
+  }
+  new IntersectionObserver(es => {
+    seen = es[0].isIntersecting;
+    if (seen && !raf) raf = requestAnimationFrame(frame);
+  }, { rootMargin: '300px 0px' }).observe(sec);
+  if (still){
+    const once = () => requestAnimationFrame(frame);
+    (window.scroller || window).addEventListener('scroll', once, { passive: true });
+    addEventListener('scroll', once, { passive: true });
+  }
+  frame(performance.now());
+})();
+
+/* a live waterloo clock next to featured work. tiny detail, reads as care */
+(function(){
+  const el = document.getElementById('localTime');
+  if (!el) return;
+  const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', hour: 'numeric', minute: '2-digit' });
+  const tick = () => { el.textContent = fmt.format(new Date()).replace(/\./g, '').toLowerCase(); };
+  tick(); setInterval(tick, 20000);
+})();
 
 window.addEventListener('load', () => {
   startTypewriter();

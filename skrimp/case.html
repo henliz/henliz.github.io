@@ -14,7 +14,7 @@
   <title>Skrimp Case Study</title>
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital, wght@0, 400;0, 500;1, 400;1, 500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap" rel="stylesheet" />
 
   <style>
 /* Satoshi, self-hosted. Replaces Montserrat and Montserrat Alternates:
@@ -39,7 +39,7 @@
       font-weight: normal; font-style: normal;
     }
     .px { font-family: 'DotempDemo', monospace !important; font-style: normal !important; font-weight: 400; font-size: 0.9em; }
-    .di { font-family: 'Didot', 'Cormorant Garamond', serif !important; font-style: italic !important; font-weight: 700; }
+    .di { font-family:'DotempDemo', monospace !important; font-style:normal !important; font-weight:400 !important; }
 
     :root {
       --accent-rgb: 42,200,192;
@@ -169,10 +169,10 @@
 
     /* ---- HEADINGS ---- */
     .section-heading {
-      font-size: clamp(1.6rem,3.5vw,2.6rem); font-weight: 700;
+      font-size: clamp(1.6rem,3.5vw,2.6rem); 
       color: var(--text-secondary); line-height: 1.15; margin-bottom: 1.25rem;
-      font-family: 'Didot','Cormorant Garamond',serif !important;
-      font-style: italic !important; letter-spacing: .06em;
+      font-family:'DotempDemo', monospace !important; font-style:normal !important; font-weight:400 !important;
+      letter-spacing: .06em;
       opacity: 0;
     }
     .sub-heading {
@@ -222,7 +222,7 @@
       animation: gradientShift 5s ease infinite;
     }
     .intro-left .tagline {
-      font-family: 'Cormorant Garamond','Didot',serif;
+      font-family: 'Bodoni Moda', serif;
       font-style: italic; font-size: clamp(1.1rem,2.2vw,1.55rem);
       font-weight: 400; color: var(--text-secondary);
       margin-bottom: 1rem; line-height: 1.4; letter-spacing: .02em;
@@ -262,9 +262,9 @@
     }
     .outcome-item:last-child { border-right:0; }
     .outcome-num {
-      font-family: 'Didot','Cormorant Garamond',serif;
-      font-style: italic; font-size: clamp(1.5rem,2.8vw,2.2rem);
-      font-weight:700; color:var(--text-secondary); line-height:1; letter-spacing: .06em;
+      font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
+      font-size: clamp(1.5rem,2.8vw,2.2rem);
+      color:var(--text-secondary); line-height:1; letter-spacing: .06em;
     }
     .outcome-label { font-size:.8rem; color:var(--text-primary); opacity:.75; line-height:1.4; }
 
@@ -358,7 +358,7 @@
     /* ---- STATS GRID ---- */
     .stats-grid{ display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin:clamp(24px,3.2vh,36px) 0 clamp(14px,2vh,22px); align-items:flex-start; }
     .stats-card{ flex:1 1 220px; min-width:200px; max-width:251px; background:var(--inner-card); border:1px solid var(--glass-border); border-radius:16px; padding:1rem 1rem 1.05rem; box-shadow:0 6px 22px rgba(var(--sh-rgb), calc(.28 * var(--sh-k))); transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease; }
-    .stat-number { font-family:'Didot','Cormorant Garamond',serif; font-style:italic; font-size:clamp(2rem,3.5vw,2.8rem); font-weight:700; color:var(--text-secondary); line-height:1; margin-bottom:.5rem; letter-spacing:.04em; }
+    .stat-number { font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; font-size:clamp(2rem,3.5vw,2.8rem); color:var(--text-secondary); line-height:1; margin-bottom:.5rem; letter-spacing:.04em; }
     .stats-title { font-size:.85rem; font-weight:600; color:var(--text-secondary); margin-bottom:.4rem; line-height:1.3; }
     .stats-desc { font-size:.85rem; line-height:1.45; color:var(--text-primary); opacity:.8; }
 
@@ -411,7 +411,7 @@
     /* ---- BODY IMAGES ---- */
     .body-img { width:100%; border-radius:12px; box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.4 * var(--sh-k))); border:1px solid var(--glass-border); margin:1.5rem 0 .4rem; display:block; }
     .body-img-caption {
-      font-family: 'Cormorant Garamond', 'Didot', serif; font-style: italic;
+      font-family: 'Bodoni Moda', serif; font-style: italic;
       font-size: 0.78rem; letter-spacing: .03em; text-align: center;
       color: var(--text-secondary); opacity: .45; margin-bottom: 1.5rem;
       max-width: 100% !important; width: 100%; display: block;
@@ -1165,7 +1165,7 @@ figure{
       <section id="challenge">
         <div class="section-content reveal">
           <h2 class="section-heading">Food prices outran wages for four straight years. So the one thing Skrimp was never allowed to cost a family was time.</h2>
-          <p class="lede">Groceries are up <span class="px">26.8%</span> since 2020. Pay is not.</p>
+          <p class="lede">Groceries are up 26.8% since 2020. Pay is not.</p>
 
           <div class="chart-aside">
             <figure class="chart-figure">
@@ -1173,9 +1173,9 @@ figure{
               <figcaption>Food vs. wage inflation, June 2021 to 2024. Sources: Canada Food Price Report 2025, Statistics Canada 2021 to 2024, WSJ March 2024.</figcaption>
             </figure>
 
-            <p>I pulled Statistics Canada's food and wage series for June 2021 to 2024 and plotted them against each other, because I wanted to know whether this was a spending problem or an arithmetic one. Food inflation ran at <span class="px">6.6%</span>. Wage inflation ran at <span class="px">3.7%</span>. The lines separate in early 2022 and never come back together.</p>
+            <p>I pulled Statistics Canada's food and wage series for June 2021 to 2024 and plotted them against each other, because I wanted to know whether this was a spending problem or an arithmetic one. Food inflation ran at 6.6%. Wage inflation ran at 3.7%. The lines separate in early 2022 and never come back together.</p>
 
-            <p>That gap is not abstract inflation. It is the item you put back. The recipe you stopped making. The Sunday session that used to feel like cooking and now feels like damage control. Younger households, already carrying <span class="px">30%</span> less generational wealth than boomers were at the same age, absorb it worst.</p>
+            <p>That gap is not abstract inflation. It is the item you put back. The recipe you stopped making. The Sunday session that used to feel like cooking and now feels like damage control. Younger households, already carrying 30% less generational wealth than boomers were at the same age, absorb it worst.</p>
           </div>
 
           <p>Nobody can really control their rent, their utilities or their car insurance. Groceries were the one line families told me felt like something they could actually tackle, which is exactly why they were already working so hard at it. Every household I spoke to was running a manual savings algorithm in their head, every week, unasked. That is not a motivation problem. It is a tooling problem.</p>
@@ -1451,7 +1451,7 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">What this taught me that a classroom couldn't.</h2>
           <blockquote class="pull-quote reveal">
-            "Families testing the app have reported cutting their grocery bills by as much as <span class="px">$100/week</span>, close to <span class="px">$5, 000/yr</span>."
+            "Families testing the app have reported cutting their grocery bills by as much as $100/week, close to $5, 000/yr."
             <cite>Waterloo Region Record, 2025</cite>
           </blockquote>
           <div class="cards reveal">
@@ -1649,7 +1649,6 @@ figure{
     // --- heading scramble + font-mix (same system as Menzo) ---
     (function(){
       const CHARSET='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
-      const RUNS=[3,2];
       function rand(){return CHARSET[Math.floor(Math.random()*CHARSET.length)];}
 
       function scramble(el,text,dur,onDone){
@@ -1672,17 +1671,14 @@ figure{
         })(performance.now());
       }
 
-      function fontMix(el,text){
-        let html='',runIdx=0,runCount=0,usePx=true;
-        for(let i=0;i<text.length;i++){
-          const cp=text.codePointAt(i);
-          if(cp>127){html+=String.fromCodePoint(cp);if(cp>0xFFFF)i++;continue;}
-          const c=text[i];
-          if(c===' '){html+=' ';continue;}
-          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
-          if(++runCount>=RUNS[runIdx%2]){usePx=!usePx;runIdx++;runCount=0;}
-        }
-        el.innerHTML=html;
+      function fontMix(el, text){
+        // titles used to alternate pixel + didot letters (the blend). now the
+        // whole title is one clean pixel run, .di is the pixel font. a span so
+        // a heading's own font rule can't win over it
+        const s = document.createElement('span');
+        s.className = 'di';
+        s.textContent = text;
+        el.replaceChildren(s);
       }
 
       // separate observer for all headings — they manage their own opacity

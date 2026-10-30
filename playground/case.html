@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Playground – Henriëtta van Niekerk</title>
     <link rel="icon" type="image/png" href="/HenLogo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap" rel="stylesheet">
     <script>
       // follows the toggle on the main page (same origin, so same storage)
       (function () {
@@ -45,7 +45,7 @@
        characters at a time, the same way the case studies do, which is
        the house treatment and was missing here entirely. */
     .px { font-family: 'DotempDemo', monospace; font-style: normal; font-weight: 400; font-size: 0.88em; }
-    .di { font-family: 'Didot', 'Cormorant Garamond', serif; font-style: italic; font-weight: 700; }
+    .di { font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; }
 
     /* ── the desk ─────────────────────────────────────────────────
        This is Henrietta's own page, so it keeps the site's blue-teal
@@ -361,8 +361,8 @@
     }
     .brief b {
       display: block;
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 600;
+      font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
+      
       font-size: 1.42rem;
       letter-spacing: 0.01em;
       color: var(--ink);
@@ -560,7 +560,7 @@
 
 <div class="chrome" id="chrome">
   <span id="hint">scroll to move around, or drag</span>
-  <button type="button" id="recentre">re<span class="px">ce</span>ntre</button>
+  <button type="button" id="recentre">recentre</button>
 </div>
 
 <div class="mapwrap">
@@ -950,24 +950,13 @@ function build(it, i) {
 
 ITEMS.forEach(build);
 
-/* ── the pixel blend ───────────────────────────────────────────
-   The house title treatment: runs of three characters in the pixel face,
-   then two in the italic, alternating. Same RUNS as the case studies, so
-   a title here reads as the same voice as a title there. Non-ASCII is
-   left alone; the pixel face has no glyph for it. */
-const RUNS = [3, 2];
+/* titles are one clean pixel run (the .di class), same as the case
+   studies. used to be the 3 pixel / 2 italic letter blend */
 function fontMix(el) {
-  const text = el.textContent;
-  let html = '', runIdx = 0, runCount = 0, usePx = true;
-  for (let i = 0; i < text.length; i++) {
-    const cp = text.codePointAt(i);
-    if (cp > 127) { html += String.fromCodePoint(cp); if (cp > 0xFFFF) i++; continue; }
-    const c = text[i];
-    if (c === ' ') { html += ' '; continue; }
-    html += `<span class="${usePx ? 'px' : 'di'}">${esc(c)}</span>`;
-    if (++runCount >= RUNS[runIdx % 2]) { usePx = !usePx; runIdx++; runCount = 0; }
-  }
-  el.innerHTML = html;
+  const s = document.createElement('span');
+  s.className = 'di';
+  s.textContent = el.textContent;
+  el.replaceChildren(s);
 }
 document.querySelectorAll('.note h1, .cap h2').forEach(fontMix);
 
