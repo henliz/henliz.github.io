@@ -936,7 +936,7 @@
     /* her, bobbing in the middle. frames are swapped by the script */
     .intro-fall {
       position: absolute; left: 50%; top: 44%; z-index: 2;
-      width: clamp(150px, 19vw, 250px); aspect-ratio: 657 / 560;
+      width: clamp(240px, 32vw, 470px); aspect-ratio: 657 / 560;
       translate: -50% -50%;
       animation: introDrop .9s cubic-bezier(.22,1,.36,1) both, introBob 2.4s ease-in-out .9s infinite alternate;
       filter: drop-shadow(0 18px 28px rgba(40, 90, 130, .2));
@@ -4511,16 +4511,27 @@ body::after{
         const frames  = [...fall.querySelectorAll('img')];
         const calm    = matchMedia('(prefers-reduced-motion: reduce)').matches;
         const MIN_MS  = calm ? 0 : 1600;        // always long enough to see her fall
-        let ready = false, minDone = false, open = true, kickT = 0;
+        let ready = false, minDone = false, open = true;
 
-        // her kick on a loop while she's falling: 1, smear, 1.5, smear, 2, back
-        const KICK = [[1, 45], [2, 70], [3, 45], [4, 600], [3, 45], [2, 70], [1, 45], [0, 900]];
+        // her kick on a loop while she's falling: hold pose 1, then 1, smear,
+        // 1.5, smear, 2 (held), and back. it only starts once all five frames
+        // are decoded (swapping to a frame that hadn't loaded showed nothing,
+        // which is what made it look broken), and every timer is tracked so
+        // a replay can't start a second kick on top of the first
+        const KICK = [[0, 700], [1, 45], [2, 70], [3, 45], [4, 600], [3, 45], [2, 70], [1, 45]];
         const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
+        const decoded = Promise.all(frames.map(f => f.decode ? f.decode().catch(() => {}) : null));
+        let timers = [];
+        function stopKick() { timers.forEach(clearTimeout); timers = []; show(0); }
         function kick() {
+          stopKick();
           if (calm) return;
-          let at = 0;
-          KICK.forEach(([f, ms]) => { kickT = setTimeout(() => open && show(f), at); at += ms; });
-          kickT = setTimeout(() => open && kick(), at);
+          decoded.then(() => {
+            if (!open) return;
+            let at = 0;
+            KICK.forEach(([f, ms]) => { timers.push(setTimeout(() => open && show(f), at)); at += ms; });
+            timers.push(setTimeout(() => open && kick(), at));
+          });
         }
 
         function part() {
@@ -4530,7 +4541,7 @@ body::after{
           setTimeout(() => {
             overlay.classList.add('hidden');
             overlay.setAttribute('aria-hidden', 'true');
-            open = false; clearTimeout(kickT); show(0);
+            open = false; stopKick();
           }, 900);
         }
         function maybePart() { if (ready && minDone) part(); }
@@ -4542,9 +4553,21 @@ body::after{
           if (d.type === 'tileProgress') bar.style.transform = 'scaleX(' + Math.max(.08, d.p) + ')';
           if (d.type === 'modelsReady') { ready = true; maybePart(); }
         });
-        setTimeout(() => { minDone = true; maybePart(); }, MIN_MS);
-        setTimeout(() => { ready = true; minDone = true; maybePart(); }, 8000);   // safety net
-        kick();
+        // only the homepage gets the intro. a direct link (/trove/ etc)
+        // goes straight in
+        const home = /^\/(index\.html)?$/.test(location.pathname);
+        if (!home) {
+          // no fade either, or you'd see a flash of sky on the way in
+          open = false;
+          overlay.style.transition = 'none';
+          overlay.classList.add('parting', 'hidden');
+          overlay.setAttribute('aria-hidden', 'true');
+          requestAnimationFrame(() => requestAnimationFrame(() => overlay.style.transition = ''));
+        } else {
+          setTimeout(() => { minDone = true; maybePart(); }, MIN_MS);
+          setTimeout(() => { ready = true; minDone = true; maybePart(); }, 8000);   // safety net
+          kick();
+        }
 
         // scroll up past the top: the clouds close back in, she falls
         // through again, then they part. rate limited
@@ -4552,6 +4575,7 @@ body::after{
         function replay() {
           const now = performance.now();
           if (open || now - lastPlay < 3500 || calm) return;
+          if (document.documentElement.hasAttribute('data-pane-open')) return;   // not over a case study
           lastPlay = now; open = true; pull = 0;
           overlay.removeAttribute('aria-hidden');
           overlay.classList.add('snap');
