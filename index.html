@@ -3239,6 +3239,59 @@
 .btn-cta-primary:active, .btn-cta-northstar:active, .theme-toggle:active,
 .social-btn:active, .rail-back:active { scale: .97; }
 .cell:active .tile { scale: .985; }
+
+/* materials
+   why it felt flat: the glass card was pale blue on a pale blue sky with no
+   shadow and a DARK hairline edge, so it read as a tinted rectangle, and the
+   tiles had one big black blur and an invisible edge. real glass catches
+   light on its edges and sits above what's behind it. so:
+   - panels: bright specular top edge + light hairline, layered soft shadow
+   - tiles: a gloss that fades down from the top edge, a light rim, and a
+     stacked shadow (tight contact + soft ambient) instead of one black blob
+   - grain: a barely there noise over everything so gradients read as a
+     material instead of plastic */
+.sidebar, .content-card{
+  border-color:rgba(255,255,255,.62) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -1px 0 rgba(18,24,31,.05),
+    0 1px 2px rgba(20,40,60,.06),
+    0 10px 24px -8px rgba(20,40,60,.14),
+    0 32px 70px -20px rgba(20,40,60,.26) !important;
+}
+:root[data-theme="dark"] .sidebar, :root[data-theme="dark"] .content-card{
+  border-color:rgba(255,255,255,.09) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 1px 2px rgba(0,0,0,.3),
+    0 32px 70px -20px rgba(0,0,0,.6) !important;
+}
+.tile{
+  box-shadow:
+    0 1px 1px rgba(20,40,60,.10),
+    0 3px 6px -1px rgba(20,40,60,.10),
+    0 14px 32px -10px rgba(20,40,60,.30) !important;
+}
+.cell:hover .tile{
+  box-shadow:
+    0 1px 1px rgba(20,40,60,.08),
+    0 6px 12px -2px rgba(20,40,60,.10),
+    0 28px 56px -14px rgba(20,40,60,.34) !important;
+}
+.tile-sheen{
+  position:absolute; inset:0; z-index:4; pointer-events:none; border-radius:inherit;
+  background:linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.04) 22%, rgba(255,255,255,0) 45%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.42), inset 0 0 0 1px rgba(255,255,255,.12);
+  opacity:.85; transition:opacity .25s ease;
+}
+.cell:hover .tile-sheen{ opacity:1; }
+body::after{
+  content:''; position:fixed; inset:0; z-index:9000; pointer-events:none;
+  opacity:.045; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px 160px;
+}
+:root[data-theme="dark"] body::after{ mix-blend-mode:screen; opacity:.035; }
 </style>
 </head>
 <body>
@@ -4802,6 +4855,7 @@ stations.forEach((cfg,i) => {
        <div class="tile-scrim"></div>
        ${mascotHtml}
        ${videoHtml}
+       <div class="tile-sheen"></div>
      </${tag}>
      <${tag} class="tile-cap"${to}>
        <div class="tile-name">${cfg.tagline}</div>
