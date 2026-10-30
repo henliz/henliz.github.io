@@ -26,7 +26,7 @@ Re-run after any change to index.html or a case file:  python3 build-routes.py
 import pathlib, re, html as _html
 
 ROOT = pathlib.Path(__file__).parent
-SHELL = (ROOT / 'index.html').read_text()
+SHELL = (ROOT / 'index.html').read_text(encoding='utf-8')
 
 ROUTES = {
  'trove':   ("Trove — Henriëtta van Niekerk",
@@ -39,7 +39,7 @@ ROUTES = {
    "Postpartum support that arrives as a text, not another app to download. TechNova 2025 winner: concept to live telephony in 36 hours."),
  'equinox': ("Equinox — Henriëtta van Niekerk",
    "Reading Overcomplicated Screen Transitions as a design constraint, not decoration. First of 88 at Comfy Jam Winter 2026."),
- 'about':   ("About — Henriëtta van Niekerk",
+ 'about':   ("About Me — Henriëtta van Niekerk",
    "Henriëtta van Niekerk is a design engineer and founder in Waterloo, Ontario, building systems that carry the load instead of the person."),
  'playground':("Playground — Henriëtta van Niekerk",
    "Experiments, sketches and the offcuts that never became a case study."),
@@ -86,7 +86,7 @@ def readable(slug: str) -> str:
     f = ROOT / slug / 'case.html'
     if not f.exists():
         return ''
-    src = f.read_text()
+    src = f.read_text(encoding='utf-8')
     src = src[src.index('<body'):] if '<body' in src else src
     src = re.sub(r'<(script|style)[\s\S]*?</\1>', ' ', src)
     out, seen = [], set()
@@ -118,6 +118,7 @@ for slug, (title, desc) in ROUTES.items():
     out = inject_readable(out, slug)
     d = ROOT / slug
     d.mkdir(exist_ok=True)
-    (d / 'index.html').write_text(out)
+    # explicit, so a run on Windows doesn't rewrite every line as CRLF
+    (d / 'index.html').write_text(out, encoding='utf-8', newline='\n')
     written.append(slug)
 print('route pages generated from the shell:', ', '.join(written))
