@@ -13,7 +13,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Equinox – Case Study</title>
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap" rel="stylesheet" />
   <style>
 /* Satoshi, self-hosted. Replaces Montserrat and Montserrat Alternates:
    squared bowls and tight apertures agree with DotempDemo's staircase where
@@ -37,7 +37,7 @@
       font-weight: normal; font-style: normal;
     }
     .px { font-family: 'DotempDemo', monospace !important; font-style: normal !important; font-weight: 400; font-size: 0.9em; }
-    .di { font-family: 'Didot', 'Cormorant Garamond', serif !important; font-style: italic !important; font-weight: 700; }
+    .di { font-family:'DotempDemo', monospace !important; font-style:normal !important; font-weight:400 !important; }
 
     :root {
       --accent-rgb: 184,84,75;
@@ -137,10 +137,10 @@
 
     /* ---- HEADINGS ---- */
     .section-heading {
-      font-size: clamp(1.6rem,3.5vw,2.6rem); font-weight: 700;
+      font-size: clamp(1.6rem,3.5vw,2.6rem); 
       color: var(--text-secondary); line-height: 1.15; margin-bottom: 1.25rem;
-      font-family: 'Didot','Cormorant Garamond',serif !important;
-      font-style: italic !important; letter-spacing: .06em;
+      font-family:'DotempDemo', monospace !important; font-style:normal !important; font-weight:400 !important;
+      letter-spacing: .06em;
       opacity: 0;
     }
     .sub-heading {
@@ -239,9 +239,9 @@
     .outcome-item { padding:1.5rem 1.25rem; border-right:1px solid var(--rule); display:flex; flex-direction:column; gap:.3rem; }
     .outcome-item:last-child { border-right:0; }
     .outcome-num {
-      font-family:'Didot','Cormorant Garamond',serif;
-      font-style:italic; font-size:clamp(1.5rem,2.8vw,2.2rem);
-      font-weight:700; color:var(--text-secondary); line-height:1;
+      font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
+      font-size:clamp(1.5rem,2.8vw,2.2rem);
+      color:var(--text-secondary); line-height:1;
       margin-bottom:.5rem; letter-spacing:.04em;
     }
     .outcome-label { font-size:.8rem; line-height:1.4; opacity:.75; }
@@ -311,7 +311,7 @@
     .pull-quote {
       border-left:3px solid rgba(var(--accent-rgb),.5);
       padding:1rem 1.5rem; margin:1.5rem 0;
-      font-family:'Didot','Cormorant Garamond',serif;
+      font-family:'Bodoni Moda', serif;
       font-style:italic; font-size:clamp(1.05rem,1.8vw,1.3rem);
       line-height:1.6; color:var(--text-secondary);
       background:rgba(var(--accent-rgb),.05); border-radius:0 12px 12px 0;
@@ -401,7 +401,7 @@
     .stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; margin-bottom:2rem; }
     .stats-card { padding:1.5rem 1.1rem; border-top:2px solid var(--accent); opacity:0; transform:translateY(20px); transition:all .5s ease; }
     .stats-card.active { opacity:1 !important; transform:translateY(0) !important; }
-    .stat-number { font-family:'Didot','Cormorant Garamond',serif; font-style:italic; font-size:clamp(2rem,3.5vw,2.8rem); font-weight:700; color:var(--text-secondary); line-height:1; margin-bottom:.5rem; letter-spacing:.04em; }
+    .stat-number { font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; font-size:clamp(2rem,3.5vw,2.8rem); color:var(--text-secondary); line-height:1; margin-bottom:.5rem; letter-spacing:.04em; }
     .stats-title { font-size:.85rem; font-weight:600; color:var(--text-secondary); margin-bottom:.4rem; line-height:1.3; }
     .stats-desc { font-size:.85rem; line-height:1.45; color:var(--text-primary); opacity:.8; }
 
@@ -506,8 +506,8 @@
     }
     .board tbody tr:last-child td{ border-bottom:0 }
     .board td.rank{
-      font-family:'Didot','Cormorant Garamond',serif; font-style:italic;
-      font-weight:700; font-size:1.15rem; color:var(--text-secondary); width:5.5rem;
+      font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; 
+      font-size:1.15rem; color:var(--text-secondary); width:5.5rem;
     }
     .board tr.gold td{ background:rgba(var(--accent-rgb),.14) }
     .board tr.gold td.rank{ color:var(--accent-bright) }
@@ -985,7 +985,7 @@ figure{
 
           <p>Four floors. Nine artefacts. No fail states, no timer, no combat, nothing at all to lose. You clean centuries of neglect off things, put fractured things back together, and read the wizard&rsquo;s notes as the journal hands them to you, until it becomes clear what he did. At the top there is a beacon with three concentric rings and nine seasonal inscriptions, and it is not going to hint at the answer.</p>
 
-          <p>Fourteen people built it in eighteen days. Four of us wrote code, and <span class="px">281</span> commits later it was on itch.</p>
+          <p>Fourteen people built it in eighteen days. Four of us wrote code, and 281 commits later it was on itch.</p>
 
         </div>
       </section>
@@ -1017,7 +1017,7 @@ figure{
 
           <p>The jam carried one required limitation: every scene, level or room change had to be an elaborate transition. Most teams read that as a visual dare, so make a nicer wipe. We read it as a brief about pacing. In a game with no fail states and no timer, transitions are the only punctuation you have. They are the difference between four rooms and four chapters.</p>
 
-          <p>I built the floor transitions. They live in <span class="px">portal.gd</span> and the transition canvas.</p>
+          <p>I built the floor transitions. They live in portal.gd and the transition canvas.</p>
 
 
           <div class="steps reveal">
@@ -1071,7 +1071,7 @@ figure{
 
           <h3 class="sub-heading">First you put it back together</h3>
 
-          <p>A bust of the wizard is in pieces on the workbench. The repair minigame floats the fragments in front of you and you drag each one home. No timer, no failure, and <span class="px">R</span> puts every piece back where it started, because a cozy game cannot afford a move you regret.</p>
+          <p>A bust of the wizard is in pieces on the workbench. The repair minigame floats the fragments in front of you and you drag each one home. No timer, no failure, and R puts every piece back where it started, because a cozy game cannot afford a move you regret.</p>
 
           <div class="video-embed reveal">
             <video data-src="vid/repair.mp4" poster="vid/repair.jpg"
@@ -1082,7 +1082,7 @@ figure{
 
           <h3 class="sub-heading">Then you get the dirt off it</h3>
 
-          <p>Cleaning is the interaction the whole game rests on. A shader keeps a mask over the artefact, your cursor is a soft brush that lifts dirt with falloff so it feels organic rather than geometric, and the system rasterizes the mesh UVs first so progress only counts over geometry you can actually see. At <span class="px">95%</span> it calls it done, and that last five percent is deliberate: nobody should have to hunt a single stubborn pixel behind an ear.</p>
+          <p>Cleaning is the interaction the whole game rests on. A shader keeps a mask over the artefact, your cursor is a soft brush that lifts dirt with falloff so it feels organic rather than geometric, and the system rasterizes the mesh UVs first so progress only counts over geometry you can actually see. At 95% it calls it done, and that last five percent is deliberate: nobody should have to hunt a single stubborn pixel behind an ear.</p>
 
           <div class="video-embed reveal">
             <video data-src="vid/clean.mp4" poster="vid/clean.jpg"
@@ -1157,7 +1157,7 @@ figure{
       <section id="dayone">
         <div class="section-content reveal">
           <h2 class="section-heading">Before any art arrived, I wrote the file that stopped fourteen people corrupting each other&rsquo;s work.</h2>
-          <p class="lede">Godot, 3D models, textures, audio, and a repo on its way to 190 MB. On day one, a <span class="px">.gitattributes</span>.</p>
+          <p class="lede">Godot, 3D models, textures, audio, and a repo on its way to 190 MB. On day one, a .gitattributes.</p>
 
           <p>Binary files do not merge. Two people touching the same model or the same scene file produce a conflict git cannot resolve, and on a jam clock that costs an afternoon nobody has to spare. Git LFS fixes it by keeping the large files outside the repository proper, but only if the tracking rules exist before the assets land.</p>
 
@@ -1178,7 +1178,7 @@ figure{
           </div>
           <p class="cap">Committed 10 January, the first day of the jam, before a single asset existed.</p>
 
-          <p>The last block is the part people miss. Most gamedev templates cover models, images and audio. Godot has its own binary formats on top of those, and <span class="px">.scn</span>, <span class="px">.res</span>, <span class="px">.material</span>, <span class="px">.anim</span>, <span class="px">.mesh</span> and <span class="px">.lmbake</span> will bloat a repository and conflict just as badly if nobody tracks them. It is the least glamorous thing on this page and it is the one I would do again first.</p>
+          <p>The last block is the part people miss. Most gamedev templates cover models, images and audio. Godot has its own binary formats on top of those, and .scn, .res, .material, .anim, .mesh and .lmbake will bloat a repository and conflict just as badly if nobody tracks them. It is the least glamorous thing on this page and it is the one I would do again first.</p>
 
           <div class="highlight-box reveal">
             <strong>The same file, from the other end</strong>
@@ -1251,7 +1251,6 @@ figure{
     // --- heading scramble + font-mix ---
     (function(){
       const CHARSET='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
-      const RUNS=[3,2];
       function rand(){return CHARSET[Math.floor(Math.random()*CHARSET.length)];}
 
       function scramble(el,text,dur,onDone){
@@ -1274,17 +1273,10 @@ figure{
         })(performance.now());
       }
 
-      function fontMix(el,text){
-        let html='',runIdx=0,runCount=0,usePx=true;
-        for(let i=0;i<text.length;i++){
-          const cp=text.codePointAt(i);
-          if(cp>127){html+=String.fromCodePoint(cp);if(cp>0xFFFF)i++;continue;}
-          const c=text[i];
-          if(c===' '){html+=' ';continue;}
-          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
-          if(++runCount>=RUNS[runIdx%2]){usePx=!usePx;runIdx++;runCount=0;}
-        }
-        el.innerHTML=html;
+      function fontMix(el, text){
+        // used to alternate pixel and didot letters, now the heading is just
+        // the pixel font (the css does that), no blend
+        el.textContent = text;
       }
 
       const hio=new IntersectionObserver((entries,obs)=>{

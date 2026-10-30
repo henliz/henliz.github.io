@@ -15,7 +15,7 @@
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap" rel="stylesheet" />
 
   <style>
 /* Satoshi, self-hosted. Replaces Montserrat and Montserrat Alternates:
@@ -43,7 +43,7 @@
 
     /* Font-mix classes — matches main portfolio */
     .px { font-family: 'DotempDemo', monospace; font-style: normal; font-weight: 400; font-size: 0.9em; }
-    .di { font-family: 'Didot', 'Cormorant Garamond', serif; font-style: italic; font-weight: 700; }
+    .di { font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; }
 
     :root{
       --accent-rgb: 196,96,122;
@@ -138,12 +138,12 @@
     /* Editorial section heading — base font is overridden per-char after scramble */
     .section-heading{
       font-size: clamp(1.6rem,3.5vw,2.6rem);
-      font-weight:700;
+      
       color:var(--text-secondary);
       line-height:1.15;
       margin-bottom:1.25rem;
-      font-family: 'Didot', 'Cormorant Garamond', serif;
-      font-style: italic;
+      font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
+      
       letter-spacing: 0.06em;
     }
     /* During scramble: monospace pixel font + CA pulse */
@@ -239,7 +239,7 @@
       animation:gradientShift 4s ease infinite;
     }
     .intro-left .tagline{
-      font-family: 'Cormorant Garamond', 'Didot', serif;
+      font-family: 'Bodoni Moda', serif;
       font-style: italic;
       font-size: clamp(1.15rem, 2.2vw, 1.65rem);
       font-weight:400;
@@ -301,10 +301,10 @@
     }
     .outcome-item:last-child{border-right:0}
     .outcome-num{
-      font-family: 'Didot', 'Cormorant Garamond', serif;
-      font-style: italic;
+      font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
+      
       font-size: clamp(1.6rem, 3vw, 2.4rem);
-      font-weight:700;
+      
       color:var(--text-secondary);
       line-height:1;
       letter-spacing: 0.06em;
@@ -1214,7 +1214,7 @@ figure{
             <figcaption>Text in or call in, one classifier, three possible ends, and a follow up text whichever way it goes.</figcaption>
           </figure>
           <p>From there it is deterministic code. Topic plus region goes to Snowflake and comes back with two or three vetted resources you can actually phone. The evidence is short pre written cards drawn from the WHO, the CDC, the American College of Obstetricians and Gynecologists and Postpartum Support International, fed in rather than recalled. Auntie never freestyles medical advice because she structurally cannot.</p>
-          <div class="highlight-box"><strong>Contracts are what let four people ship like one mind</strong>The classifier service returns <span class="px">{ intent, topic, region, reply_text, red_flags }</span>. The phone and text service asks the resource database for the local lines and the profile store for the small bit of context. Nobody had to read anybody else&rsquo;s code, and nothing had to be rewritten at hour thirty.</div>
+          <div class="highlight-box"><strong>Contracts are what let four people ship like one mind</strong>The classifier service returns { intent, topic, region, reply_text, red_flags }. The phone and text service asks the resource database for the local lines and the profile store for the small bit of context. Nobody had to read anybody else&rsquo;s code, and nothing had to be rewritten at hour thirty.</div>
           <figure class="mini-images reveal">
             <img src="auntiestack.png" alt="Architecture: Twilio telephony, Gemini intent and safety, Snowflake resources, MongoDB Atlas session context, orchestrated in TypeScript" loading="lazy">
           </figure>
@@ -1374,10 +1374,9 @@ figure{
     })();
 
 
-    // Section heading: scramble-in + font mixing (DotempDemo ×3 / Didot ×2)
+    // Section heading: scramble-in, then it settles as plain pixel text
     (function(){
       const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
-      const RUNS    = [3, 2];
       function rand(){ return CHARSET[Math.floor(Math.random()*CHARSET.length)]; }
 
       function scramble(el, text, dur, onDone){
@@ -1401,22 +1400,9 @@ figure{
       }
 
       function fontMix(el, text){
-        let html='', runIdx=0, runCount=0, usePx=true;
-        for(let i=0;i<text.length;i++){
-          const cp = text.codePointAt(i);
-          // skip emoji / non-ASCII — use String.fromCodePoint so surrogate pairs
-          // are emitted as one complete character, not just the high surrogate
-          if(cp > 127){
-            html += String.fromCodePoint(cp);
-            if(cp > 0xFFFF) i++; // advance past the low surrogate
-            continue;
-          }
-          const c = text[i];
-          if(c===' '){ html+=' '; continue; }
-          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
-          if(++runCount>=RUNS[runIdx%2]){ usePx=!usePx; runIdx++; runCount=0; }
-        }
-        el.innerHTML=html;
+        // used to alternate pixel and didot letters, now the heading is just
+        // the pixel font (the css does that), no blend
+        el.textContent = text;
       }
 
       const hio=new IntersectionObserver((entries,obs)=>{

@@ -28,7 +28,7 @@
 @font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
 @font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap');
 
 @font-face{
   font-family:'DotempDemo';
@@ -179,7 +179,7 @@ a{ color:inherit }
   width:340px; margin:-340px 0 0 -170px;      /* anchored by its own centre */
   text-align:center; pointer-events:none; opacity:0;
   transition:opacity .35s ease; z-index:9;
-  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; 
   font-size:1.2rem; color:#fff;
   text-shadow:0 1px 10px rgba(0,0,0,.9), 0 0 4px rgba(0,0,0,.8);
 }
@@ -236,8 +236,8 @@ a{ color:inherit }
 }
 #panel.open{ opacity:1; transform:translate(0,-50%); pointer-events:auto }
 #panel h2{
-  font-family:'Cormorant Garamond',serif; font-size:clamp(1.5rem,2.6vw,2rem);
-  font-weight:600; line-height:1.15; margin:0 0 .2rem;
+  font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; font-size:clamp(1.5rem,2.6vw,2rem);
+  line-height:1.15; margin:0 0 .2rem;
 }
 #panel .eyebrow{
   display:block; font-size:.66rem; letter-spacing:.2em; text-transform:uppercase;
@@ -314,7 +314,7 @@ a{ color:inherit }
 #mac .prev{ position:absolute; left:26px; top:34px; z-index:1; pointer-events:none }
 #mac .prev-h{
   margin:0 0 9px; text-align:left;
-  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; 
   font-size:16px; color:rgba(255,255,255,.94);
   text-shadow:0 1px 10px rgba(0,0,0,.7);
 }
@@ -506,7 +506,7 @@ a{ color:inherit }
 #mac .side .it.on{ background:#d8b45a33; font-weight:600 }
 
 #mac .notes{ padding:20px 26px; background:#fffdf7 }
-#mac .notes h3{ font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; margin-bottom:11px }
+#mac .notes h3{ font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; font-size:22px; margin-bottom:11px }
 #mac .notes p{ font-size:11.5px; line-height:1.72; margin-bottom:9px; opacity:.84 }
 #mac .notes .cred{ font-size:9.5px; line-height:1.7; opacity:.55; margin-top:16px;
   border-top:1px solid #e6e2d6; padding-top:10px }
@@ -812,8 +812,8 @@ a{ color:inherit }
 #audio.playing:not(.picking) #nowPlaying{ max-height:70px; opacity:1; margin-bottom:.5rem }
 #audio.playing:not(.picking) #repick{ max-height:44px; opacity:1; margin-bottom:.7rem }
 
-#nowPlaying b{ display:block; font-family:'Cormorant Garamond',serif;
-  font-size:1.25rem; font-weight:600; line-height:1.2 }
+#nowPlaying b{ display:block; font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
+  font-size:1.25rem; line-height:1.2 }
 #nowPlaying span{ font-size:.78rem; color:var(--muted); opacity:.85 }
 #repick{
   display:block; width:100%; padding:.48rem .8rem;
@@ -1028,7 +1028,7 @@ a{ color:inherit }
 @keyframes bootSpark{ 0%,100%{transform:translateY(0) scale(1);opacity:.35} 50%{transform:translateY(-14px) scale(1.2);opacity:.9} }
 
 .boot-title{
-  font-family:'Cormorant Garamond',serif; font-size:2.3rem; font-weight:400;
+  font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; font-size:2.3rem; 
   letter-spacing:.02em; margin-bottom:.7rem;
   background:linear-gradient(45deg, var(--ink), var(--muted), var(--accent), var(--muted));
   background-size:200% 200%; background-clip:text; -webkit-background-clip:text;
@@ -1038,7 +1038,7 @@ a{ color:inherit }
 @keyframes bootShift{ 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
 .boot-msg{
-  font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.15rem;
+  font-family:'Bodoni Moda', serif; font-style:italic; font-size:1.15rem;
   color:var(--muted); opacity:.9; margin-bottom:1.6rem; min-height:1.5em;
 }
 .boot-track{
@@ -1114,7 +1114,7 @@ a{ color:inherit }
   <canvas id="gl"></canvas>
   <div id="pins"></div>
   <div id="crateTags" aria-hidden="true"></div>
-  <p id="crateTitle">pick an al<span class="px">bu</span>m to listen to</p>
+  <p id="crateTitle">pick an album to listen to</p>
 
   <aside id="panel" role="dialog" aria-label="About Henrietta">
     <div id="panelBody"></div>
@@ -1122,7 +1122,7 @@ a{ color:inherit }
 
   <div class="chrome" id="chrome">
     <span id="hint">click a <b>+</b> to look closer</span>
-    <button type="button" id="back">ba<span class="px">ck</span></button>
+    <button type="button" id="back">back</button>
   </div>
 
   <!-- the laptop's desktop. Authored at 900x563, 16:10 like the real
@@ -1456,7 +1456,7 @@ a{ color:inherit }
   <div id="audio" aria-label="Music player">
     <span class="eyebrow">What I play</span>
     <div id="nowPlaying"></div>
-    <button type="button" id="repick">pick a new al<span class="px">bu</span>m</button>
+    <button type="button" id="repick">pick a new album</button>
     <div id="spotWrap"><div id="spot"></div></div>
     <p class="meta">It keeps playing while you look around the desk. The
       lighter and the tape recorder will hush it and hand it back.</p>
@@ -1485,7 +1485,7 @@ a{ color:inherit }
         <span class="boot-sparks"><i></i><i></i><i></i><i></i><i></i><i></i></span>
         <img src="../loading.gif" alt="" onerror="this.remove()">
       </div>
-      <h1 class="boot-title"><span class="px">Warm</span>ing the room&hellip;</h1>
+      <h1 class="boot-title">Warming the room&hellip;</h1>
       <p class="boot-msg" id="bootMsg">Pulling the chair out for you</p>
       <div class="boot-track"><div class="boot-fill" id="bootFill"></div></div>
       <div class="boot-pct" id="bootPct">0%</div>
