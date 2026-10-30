@@ -92,6 +92,8 @@
         /* Custom Cursor - Only show on desktop */
         .custom-cursor {
             position: fixed;
+            /* parked at 0,0, the js moves it with the translate property */
+            left: 0; top: 0;
             width: 18px;
             height: 18px;
             background: rgba(var(--rail-accent-rgb), 0.15);
@@ -240,7 +242,7 @@
         .navbar .logo {
             text-decoration: none;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
             display: flex;
             align-items: center;
         }
@@ -248,7 +250,7 @@
         .navbar .logo img {
             height: 40px;
             width: auto;
-            transition: all 0.3s ease;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
         }
 
         .navbar .logo:hover img {
@@ -267,7 +269,7 @@
             font-size: 0.95rem;
             color: var(--ink);
             text-decoration: none;
-            transition: all 0.3s;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
             position: relative;
         }
 
@@ -343,7 +345,7 @@
             cursor: pointer;
             padding: 0.5rem;
             border-radius: 8px;
-            transition: all 0.3s ease;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
             background: rgba(var(--muted-rgb),0.1);
         }
 
@@ -356,7 +358,7 @@
             height: 3px;
             background: var(--muted);
             margin: 3px 0;
-            transition: all 0.3s ease;
+            transition: transform .3s cubic-bezier(.23,1,.32,1), opacity .2s ease;
             border-radius: 2px;
         }
 
@@ -408,7 +410,7 @@
             display: block;
             padding: 1rem 0;
             border-bottom: 1px solid rgba(var(--muted-rgb),0.1);
-            transition: all 0.3s ease;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
         }
 
         .mobile-menu ul li a:hover {
@@ -427,7 +429,7 @@
             z-index: 998;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
         }
 
         .overlay.active {
@@ -573,7 +575,7 @@
     backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
     border:1px solid rgba(var(--muted-rgb),.14);
     box-shadow:0 8px 32px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05);
-    transition:transform .5s cubic-bezier(.4,0,.2,1),border-color .5s ease,box-shadow .5s ease,background .5s ease;
+    transition:transform .25s cubic-bezier(.23,1,.32,1),border-color .2s ease,box-shadow .25s cubic-bezier(.23,1,.32,1),background .2s ease,scale .12s cubic-bezier(.23,1,.32,1);
     display:block;text-decoration:none;color:inherit;
   }
   .tile::before{
@@ -769,7 +771,7 @@
             border: 1px solid rgba(42, 157, 143, 0.3);
             color: var(--muted);
             font-weight: 500;
-            transition: all 0.3s;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
         }
 
         .skill-tag:hover {
@@ -796,7 +798,7 @@
             border-radius: 15px;
             color: var(--ink);
             text-decoration: none;
-            transition: all 0.3s;
+            transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .2s cubic-bezier(.23,1,.32,1);
             font-weight: 500;
             border: 1px solid rgba(var(--muted-rgb),0.2);
         }
@@ -3229,6 +3231,19 @@
   text-transform:none !important;
   letter-spacing:.01em !important;
 }
+
+/* press feedback
+   nothing on the site reacted to being clicked. now buttons and tiles dip a
+   tiny bit on press, on the `scale` property so it stacks with their hover
+   lift (transform) instead of fighting it. transitions repeated from each
+   button's own rule with scale tacked on the end */
+.btn-cta-primary   { transition: background .2s ease, transform .15s ease, box-shadow .2s ease, scale .12s cubic-bezier(.23,1,.32,1); }
+.btn-cta-northstar { transition: border-color .2s ease, color .2s ease, transform .15s ease, background .2s ease, scale .12s cubic-bezier(.23,1,.32,1); }
+.theme-toggle, .social-btn { transition: background .2s ease, border-color .2s ease, transform .15s ease, scale .12s cubic-bezier(.23,1,.32,1); }
+.rail-back { transition: border-color .2s ease, background .2s ease, scale .12s cubic-bezier(.23,1,.32,1); }
+.btn-cta-primary:active, .btn-cta-northstar:active, .theme-toggle:active,
+.social-btn:active, .rail-back:active { scale: .97; }
+.cell:active .tile { scale: .985; }
 </style>
 </head>
 <body>
@@ -3888,26 +3903,21 @@
             const cursor = document.getElementById('cursor');
             let mouseX = 0;
             let mouseY = 0;
-            let animationId;
 
-            // Smooth cursor movement with requestAnimationFrame
+            // moves on the `translate` property, which is compositor only,
+            // instead of left/top which made the browser do layout every move.
+            // and it moves right in the event, not on the next frame: chrome
+            // already lines mousemove up with frames, so the old rAF hop just
+            // made the ring trail your hand by an extra frame
             function updateCursor() {
-                cursor.style.left = mouseX + 'px';
-                cursor.style.top = mouseY + 'px';
+                cursor.style.translate = mouseX + 'px ' + mouseY + 'px';
             }
 
-            // Track mouse movement with throttling
             document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
                 cursor.style.opacity = '1';
-
-                if (!animationId) {
-                    animationId = requestAnimationFrame(() => {
-                        updateCursor();
-                        animationId = null;
-                    });
-                }
+                updateCursor();
             });
 
             // Click animation
@@ -4008,8 +4018,7 @@
                     const rect = frame.getBoundingClientRect();
                     mouseX = rect.left + d.x;
                     mouseY = rect.top + d.y;
-                    cursor.style.left = mouseX + 'px';
-                    cursor.style.top  = mouseY + 'px';
+                    updateCursor();
                     cursor.style.opacity = '1';
                 }
                 if (d.type === 'iframeDown')  cursor.classList.add('clicking');
