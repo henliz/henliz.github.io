@@ -3327,24 +3327,12 @@ body::after{
 }
 
 /* editorial pass
-   - captions: project name (pixel) + year up top, then the punchy line, then
-     stat + tags, all tighter so the titles do the talking
+   - captions are just the punchy line (it's the headline again, no project
+     name + year row, that read juvenile), then stat + tags
    - numbers on the nav and section titles, a live waterloo clock
    - no hover lift (the hover up thing is an ai tell) */
-.tile-meta{
-  display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
-  padding-bottom:.55rem; margin-bottom:.6rem;
-  border-bottom:1px solid rgba(var(--ink-rgb), .12);
-}
-.tile-proj{ font-family:'DotempDemo', monospace; font-size:clamp(1.15rem, 1.6vw, 1.45rem); line-height:1.1; color:var(--ink); }
-.tile-year{ font-family:'Satoshi', sans-serif; font-size:.78rem; font-weight:500; letter-spacing:.01em; color:rgba(var(--ink-rgb), .55); white-space:nowrap; }
-.tile-name{
-  font-size:clamp(.9rem, 1.1vw, 1rem) !important; font-weight:500 !important;
-  line-height:1.42 !important; letter-spacing:-.005em !important;
-  color:rgba(var(--ink-rgb), .82) !important;
-}
-.tile-stat{ margin-top:.3rem !important; font-size:.8rem !important; color:rgba(var(--ink-rgb), .55) !important; }
-.tile-tags{ margin-top:.75rem !important; }
+.tile-stat{ margin-top:.5rem !important; font-size:.8rem !important; color:rgba(var(--ink-rgb), .55) !important; }
+.tile-tags{ margin-top:.85rem !important; }
 
 .sb-n, .sec-n{ font-family:'DotempDemo', monospace; font-style:normal; color:rgba(var(--ink-rgb), .38); }
 .sb-n{ font-size:.82em; margin-right:.7em; }
@@ -5116,7 +5104,6 @@ stations.forEach((cfg,i) => {
        <div class="tile-sheen"></div>
      </${tag}>
      <${tag} class="tile-cap"${to}>
-       <div class="tile-meta"><span class="tile-proj">${cfg.title || cfg.name}</span><span class="tile-year">${cfg.year || ''}</span></div>
        <div class="tile-name">${cfg.tagline}</div>
        <p class="tile-stat">${cfg.stat}</p>
        <div class="tile-tags">${(cfg.award ? [`<span class="is-award">\u{1F3C6} ${cfg.award}</span>`] : [])
