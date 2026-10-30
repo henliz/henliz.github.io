@@ -3184,15 +3184,48 @@
   padding-top:clamp(28px,4vh,56px) !important;
 }
 
-/* ── corners, sharpened ──────────────────────────────────────────────────
-   Roughly halved. A soft radius reads friendly; a tight one reads considered.
-   Pills stay pills, and the phone mockups keep their real device radius —
-   that one describes an object rather than styling a box. */
-.tile{ border-radius:10px !important; }
-.sidebar{ border-radius:12px 0 0 12px !important; }
-.content-card{ border-radius:0 12px 12px 0 !important; }
-.case-pane{ border-radius:0 12px 12px 0 !important; }
+/* corners
+   one scale for the whole site: 14 for the big panels, 10 for tiles and
+   cards, 6 for small chips and rows, pills stay pills. the phone mockups
+   keep their real device radius since that's describing an object.
+   desktop: rail and card butt together so the inside edges are square.
+   phone: they're separate floating panels so all four corners round (this
+   used to stay half square on phones because of the !important here) */
+:root{ --r-lg:14px; --r-md:10px; --r-sm:6px; }
+.tile{ border-radius:var(--r-md) !important; }
+.sidebar{ border-radius:var(--r-lg) 0 0 var(--r-lg) !important; }
+.content-card, .case-pane{ border-radius:0 var(--r-lg) var(--r-lg) 0 !important; }
 .tile-video, .tile-scrim{ border-radius:inherit !important; }
+.pe-endorse-card{ border-radius:var(--r-md) !important; }
+.pe-press-item{ border-radius:var(--r-sm) !important; }
+.tile-tags > span, .ns-chaos-tag{ border-radius:var(--r-sm) !important; }
+@media (max-width: 920px){
+  .sidebar, .content-card, .case-pane{ border-radius:var(--r-lg) !important; }
+  .case-pane{ left:var(--gap) !important; }
+  /* the drawer's links were stretched to fill the whole height so they
+     floated way apart. now they stack up top as proper 44px tap rows and
+     the lets conspire row sits at the bottom */
+  .sb-group{ flex:0 0 auto !important; justify-content:flex-start !important; gap:0 !important; }
+  .sb-group .sb-link{ padding-block:.7rem !important; font-size:1.05rem; }
+  .sb-foot{ margin-top:auto; }
+}
+
+/* page grid
+   every landing section shares one content width and one side padding, so
+   the left edge stays put as you scroll. featured work, north star and
+   endorsements used to sit at 3 different left edges (1320/1120/1080 wide
+   with different padding each) */
+:root{ --page-max:1320px; --page-pad:clamp(18px,2.2vw,44px); }
+@media (max-width: 920px){ :root{ --page-pad:clamp(14px,4vw,26px); } }
+.work-head, .bento-grid, .ns-page, .pe-page{
+  max-width:var(--page-max) !important;
+  padding-inline:var(--page-pad) !important;
+  margin-inline:auto;
+  box-sizing:border-box;
+}
+/* the work section's wrapper had 26px of its own on top, that's what
+   pushed featured work in further than everything else */
+#wrap{ padding-inline:0 !important; }
 
 /* ── phones: one tile per row ────────────────────────────────────────────
    The four-up grid kept its columns all the way down, so on a phone each
