@@ -3377,25 +3377,40 @@ body::after{
 @media (max-width: 920px){ .local-time span{ display:none; } }
 
 /* north star sky
-   hen floats top right of the section with trove's clouds behind and in
-   front of her. the section's content sits above the sky layer */
+   the sky layer covers the headline part of the section and sits under the
+   page, so the big pixel headline overlaps her as she falls past (magazine
+   cover style). she's graded toward the sky (a touch less saturation, a
+   cool soft shadow, a faint haze) so she lives in the scene instead of
+   being stuck on top of it */
 .northstar-section{ position:relative; isolation:isolate; }
 .northstar-section .ns-page{ position:relative; z-index:1; }
-.ns-sky{ position:absolute; top:0; right:0; width:min(46%, 560px); height:clamp(380px, 52vh, 560px); pointer-events:none; z-index:0; }
+.ns-sky{ position:absolute; top:0; right:0; width:min(52%, 640px); height:clamp(440px, 60vh, 620px); pointer-events:none; z-index:0;
+  /* she only exists inside this window: fades in as she drops into the
+     section and dissolves before the table, so she never sits over the
+     section above or the matrix below */
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 16%, #000 74%, transparent 100%);
+          mask-image:linear-gradient(to bottom, transparent 0, #000 16%, #000 74%, transparent 100%); }
 .ns-sky > *{ position:absolute; will-change:translate; }
 .ns-cloud{ background-repeat:no-repeat; background-size:contain; }
-.ns-cloud--far{ right:-8%; top:6%; width:120%; aspect-ratio:1100 / 150; background-image:url('./field/clouds-far.webp'); opacity:.9; }
-.ns-cloud--near{ right:-14%; top:58%; width:125%; aspect-ratio:1100 / 280; background-image:url('./field/clouds-near.webp'); }
-.ns-hen{ right:8%; top:18%; width:clamp(150px, 15vw, 240px); aspect-ratio:657 / 560; }
+.ns-cloud--far{ right:-10%; top:0; width:130%; aspect-ratio:1100 / 150; background-image:url('./field/clouds-far.webp'); opacity:.85; }
+.ns-cloud--near{ right:-18%; top:0; width:140%; aspect-ratio:1100 / 280; background-image:url('./field/clouds-near.webp'); z-index:2; }
+.ns-hen{
+  right:12%; top:0; width:clamp(190px, 19vw, 300px); aspect-ratio:657 / 560; z-index:1;
+  will-change:translate, rotate, opacity;
+  filter:saturate(.84) brightness(1.03) drop-shadow(0 18px 28px rgba(40, 90, 130, .22));
+}
+.ns-hen::after{
+  /* haze: a faint wash of sky over her so she sits at the same depth as the clouds */
+  content:''; position:absolute; inset:-4%; border-radius:50%;
+  background:radial-gradient(closest-side, rgba(214,234,244,.0) 55%, rgba(214,234,244,.18));
+  pointer-events:none;
+}
 .ns-hen img{ position:absolute; inset:0; width:100%; height:100%; opacity:0; }
 .ns-hen img.on{ opacity:1; }
-/* a tiny lift while she kicks, springy like the tots */
-.ns-hen{ transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
-.ns-hen.kicking{ transform:translateY(-10px) rotate(-1.5deg); }
+:root[data-theme="dark"] .ns-hen{ filter:saturate(.8) brightness(.92) drop-shadow(0 18px 28px rgba(0,0,0,.4)); }
 @media (max-width: 920px){
-  .ns-sky{ width:52%; height:300px; }
-  .ns-hen{ width:clamp(110px, 28vw, 150px); top:4%; right:4%; }
-  .ns-cloud--near{ top:52%; }
+  .ns-sky{ width:58%; height:340px; }
+  .ns-hen{ width:clamp(130px, 34vw, 190px); right:6%; }
 }
 </style>
 </head>
@@ -3624,10 +3639,11 @@ body::after{
 
         <!-- North star philosophy section -->
         <div class="northstar-section" id="northstar">
-          <!-- hen falling through the sky beside the north star headline.
-               trove's cloud layers drift past at different speeds as you
-               scroll, and every so often she kicks like the trove tots hop:
-               her 3 drawn poses with a smear frame between each -->
+          <!-- hen falls through the north star section as you scroll: she
+               drops in from above, passes behind the headline and drops out
+               before the table. her legs go pose 1, 1.5, 2 as she falls (a
+               smear frame flashes between each), clouds rise past her, and
+               she bobs a little the whole time so she's never frozen -->
           <div class="ns-sky" aria-hidden="true">
             <div class="ns-cloud ns-cloud--far" data-depth="-.25"></div>
             <div class="ns-hen" data-depth=".35">
@@ -6160,49 +6176,75 @@ document.addEventListener('click', e => {
   place();
 })();
 
-/* north star sky: layers drift by scroll position, hen kicks now and then */
+/* north star sky: hen falls through the section, driven by scroll so there's
+   never a loop to reset. t runs 0 to 1 from "section top just below the
+   screen" to "headline gone off the top". everything is derived from t
+   plus a slow sine bob, so scrolling back up plays it backwards */
 (function(){
   const sky = document.querySelector('.ns-sky');
   if (!sky) return;
   const sec = sky.parentElement;
-  const layers = [...sky.querySelectorAll('[data-depth]')];
-  const frames = [...sky.querySelectorAll('.ns-hen img')];
+  const hen = sky.querySelector('.ns-hen');
+  const far = sky.querySelector('.ns-cloud--far');
+  const near = sky.querySelector('.ns-cloud--near');
+  const frames = [...hen.querySelectorAll('img')];   // 1, smear, 1.5, smear, 2
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (still) return;
-  let seen = false, raf = 0;
-  // -1 when the section's top is at the bottom of the screen, 1 at the top
-  function drift(){
-    raf = 0;
-    const r = sec.getBoundingClientRect();
-    const t = 1 - (r.top + r.height * .25) / innerHeight;
-    for (const l of layers){
-      const d = +l.dataset.depth;
-      l.style.translate = (t * d * -60).toFixed(1) + 'px ' + (t * d * -140).toFixed(1) + 'px';
-    }
+  let pose = 0, flash = 0, seen = false, raf = 0;
+  const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const ease = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+
+  function poseFor(t){ return t < .4 ? 0 : t < .6 ? 2 : 4; }
+  function setPose(next){
+    if (next === pose) return;
+    // a quick smear on the way between two drawn poses
+    const smear = (pose + next) / 2 | 0;
+    const via = smear % 2 ? smear : (pose < next ? pose + 1 : pose - 1);
+    pose = next;
+    show(via);
+    clearTimeout(flash);
+    flash = setTimeout(() => show(pose), 55);
   }
-  const kick = () => raf || (raf = requestAnimationFrame(drift));
+
+  // her path is choreographed in SCREEN space, then converted to the
+  // section's coordinates. page scroll alone would make her drift upward.
+  // drop in from above the screen, fall slowly alongside you while the
+  // headline passes over her, then drop out the bottom
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const easeOut = k => 1 - Math.pow(1 - k, 3), easeIn = k => k * k * k;
+  function screenY(t, vh){
+    if (t < .2)  return lerp(-.5 * vh, .14 * vh, easeOut(t / .2));
+    if (t < .8)  return lerp(.14 * vh, .3 * vh, (t - .2) / .6);
+    return lerp(.3 * vh, 1.1 * vh, easeIn((t - .8) / .2));
+  }
+  function frame(now){
+    raf = seen && !still ? requestAnimationFrame(frame) : 0;
+    const vh = innerHeight;
+    const r = sec.getBoundingClientRect();
+    // span ends just as the system matrix comes up, so she's gone before it
+    const t = clamp((vh * .9 - r.top) / (vh * .9 + 380), 0, 1);
+    const top = r.top;                 // the sky layer sits at the section top
+    const bob = still ? 0 : Math.sin(now / 1400) * 7;
+    const sway = still ? 0 : Math.sin(now / 2100) * 1.8;
+    const y = screenY(t, vh) - top + bob;
+    hen.style.translate = (-t * 50).toFixed(1) + 'px ' + y.toFixed(1) + 'px';
+    hen.style.rotate = (-8 + t * 18 + sway).toFixed(2) + 'deg';
+    hen.style.opacity = clamp(Math.min(t, 1 - t) / .05, 0, 1).toFixed(3);
+    // clouds rise up the screen past her, the near layer faster
+    far.style.translate = (-t * 40).toFixed(1) + 'px ' + (lerp(.65 * vh, -.1 * vh, t) - top).toFixed(1) + 'px';
+    near.style.translate = (t * 60).toFixed(1) + 'px ' + (lerp(1.05 * vh, -.45 * vh, t) - top).toFixed(1) + 'px';
+    setPose(poseFor(t));
+  }
   new IntersectionObserver(es => {
     seen = es[0].isIntersecting;
-    if (seen) kick();
-  }, { rootMargin: '200px' }).observe(sec);
-  (window.scroller || window).addEventListener('scroll', () => seen && kick(), { passive: true });
-  addEventListener('scroll', () => seen && kick(), { passive: true });
-
-  // the kick, as [frame, ms]: 1, smear, 1.5, smear, 2 (held with a little
-  // lift), then the same way back down
-  const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
-  const hen = sky.querySelector('.ns-hen');
-  const KICK = [[1, 45], [2, 70], [3, 45], [4, 950], [3, 45], [2, 70], [1, 45], [0, 0]];
-  function play(){
-    if (!seen || document.hidden) return schedule();
-    hen.classList.add('kicking');
-    let at = 0;
-    KICK.forEach(([f, ms]) => { setTimeout(() => show(f), at); at += ms; });
-    setTimeout(() => { hen.classList.remove('kicking'); schedule(); }, at);
+    if (seen && !raf) raf = requestAnimationFrame(frame);
+  }, { rootMargin: '300px 0px' }).observe(sec);
+  if (still){
+    const once = () => requestAnimationFrame(frame);
+    (window.scroller || window).addEventListener('scroll', once, { passive: true });
+    addEventListener('scroll', once, { passive: true });
   }
-  function schedule(){ setTimeout(play, 5000 + Math.random() * 6000); }
-  schedule();
-  drift();
+  frame(performance.now());
 })();
 
 /* a live waterloo clock next to featured work. tiny detail, reads as care */
