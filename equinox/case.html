@@ -1274,9 +1274,13 @@ figure{
       }
 
       function fontMix(el, text){
-        // used to alternate pixel and didot letters, now the heading is just
-        // the pixel font (the css does that), no blend
-        el.textContent = text;
+        // titles used to alternate pixel + didot letters (the blend). now the
+        // whole title is one clean pixel run, .di is the pixel font. a span so
+        // a heading's own font rule can't win over it
+        const s = document.createElement('span');
+        s.className = 'di';
+        s.textContent = text;
+        el.replaceChildren(s);
       }
 
       const hio=new IntersectionObserver((entries,obs)=>{

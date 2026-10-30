@@ -1649,7 +1649,6 @@ figure{
     // --- heading scramble + font-mix (same system as Menzo) ---
     (function(){
       const CHARSET='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
-      const RUNS=[3,2];
       function rand(){return CHARSET[Math.floor(Math.random()*CHARSET.length)];}
 
       function scramble(el,text,dur,onDone){
@@ -1672,17 +1671,14 @@ figure{
         })(performance.now());
       }
 
-      function fontMix(el,text){
-        let html='',runIdx=0,runCount=0,usePx=true;
-        for(let i=0;i<text.length;i++){
-          const cp=text.codePointAt(i);
-          if(cp>127){html+=String.fromCodePoint(cp);if(cp>0xFFFF)i++;continue;}
-          const c=text[i];
-          if(c===' '){html+=' ';continue;}
-          html+=`<span class="${usePx?'px':'di'}">${c}</span>`;
-          if(++runCount>=RUNS[runIdx%2]){usePx=!usePx;runIdx++;runCount=0;}
-        }
-        el.innerHTML=html;
+      function fontMix(el, text){
+        // titles used to alternate pixel + didot letters (the blend). now the
+        // whole title is one clean pixel run, .di is the pixel font. a span so
+        // a heading's own font rule can't win over it
+        const s = document.createElement('span');
+        s.className = 'di';
+        s.textContent = text;
+        el.replaceChildren(s);
       }
 
       // separate observer for all headings — they manage their own opacity
