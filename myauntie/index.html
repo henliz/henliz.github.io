@@ -910,14 +910,15 @@
         }
     /* the intro / loading screen
        she falls through the sky while the page loads: clouds keep rising
-       past her (that's what reads as falling), she bobs and does her kick.
-       when the first screen of tiles is really ready the two front cloud
-       banks part, she drops out of frame and the sky fades, so you land on
-       the page. scrolling up past the top plays it again (see the script) */
+       past her (that's what reads as falling) and she kicks 1, 1.5, 2 one
+       way, same as the north star. when the first screen of tiles is ready
+       a cloud deck rushes up in front of her, she drops into it, it splits
+       open as she goes through and the sky fades, so you land on the page.
+       scrolling up past the top plays it again (see the script) */
     #scene-overlay {
       position: fixed; inset: 0; z-index: 5000; overflow: hidden;
       background: linear-gradient(180deg, #9fd0ea 0%, #c8e5f3 50%, #eaf6fb 100%);
-      transition: opacity .5s ease .35s, visibility 0s linear .9s;
+      transition: opacity .45s ease .95s, visibility 0s linear 1.4s;
     }
     :root[data-theme="dark"] #scene-overlay { background: linear-gradient(180deg, #0c1824 0%, #16283a 60%, #1d3349 100%); }
     #scene-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -946,28 +947,24 @@
     @keyframes introDrop { from { transform: translateY(-75vh) rotate(-10deg); } to { transform: none; } }
     @keyframes introBob { from { transform: translateY(-8px) rotate(-3deg); } to { transform: translateY(8px) rotate(3deg); } }
 
-    /* the two front cloud banks that part */
-    /* each bank is a dense mass: several cloud images stacked at different
-       sizes over a soft white mist, so two real walls of cloud slide apart */
+    /* the cloud deck she falls through: two dense halves that overlap in
+       the middle, waiting below the screen. each is several cloud images
+       stacked over a soft white mist so it reads as a real wall of cloud */
     .intro-bank {
-      position: absolute; bottom: -10vh; z-index: 3; width: 72vw; height: 52vh;
+      position: absolute; bottom: -18vh; z-index: 3; width: 80vw; height: 84vh;
       background:
-        url('/field/clouds-near.webp') 10% 30% / 70% auto no-repeat,
-        url('/field/clouds-near.webp') 70% 55% / 85% auto no-repeat,
-        url('/field/clouds-far.webp') 30% 80% / 90% auto no-repeat,
-        url('/field/clouds-near.webp') 0% 95% / 100% auto no-repeat,
-        radial-gradient(75% 65% at 45% 72%, rgba(255,255,255,.96), rgba(255,255,255,.72) 50%, rgba(255,255,255,0) 85%);
-      transition: transform .9s cubic-bezier(.65,0,.35,1), opacity .9s ease;
+        url('/field/clouds-near.webp') 10% 12% / 70% auto no-repeat,
+        url('/field/clouds-near.webp') 75% 30% / 85% auto no-repeat,
+        url('/field/clouds-far.webp') 30% 60% / 90% auto no-repeat,
+        url('/field/clouds-near.webp') 0% 85% / 100% auto no-repeat,
+        radial-gradient(80% 72% at 50% 66%, #fff, #fff 52%, rgba(255,255,255,.88) 68%, rgba(255,255,255,0) 92%);
       /* feather the box so the mist never shows a hard rectangular edge */
       -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
-              mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, transparent 100%);
+              mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%);
     }
     :root[data-theme="dark"] .intro-bank { filter: brightness(.82) saturate(.8); }
-    .intro-bank.l { left: -14vw; }
-    .intro-bank.r { right: -14vw; transform: scaleX(-1); }
-    .intro-bank.top { bottom: auto; top: -14vh; height: 40vh; width: 62vw; opacity: .9; }
-    .intro-bank.top.l { left: -18vw; transform: scaleY(-1); }
-    .intro-bank.top.r { right: -18vw; transform: scale(-1, -1); }
+    .intro-bank.l { left: -12vw; transform: translateY(80vh); }
+    .intro-bank.r { right: -12vw; transform: translateY(80vh) scaleX(-1); }
 
     .intro-bar {
       position: absolute; left: 50%; bottom: 28px; translate: -50% 0; z-index: 4;
@@ -978,18 +975,32 @@
       transform: scaleX(.08); transform-origin: left; transition: transform .35s cubic-bezier(.23,1,.32,1);
     }
 
-    /* parting: banks slide off to the sides, she drops out of frame */
-    #scene-overlay.parting .intro-bank.l { transform: translateX(-80vw); }
-    #scene-overlay.parting .intro-bank.r { transform: translateX(80vw) scaleX(-1); }
-    #scene-overlay.parting .intro-bank.top.l { transform: translateX(-80vw) scaleY(-1); }
-    #scene-overlay.parting .intro-bank.top.r { transform: translateX(80vw) scale(-1, -1); }
-    #scene-overlay.parting .intro-fall {
-      animation: introOut .8s cubic-bezier(.55,0,.85,.35) forwards;
+    /* going through: the deck rushes up to meet her, she drops into it,
+       then the halves split off to the sides as she falls out the bottom */
+    #scene-overlay.parting .intro-bank.l { animation: deckL 1.35s cubic-bezier(.45,0,.3,1) forwards; }
+    #scene-overlay.parting .intro-bank.r { animation: deckR 1.35s cubic-bezier(.45,0,.3,1) forwards; }
+    @keyframes deckL {
+      0%   { transform: translateY(80vh); }
+      38%  { transform: translateY(-8vh); }
+      55%  { transform: translate(-4vw, -10vh); }
+      100% { transform: translate(-85vw, -14vh); }
     }
-    @keyframes introOut { from { transform: none; } to { transform: translateY(95vh) rotate(16deg); } }
+    @keyframes deckR {
+      0%   { transform: translateY(80vh) scaleX(-1); }
+      38%  { transform: translateY(-8vh) scaleX(-1); }
+      55%  { transform: translate(4vw, -10vh) scaleX(-1); }
+      100% { transform: translate(85vw, -14vh) scaleX(-1); }
+    }
+    #scene-overlay.parting .intro-fall {
+      animation: introOut 1.25s linear forwards;
+    }
+    /* sinks into the deck while it rises over her, then drops out below */
+    @keyframes introOut {
+      0%   { transform: none; animation-timing-function: cubic-bezier(.4,0,.6,1); }
+      45%  { transform: translateY(14vh) rotate(5deg); animation-timing-function: cubic-bezier(.5,0,.9,.4); }
+      100% { transform: translateY(110vh) rotate(14deg); }
+    }
     #scene-overlay.parting .intro-bar { opacity: 0; transition: opacity .3s; }
-    /* on a replay the banks jump straight back into place, no slide in */
-    #scene-overlay.snap .intro-bank { transition: none !important; }
     #scene-overlay.hidden * { animation-play-state: paused !important; }
 
     @media (prefers-reduced-motion: reduce) {
@@ -4577,9 +4588,7 @@ body::after{
       </div>
       <div class="intro-bank l"></div>
       <div class="intro-bank r"></div>
-      <div class="intro-bank top l"></div>
-      <div class="intro-bank top r"></div>
-      <div class="intro-bar"><i id="overlay-bar"></i></div>
+        <div class="intro-bar"><i id="overlay-bar"></i></div>
     </div>
 
     <script>
@@ -4592,36 +4601,36 @@ body::after{
         const MIN_MS  = calm ? 0 : 1600;        // always long enough to see her fall
         let ready = false, minDone = false, open = true;
 
-        // her kick on a loop while she's falling: hold pose 1, then 1, smear,
-        // 1.5, smear, 2 (held), and back. it only starts once all five frames
-        // are decoded (swapping to a frame that hadn't loaded showed nothing,
-        // which is what made it look broken), and every timer is tracked so
-        // a replay can't start a second kick on top of the first
-        const KICK = [[0, 700], [1, 45], [2, 70], [3, 45], [4, 600], [3, 45], [2, 70], [1, 45]];
+        // her kick goes one way, like the north star: pose 1 while she
+        // falls, 1.5 once loading is underway, 2 as she drops into the
+        // clouds. a smear frame flashes between drawn poses. frames are
+        // indexed 0 = 1, 1 = smear, 2 = 1.5, 3 = smear, 4 = 2. nothing swaps
+        // until all five are decoded, so it never flashes an empty frame
         const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
         const decoded = Promise.all(frames.map(f => f.decode ? f.decode().catch(() => {}) : null));
-        let timers = [];
-        function stopKick() { timers.forEach(clearTimeout); timers = []; show(0); }
-        function kick() {
-          stopKick();
-          if (calm) return;
+        let pose = 0, smearT = 0, midT = 0;
+        function setPose(next) {
+          if (calm || next <= pose) return;
           decoded.then(() => {
-            if (!open) return;
-            let at = 0;
-            KICK.forEach(([f, ms]) => { timers.push(setTimeout(() => open && show(f), at)); at += ms; });
-            timers.push(setTimeout(() => open && kick(), at));
+            if (!open || next <= pose) return;
+            show(next - 1); pose = next;
+            clearTimeout(smearT); smearT = setTimeout(() => show(pose), 55);
           });
         }
+        function resetPose() { clearTimeout(smearT); clearTimeout(midT); pose = 0; show(0); }
+        // 1.5 at 40% loaded, or after a beat if loading is quick
+        function startFall() { resetPose(); midT = setTimeout(() => setPose(2), 900); }
 
         function part() {
           if (!open) return;
           bar.style.transform = 'scaleX(1)';
           overlay.classList.add('parting');
+          setPose(2); setTimeout(() => setPose(4), 160);   // full kick on the way in
           setTimeout(() => {
             overlay.classList.add('hidden');
             overlay.setAttribute('aria-hidden', 'true');
-            open = false; stopKick();
-          }, 900);
+            open = false;
+          }, 1400);
         }
         function maybePart() { if (ready && minDone) part(); }
 
@@ -4629,7 +4638,10 @@ body::after{
         // module posts progress and then modelsReady), never before MIN_MS
         window.addEventListener('message', function (e) {
           const d = e.data || {};
-          if (d.type === 'tileProgress') bar.style.transform = 'scaleX(' + Math.max(.08, d.p) + ')';
+          if (d.type === 'tileProgress') {
+            bar.style.transform = 'scaleX(' + Math.max(.08, d.p) + ')';
+            if (d.p >= .4) setPose(2);
+          }
           if (d.type === 'modelsReady') { ready = true; maybePart(); }
         });
         // only the homepage gets the intro. a direct link (/trove/ etc)
@@ -4645,7 +4657,7 @@ body::after{
         } else {
           setTimeout(() => { minDone = true; maybePart(); }, MIN_MS);
           setTimeout(() => { ready = true; minDone = true; maybePart(); }, 8000);   // safety net
-          kick();
+          startFall();
         }
 
         // scroll up past the top: the clouds close back in, she falls
@@ -4657,12 +4669,10 @@ body::after{
           if (document.documentElement.hasAttribute('data-pane-open')) return;   // not over a case study
           lastPlay = now; open = true; pull = 0;
           overlay.removeAttribute('aria-hidden');
-          overlay.classList.add('snap');
           overlay.classList.remove('hidden', 'parting');
           // restart her drop in
           fall.style.animation = 'none'; void fall.offsetWidth; fall.style.animation = '';
-          requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.remove('snap')));
-          kick();
+          startFall();
           setTimeout(part, 2000);   // drop in, fall for a beat, then part
         }
         function atTop() {
