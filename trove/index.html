@@ -917,12 +917,18 @@
        scrolling up past the top plays it again (see the script) */
     #scene-overlay {
       position: fixed; inset: 0; z-index: 5000; overflow: hidden;
-      background: linear-gradient(180deg, #9fd0ea 0%, #c8e5f3 50%, #eaf6fb 100%);
-      transition: opacity .45s ease .95s, visibility 0s linear 1.4s;
+      transition: opacity .35s ease, visibility 0s linear .35s;
     }
-    :root[data-theme="dark"] #scene-overlay { background: linear-gradient(180deg, #0c1824 0%, #16283a 60%, #1d3349 100%); }
     #scene-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     #scene-overlay:not(.hidden) { transition: opacity .3s ease, visibility 0s; }
+    .intro-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #9fd0ea 0%, #c8e5f3 50%, #eaf6fb 100%); }
+    :root[data-theme="dark"] .intro-sky { background: linear-gradient(180deg, #0c1824 0%, #16283a 60%, #1d3349 100%); }
+
+    /* the handoff overlaps the ending: once the deck has swallowed her the
+       sky and the little clouds fade out underneath it, so the page is
+       already there when the halves split open */
+    #scene-overlay.parting .intro-sky,
+    #scene-overlay.parting .intro-cloud { opacity: 0; transition: opacity .45s ease .55s; }
 
     /* clouds rising past her, each its own size, speed, depth and start */
     .intro-cloud {
@@ -932,6 +938,7 @@
       animation: introRise var(--t, 5s) linear var(--d, 0s) infinite;
     }
     .intro-cloud.far { background-image: url('/field/clouds-far.webp'); aspect-ratio: 1100 / 150; filter: blur(.5px); }
+    .intro-cloud.front { z-index: 2; filter: blur(1.5px); }
     @keyframes introRise { from { transform: translateY(110vh); } to { transform: translateY(-40vh); } }
 
     /* her, bobbing in the middle. frames are swapped by the script */
@@ -4574,11 +4581,16 @@ body::after{
          clouds part and you land on the page. scroll up past the top and
          it plays again -->
     <div id="scene-overlay" role="status" aria-label="Loading">
+      <div class="intro-sky"></div>
       <div class="intro-cloud far" style="--x:4vw;--w:56vw;--t:6.5s;--d:-1.2s;--o:.7"></div>
       <div class="intro-cloud far" style="--x:56vw;--w:48vw;--t:7.5s;--d:-4.6s;--o:.65"></div>
+      <div class="intro-cloud far" style="--x:26vw;--w:44vw;--t:5.6s;--d:-3.4s;--o:.75"></div>
+      <div class="intro-cloud far" style="--x:-14vw;--w:40vw;--t:6s;--d:-5.2s;--o:.6"></div>
+      <div class="intro-cloud far" style="--x:72vw;--w:40vw;--t:5.2s;--d:-2.2s;--o:.7"></div>
       <div class="intro-cloud" style="--x:-10vw;--w:64vw;--t:4.2s;--d:-2.8s"></div>
       <div class="intro-cloud" style="--x:48vw;--w:70vw;--t:4.8s;--d:-.6s"></div>
-      <div class="intro-cloud far" style="--x:26vw;--w:44vw;--t:5.6s;--d:-3.4s;--o:.75"></div>
+      <div class="intro-cloud" style="--x:18vw;--w:60vw;--t:4.5s;--d:-1.9s;--o:.85"></div>
+      <div class="intro-cloud" style="--x:64vw;--w:56vw;--t:3.9s;--d:-3.3s;--o:.85"></div>
       <div class="intro-fall">
         <img class="on" src="/sky/hen-fall-1.webp" alt="">
         <img src="/sky/hen-fall-1s.webp" alt="">
@@ -4586,6 +4598,9 @@ body::after{
         <img src="/sky/hen-fall-2s.webp" alt="">
         <img src="/sky/hen-fall-2.webp" alt="">
       </div>
+      <div class="intro-cloud front" style="--x:-22vw;--w:62vw;--t:3.2s;--d:-1.4s;--o:.85"></div>
+      <div class="intro-cloud front" style="--x:66vw;--w:60vw;--t:3.5s;--d:-.3s;--o:.85"></div>
+      <div class="intro-cloud front" style="--x:20vw;--w:62vw;--t:5.4s;--d:-2.6s;--o:.55"></div>
       <div class="intro-bank l"></div>
       <div class="intro-bank r"></div>
         <div class="intro-bar"><i id="overlay-bar"></i></div>
@@ -4630,7 +4645,7 @@ body::after{
             overlay.classList.add('hidden');
             overlay.setAttribute('aria-hidden', 'true');
             open = false;
-          }, 1400);
+          }, 1000);
         }
         function maybePart() { if (ready && minDone) part(); }
 
