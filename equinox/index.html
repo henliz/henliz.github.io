@@ -3407,13 +3407,18 @@ body::after{
   .ns-hen{ width:clamp(130px, 34vw, 190px); right:6%; }
 }
 
-/* rail walker: her feet sit on the divider line above lets conspire. she
-   takes over the "push the footer down" job from sb-foot */
-.rail-walk{ position:relative; height:calc(95px + .4rem); margin-top:auto; pointer-events:none; flex:0 0 auto; }
+/* rail walker: chibi her walking on the spot, feet on the divider line
+   above lets conspire. 8 frames in one sheet; stepping the background
+   from 0 to 8/7 of its width lands exactly on each of the 8 frames */
+.rail-walk{ position:relative; height:calc(100px + .3rem); margin-top:auto; pointer-events:none; flex:0 0 auto; }
 .rail-walk + .sb-foot{ margin-top:0 !important; }
-.walker{ position:absolute; left:0; bottom:-2px; width:46px; height:95px; transform-origin:50% 100%; will-change:translate; }
-.walker img{ position:absolute; inset:0; width:100%; height:100%; opacity:0; transition:opacity 40ms linear; }
-.walker img.on{ opacity:1; }
+.walker{
+  position:absolute; left:.6rem; bottom:-2px; width:60px; height:100px;
+  background:url('/sky/chibi-walk.webp') 0 0 / 800% 100% no-repeat;
+  animation:chibiWalk .9s steps(8) infinite;
+}
+@keyframes chibiWalk{ to{ background-position:calc(100% * 8 / 7) 0; } }
+@media (prefers-reduced-motion: reduce){ .walker{ animation:none; } }
 </style>
 </head>
 <body>
@@ -3653,18 +3658,10 @@ body::after{
                 <a class="sb-link" href="/playground/"  data-pane="playground"><span class="sb-n">06</span>playground</a>
             </nav>
 
-            <!-- tiny her, strolling along the line above lets conspire. her 4
-                 drawn walk keys, glided at exactly her step length so the
-                 planted foot doesn't skate. she walks somewhere, rests,
-                 turns around, repeat -->
-            <div class="rail-walk" aria-hidden="true">
-              <div class="walker">
-                <img src="/sky/walk-1.webp" alt="" decoding="async">
-                <img class="on" src="/sky/walk-2.webp" alt="" decoding="async">
-                <img src="/sky/walk-3.webp" alt="" decoding="async">
-                <img src="/sky/walk-4.webp" alt="" decoding="async">
-              </div>
-            </div>
+            <!-- chibi her walking on the spot above lets conspire. her 8 frame
+                 cycle as one sprite sheet, lined up on her head so it never
+                 jitters, played with css steps() -->
+            <div class="rail-walk" aria-hidden="true"><div class="walker"></div></div>
             <div class="sb-foot">
                 <div class="sb-foot-row">
                     <!-- one pill: the label swaps for the socials on hover -->
@@ -6346,50 +6343,6 @@ document.addEventListener('click', e => {
     addEventListener('scroll', once, { passive: true });
   }
   frame(performance.now());
-})();
-
-/* rail walker: walk to a random spot, rest, turn, repeat. frame 2 (the
-   passing pose, legs together) doubles as her standing pose */
-(function(){
-  const lane = document.querySelector('.rail-walk');
-  if (!lane) return;
-  const me = lane.querySelector('.walker');
-  const frames = [...me.querySelectorAll('img')];
-  const FRAME_MS = 140;
-  const STEP_PX = 39;                         // her stride at this size, measured off the drawing
-  const SPEED = (STEP_PX * 2) / (FRAME_MS * 4); // px per ms: one 4 key cycle is two steps
-  const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
-  let x = 12, dir = 1, target = x, mode = 'rest', until = 0, frame = 1, frameAt = 0, last = 0, raf = 0;
-
-  const place = () => { me.style.translate = x.toFixed(1) + 'px 0'; me.style.scale = dir + ' 1'; };
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches){ show(1); place(); return; }
-
-  function room(){ return Math.max(0, lane.clientWidth - me.offsetWidth); }
-  function pickTarget(){
-    const max = room();
-    let t = x;
-    for (let k = 0; k < 8 && Math.abs(t - x) < 50; k++) t = Math.random() * max;
-    target = t; dir = t > x ? 1 : -1; mode = 'walk'; frame = 0; frameAt = 0; show(0);
-  }
-  function tick(now){
-    raf = requestAnimationFrame(tick);
-    const dt = Math.min(now - (last || now), 50); last = now;
-    if (!lane.offsetParent || document.hidden) return;      // drawer shut or tab hidden
-    if (mode === 'rest'){
-      if (now >= until) pickTarget();
-    } else {
-      frameAt += dt;
-      if (frameAt >= FRAME_MS){ frameAt -= FRAME_MS; frame = (frame + 1) % 4; show(frame); }
-      x += dir * SPEED * dt;
-      if ((dir > 0 && x >= target) || (dir < 0 && x <= target)){
-        x = target; mode = 'rest'; until = now + 1800 + Math.random() * 3500; show(1);
-      }
-    }
-    place();
-  }
-  place();
-  until = performance.now() + 1200;
-  raf = requestAnimationFrame(tick);
 })();
 
 /* a live waterloo clock next to featured work. tiny detail, reads as care */
