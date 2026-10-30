@@ -531,6 +531,23 @@
   @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
   .bento-head p{font-size:0.84rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(var(--muted-rgb),.78);font-weight:600}
 
+  /* every landing section opens on the same big serif title as
+     "endorsements" (.sec-title, defined with the press styles) */
+  .work-head{max-width:min(1320px, 100%);margin:0 auto;box-sizing:border-box;
+             padding-inline:clamp(18px,2.2vw,44px)}
+  .work-head .work-title{padding-top:clamp(28px,4.4vh,56px);margin-bottom:0}
+  /* on desktop the intro lives in the rail, this slot only fills on a phone */
+  .work-intro{display:none}
+  @media (max-width: 920px){
+    .work-intro{display:block;padding:3.4rem 0 1.2rem}
+    .work-intro .display-name{margin-bottom:.9rem;line-height:.94}
+    .work-intro .name-first{font-size:clamp(2.7rem,13vw,3.8rem)}
+    .work-intro .name-last{font-size:clamp(1.55rem,7.2vw,2.2rem);letter-spacing:.05em}
+    .work-intro .rail-pitch{font-size:1.02rem;max-width:34ch}
+    .work-intro .tagline{font-size:.96rem;width:100%;max-width:34ch;margin-bottom:0;line-height:1.38}
+    /* the tooltip is a hover thing, on touch it just sits on top of the name */
+    .work-intro .tagline-tooltip{display:none}
+  }
   .bento-grid{
     /* box-sizing keeps the inline padding inside the max-width, so the grid
        never touches the card's edges. the top padding drops the whole set of
@@ -994,32 +1011,17 @@
       margin: 0 auto;
       padding: 0 2.5rem;
     }
-    .pe-masthead {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      margin-bottom: 4rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid rgba(var(--muted-rgb),0.15);
-    }
-    .pe-rule { flex: 1; height: 1px; background: rgba(var(--muted-rgb),0.15); }
-    .pe-tag {
-      font-size: 0.78rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: rgba(var(--muted-rgb),.74);
-      white-space: nowrap;
-      font-weight: 500;
-      font-family: 'Satoshi', sans-serif;
-    }
+    /* section titles: a touch of negative tracking at display size */
+    .sec-title { margin-top: 0; letter-spacing: -0.01em; }
     .pe-body {
       display: grid;
       grid-template-columns: 5fr 7fr;
       gap: 4rem;
       align-items: start;
     }
+    .sec-title,
     .pe-track-label {
-      font-family: ‘Bodoni Moda’, serif;
+      font-family: 'Bodoni Moda', serif;
       font-style: italic;
       font-size: clamp(1.6rem, 3vw, 2.4rem);
       font-weight: 400;
@@ -1244,12 +1246,8 @@
     /* ===== North Star inline section ===== */
     .ns-page { max-width: 1120px; margin: 0 auto; padding: 5rem 2.5rem 7rem; }
 
-    .ns-masthead { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 4.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(var(--muted-rgb),0.18); }
-    .ns-masthead-rule { flex: 1; height: 1px; background: rgba(var(--muted-rgb),0.18); }
-    .ns-masthead-tag { font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(var(--muted-rgb),.72); white-space: nowrap; font-weight: 500; }
-
     .ns-headline-block { margin-bottom: 5rem; }
-    .ns-kicker { font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(var(--muted-rgb),.76); margin-bottom: 1.1rem; font-weight: 500; }
+    .ns-title { margin-bottom: 1.4rem; }
 
     @keyframes nsHeadlineScramble {
       0%   { text-shadow: 6px 0 rgba(var(--rail-accent-rgb), 0.55), -6px 0 rgba(42,157,143,0.55); }
@@ -2735,9 +2733,7 @@
     :root[data-theme="light"] .ns-chaos-name,
     :root[data-theme="light"] .ns-principle-title,
     :root[data-theme="light"] .ns-matrix-table tbody td:first-child { color: var(--ink); }
-    :root[data-theme="light"] .ns-kicker,
-    :root[data-theme="light"] .ns-section-label,
-    :root[data-theme="light"] .ns-masthead-tag { color: var(--accent); }
+    :root[data-theme="light"] .ns-section-label { color: var(--accent); }
     :root[data-theme="light"] .ns-matrix-table thead th { color: var(--accent); border-bottom-color: var(--accent-dim); }
     :root[data-theme="light"] .ns-matrix-table tbody td { color: var(--ink-soft); }
     :root[data-theme="light"] .ns-manifesto p,
@@ -2745,10 +2741,10 @@
     :root[data-theme="light"] .ns-principle-body { color: var(--ink-soft); }
     :root[data-theme="light"] .ns-pull { color: var(--ink); border-left-color: var(--accent-dim); }
     :root[data-theme="light"] .ns-manifesto p:first-child::first-letter { color: var(--accent); }
-    :root[data-theme="light"] .ns-masthead-rule { background: var(--line); }
 
     /* ── endorsements / press ── */
     :root[data-theme="light"] .pe-quote,
+    :root[data-theme="light"] .sec-title,
     :root[data-theme="light"] .pe-track-label,
     :root[data-theme="light"] .pe-press-headline { color: var(--ink); }
     :root[data-theme="light"] .pe-role,
@@ -3443,6 +3439,10 @@
         <!-- Full-width models section -->
         <div class="models-section" id="projects">
 <div id="wrap">
+    <header class="work-head">
+      <div class="work-intro" id="workIntro"></div>
+      <h2 class="sec-title work-title">fea<span class="px">tu</span>red w<span class="px">or</span>k</h2>
+    </header>
     <div class="bento-grid" id="grid">
       <!-- Real HTML so crawlers, AI fetchers and no-JS readers get the work.
            The tile builder clears this and renders the interactive grid. -->
@@ -3461,14 +3461,8 @@
         <div class="northstar-section" id="northstar">
           <main class="ns-page">
 
-            <div class="ns-masthead">
-              <div class="ns-masthead-rule"></div>
-              <span class="ns-masthead-tag">de<span class="px">si</span>gn ph<span class="px">il</span>os<span class="px">op</span>hy &ndash; <span class="px">2026</span></span>
-              <div class="ns-masthead-rule"></div>
-            </div>
-
             <div class="ns-headline-block">
-              <p class="ns-kicker">nor<span class="px">th</span> s<span class="px">ta</span>r</p>
+              <h2 class="sec-title ns-title">nor<span class="px">th</span> s<span class="px">ta</span>r</h2>
               <h2 class="ns-headline" id="northstarHeadline"></h2>
             </div>
 
@@ -3607,12 +3601,6 @@
         <!-- Press & Endorsements -->
         <section class="pe-section" id="endorsements">
           <div class="pe-page">
-
-            <div class="pe-masthead">
-              <div class="pe-rule"></div>
-              <span class="pe-tag">press &amp; en<span class="px">dor</span>se<span class="px">men</span>ts</span>
-              <div class="pe-rule"></div>
-            </div>
 
             <div class="pe-body">
 
@@ -5889,6 +5877,27 @@ document.addEventListener('click', e => {
             }
             cycle();
         }
+
+/* on a phone the rail is a drawer, so the name + pitch were stuck behind the
+   menu button and the page opened on a random tile. under the rail
+   breakpoint the actual intro nodes move into the work header (moved not
+   copied, so the typewriter and the gilmore egg keep working) and they move
+   back when it's wide again */
+(function () {
+  const intro = document.querySelector('.sidebar .rail-intro');
+  const slot  = document.getElementById('workIntro');
+  if (!intro || !slot) return;
+  const home = document.createComment('rail-intro');
+  intro.before(home);
+  const mq = matchMedia('(max-width: 920px)');
+  function place() {
+    if (mq.matches) { if (intro.parentNode !== slot) slot.appendChild(intro); }
+    else if (home.nextSibling !== intro) home.after(intro);
+    dispatchEvent(new Event('railintromove'));
+  }
+  mq.addEventListener('change', place);
+  place();
+})();
 
 window.addEventListener('load', () => {
   startTypewriter();
