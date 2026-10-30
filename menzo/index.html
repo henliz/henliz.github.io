@@ -3408,16 +3408,16 @@ body::after{
 }
 
 /* rail walker: chibi her walking on the spot, feet on the divider line
-   above lets conspire. 12 finished frames (168x255 each) in one sheet;
-   stepping the background from 0 to 12/11 of its width lands on each frame */
+   above lets conspire. 16 finished frames (168x259 each) in one sheet;
+   stepping the background from 0 to 16/15 of its width lands on each frame */
 .rail-walk{ position:relative; height:calc(112px + .3rem); margin-top:auto; pointer-events:none; flex:0 0 auto; }
 .rail-walk + .sb-foot{ margin-top:0 !important; }
 .walker{
-  position:absolute; left:.5rem; bottom:-2px; height:112px; aspect-ratio:168 / 255;
-  background:url('/sky/chibi-walk.webp') 0 0 / 1200% 100% no-repeat;
-  animation:chibiWalk .9s steps(12) infinite;
+  position:absolute; left:.5rem; bottom:-2px; height:112px; aspect-ratio:168 / 259;
+  background:url('/sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat;
+  animation:chibiWalk .96s steps(16) infinite;
 }
-@keyframes chibiWalk{ to{ background-position:calc(100% * 12 / 11) 0; } }
+@keyframes chibiWalk{ to{ background-position:calc(100% * 16 / 15) 0; } }
 @media (prefers-reduced-motion: reduce){ .walker{ animation:none; } }
 </style>
 </head>
@@ -3681,7 +3681,7 @@ body::after{
             <!-- chibi her walking on the spot above lets conspire. a puppet
                  built from her own drawings: one steady body, and every arm
                  and leg picked from a library of all 8 drawn frames to match
-                 a clean walk cycle, then nudged at the joint. 12 frames -->
+                 a clean walk cycle, then nudged at the joint. 16 frames -->
             <div class="rail-walk" aria-hidden="true"><div class="walker"></div></div>
             <div class="sb-foot">
                 <div class="sb-foot-row">
