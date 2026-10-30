@@ -57,7 +57,7 @@ def absolutise(html: str) -> str:
     for d in ASSET_DIRS:
         html = re.sub(r'(["\'(])' + d + r'/', r'\g<1>/' + d + '/', html)
     for f in ('HenLogo.png','loading.gif','Henrietta_van_Niekerk_Resume_2026.pdf',
-              'SkrimpCelebrate.png','SkrimpThinking.png'):
+              'SkrimpCelebrate.webp','SkrimpThinking.webp'):
         html = html.replace('"' + f + '"', '"/' + f + '"')
         html = html.replace("'" + f + "'", "'/" + f + "'")
     return html

@@ -13,8 +13,8 @@
         } catch (e) { document.documentElement.setAttribute('data-theme', 'light'); }
       })();
     </script>
-    <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <!-- icons: minified and deferred, createIcons runs on window load -->
+    <script defer src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.min.js"></script>
     <title>Résumé — Henriëtta van Niekerk</title>
     <meta name="description" content="Résumé for Henriëtta van Niekerk, design engineer. Founder of Skrimp, CTO of Path to Menzoberranzan.">
     <link rel="canonical" href="https://henliz.github.io/resume/">
@@ -3590,6 +3590,136 @@ body::after{
 </div>
 <script>document.getElementById("http-readable").remove();</script>
 
+    <!-- the intro: she falls through the sky while the page loads, then the
+         clouds part and you land on the page. scroll up past the top and
+         it plays again -->
+    <div id="scene-overlay" role="status" aria-label="Loading">
+      <div class="intro-sky"></div>
+      <div class="intro-cloud far" style="--x:4vw;--w:56vw;--t:6.5s;--d:-1.2s;--o:.6;--s:-1"></div>
+      <div class="intro-cloud far" style="--x:56vw;--w:48vw;--t:7.5s;--d:-4.6s;--o:.55;--s:1"></div>
+      <div class="intro-cloud far" style="--x:-14vw;--w:40vw;--t:6s;--d:-5.2s;--o:.5;--s:-1"></div>
+      <div class="intro-cloud cb" style="--x:58vw;--w:44vw;--t:7s;--d:-1s;--o:.8;--s:1"></div>
+      <div class="intro-cloud ca" style="--x:-12vw;--w:56vw;--t:6.4s;--d:-3.6s;--o:.85;--s:-1"></div>
+      <div class="intro-cloud cc" style="--x:30vw;--w:52vw;--t:7.6s;--d:-5.8s;--o:.75;--s:1"></div>
+      <div class="intro-cloud cb" style="--x:-6vw;--w:40vw;--t:6.8s;--d:-6.4s;--o:.8;--s:-1"></div>
+      <div class="intro-cloud ca" style="--x:62vw;--w:50vw;--t:6.2s;--d:-4.4s;--o:.85;--s:1"></div>
+      <div class="intro-fall">
+        <img class="on" src="/sky/hen-fall-1.webp" alt="">
+        <img src="/sky/hen-fall-1s.webp" alt="">
+        <img src="/sky/hen-fall-15.webp" alt="">
+        <img src="/sky/hen-fall-2s.webp" alt="">
+        <img src="/sky/hen-fall-2.webp" alt="">
+      </div>
+      <div class="intro-cloud cc front" style="--x:-30vw;--w:68vw;--t:4.6s;--d:-1.6s;--s:-1"></div>
+      <div class="intro-cloud ca front" style="--x:64vw;--w:66vw;--t:5s;--d:-3.8s;--s:1"></div>
+      <div class="intro-cloud cb front" style="--x:16vw;--w:46vw;--t:5.6s;--d:-.4s;--o:.8;--s:-1"></div>
+      <div class="intro-bar"><i id="overlay-bar"></i></div>
+    </div>
+
+    <script>
+      (function () {
+        const overlay = document.getElementById('scene-overlay');
+        const bar     = document.getElementById('overlay-bar');
+        const fall    = overlay.querySelector('.intro-fall');
+        const frames  = [...fall.querySelectorAll('img')];
+        const calm    = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const MIN_MS  = calm ? 0 : 1600;        // always long enough to see her fall
+        let ready = false, minDone = false, open = true;
+
+        // her kick goes one way, like the north star: pose 1 while she
+        // falls, 1.5 once loading is underway, 2 as she drops into the
+        // clouds. a smear frame flashes between drawn poses. frames are
+        // indexed 0 = 1, 1 = smear, 2 = 1.5, 3 = smear, 4 = 2. nothing swaps
+        // until all five are decoded, so it never flashes an empty frame
+        const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
+        const decoded = Promise.all(frames.map(f => f.decode ? f.decode().catch(() => {}) : null));
+        let pose = 0, smearT = 0, midT = 0;
+        function setPose(next) {
+          if (calm || next <= pose) return;
+          decoded.then(() => {
+            if (!open || next <= pose) return;
+            show(next - 1); pose = next;
+            clearTimeout(smearT); smearT = setTimeout(() => show(pose), 55);
+          });
+        }
+        function resetPose() { clearTimeout(smearT); clearTimeout(midT); pose = 0; show(0); }
+        // 1.5 at 40% loaded, or after a beat if loading is quick
+        function startFall() { resetPose(); midT = setTimeout(() => setPose(2), 900); }
+
+        function part() {
+          if (!open) return;
+          bar.style.transform = 'scaleX(1)';
+          overlay.classList.add('parting');
+          setPose(2); setTimeout(() => setPose(4), 160);   // full kick on the way in
+          setTimeout(() => {
+            overlay.classList.add('hidden');
+            overlay.setAttribute('aria-hidden', 'true');
+            open = false;
+          }, 850);
+        }
+        function maybePart() { if (ready && minDone) part(); }
+
+        // first load: part once the on screen tiles are ready (the tile
+        // module posts progress and then modelsReady), never before MIN_MS
+        window.addEventListener('message', function (e) {
+          const d = e.data || {};
+          if (d.type === 'tileProgress') {
+            bar.style.transform = 'scaleX(' + Math.max(.08, d.p) + ')';
+            if (d.p >= .4) setPose(2);
+          }
+          if (d.type === 'modelsReady') { ready = true; maybePart(); }
+        });
+        // only the homepage gets the intro. a direct link (/trove/ etc)
+        // goes straight in
+        const home = /^\/(index\.html)?$/.test(location.pathname);
+        if (!home) {
+          // no fade either, or you'd see a flash of sky on the way in
+          open = false;
+          overlay.style.transition = 'none';
+          overlay.classList.add('parting', 'hidden');
+          overlay.setAttribute('aria-hidden', 'true');
+          requestAnimationFrame(() => requestAnimationFrame(() => overlay.style.transition = ''));
+        } else {
+          setTimeout(() => { minDone = true; maybePart(); }, MIN_MS);
+          // don't hold people in the sky for long. on a phone over 4g the
+          // first tile could take 8s+ and the intro just sat there, so it
+          // waits at most 3.5s, then parts anyway. tiles still loading
+          // fade in by themselves once they're ready
+          setTimeout(() => { ready = true; minDone = true; maybePart(); }, 3500);
+          startFall();
+        }
+
+        // scroll up past the top: the clouds close back in, she falls
+        // through again, then they part. rate limited
+        let pull = 0, lastPlay = 0;
+        function replay() {
+          const now = performance.now();
+          if (open || now - lastPlay < 3500 || calm) return;
+          if (document.documentElement.hasAttribute('data-pane-open')) return;   // not over a case study
+          lastPlay = now; open = true; pull = 0;
+          overlay.removeAttribute('aria-hidden');
+          overlay.classList.remove('hidden', 'parting');
+          // restart her drop in
+          fall.style.animation = 'none'; void fall.offsetWidth; fall.style.animation = '';
+          startFall();
+          setTimeout(part, 2000);   // drop in, fall for a beat, then part
+        }
+        function atTop() {
+          const sc = window.scroller || document.getElementById('contentCard');
+          return !sc || (sc.scrollTop || 0) <= 2;
+        }
+        addEventListener('wheel', e => {
+          if (e.deltaY < 0 && atTop()) { pull += -e.deltaY; if (pull > 220) replay(); }
+          else pull = 0;
+        }, { passive: true });
+        let ty = null;
+        addEventListener('touchstart', e => { ty = atTop() ? e.touches[0].clientY : null; }, { passive: true });
+        addEventListener('touchmove', e => {
+          if (ty !== null && e.touches[0].clientY - ty > 110) { ty = null; replay(); }
+        }, { passive: true });
+      })();
+    </script>
+
     <!--
         Liquid glass SVG displacement filter.
         backdrop-filter: url(#navbar-lg) geometrically warps background pixels
@@ -3658,7 +3788,7 @@ body::after{
 
         <nav class="navbar">
             <a href="#home" class="logo" onclick="scrollToTop()">
-                <img src="/HenLogo.png" alt="Henlogo">
+                <img src="favicon.png" alt="" loading="lazy">
             </a>
             <ul class="nav-links">
                 <li><a href="/resume/">Resume</a></li>
@@ -4553,6 +4683,9 @@ body::after{
     <script>
     </script>
 
+    <!-- smooth scroll lib, loaded right before the script that sets it up
+         (it used to sit in the head and block the whole first paint) -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script>
     /* ============================================================
        Lenis — butter smooth scroll
@@ -4627,131 +4760,6 @@ body::after{
     })();
     </script>
 
-    <!-- the intro: she falls through the sky while the page loads, then the
-         clouds part and you land on the page. scroll up past the top and
-         it plays again -->
-    <div id="scene-overlay" role="status" aria-label="Loading">
-      <div class="intro-sky"></div>
-      <div class="intro-cloud far" style="--x:4vw;--w:56vw;--t:6.5s;--d:-1.2s;--o:.6;--s:-1"></div>
-      <div class="intro-cloud far" style="--x:56vw;--w:48vw;--t:7.5s;--d:-4.6s;--o:.55;--s:1"></div>
-      <div class="intro-cloud far" style="--x:-14vw;--w:40vw;--t:6s;--d:-5.2s;--o:.5;--s:-1"></div>
-      <div class="intro-cloud cb" style="--x:58vw;--w:44vw;--t:7s;--d:-1s;--o:.8;--s:1"></div>
-      <div class="intro-cloud ca" style="--x:-12vw;--w:56vw;--t:6.4s;--d:-3.6s;--o:.85;--s:-1"></div>
-      <div class="intro-cloud cc" style="--x:30vw;--w:52vw;--t:7.6s;--d:-5.8s;--o:.75;--s:1"></div>
-      <div class="intro-cloud cb" style="--x:-6vw;--w:40vw;--t:6.8s;--d:-6.4s;--o:.8;--s:-1"></div>
-      <div class="intro-cloud ca" style="--x:62vw;--w:50vw;--t:6.2s;--d:-4.4s;--o:.85;--s:1"></div>
-      <div class="intro-fall">
-        <img class="on" src="/sky/hen-fall-1.webp" alt="">
-        <img src="/sky/hen-fall-1s.webp" alt="">
-        <img src="/sky/hen-fall-15.webp" alt="">
-        <img src="/sky/hen-fall-2s.webp" alt="">
-        <img src="/sky/hen-fall-2.webp" alt="">
-      </div>
-      <div class="intro-cloud cc front" style="--x:-30vw;--w:68vw;--t:4.6s;--d:-1.6s;--s:-1"></div>
-      <div class="intro-cloud ca front" style="--x:64vw;--w:66vw;--t:5s;--d:-3.8s;--s:1"></div>
-      <div class="intro-cloud cb front" style="--x:16vw;--w:46vw;--t:5.6s;--d:-.4s;--o:.8;--s:-1"></div>
-      <div class="intro-bar"><i id="overlay-bar"></i></div>
-    </div>
-
-    <script>
-      (function () {
-        const overlay = document.getElementById('scene-overlay');
-        const bar     = document.getElementById('overlay-bar');
-        const fall    = overlay.querySelector('.intro-fall');
-        const frames  = [...fall.querySelectorAll('img')];
-        const calm    = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const MIN_MS  = calm ? 0 : 1600;        // always long enough to see her fall
-        let ready = false, minDone = false, open = true;
-
-        // her kick goes one way, like the north star: pose 1 while she
-        // falls, 1.5 once loading is underway, 2 as she drops into the
-        // clouds. a smear frame flashes between drawn poses. frames are
-        // indexed 0 = 1, 1 = smear, 2 = 1.5, 3 = smear, 4 = 2. nothing swaps
-        // until all five are decoded, so it never flashes an empty frame
-        const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
-        const decoded = Promise.all(frames.map(f => f.decode ? f.decode().catch(() => {}) : null));
-        let pose = 0, smearT = 0, midT = 0;
-        function setPose(next) {
-          if (calm || next <= pose) return;
-          decoded.then(() => {
-            if (!open || next <= pose) return;
-            show(next - 1); pose = next;
-            clearTimeout(smearT); smearT = setTimeout(() => show(pose), 55);
-          });
-        }
-        function resetPose() { clearTimeout(smearT); clearTimeout(midT); pose = 0; show(0); }
-        // 1.5 at 40% loaded, or after a beat if loading is quick
-        function startFall() { resetPose(); midT = setTimeout(() => setPose(2), 900); }
-
-        function part() {
-          if (!open) return;
-          bar.style.transform = 'scaleX(1)';
-          overlay.classList.add('parting');
-          setPose(2); setTimeout(() => setPose(4), 160);   // full kick on the way in
-          setTimeout(() => {
-            overlay.classList.add('hidden');
-            overlay.setAttribute('aria-hidden', 'true');
-            open = false;
-          }, 850);
-        }
-        function maybePart() { if (ready && minDone) part(); }
-
-        // first load: part once the on screen tiles are ready (the tile
-        // module posts progress and then modelsReady), never before MIN_MS
-        window.addEventListener('message', function (e) {
-          const d = e.data || {};
-          if (d.type === 'tileProgress') {
-            bar.style.transform = 'scaleX(' + Math.max(.08, d.p) + ')';
-            if (d.p >= .4) setPose(2);
-          }
-          if (d.type === 'modelsReady') { ready = true; maybePart(); }
-        });
-        // only the homepage gets the intro. a direct link (/trove/ etc)
-        // goes straight in
-        const home = /^\/(index\.html)?$/.test(location.pathname);
-        if (!home) {
-          // no fade either, or you'd see a flash of sky on the way in
-          open = false;
-          overlay.style.transition = 'none';
-          overlay.classList.add('parting', 'hidden');
-          overlay.setAttribute('aria-hidden', 'true');
-          requestAnimationFrame(() => requestAnimationFrame(() => overlay.style.transition = ''));
-        } else {
-          setTimeout(() => { minDone = true; maybePart(); }, MIN_MS);
-          setTimeout(() => { ready = true; minDone = true; maybePart(); }, 8000);   // safety net
-          startFall();
-        }
-
-        // scroll up past the top: the clouds close back in, she falls
-        // through again, then they part. rate limited
-        let pull = 0, lastPlay = 0;
-        function replay() {
-          const now = performance.now();
-          if (open || now - lastPlay < 3500 || calm) return;
-          if (document.documentElement.hasAttribute('data-pane-open')) return;   // not over a case study
-          lastPlay = now; open = true; pull = 0;
-          overlay.removeAttribute('aria-hidden');
-          overlay.classList.remove('hidden', 'parting');
-          // restart her drop in
-          fall.style.animation = 'none'; void fall.offsetWidth; fall.style.animation = '';
-          startFall();
-          setTimeout(part, 2000);   // drop in, fall for a beat, then part
-        }
-        function atTop() {
-          const sc = window.scroller || document.getElementById('contentCard');
-          return !sc || (sc.scrollTop || 0) <= 2;
-        }
-        addEventListener('wheel', e => {
-          if (e.deltaY < 0 && atTop()) { pull += -e.deltaY; if (pull > 220) replay(); }
-          else pull = 0;
-        }, { passive: true });
-        let ty = null;
-        addEventListener('touchstart', e => { ty = atTop() ? e.touches[0].clientY : null; }, { passive: true });
-        addEventListener('touchmove', e => {
-          if (ty !== null && e.touches[0].clientY - ty > 110) { ty = null; replay(); }
-        }, { passive: true });
-      })();
-    </script>
 
 <script>
 /* North star — scroll-triggered scramble headline */
@@ -4874,8 +4882,8 @@ const eul = (x,y,z)=>new THREE.Euler(
         driftAmp:0.10, fitScale:1.06,
         // swapped: the thinker stands with the groceries, the celebrant with the food
         decals:[
-          {url:'/SkrimpThinking.png',  size:[2.80,3.36], pos:[-2.70,1.08,2.6], rotY:0.30},
-          {url:'/SkrimpCelebrate.png', size:[3.25,3.90], pos:[ 4.35,0.32,4.6], rotY:-0.26}
+          {url:'/SkrimpThinking.webp',  size:[2.80,3.36], pos:[-2.70,1.08,2.6], rotY:0.30},
+          {url:'/SkrimpCelebrate.webp', size:[3.25,3.90], pos:[ 4.35,0.32,4.6], rotY:-0.26}
         ]
       },
       {
@@ -5190,9 +5198,8 @@ stations.forEach((cfg,i) => {
          <span class="mascot-lift">
            <img class="mascot-still" src="/mascots/${m.key}-standing.webp" alt="" loading="lazy"
                 style="width:calc(${m.h}cqh * ${m.sw} / ${m.sh})">
-           <span class="mascot-fall" style="
-             --ff:${m.ff}; --fa:${m.fa.toFixed(4)}; --fs:${m.fs};
-             background-image:url('/mascots/${m.key}-fall.webp')"></span>
+           <span class="mascot-fall" data-bg="/mascots/${m.key}-fall.webp" style="
+             --ff:${m.ff}; --fa:${m.fa.toFixed(4)}; --fs:${m.fs}"></span>
          </span>
        </span>`).join('');
 
@@ -5296,8 +5303,21 @@ stations.forEach((cfg,i) => {
     hop.at = home;                         // where he is now, in % of tile width
     let wx = 0, busy = false;              // offset from home, same units
 
+    // his hop sheet loads after the intro, he just stands until it's in
+    const fall = hop.querySelector('.mascot-fall');
+    let sheet = false;
+    const loadSheet = () => {
+      if (sheet || !fall?.dataset.bg) return;
+      sheet = 'loading';
+      const im = new Image();
+      im.onload = () => { fall.style.backgroundImage = `url('${fall.dataset.bg}')`; sheet = true; };
+      im.src = fall.dataset.bg;
+    };
+    addEventListener('message', e => { if (e.data?.type === 'modelsReady') setTimeout(loadSheet, 1500); });
+    setTimeout(loadSheet, 9000);   // in case the intro never posts
+
     const jump = () => {
-      if (busy || !tile) return;
+      if (busy || !tile || sheet !== true) return;
       const W = tile.clientWidth; if (!W) return;
       // mostly little hops, occasionally a big one that actually travels
       const power = Math.random() < 0.72 ? Math.random() * 0.45
@@ -5564,6 +5584,14 @@ stations.forEach((cfg,i) => {
     let done = false;
     return () => { if (done) return; done = true; if (--view.pending === 0) settle(); };
   };
+  // everything below only starts when load() runs: straight away for tiles
+  // on the first screen, otherwise when the tile is about a screen away
+  // (see the end of this script). on a phone that's the difference between
+  // pulling every model on the page up front and pulling one
+  if (cfg.cover) view.cover = true;
+  view.load = () => {
+  if (view.loadStarted) return;
+  view.loadStarted = true;
   setTimeout(settle, 8000);
   {
     // the dom scene's own art (css backgrounds incl ::before/::after, imgs)
@@ -5604,7 +5632,6 @@ stations.forEach((cfg,i) => {
   if (cfg.cover) {
     // nothing for the shared canvas to draw — the tile is its own image, and
     // the hover-video layer sits on top of it like it does everywhere else
-    view.cover = true;
   } else if (cfg.parallax) {
     // Equinox: three stacked billboards, nudged by pointer instead of camera azimuth
     view.layers = [];
@@ -5673,6 +5700,7 @@ stations.forEach((cfg,i) => {
       rel();
     }, undefined, rel);
   }
+  };
 
   // ---- hover + drag-to-orbit, per tile ----
   cell.addEventListener('pointerenter', () => view.hover = 1);
@@ -6022,6 +6050,18 @@ firstScreen = views.filter(v => {
   return r.width && r.top < innerHeight && r.bottom > 0;
 });
 if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'modelsReady' }, '*'); }
+
+// first screen loads now, the rest when they're within about a screen of
+// being scrolled into view
+firstScreen?.forEach(v => v.load());
+{
+  const lazyObs = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const v = views.find(x => x.cell === e.target);
+    if (v) { v.load(); lazyObs.unobserve(e.target); }
+  }), { root: document.getElementById('contentCard'), rootMargin: '100% 0px' });
+  views.forEach(v => { if (!v.loadStarted) lazyObs.observe(v.cell); });
+}
 
 </script>
     <div id="parisModal" class="modal" role="dialog" aria-modal="true">
