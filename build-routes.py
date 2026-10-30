@@ -49,7 +49,7 @@ ROUTES = {
 
 # every directory the shell loads assets from, so a copy one level down
 # still finds them
-ASSET_DIRS = ('models','field','scenes','mascots','fonts','css','js',
+ASSET_DIRS = ('models','field','scenes','mascots','fonts','css','js','sky','lostinhandoff','endorsements',
               'equinox','trove','skrimp','menzo','myauntie','about','playground','resume')
 
 def absolutise(html: str) -> str:
