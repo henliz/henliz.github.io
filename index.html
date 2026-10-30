@@ -3408,12 +3408,12 @@ body::after{
 }
 
 /* rail walker: chibi her walking on the spot, feet on the divider line
-   above lets conspire. 16 finished frames (168x259 each) in one sheet;
+   above lets conspire. 16 finished frames (168x255 each) in one sheet;
    stepping the background from 0 to 16/15 of its width lands on each frame */
 .rail-walk{ position:relative; height:calc(112px + .3rem); margin-top:auto; pointer-events:none; flex:0 0 auto; }
 .rail-walk + .sb-foot{ margin-top:0 !important; }
 .walker{
-  position:absolute; left:.5rem; bottom:-2px; height:112px; aspect-ratio:168 / 259;
+  position:absolute; left:.5rem; bottom:-2px; height:112px; aspect-ratio:168 / 255;
   background:url('./sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat;
   animation:chibiWalk .96s steps(16) infinite;
 }
