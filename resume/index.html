@@ -3326,9 +3326,7 @@ body::after{
    - captions: project name (pixel) + year up top, then the punchy line, then
      stat + tags, all tighter so the titles do the talking
    - numbers on the nav and section titles, a live waterloo clock
-   - tiles sit as one graded set at rest and pop to full colour on hover,
-     no lift (the hover up thing is an ai tell)
-   - the right column drops down so the grid staggers like a magazine */
+   - no hover lift (the hover up thing is an ai tell) */
 .tile-meta{
   display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
   padding-bottom:.55rem; margin-bottom:.6rem;
@@ -3355,21 +3353,22 @@ body::after{
 }
 .local-time time{ font-family:'DotempDemo', monospace; font-size:1.05em; color:rgba(var(--ink-rgb), .72); margin-left:.35em; }
 
-/* graded set at rest, full colour on hover. the sheen carries a faint sky
-   tint that lifts off as the colour comes in */
-.tile{ filter:saturate(.74) brightness(1.03); transition:filter .35s cubic-bezier(.23,1,.32,1), box-shadow .25s cubic-bezier(.23,1,.32,1), scale .12s cubic-bezier(.23,1,.32,1) !important; }
-.cell:hover .tile{ filter:none; }
-.tile-sheen{ background-color:rgba(206,228,238,.10); transition:opacity .25s ease, background-color .35s ease; }
-.cell:hover .tile-sheen{ background-color:rgba(206,228,238,0); }
-@media (hover: none){ .tile{ filter:none; } .tile-sheen{ background-color:transparent; } }
-
-/* stagger: the right hand column sits lower. transform, not margin, so the
-   rows stay aligned underneath and nothing reflows; the grid gets the same
-   amount of padding at the bottom so the last tile isn't clipped */
+/* magazine layout
+   every project gets the shape that suits it instead of six identical
+   boxes: tall for the phone ones, wide for the banner ones. on desktop the
+   grid runs on tiny 8px rows and each cell spans however many its real
+   height needs (set in js, see packGrid), so a tile slots in under
+   whichever column is shorter like a magazine spread. phones keep one
+   column at the original shape */
 @media (min-width: 921px){
-  .bento-grid .cell:nth-child(even){ transform:translateY(clamp(56px, 9vh, 110px)); }
-  .bento-grid{ padding-bottom:clamp(56px, 9vh, 110px) !important; }
-  .work-titlebar .local-time{ transform:none; }
+  .bento-grid{ grid-auto-rows:8px !important; row-gap:0 !important; }
+  .bento-grid .cell{ align-self:start; padding-bottom:clamp(48px, 7.5vh, 96px); }
+  .t-trove .tile{ aspect-ratio:1 / 1 !important; }
+  .t-skrimp .tile{ aspect-ratio:4 / 3 !important; }
+  .t-menzo .tile{ aspect-ratio:10 / 9 !important; }
+  .t-auntie .tile{ aspect-ratio:1 / 1 !important; }
+  .t-equinox .tile{ aspect-ratio:4 / 3 !important; }
+  .t-handoff .tile{ aspect-ratio:889 / 510 !important; }
 }
 @media (max-width: 920px){ .local-time span{ display:none; } }
 </style>
@@ -5680,7 +5679,9 @@ function renderFrame(){
     // shorter than that, pull the camera back by the same factor so the model
     // scales down to fit instead of being cropped top and bottom.
     // parallax tiles are meant to fill their box, so they opt out
-    const boxShrink = v.layers ? 1 : Math.max(1, aspect2 / 1.25);
+    // and the same idea the other way for the squarer magazine tiles, or a
+    // tall phone fills the whole height edge to edge
+    const boxShrink = v.layers ? 1 : Math.max(1, aspect2 / 1.25, 1.3 / aspect2);
     if (v.framed){
       // distance that just fits the box on each axis; take the tighter one
       const vFov = THREE.MathUtils.degToRad(v.camera.fov);
@@ -5724,6 +5725,21 @@ if (window.__gfx.still){
   window.scroller?.addEventListener('scroll', wake, { passive: true });
   addEventListener('scroll', wake, { passive: true });
 }
+
+/* masonry: on desktop each cell spans as many 8px grid rows as its actual
+   height, so the two columns pack independently. runs again whenever a
+   cell changes size (font load, resize, captions wrapping differently) */
+const packMQ = matchMedia('(min-width: 921px)');
+function packGrid(){
+  for (const c of grid.children){
+    if (!packMQ.matches){ c.style.gridRowEnd = ''; continue; }
+    c.style.gridRowEnd = 'span ' + Math.ceil(c.getBoundingClientRect().height / 8);
+  }
+}
+packGrid();
+const packRO = new ResizeObserver(() => requestAnimationFrame(packGrid));
+for (const c of grid.children) packRO.observe(c);
+packMQ.addEventListener('change', packGrid);
 
 // which tiles the cover has to wait for: whatever's on screen right now
 firstScreen = views.filter(v => {
