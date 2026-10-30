@@ -561,12 +561,10 @@
   /* defaults live on the cell so a station's theme block can override them */
   .cell{display:flex;flex-direction:column;gap:.6rem;min-width:0;position:relative;
         --sa:102,252,241;--sa2:168,218,220}
-  /* four equal boxes, then Equinox across the bottom. One grid row each and a
-     fixed aspect on the box, so every tile is exactly the same height however
-     many lines its caption runs to. */
-  .t-trove, .t-skrimp, .t-menzo, .t-auntie {grid-column:span 2}
-  .t-equinox {grid-column:span 4}
-  .t-equinox .tile{aspect-ratio:auto;min-height:clamp(280px,38vh,420px)}
+  /* six equal boxes, two per row. fixed aspect on the box so every tile is
+     the exact same height however many lines its caption runs to. (equinox
+     used to be the wide one across the bottom, the sixth tile evened it out) */
+  .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox, .t-handoff {grid-column:span 2}
 
   .tile{
     position:relative;flex:none;border-radius:20px;overflow:hidden;cursor:pointer;
@@ -3208,12 +3206,9 @@
     row-gap: clamp(44px, 6vh, 72px) !important;
     padding-inline: clamp(14px, 4vw, 26px) !important;
   }
-  .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox{
+  .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox, .t-handoff{
     grid-column: 1 / -1 !important;
   }
-  /* Equinox was the wide one across the bottom; at one column it is the
-     same shape as the rest */
-  .t-equinox .tile{ aspect-ratio: 5 / 3 !important; min-height: 0 !important; }
 }
 
 /* small text
@@ -4490,6 +4485,18 @@ const eul = (x,y,z)=>new THREE.Euler(
         cover:'equinox/equinox-banner.webp', noDrag:true,
         theme:{ accent:'200, 135, 74', accent2:'232, 192, 96', scene:'equinox' },
       },
+      {
+        // no case study yet, so no href: the tile renders as a plain div that
+        // doesn't open anything and hovering just says coming soon
+        name:'Lost in Handoff', category:'UX Research / Healthcare',
+        tagline:'Making sure what first responders learn at the scene actually reaches the hospital',
+        video:{ kind:'soon', label:'coming soon :)' },
+        stat:'GBDA 402 research proposal, in progress',
+        tags:['UX research','Healthcare'],
+        href:null,
+        cover:'lostinhandoff/cover.webp', noDrag:true,
+        theme:{ accent:'196, 40, 40', accent2:'240, 140, 60', scene:'handoff' },
+      },
     ];
 // how far the camera sits back per tile, tuned so each model fills its art box
 const FIT = {
@@ -4502,7 +4509,7 @@ const LIFT = { 'Trove':-0.10, 'Skrimp AI':-0.10 };
 // which grid slot each station takes, keyed by name
 const SLOTS = {
   'Trove':'t-trove', 'Skrimp AI':'t-skrimp', 'Path to Menzoberranzan':'t-menzo',
-  'MyAuntie':'t-auntie', 'Equinox':'t-equinox',
+  'MyAuntie':'t-auntie', 'Equinox':'t-equinox', 'Lost in Handoff':'t-handoff',
 };
 
 /* one renderer for every tile
@@ -4804,21 +4811,24 @@ stations.forEach((cfg,i) => {
   const v = cfg.video || {};
   const videoHtml = !v.kind ? '' :
     v.kind === 'soon'
-      ? `<div class="tile-video tile-video--soon"><span>demo video coming soon</span></div>`
+      ? `<div class="tile-video tile-video--soon"><span>${v.label || 'demo video coming soon'}</span></div>`
       : `<div class="tile-video" data-kind="${v.kind}" data-src="${v.src || v.id}" data-start="${v.start || 0}"></div>`;
 
+  // no href (a coming soon tile) = plain divs, nothing to click through to
+  const tag = cfg.href ? 'a' : 'div';
+  const to  = cfg.href ? ` href="${cfg.href}"` : '';
   cell.innerHTML =
-    `<a class="tile" href="${cfg.href}">
+    `<${tag} class="tile${cfg.href ? '' : ' is-soon'}"${to}>
        <div class="tile-scrim"></div>
        ${mascotHtml}
        ${videoHtml}
-     </a>
-     <a class="tile-cap" href="${cfg.href}">
+     </${tag}>
+     <${tag} class="tile-cap"${to}>
        <div class="tile-name">${cfg.tagline}</div>
        <p class="tile-stat">${cfg.stat}</p>
        <div class="tile-tags">${(cfg.award ? [`<span class="is-award">\u{1F3C6} ${cfg.award}</span>`] : [])
          .concat((cfg.tags || []).map(t => `<span>${t}</span>`)).join('')}</div>
-     </a>`;
+     </${tag}>`;
   grid.appendChild(cell);
 
   /* The idle hop, ported from the landing page's mascot-stage: ONE 0.64s
