@@ -1853,6 +1853,54 @@
             transform: scale(1.04);
         }
 
+        /* her head above the name. the wink is stacked on top and faded in
+           on hover so the swap is instant (both images are already loaded),
+           and a little speech bubble pops out to her right */
+        .rail-hen {
+            position: relative; display: block; align-self: flex-start;
+            width: clamp(40px, 6vh, 54px); aspect-ratio: 220 / 234;
+            margin-bottom: clamp(.15rem, .6vh, .4rem);
+        }
+        .rail-hen img {
+            position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+            filter: drop-shadow(0 6px 14px rgba(20, 40, 60, .22));
+            transition: transform .3s cubic-bezier(.34, 1.4, .64, 1);
+        }
+        .rail-hen .hen-wink { opacity: 0; }
+        .rail-hen:hover .hen-wink, .rail-hen:focus-visible .hen-wink { opacity: 1; }
+        .rail-hen:hover .hen-face, .rail-hen:focus-visible .hen-face { opacity: 0; }
+        .rail-hen:hover img, .rail-hen:focus-visible img { transform: rotate(-6deg) scale(1.05); }
+        .hen-bubble {
+            position: absolute; left: calc(100% + 12px); top: 50%;
+            translate: 0 -50%;
+            background: rgba(5, 9, 15, 0.96); color: rgba(240, 242, 240, 0.85);
+            border: 1px solid rgba(var(--muted-rgb), 0.18);
+            font-family: 'Satoshi', sans-serif; font-size: .8rem; font-weight: 500;
+            line-height: 1.3; width: max-content; max-width: 9.5rem;
+            padding: .45rem .75rem; border-radius: 14px;
+            pointer-events: none; z-index: 50;
+            opacity: 0; transform: scale(.85); transform-origin: left center;
+            transition: opacity .18s ease, transform .25s cubic-bezier(.34, 1.4, .64, 1);
+        }
+        /* the little tail pointing back at her */
+        .hen-bubble::before {
+            content: ''; position: absolute; right: 100%; top: 50%;
+            margin-top: -6px; margin-right: -1px;
+            border: 6px solid transparent; border-right-color: inherit;
+        }
+        .hen-bubble::after {
+            content: ''; position: absolute; right: 100%; top: 50%;
+            margin-top: -5px; margin-right: -2px;
+            border: 5px solid transparent; border-right-color: rgba(5, 9, 15, 0.96);
+        }
+        .rail-hen:hover .hen-bubble, .rail-hen:focus-visible .hen-bubble { opacity: 1; transform: none; }
+        :root[data-theme="light"] .hen-bubble { background: rgba(255,255,255,0.98); color: var(--ink-soft); border-color: var(--line); }
+        :root[data-theme="light"] .hen-bubble::after { border-right-color: rgba(255,255,255,0.98); }
+        @media (prefers-reduced-motion: reduce) {
+            .rail-hen img, .hen-bubble { transition: opacity .15s ease; }
+            .rail-hen:hover img, .rail-hen:focus-visible img { transform: none; }
+        }
+
         /* ── rail: back home ─────────────────────────────
            only exists while a pane is open — the logo alone is a
            weak exit, so a case study gets a labelled way out sat
@@ -1874,10 +1922,10 @@
             display: flex;
             align-items: center;
             gap: clamp(0.4rem, 1.2vh, 0.66rem);
-            /* the surname's own line box sits high against a square mark, so
-               drop it to share a centre line with it and give the first name
-               room to breathe above */
-            margin-top: clamp(0.3rem, 1.25vh, 0.62rem);
+            /* the mark used to sit beside the surname and needed this row
+               dropped to share its centre line. the mark lives above the
+               name now, so it only needs a hair of space */
+            margin-top: clamp(0.1rem, 0.5vh, 0.3rem);
             margin-bottom: clamp(0.1rem, 0.5vh, 0.26rem);
         }
         .name-row .rail-logo { margin-bottom: 0; }
@@ -3670,13 +3718,17 @@ body::after{
             </div>
 
             <div class="rail-intro">
+                <!-- her head above the name. hover (or focus) and she winks
+                     and says she's looking for roles -->
+                <a class="rail-hen" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk, home. looking for winter 2027 roles">
+                    <img class="hen-face" src="/sky/henhead.webp" alt="" width="220" height="234">
+                    <img class="hen-wink" src="/sky/henwink.webp" alt="" width="220" height="234">
+                    <span class="hen-bubble" aria-hidden="true">looking for winter 2027 roles &#10024;</span>
+                </a>
                 <h1 class="display-name">
                     <span class="name-first" aria-label="Henriëtta">Henri<span class="uml">e</span>tta</span>
                     <span class="name-row">
                         <span class="name-last">van Niekerk</span>
-                        <a class="rail-logo" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk — home">
-                            <img src="/HenLogo.png" alt="">
-                        </a>
                     </span>
                 </h1>
 
