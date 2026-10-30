@@ -586,7 +586,6 @@
   }
   .cell:hover .tile::before{left:100%}
   .cell:hover .tile{
-    transform:translateY(-5px);
     border-color:rgba(var(--sa),.42);
     background:rgba(15,20,25,.4);
     box-shadow:0 22px 60px rgba(0,0,0,.4), 0 0 40px rgba(var(--sa),.13), inset 0 1px 0 rgba(255,255,255,.08);
@@ -1733,7 +1732,7 @@
                contact button. They had drifted to five slightly different
                clamps, which is exactly the sort of difference you feel
                without being able to name. */
-            --rail-text: clamp(0.86rem, 2.15vh, 1.1rem);
+            --rail-text: clamp(0.8rem, 1.9vh, 0.98rem);
             --gap: 22px;            /* outer margin — lets the sky show */
             --rail-w: clamp(296px, 20.5vw, 344px);
             --rail-gutter: 16px;
@@ -3085,7 +3084,7 @@
 .tile{ border:none !important; }
 .cell:hover .tile{ border-color:transparent !important; }
 .cell[data-scene] .tile::before{ animation:none !important; }
-.cell:hover .tile{ transform:translateY(-4px); box-shadow:0 26px 64px rgba(20,40,60,.18) !important; }
+.cell:hover .tile{ box-shadow:0 26px 64px rgba(20,40,60,.18) !important; }
 
 
 /* The title carries the tile, so it gets the weight. Not the pixel face:
@@ -3322,6 +3321,57 @@ body::after{
   content:'..'; position:absolute; left:50%; top:-.62em;
   transform:translateX(-50%); letter-spacing:.02em; pointer-events:none;
 }
+
+/* editorial pass
+   - captions: project name (pixel) + year up top, then the punchy line, then
+     stat + tags, all tighter so the titles do the talking
+   - numbers on the nav and section titles, a live waterloo clock
+   - tiles sit as one graded set at rest and pop to full colour on hover,
+     no lift (the hover up thing is an ai tell)
+   - the right column drops down so the grid staggers like a magazine */
+.tile-meta{
+  display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
+  padding-bottom:.55rem; margin-bottom:.6rem;
+  border-bottom:1px solid rgba(var(--ink-rgb), .12);
+}
+.tile-proj{ font-family:'DotempDemo', monospace; font-size:clamp(1.15rem, 1.6vw, 1.45rem); line-height:1.1; color:var(--ink); }
+.tile-year{ font-family:'Satoshi', sans-serif; font-size:.78rem; font-weight:500; letter-spacing:.01em; color:rgba(var(--ink-rgb), .55); white-space:nowrap; }
+.tile-name{
+  font-size:clamp(.9rem, 1.1vw, 1rem) !important; font-weight:500 !important;
+  line-height:1.42 !important; letter-spacing:-.005em !important;
+  color:rgba(var(--ink-rgb), .82) !important;
+}
+.tile-stat{ margin-top:.3rem !important; font-size:.8rem !important; color:rgba(var(--ink-rgb), .55) !important; }
+.tile-tags{ margin-top:.75rem !important; }
+
+.sb-n, .sec-n{ font-family:'DotempDemo', monospace; font-style:normal; color:rgba(var(--ink-rgb), .38); }
+.sb-n{ font-size:.82em; margin-right:.7em; }
+.sec-n{ font-size:.38em; vertical-align:super; margin-right:.45em; letter-spacing:.02em; }
+
+.work-titlebar{ display:flex; align-items:baseline; justify-content:space-between; gap:1rem; }
+.local-time{
+  font-family:'Satoshi', sans-serif; font-size:.78rem; font-weight:500;
+  color:rgba(var(--ink-rgb), .5); white-space:nowrap; margin:0;
+}
+.local-time time{ font-family:'DotempDemo', monospace; font-size:1.05em; color:rgba(var(--ink-rgb), .72); margin-left:.35em; }
+
+/* graded set at rest, full colour on hover. the sheen carries a faint sky
+   tint that lifts off as the colour comes in */
+.tile{ filter:saturate(.74) brightness(1.03); transition:filter .35s cubic-bezier(.23,1,.32,1), box-shadow .25s cubic-bezier(.23,1,.32,1), scale .12s cubic-bezier(.23,1,.32,1) !important; }
+.cell:hover .tile{ filter:none; }
+.tile-sheen{ background-color:rgba(206,228,238,.10); transition:opacity .25s ease, background-color .35s ease; }
+.cell:hover .tile-sheen{ background-color:rgba(206,228,238,0); }
+@media (hover: none){ .tile{ filter:none; } .tile-sheen{ background-color:transparent; } }
+
+/* stagger: the right hand column sits lower. transform, not margin, so the
+   rows stay aligned underneath and nothing reflows; the grid gets the same
+   amount of padding at the bottom so the last tile isn't clipped */
+@media (min-width: 921px){
+  .bento-grid .cell:nth-child(even){ transform:translateY(clamp(56px, 9vh, 110px)); }
+  .bento-grid{ padding-bottom:clamp(56px, 9vh, 110px) !important; }
+  .work-titlebar .local-time{ transform:none; }
+}
+@media (max-width: 920px){ .local-time span{ display:none; } }
 </style>
 </head>
 <body>
@@ -3470,12 +3520,12 @@ body::after{
             </div>
 
             <nav class="sb-group">
-                <a class="sb-link" href="#projects"     data-scroll="#projects">featured work</a>
-                <a class="sb-link" href="#northstar"    data-scroll="#northstar">north star</a>
-                <a class="sb-link" href="#endorsements" data-scroll="#endorsements">endorsements</a>
-                <a class="sb-link" href="/about/"       data-pane="about">about me</a>
-                <a class="sb-link" href="/resume/"      data-pane="resume">resume</a>
-                <a class="sb-link" href="/playground/"  data-pane="playground">playground</a>
+                <a class="sb-link" href="#projects"     data-scroll="#projects"><span class="sb-n">01</span>featured work</a>
+                <a class="sb-link" href="#northstar"    data-scroll="#northstar"><span class="sb-n">02</span>north star</a>
+                <a class="sb-link" href="#endorsements" data-scroll="#endorsements"><span class="sb-n">03</span>endorsements</a>
+                <a class="sb-link" href="/about/"       data-pane="about"><span class="sb-n">04</span>about me</a>
+                <a class="sb-link" href="/resume/"      data-pane="resume"><span class="sb-n">05</span>resume</a>
+                <a class="sb-link" href="/playground/"  data-pane="playground"><span class="sb-n">06</span>playground</a>
             </nav>
 
             <div class="sb-foot">
@@ -3531,7 +3581,7 @@ body::after{
 <div id="wrap">
     <header class="work-head">
       <div class="work-intro" id="workIntro"></div>
-      <h2 class="sec-title work-title">featured work</h2>
+      <div class="work-titlebar"><h2 class="sec-title work-title"><span class="sec-n">01</span>featured work</h2><p class="local-time" aria-label="local time in Waterloo"><span>waterloo, on</span> <time id="localTime"></time></p></div>
     </header>
     <div class="bento-grid" id="grid">
       <!-- Real HTML so crawlers, AI fetchers and no-JS readers get the work.
@@ -3552,7 +3602,7 @@ body::after{
           <main class="ns-page">
 
             <div class="ns-headline-block">
-              <h2 class="sec-title ns-title">north star</h2>
+              <h2 class="sec-title ns-title"><span class="sec-n">02</span>north star</h2>
               <h2 class="ns-headline" id="northstarHeadline"></h2>
             </div>
 
@@ -3696,7 +3746,7 @@ body::after{
 
               <!-- Left: Endorsements -->
               <div>
-                <p class="pe-track-label">endorsements</p>
+                <p class="pe-track-label"><span class="sec-n">03</span>endorsements</p>
                 <!-- Avatars are local files or the .pe-avatar-init monogram, never
                      a hotlink. LinkedIn's media URLs carry a signed ?e= expiry and
                      two of these had been 403ing since March. Drop a square webp in
@@ -4443,7 +4493,8 @@ const eul = (x,y,z)=>new THREE.Euler(
     const stations = [
       {
         name:'Trove', category:'Product Design Engineering / AI',
-        tagline:'Turning behavioural data into a personality read people actually recognise',
+        tagline:'A personality read people actually recognise, built from what they do',
+        title:'Trove', year:'2026',
         stat:'0 \u2192 10,250 users, 61.9K views, five months',
         tags:['Design engineer','LLM runtime','Web + iOS'],
         href:'/trove/',
@@ -4460,7 +4511,8 @@ const eul = (x,y,z)=>new THREE.Euler(
       },
       {
         name:'Skrimp AI', category:'Product Design / AI',
-        tagline:'Planning a week of dinners around live prices and whatever\u2019s already in the fridge',
+        tagline:'A week of dinners planned around live prices and what\u2019s already in the fridge',
+        title:'Skrimp', year:'2025–',
         video:{ kind:'file', src:'/skrimp/media/skrimp-smartload-demo.mp4' },
         stat:'$5K/yr saved per family, free always',
         tags:['Solo founder','Live flyer data','Mobile + web'],
@@ -4497,7 +4549,8 @@ const eul = (x,y,z)=>new THREE.Euler(
       },
       {
         name:'Path to Menzoberranzan', category:'Technical Direction / Game',
-        tagline:'Running a volunteer studio on an undocumented engine',
+        tagline:'A 140 person volunteer studio, shipping on an engine with no docs',
+        title:'Path to Menzoberranzan', year:'2025–',
         video:{ kind:'yt', id:'1oBlmSvi1So' },
         stat:'140+ contributors, 1,700 Patrons, 0 docs',
         tags:['CTO','Build tooling','PC'],
@@ -4509,7 +4562,8 @@ const eul = (x,y,z)=>new THREE.Euler(
       },
       {
         name:'MyAuntie', category:'UX Design / AI',
-        tagline:'Postpartum support that arrives as a text, not another app to download',
+        tagline:'Postpartum support that arrives as a text, not another app',
+        title:'MyAuntie', year:'2025',
         video:{ kind:'yt', id:'kARMZuwfmMA', start:8 },
         stat:'TechNova 2025, concept to live in 36 hours',
         tags:['36-hour build','Telephony'],
@@ -4536,7 +4590,8 @@ const eul = (x,y,z)=>new THREE.Euler(
       },
       {
         name:'Equinox', category:'Game Design / Godot',
-        tagline:'Reading \u201cOvercomplicated Screen Transitions\u201d as a design constraint, not decoration',
+        tagline:'\u201cOvercomplicated screen transitions\u201d, played as a design constraint',
+        title:'Equinox', year:'2026',
         // straight into the game. The showcase opens on a title card and the
         // main menu, which is a jarring thing for a tile to loop on. The yt
         // player seeks here on load AND on every hand-rolled loop.
@@ -4552,7 +4607,8 @@ const eul = (x,y,z)=>new THREE.Euler(
         // no case study yet, so no href: the tile renders as a plain div that
         // doesn't open anything and hovering just says coming soon
         name:'Lost in Handoff', category:'UX Research / Healthcare',
-        tagline:'Making sure what first responders learn at the scene actually reaches the hospital',
+        tagline:'What responders learn at the scene, actually reaching the hospital',
+        title:'Lost in Handoff', year:'2026',
         video:{ kind:'soon', label:'coming soon :)' },
         stat:'GBDA 402 research proposal, in progress',
         tags:['Capstone','UX research','Healthcare'],
@@ -4889,6 +4945,7 @@ stations.forEach((cfg,i) => {
        <div class="tile-sheen"></div>
      </${tag}>
      <${tag} class="tile-cap"${to}>
+       <div class="tile-meta"><span class="tile-proj">${cfg.title || cfg.name}</span><span class="tile-year">${cfg.year || ''}</span></div>
        <div class="tile-name">${cfg.tagline}</div>
        <p class="tile-stat">${cfg.stat}</p>
        <div class="tile-tags">${(cfg.award ? [`<span class="is-award">\u{1F3C6} ${cfg.award}</span>`] : [])
@@ -6044,6 +6101,15 @@ document.addEventListener('click', e => {
   }
   mq.addEventListener('change', place);
   place();
+})();
+
+/* a live waterloo clock next to featured work. tiny detail, reads as care */
+(function(){
+  const el = document.getElementById('localTime');
+  if (!el) return;
+  const fmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', hour: 'numeric', minute: '2-digit' });
+  const tick = () => { el.textContent = fmt.format(new Date()).replace(/\./g, '').toLowerCase(); };
+  tick(); setInterval(tick, 20000);
 })();
 
 window.addEventListener('load', () => {
