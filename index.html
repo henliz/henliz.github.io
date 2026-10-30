@@ -2208,8 +2208,7 @@
             max-width: 100%;
             margin-bottom: 0;
             line-height: 1.38;
-            /* holds the tallest phrase so the nav below doesn't
-               jump around while the typewriter runs */
+            /* fallback until startTypewriter measures the tallest phrase */
             min-height: 4.4em;
         }
         .sidebar .tagline-tooltip {
@@ -5844,6 +5843,29 @@ document.addEventListener('click', e => {
                 if (isGG) tagline.classList.add('gg-active');
                 else      tagline.classList.remove('gg-active');
             }
+
+            /* hold the tallest phrase's height so nothing under it moves
+               while it types. the old fixed em guess was a line short for the
+               9am quote (4 lines in the rail) so the whole nav kept nudging.
+               measured in one go so the test text never actually paints */
+            function reserve() {
+                if (!tagline) return;
+                const keep = el.textContent, keepGG = tagline.classList.contains('gg-active');
+                tagline.style.minHeight = '0px';
+                let max = 0;
+                phrases.forEach(p => {
+                    setGGMode(p.gg); el.textContent = p.text;
+                    max = Math.max(max, tagline.offsetHeight);
+                });
+                el.textContent = keep; setGGMode(keepGG);
+                tagline.style.minHeight = max + 'px';
+            }
+            reserve();
+            document.fonts?.ready.then(reserve);
+            let rq = 0;
+            const queue = () => { cancelAnimationFrame(rq); rq = requestAnimationFrame(reserve); };
+            addEventListener('resize', queue);
+            addEventListener('railintromove', queue);
 
             function type(phrase, cb) {
                 let i = 0; el.textContent = '';
