@@ -560,13 +560,14 @@
   /* each cell is a box plus its caption underneath, so the box is all model */
   /* defaults live on the cell so a station's theme block can override them */
   .cell{display:flex;flex-direction:column;gap:.6rem;min-width:0;position:relative;
-        --sa:102,252,241;--sa2:168,218,220}
-  /* four equal boxes, then Equinox across the bottom. One grid row each and a
-     fixed aspect on the box, so every tile is exactly the same height however
-     many lines its caption runs to. */
-  .t-trove, .t-skrimp, .t-menzo, .t-auntie {grid-column:span 2}
-  .t-equinox {grid-column:span 4}
-  .t-equinox .tile{aspect-ratio:auto;min-height:clamp(280px,38vh,420px)}
+        --sa:102,252,241;--sa2:168,218,220;
+        transition:opacity .5s cubic-bezier(.23,1,.32,1), translate .5s cubic-bezier(.23,1,.32,1)}
+  /* hidden until everything in it has loaded and drawn (see tile reveal) */
+  .cell:not(.is-ready){opacity:0;translate:0 10px}
+  /* six equal boxes, two per row. fixed aspect on the box so every tile is
+     the exact same height however many lines its caption runs to. (equinox
+     used to be the wide one across the bottom, the sixth tile evened it out) */
+  .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox, .t-handoff {grid-column:span 2}
 
   .tile{
     position:relative;flex:none;border-radius:20px;overflow:hidden;cursor:pointer;
@@ -908,87 +909,54 @@
 
         @media screen and (max-width: 600px) {
         }
-    /* === 3D scene loading overlay === */
-    @keyframes overlayGradient {
-      0%   { background-position: 0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    @keyframes gifFloat {
-      0%, 100% { transform: translateY(0px); }
-      50%       { transform: translateY(-8px); }
-    }
+    /* loading cover
+       frosted glass over the actual page, not a separate loading screen. it
+       only waits for the tiles you can see on load (see tile reveal in the
+       module), shows real progress as a thin line, and clears by un-blurring
+       so the page sharpens into place instead of a card fading away */
     #scene-overlay {
       position: fixed;
       inset: 0;
       z-index: 5000;
-      background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2d3748 50%, #1e3a5f 75%, #0f1419 100%);
-      background-size: 400% 400%;
-      animation: overlayGradient 20s ease infinite;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.8s ease, visibility 0.8s ease;
+      display: grid;
+      place-items: center;
+      background: rgba(214, 232, 240, 0.55);
+      backdrop-filter: blur(28px) saturate(1.2);
+      -webkit-backdrop-filter: blur(28px) saturate(1.2);
+      transition: opacity .45s cubic-bezier(.23,1,.32,1),
+                  backdrop-filter .45s cubic-bezier(.23,1,.32,1),
+                  -webkit-backdrop-filter .45s cubic-bezier(.23,1,.32,1),
+                  visibility .45s;
     }
+    :root[data-theme="dark"] #scene-overlay { background: rgba(10, 16, 22, 0.6); }
     #scene-overlay.hidden {
       opacity: 0;
       visibility: hidden;
-      /* opacity and visibility hide it, they do not switch it off. The
-         gradient kept animating for the life of the page: a full-viewport
-         background-position animation, which is not a compositor property,
-         so it repainted 1433x715 every frame behind everything else. The
-         card inside it kept a blur(35px) backdrop-filter alive too, and
-         the opacity:0 makes this element a backdrop root, which is its own
-         render surface. All of it invisible, none of it free. */
-      animation: none;
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
       pointer-events: none;
     }
-    #scene-overlay.hidden *,
-    #scene-overlay.hidden::before,
-    #scene-overlay.hidden::after {
-      animation: none !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
+    .scene-overlay-mark {
+      display: grid; justify-items: center; gap: 18px;
     }
-    .scene-overlay-card {
-      text-align: center;
-      background: rgba(15, 20, 25, 0.15);
-      backdrop-filter: blur(35px);
-      border-radius: 32px;
-      padding: 3rem 2.5rem;
-      border: 1px solid rgba(var(--muted-rgb),0.2);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      max-width: 380px;
-      width: 90%;
+    .scene-overlay-mark img {
+      width: 52px; height: 52px; object-fit: contain;
+      animation: coverBreathe 1.6s ease-in-out infinite alternate;
     }
-    .scene-overlay-gif {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid rgba(var(--muted-rgb),0.4);
-      box-shadow: 0 0 30px rgba(42, 157, 143, 0.3);
-      animation: gifFloat 4s ease-in-out infinite;
-      object-fit: cover;
-      background: rgba(var(--muted-rgb),0.1);
+    @keyframes coverBreathe { from { opacity: .55; transform: scale(.97); } to { opacity: 1; transform: none; } }
+    .scene-overlay-bar {
+      width: 112px; height: 2px; border-radius: 2px; overflow: hidden;
+      background: rgba(var(--muted-rgb), .18);
     }
-    .scene-overlay-title {
-      font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
-      font-size: 1.6rem;
-      background: linear-gradient(45deg, #f1faee, #a8dadc, #66fcf1);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: overlayGradient 6s ease infinite;
-      margin-top: 1.25rem;
-      margin-bottom: 0.5rem;
+    .scene-overlay-bar i {
+      display: block; height: 100%; width: 100%;
+      background: var(--rail-accent, #2a9d8f);
+      transform: scaleX(.08); transform-origin: left;
+      transition: transform .35s cubic-bezier(.23,1,.32,1);
     }
-    .scene-overlay-msg {
-      font-family: 'Satoshi', sans-serif;
-      color: var(--muted);
-      font-size: 1rem;
-      opacity: 0.9;
-      font-style: italic;
+    #scene-overlay.hidden * { animation: none !important; }
+    @media (prefers-reduced-motion: reduce) {
+      .scene-overlay-mark img { animation: none; }
     }
 
     .testimonials-section { display: none; }
@@ -2735,9 +2703,6 @@
     :root[data-theme="light"] .pe-source { color: var(--accent); }
 
     /* ── loading overlay ── */
-    :root[data-theme="light"] #scene-overlay { background: #dbe7ec; }
-    :root[data-theme="light"] .scene-overlay-card { background: rgba(255,255,255,0.8); border-color: var(--line); }
-    :root[data-theme="light"] .scene-overlay-msg { color: var(--ink-soft); }
 
     /* footer.html is injected at runtime and brings its own dark fill */
     :root[data-theme="light"] footer.hen-footer {
@@ -3186,15 +3151,48 @@
   padding-top:clamp(28px,4vh,56px) !important;
 }
 
-/* ── corners, sharpened ──────────────────────────────────────────────────
-   Roughly halved. A soft radius reads friendly; a tight one reads considered.
-   Pills stay pills, and the phone mockups keep their real device radius —
-   that one describes an object rather than styling a box. */
-.tile{ border-radius:10px !important; }
-.sidebar{ border-radius:12px 0 0 12px !important; }
-.content-card{ border-radius:0 12px 12px 0 !important; }
-.case-pane{ border-radius:0 12px 12px 0 !important; }
+/* corners
+   one scale for the whole site: 14 for the big panels, 10 for tiles and
+   cards, 6 for small chips and rows, pills stay pills. the phone mockups
+   keep their real device radius since that's describing an object.
+   desktop: rail and card butt together so the inside edges are square.
+   phone: they're separate floating panels so all four corners round (this
+   used to stay half square on phones because of the !important here) */
+:root{ --r-lg:14px; --r-md:10px; --r-sm:6px; }
+.tile{ border-radius:var(--r-md) !important; }
+.sidebar{ border-radius:var(--r-lg) 0 0 var(--r-lg) !important; }
+.content-card, .case-pane{ border-radius:0 var(--r-lg) var(--r-lg) 0 !important; }
 .tile-video, .tile-scrim{ border-radius:inherit !important; }
+.pe-endorse-card{ border-radius:var(--r-md) !important; }
+.pe-press-item{ border-radius:var(--r-sm) !important; }
+.tile-tags > span, .ns-chaos-tag{ border-radius:var(--r-sm) !important; }
+@media (max-width: 920px){
+  .sidebar, .content-card, .case-pane{ border-radius:var(--r-lg) !important; }
+  .case-pane{ left:var(--gap) !important; }
+  /* the drawer's links were stretched to fill the whole height so they
+     floated way apart. now they stack up top as proper 44px tap rows and
+     the lets conspire row sits at the bottom */
+  .sb-group{ flex:0 0 auto !important; justify-content:flex-start !important; gap:0 !important; }
+  .sb-group .sb-link{ padding-block:.7rem !important; font-size:1.05rem; }
+  .sb-foot{ margin-top:auto; }
+}
+
+/* page grid
+   every landing section shares one content width and one side padding, so
+   the left edge stays put as you scroll. featured work, north star and
+   endorsements used to sit at 3 different left edges (1320/1120/1080 wide
+   with different padding each) */
+:root{ --page-max:1320px; --page-pad:clamp(18px,2.2vw,44px); }
+@media (max-width: 920px){ :root{ --page-pad:clamp(14px,4vw,26px); } }
+.work-head, .bento-grid, .ns-page, .pe-page{
+  max-width:var(--page-max) !important;
+  padding-inline:var(--page-pad) !important;
+  margin-inline:auto;
+  box-sizing:border-box;
+}
+/* the work section's wrapper had 26px of its own on top, that's what
+   pushed featured work in further than everything else */
+#wrap{ padding-inline:0 !important; }
 
 /* ── phones: one tile per row ────────────────────────────────────────────
    The four-up grid kept its columns all the way down, so on a phone each
@@ -3208,12 +3206,9 @@
     row-gap: clamp(44px, 6vh, 72px) !important;
     padding-inline: clamp(14px, 4vw, 26px) !important;
   }
-  .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox{
+  .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox, .t-handoff{
     grid-column: 1 / -1 !important;
   }
-  /* Equinox was the wide one across the bottom; at one column it is the
-     same shape as the rest */
-  .t-equinox .tile{ aspect-ratio: 5 / 3 !important; min-height: 0 !important; }
 }
 
 /* small text
@@ -3244,6 +3239,59 @@
 .btn-cta-primary:active, .btn-cta-northstar:active, .theme-toggle:active,
 .social-btn:active, .rail-back:active { scale: .97; }
 .cell:active .tile { scale: .985; }
+
+/* materials
+   why it felt flat: the glass card was pale blue on a pale blue sky with no
+   shadow and a DARK hairline edge, so it read as a tinted rectangle, and the
+   tiles had one big black blur and an invisible edge. real glass catches
+   light on its edges and sits above what's behind it. so:
+   - panels: bright specular top edge + light hairline, layered soft shadow
+   - tiles: a gloss that fades down from the top edge, a light rim, and a
+     stacked shadow (tight contact + soft ambient) instead of one black blob
+   - grain: a barely there noise over everything so gradients read as a
+     material instead of plastic */
+.sidebar, .content-card{
+  border-color:rgba(255,255,255,.62) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -1px 0 rgba(18,24,31,.05),
+    0 1px 2px rgba(20,40,60,.06),
+    0 10px 24px -8px rgba(20,40,60,.14),
+    0 32px 70px -20px rgba(20,40,60,.26) !important;
+}
+:root[data-theme="dark"] .sidebar, :root[data-theme="dark"] .content-card{
+  border-color:rgba(255,255,255,.09) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 1px 2px rgba(0,0,0,.3),
+    0 32px 70px -20px rgba(0,0,0,.6) !important;
+}
+.tile{
+  box-shadow:
+    0 1px 1px rgba(20,40,60,.10),
+    0 3px 6px -1px rgba(20,40,60,.10),
+    0 14px 32px -10px rgba(20,40,60,.30) !important;
+}
+.cell:hover .tile{
+  box-shadow:
+    0 1px 1px rgba(20,40,60,.08),
+    0 6px 12px -2px rgba(20,40,60,.10),
+    0 28px 56px -14px rgba(20,40,60,.34) !important;
+}
+.tile-sheen{
+  position:absolute; inset:0; z-index:4; pointer-events:none; border-radius:inherit;
+  background:linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.04) 22%, rgba(255,255,255,0) 45%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.42), inset 0 0 0 1px rgba(255,255,255,.12);
+  opacity:.85; transition:opacity .25s ease;
+}
+.cell:hover .tile-sheen{ opacity:1; }
+body::after{
+  content:''; position:fixed; inset:0; z-index:9000; pointer-events:none;
+  opacity:.045; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px 160px;
+}
+:root[data-theme="dark"] body::after{ mix-blend-mode:screen; opacity:.035; }
 </style>
 </head>
 <body>
@@ -4361,59 +4409,38 @@
     </script>
 
     <!-- 3D scene loading overlay: waits for hero + models to be fully rendered -->
-    <div id="scene-overlay">
-      <div class="scene-overlay-card">
-        <img
-          src="/loading.gif"
-          alt=""
-          class="scene-overlay-gif"
-          onerror="this.style.display='none'"
-        >
-        <p class="scene-overlay-title">Loading Magic...</p>
-        <p class="scene-overlay-msg" id="overlay-msg">Warming up the 3D scenes ✨</p>
+    <div id="scene-overlay" role="status" aria-label="Loading">
+      <div class="scene-overlay-mark">
+        <img src="/HenLogo.png" alt="">
+        <div class="scene-overlay-bar"><i id="overlay-bar"></i></div>
       </div>
     </div>
 
     <script>
       (function () {
-        const overlay  = document.getElementById('scene-overlay');
-        const msgEl    = document.getElementById('overlay-msg');
-        let heroReady   = false;
-        let modelsReady = false;
-        let dismissed   = false;
+        const overlay = document.getElementById('scene-overlay');
+        const bar     = document.getElementById('overlay-bar');
+        let dismissed = false;
 
-        const messages = [
-          'Warming up the 3D scenes ✨',
-          'Loading pixels with love 💖',
-          'Summoning digital nostalgia 🌈',
-          'Calibrating liquid glass 🌊',
-        ];
-        let msgIdx = 0;
-        const msgTimer = setInterval(() => {
-          msgIdx = (msgIdx + 1) % messages.length;
-          msgEl.textContent = messages[msgIdx];
-        }, 1800);
-
+        // no fake "ready!" beat, the moment the first screen of tiles is
+        // really drawn the glass clears
         function dismiss() {
           if (dismissed) return;
           dismissed = true;
-          clearInterval(msgTimer);
-          msgEl.textContent = 'Ready! 🎉';
-          // Brief "ready" flash before fading
-          setTimeout(() => overlay.classList.add('hidden'), 300);
+          bar.style.transform = 'scaleX(1)';
+          overlay.classList.add('hidden');
         }
 
+        // the tile module posts progress (0 to 1) as each on screen tile
+        // finishes, then modelsReady once they're all in
         window.addEventListener('message', function (e) {
-          if (e.data && e.data.type === 'modelsReady') modelsReady = true;
-          // the hero is inline now, so the models are the only signal left
-          if (modelsReady) dismiss();
-
+          const d = e.data || {};
+          if (d.type === 'tileProgress') bar.style.transform = 'scaleX(' + Math.max(.08, d.p) + ')';
+          if (d.type === 'modelsReady') dismiss();
         });
 
-        // Hard timeout: if signals never arrive, show the page anyway
-        // Shorter when coming from loading.html (models already cached)
-        const fromLoader = new URLSearchParams(location.search).get('loaded') === 'true';
-        setTimeout(dismiss, fromLoader ? 5000 : 12000);
+        // safety net if a model never shows up (bad network, blocked cdn)
+        setTimeout(dismiss, 8000);
       })();
     </script>
 
@@ -4593,6 +4620,18 @@ const eul = (x,y,z)=>new THREE.Euler(
         cover:'/equinox/equinox-banner.webp', noDrag:true,
         theme:{ accent:'200, 135, 74', accent2:'232, 192, 96', scene:'equinox' },
       },
+      {
+        // no case study yet, so no href: the tile renders as a plain div that
+        // doesn't open anything and hovering just says coming soon
+        name:'Lost in Handoff', category:'UX Research / Healthcare',
+        tagline:'Making sure what first responders learn at the scene actually reaches the hospital',
+        video:{ kind:'soon', label:'coming soon :)' },
+        stat:'GBDA 402 research proposal, in progress',
+        tags:['UX research','Healthcare'],
+        href:null,
+        cover:'lostinhandoff/cover.webp', noDrag:true,
+        theme:{ accent:'196, 40, 40', accent2:'240, 140, 60', scene:'handoff' },
+      },
     ];
 // how far the camera sits back per tile, tuned so each model fills its art box
 const FIT = {
@@ -4605,7 +4644,7 @@ const LIFT = { 'Trove':-0.10, 'Skrimp AI':-0.10 };
 // which grid slot each station takes, keyed by name
 const SLOTS = {
   'Trove':'t-trove', 'Skrimp AI':'t-skrimp', 'Path to Menzoberranzan':'t-menzo',
-  'MyAuntie':'t-auntie', 'Equinox':'t-equinox',
+  'MyAuntie':'t-auntie', 'Equinox':'t-equinox', 'Lost in Handoff':'t-handoff',
 };
 
 /* one renderer for every tile
@@ -4686,7 +4725,7 @@ const views = [];
 
 
 
-function addOverlay(model, url, sizeXY, posXYZ){
+function addOverlay(model, url, sizeXY, posXYZ, onDone){
   texLoader.load(url, tex => {
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
@@ -4697,7 +4736,8 @@ function addOverlay(model, url, sizeXY, posXYZ){
       new THREE.MeshBasicMaterial({map:tex, transparent:true})
     );
     m.position.set(...posXYZ); m.renderOrder = 10; model.add(m);
-  });
+    onDone?.();
+  }, undefined, () => onDone?.());
 }
 
 /* A clip mapped onto the model's OWN screen mesh, rather than onto a plane
@@ -4907,21 +4947,25 @@ stations.forEach((cfg,i) => {
   const v = cfg.video || {};
   const videoHtml = !v.kind ? '' :
     v.kind === 'soon'
-      ? `<div class="tile-video tile-video--soon"><span>demo video coming soon</span></div>`
+      ? `<div class="tile-video tile-video--soon"><span>${v.label || 'demo video coming soon'}</span></div>`
       : `<div class="tile-video" data-kind="${v.kind}" data-src="${v.src || v.id}" data-start="${v.start || 0}"></div>`;
 
+  // no href (a coming soon tile) = plain divs, nothing to click through to
+  const tag = cfg.href ? 'a' : 'div';
+  const to  = cfg.href ? ` href="${cfg.href}"` : '';
   cell.innerHTML =
-    `<a class="tile" href="${cfg.href}">
+    `<${tag} class="tile${cfg.href ? '' : ' is-soon'}"${to}>
        <div class="tile-scrim"></div>
        ${mascotHtml}
        ${videoHtml}
-     </a>
-     <a class="tile-cap" href="${cfg.href}">
+       <div class="tile-sheen"></div>
+     </${tag}>
+     <${tag} class="tile-cap"${to}>
        <div class="tile-name">${cfg.tagline}</div>
        <p class="tile-stat">${cfg.stat}</p>
        <div class="tile-tags">${(cfg.award ? [`<span class="is-award">\u{1F3C6} ${cfg.award}</span>`] : [])
          .concat((cfg.tags || []).map(t => `<span>${t}</span>`)).join('')}</div>
-     </a>`;
+     </${tag}>`;
   grid.appendChild(cell);
 
   /* The idle hop, ported from the landing page's mascot-stage: ONE 0.64s
@@ -5187,9 +5231,45 @@ stations.forEach((cfg,i) => {
                 drag:null, dragQuat:new THREE.Quaternion(), fit:FIT[cfg.name] ?? 6};
   views.push(view);
 
+  /* tile reveal
+     a tile stays invisible until everything in it has actually arrived: its
+     models, their decal + screen textures, and the painted scene's art. then
+     it gets drawn once (even if it's off screen) and the whole cell fades in.
+     models popping into a box you're already looking at reads cheap.
+     every load takes a hold() and calls what it returns when done or failed,
+     and there's an 8s safety net so a dead request can't hide a tile forever */
+  view.pending = 0; view.ready = false; view.shown = false;
+  const settle = () => {
+    if (view.ready) return;
+    view.ready = true;
+    if (window.__gfx.still) requestAnimationFrame(renderFrame); else wake();
+  };
+  const hold = () => {
+    view.pending++;
+    let done = false;
+    return () => { if (done) return; done = true; if (--view.pending === 0) settle(); };
+  };
+  setTimeout(settle, 8000);
+  {
+    // the dom scene's own art (css backgrounds incl ::before/::after, imgs)
+    const artDone = hold();
+    requestAnimationFrame(() => {
+      const urls = new Set();
+      cell.querySelectorAll('.tile, .tile *').forEach(n => [null, '::before', '::after'].forEach(ps => {
+        const bg = getComputedStyle(n, ps).backgroundImage;
+        if (bg && bg !== 'none') for (const m of bg.matchAll(/url\("?(.*?)"?\)/g)) urls.add(m[1]);
+      }));
+      cell.querySelectorAll('.tile img').forEach(im => im.src && urls.add(im.src));
+      Promise.all([...urls].map(u => new Promise(res => {
+        const im = new Image(); im.onload = im.onerror = res; im.src = u;
+      }))).then(artDone);
+    });
+  }
+
   // flat textured planes beside the models: the Skrimp guys, Auntie herself
   function addDecals(){
     (cfg.decals || []).forEach(dc => {
+      const rel = hold();
       texLoader.load(dc.url, tex => {
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.anisotropy = renderer.capabilities.getMaxAnisotropy?.() || 8;
@@ -5200,7 +5280,8 @@ stations.forEach((cfg,i) => {
         sprite.position.set(dc.pos[0], dc.pos[1], dc.pos[2]);
         if (dc.rotY) sprite.rotation.y = dc.rotY;
         sprite.renderOrder = 12; content.add(sprite);
-      });
+        rel();
+      }, undefined, rel);
     });
   }
 
@@ -5232,6 +5313,7 @@ stations.forEach((cfg,i) => {
   } else if (Array.isArray(cfg.models)) {
     addDecals();
     cfg.models.forEach((m,j) => {
+      const rel = hold();
       loader.load(m.url, gltf => {
         const mdl = gltf.scene;
         mdl.scale.setScalar(m.scale ?? 1);
@@ -5251,20 +5333,30 @@ stations.forEach((cfg,i) => {
                                             m.screen.aspect, cell.querySelector('.tf'),
                                             m.screen.fit, m.screen.crop, m.screen.punch);
           view.onScreenVideo?.();
+          // wait for the clip's first frame too, or the phone shows a blank
+          // screen that then pops. 4s cap since an off screen tile's clip
+          // doesn't get its src until it's visible
+          const vr = hold();
+          view.screenVideo.addEventListener('loadeddata', vr, { once: true });
+          view.screenVideo.addEventListener('error', vr, { once: true });
+          setTimeout(vr, 4000);
         } else if (m.screen) {
-          addOverlay(mdl, m.screen.url, m.screen.size, m.screen.pos);
+          addOverlay(mdl, m.screen.url, m.screen.size, m.screen.pos, hold());
         }
-      });
+        rel();
+      }, undefined, rel);
     });
   } else {
+    const rel = hold();
     loader.load(cfg.model, gltf => {
       const mdl = gltf.scene;
       mdl.scale.setScalar(cfg.scale);
       mdl.rotation.copy(eul(...cfg.baseEuler));
       content.add(mdl);
       addDecals();
-      if (cfg.screen) addOverlay(mdl, cfg.screen.url, cfg.screen.size, cfg.screen.pos);
-    });
+      if (cfg.screen) addOverlay(mdl, cfg.screen.url, cfg.screen.size, cfg.screen.pos, hold());
+      rel();
+    }, undefined, rel);
   }
 
   // ---- hover + drag-to-orbit, per tile ----
@@ -5439,10 +5531,22 @@ function anyVisible(){
   if (document.documentElement.hasAttribute('data-pane-open')) return false;
   const H = innerHeight;
   for (const v of views){
+    if (v.ready && !v.shown) return true;     // owes its first draw
     const r = v.el.getBoundingClientRect();
     if (r.width && r.bottom > -200 && r.top < H + 200) return true;
   }
   return false;
+}
+
+/* the cover waits on the tiles that are on screen when the page opens */
+let firstScreen = null;
+function reveal(v){
+  v.shown = true;
+  v.cell.classList.add('is-ready');
+  if (!firstScreen) return;
+  const done = firstScreen.filter(x => x.shown).length;
+  window.postMessage({ type: 'tileProgress', p: done / firstScreen.length }, '*');
+  if (done === firstScreen.length){ firstScreen = null; window.postMessage({ type: 'modelsReady' }, '*'); }
 }
 function wake(){
   /* no document.hidden guard: the browser already throttles rAF to nothing in
@@ -5493,10 +5597,12 @@ function renderFrame(){
 
   for (const v of views){
     const r = v._r;
+    if (!v.ready || r.width === 0) continue;   // still loading, nothing to show
+    const first = !v.shown;                    // drawn once even off screen
     // skip anything scrolled off screen: no scissor, no draw
-    if (r.bottom < 0 || r.top > H || r.width === 0) continue;
+    if (!first && (r.bottom < 0 || r.top > H)) continue;
     // a demo clip is covering this tile — don't draw the model under it
-    if (v.el.parentElement?.classList.contains('is-video')) continue;
+    if (v.el.parentElement?.classList.contains('is-video')) { if (first) reveal(v); continue; }
 
     // Soft drift: the model sways around front-on and eases back, so you
     // always see its face. A full turn spends half its time on the back.
@@ -5524,7 +5630,7 @@ function renderFrame(){
       });
     }
 
-    if (v.cover) continue;          // flat image tile, nothing to draw here
+    if (v.cover) { if (first) reveal(v); continue; }   // flat image tile, nothing to draw here
     // the caption lives outside the box, so the model gets the whole tile
     const artW = r.width, artH = r.height;
     const aspect2 = artW / artH;
@@ -5559,6 +5665,7 @@ function renderFrame(){
     if (cv.width !== pw || cv.height !== ph){ cv.width = pw; cv.height = ph; }
     else ctx.clearRect(0, 0, pw, ph);
     ctx.drawImage(canvas, 0, bufH - ph, pw, ph, 0, 0, pw, ph);
+    if (first) reveal(v);
   }
 }
 if (window.__gfx.still){
@@ -5577,9 +5684,12 @@ if (window.__gfx.still){
   addEventListener('scroll', wake, { passive: true });
 }
 
-// the loading overlay waits on this; posting to ourselves keeps its listener
-// unchanged now that there is no iframe to hear from
-window.postMessage({type:'modelsReady'},'*');
+// which tiles the cover has to wait for: whatever's on screen right now
+firstScreen = views.filter(v => {
+  const r = v.cell.getBoundingClientRect();
+  return r.width && r.top < innerHeight && r.bottom > 0;
+});
+if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'modelsReady' }, '*'); }
 
 </script>
     <div id="parisModal" class="modal" role="dialog" aria-modal="true">
