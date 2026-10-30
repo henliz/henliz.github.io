@@ -23,8 +23,9 @@
     <meta property="og:description" content="Résumé for Henriëtta van Niekerk, design engineer. Founder of Skrimp, CTO of Path to Menzoberranzan.">
     <meta property="og:url" content="https://henliz.github.io/resume/">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="icon" type="image/png" href="/HenLogo.png">
-    <link rel="shortcut icon" type="image/png" href="/HenLogo.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <style>
 /* Satoshi, self-hosted. Replaces Montserrat and Montserrat Alternates:
    squared bowls and tight apertures agree with DotempDemo's staircase where
@@ -1958,9 +1959,11 @@
         }
         .rail-back:hover .rail-back-arrow { transform: translateX(-2px); }
         :root[data-pane-open]:not([data-rail-plain]) .rail-back { display: inline-flex; }
-        /* the mark normally rides the surname, and the intro hides in case
-           mode — so case mode gets its own, left of the way out, tinted by the
-           open study's --logo-filter like every other rail accent */
+        /* the intro (and her head above the name) hides in case mode, so
+           case mode gets its own head, left of the way out. no tint here,
+           the per study --logo-filter would turn her skin funny colours.
+           she still winks on hover, just no speech bubble (that's a
+           homepage only thing) */
         .rail-logo--case { display: none; }
         :root[data-pane-open]:not([data-rail-plain]) .rail-logo--case {
             display: block;
@@ -1969,6 +1972,16 @@
             width: clamp(36px, 5.8vh, 46px); height: clamp(36px, 5.8vh, 46px);
             margin: 0;
         }
+        /* switch the tint off at the source: every logo filter rule reads
+           --logo-filter, so blanking it here beats them all */
+        .rail-logo--case { --logo-filter: none; }
+        .rail-logo--case img { position: absolute; inset: 0; }
+        .rail-logo--case .hen-wink { opacity: 0; }
+        .rail-logo--case:hover .hen-wink, .rail-logo--case:focus-visible .hen-wink { opacity: 1; }
+        .rail-logo--case:hover .hen-face, .rail-logo--case:focus-visible .hen-face { opacity: 0; }
+        /* the about / resume / playground panes keep the home rail, head and
+           all, but the "looking for roles" bubble stays on the homepage */
+        :root[data-pane-open] .hen-bubble { display: none; }
 
         /* ── rail: case mode (name + contents) ───────────── */
         /* the hero intro steps aside so the study you are reading owns
@@ -3682,8 +3695,9 @@ body::after{
 
             <!-- logo mark, plus the way out of a case study -->
             <div class="rail-head">
-                <a class="rail-logo rail-logo--case" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk — home">
-                    <img src="/HenLogo.png" alt="">
+                <a class="rail-logo rail-logo--case" href="#projects" data-scroll="#projects" aria-label="Henriëtta van Niekerk, home">
+                    <img class="hen-face" src="/sky/henhead.webp" alt="" width="220" height="201">
+                    <img class="hen-wink" src="/sky/henwink.webp" alt="" width="220" height="201">
                 </a>
                 <button class="rail-back" id="railBack" type="button">
                     <span class="rail-back-arrow">&larr;</span> back home
