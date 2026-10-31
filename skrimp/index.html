@@ -3500,104 +3500,221 @@ body::after{
    walks always match whatever height she ended up with. she's a bit taller
    than her strip (--reach) and stands up into the empty air under the nav,
    which costs the rail no height */
-.rail-walk{ position:relative; flex:0 1000 calc(112px + .3rem); min-height:0; max-height:calc(112px + .3rem);
+.rail-walk{ position:relative; flex:0 1000 calc(150px + .3rem); min-height:0; max-height:calc(150px + .3rem);
   margin-top:auto; pointer-events:none; container-type:size; }
 :root:not([data-pane-open]) .rail-walk + .sb-foot{ margin-top:0 !important; }
 /* homepage only, never inside a case study (or about / resume) */
 :root[data-pane-open] .rail-walk{ display:none; }
+/* the button is her + her speech bubble. the button does the pacing and the
+   sprite inside does the stepping and turning around, so the bubble rides
+   along with her without getting mirrored on the walk back.
+   her height leaves --bub of room over her head for the bubble so it never
+   pokes up into the nav. on short screens the bubble moves beside her head
+   instead (see the container query) and she walks --side less far so it
+   always fits */
 .walker{
   --reach: 22px;
-  --h: calc(100cqh - .3rem + var(--reach));
+  --bub: 44px;
+  --side: 0px;
+  --h: calc(100cqh - .3rem + var(--reach) - var(--bub));
   --w: calc(var(--h) * 168 / 255);
   position:absolute; left:0; bottom:-2px; height:var(--h); width:var(--w);
+  border:0; padding:0; margin:0; background:none; cursor:pointer; pointer-events:auto;
+  animation:chibiPace 11s linear infinite;
+}
+.walker-sprite{
+  position:absolute; inset:0;
   background:url('/sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat;
-  animation:
-    chibiWalk .96s steps(16) infinite,
-    chibiPace 11s linear infinite,
-    chibiFace 11s step-end infinite;
+  animation:chibiWalk .96s steps(16) infinite, chibiFace 11s step-end infinite;
 }
 @keyframes chibiWalk{ to{ background-position:calc(100% * 16 / 15) 0; } }
 /* across to the far side, then back the same way */
 @keyframes chibiPace{
   0%, 100% { translate: .25rem 0; }
-  50%      { translate: calc(100cqw - var(--w) - .25rem) 0; }
+  50%      { translate: calc(100cqw - var(--w) - var(--side) - .25rem) 0; }
 }
 @keyframes chibiFace{ 0% { scale: 1 1; } 50% { scale: -1 1; } }
+/* she stops while you're on her (a moving target is no fun to click) and
+   while you two are chatting */
+.walker:hover, .walker:hover .walker-sprite,
+.walker:focus-visible, .walker:focus-visible .walker-sprite,
+.walker[aria-expanded="true"], .walker[aria-expanded="true"] .walker-sprite{ animation-play-state:paused; }
+.walker:focus-visible{ outline:none; }
+.walker:focus-visible .wb-in{ outline:2px solid var(--rail-accent); outline-offset:3px; }
+
+/* her speech bubble. a little white sticker: ink outline, hard offset
+   shadow, pixel font. "!" by default, "wanna chat?" when you hover her,
+   typing dots while she's answering you, a heart while the chat's open */
+.walker-bubble{ position:absolute; left:50%; bottom:calc(100% + 6px); translate:-50% 0; pointer-events:none; }
+.wb-in{
+  position:relative; display:flex; align-items:center; justify-content:center;
+  min-width:32px; height:32px; padding:0 .6rem; white-space:nowrap;
+  font:1.05rem/1 'DotempDemo', monospace; color:#14202b;
+  background:#fff; border:2px solid #14202b; border-radius:12px;
+  box-shadow:2px 3px 0 #14202b;
+  transform-origin:50% 100%; opacity:0;
+  animation:wbIn .45s cubic-bezier(.34, 1.5, .64, 1) 2.5s forwards, wbBob 1.8s ease-in-out 2.95s infinite;
+}
+/* the tail: a rotated square showing two of its borders, so it reads as a
+   little V of outline poking out of the bubble */
+.wb-in::before{
+  content:''; position:absolute; left:50%; top:100%; width:9px; height:9px; margin:-5px 0 0 -5.5px;
+  background:#fff; border:2px solid #14202b; border-top:0; border-left:0; rotate:45deg;
+}
+.wb-dots{ display:inline-flex; gap:3px; }
+.wb-dots i{ width:5px; height:5px; border-radius:50%; background:currentColor; animation:hcDot 1s ease-in-out infinite; }
+.wb-dots i:nth-child(2){ animation-delay:.15s; }
+.wb-dots i:nth-child(3){ animation-delay:.3s; }
+@keyframes wbIn{ from{ opacity:0; transform:translateY(8px) scale(.5); } to{ opacity:1; transform:none; } }
+@keyframes wbBob{ 0%, 100%{ translate:0 0; } 50%{ translate:0 -3px; } }
+/* short rails: no room over her head, so the bubble sits beside it
+   instead, tail pointing back at her, and she stops short of the far edge
+   so it never gets cut off */
+@container (max-height: 120px){
+  .walker{ --bub:0px; --side:64px; }
+  .walker-bubble{ left:calc(100% - 2px); bottom:auto; top:6px; translate:none; }
+  .wb-in{ transform-origin:0 50%; }
+  .wb-in::before{ left:0; top:50%; margin:-5px 0 0 -6px; border:2px solid #14202b; border-top:0; border-right:0; }
+}
 @container (max-height: 54px){ .walker{ display:none; } }
 
-/* she's clickable. the strip stays click-through, only she catches the
-   pointer, and she stops walking while you're on her so she's not a moving
-   target */
-.walker{ border:0; padding:0; margin:0; cursor:pointer; pointer-events:auto; }
-.walker:hover, .walker:focus-visible, .walker[aria-expanded="true"]{ animation-play-state:paused; }
-.walker:focus-visible{ outline:2px solid var(--rail-accent); outline-offset:3px; border-radius:6px; }
-/* the "!" over her head. she's mirrored on the walk back but a "!" doesn't
-   care. it shows up a beat after the page settles, and once you've said hi
-   it's gone for the visit */
-.walker-alert{
-  position:absolute; left:50%; bottom:calc(100% + 4px);
-  width:20px; height:22px; margin-left:-10px;
-  display:grid; place-items:center;
-  font:700 .8rem/1 'Satoshi', sans-serif; color:#0b1218;
-  background:#fff; border-radius:8px;
-  box-shadow:0 3px 10px rgba(20, 40, 60, .25);
-  opacity:0; animation:alertIn .35s cubic-bezier(.34, 1.4, .64, 1) 2.5s forwards, alertBob 1.6s ease-in-out 2.85s infinite;
-}
-/* the little tail pointing down at her */
-.walker-alert::after{ content:''; position:absolute; top:100%; left:50%; margin-left:-4px; border:4px solid transparent; border-top-color:#fff; }
-.walker.said-hi .walker-alert{ display:none; }
-@keyframes alertIn{ from{ opacity:0; transform:translateY(6px) scale(.6); } to{ opacity:1; transform:none; } }
-@keyframes alertBob{ 0%, 100%{ translate:0 0; } 50%{ translate:0 -3px; } }
-
-/* the chat window. sits just right of the rail, bottom lined up with her
-   (the js places it), and pops up out of her corner */
+/* the chat window. same sticker look as her bubble: ink outline, hard
+   shadow, a little sky up top with her in it. sits just right of the rail
+   with its bottom lined up with her (the js places it) and pops up out of
+   her corner */
 .hen-chat{
+  --hc-bg:#fbfdfe; --hc-ink:#14202b; --hc-soft:#5b6c79; --hc-line:#14202b;
+  --hc-hen:#eaf5fa; --hc-you:#14202b; --hc-you-ink:#fff; --hc-acc:#2a9d8f;
+  --hc-sky:linear-gradient(180deg, #b9e1f2, #e4f4fa);
   position:fixed; left:300px; bottom:24px; z-index:60;
-  width:min(300px, calc(100vw - 24px));
-  display:flex; flex-direction:column; max-height:min(470px, calc(100vh - 48px));
-  background:rgba(5, 9, 15, .96); color:rgba(240, 242, 240, .9);
-  border:1px solid rgba(var(--muted-rgb), .18); border-radius:16px;
-  box-shadow:0 18px 50px rgba(0, 0, 0, .35);
-  font-family:'Satoshi', sans-serif;
+  width:min(340px, calc(100vw - 24px));
+  display:flex; flex-direction:column; max-height:min(560px, calc(100vh - 40px));
+  background:var(--hc-bg); color:var(--hc-ink);
+  border:2px solid var(--hc-line); border-radius:22px;
+  box-shadow:4px 5px 0 var(--hc-line), 0 24px 60px rgba(20, 40, 60, .25);
+  font-family:'Satoshi', sans-serif; overflow:hidden;
   transform-origin:left bottom;
-  animation:hcIn .28s cubic-bezier(.34, 1.3, .64, 1);
+  animation:hcIn .32s cubic-bezier(.34, 1.4, .64, 1);
+}
+:root:not([data-theme="light"]) .hen-chat{
+  --hc-bg:#0d1820; --hc-ink:#eef6f8; --hc-soft:#93a9b6; --hc-line:#03070a;
+  --hc-hen:#16303f; --hc-you:#bfe6f0; --hc-you-ink:#0b1620; --hc-acc:#66d9cc;
+  --hc-sky:linear-gradient(180deg, #1c4560, #11293a);
+  border-color:rgba(168, 218, 220, .35);
 }
 .hen-chat[hidden]{ display:none; }
 :root[data-pane-open] .hen-chat{ display:none; }
-@keyframes hcIn{ from{ opacity:0; transform:translateY(8px) scale(.92); } to{ opacity:1; transform:none; } }
-.hc-bar{ display:flex; align-items:center; gap:.5rem; padding:.6rem .7rem .55rem .85rem; border-bottom:1px solid rgba(var(--muted-rgb), .12); }
-.hc-bar img{ width:22px; height:auto; }
-.hc-title{ flex:1; font-family:'DotempDemo', monospace; font-size:.95rem; color:var(--ink); }
-.hc-x{ width:26px; height:26px; border:0; border-radius:8px; background:transparent; color:inherit; font-size:1.2rem; line-height:1; cursor:pointer; opacity:.7; }
-.hc-x:hover, .hc-x:focus-visible{ opacity:1; background:rgba(var(--muted-rgb), .12); }
-.hc-log{ flex:1; min-height:120px; overflow-y:auto; padding:.8rem .85rem .4rem; display:flex; flex-direction:column; gap:.4rem; overscroll-behavior:contain; }
-.hc-msg{ margin:0; max-width:85%; padding:.5rem .7rem; border-radius:14px; font-size:.84rem; line-height:1.4; animation:hcMsg .2s ease-out; }
-.hc-hen{ align-self:flex-start; background:rgba(var(--muted-rgb), .12); border-bottom-left-radius:4px; }
-.hc-you{ align-self:flex-end; background:rgba(var(--rail-accent-rgb), .16); border-bottom-right-radius:4px; }
-.hc-msg a, .hc-go{ color:var(--rail-accent); text-decoration:underline; text-underline-offset:2px; }
-.hc-go{ border:0; padding:0; background:none; font:inherit; cursor:pointer; }
-@keyframes hcMsg{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:none; } }
-/* her typing dots */
-.hc-dots{ display:inline-flex; gap:3px; padding:.2rem 0; }
-.hc-dots i{ width:5px; height:5px; border-radius:50%; background:currentColor; opacity:.4; animation:hcDot 1s ease-in-out infinite; }
+@keyframes hcIn{ from{ opacity:0; transform:translateY(10px) scale(.9); } to{ opacity:1; transform:none; } }
+
+/* header: her in a little sky, two clouds drifting behind */
+.hc-bar{
+  position:relative; display:flex; align-items:center; gap:.7rem;
+  padding:.8rem .8rem .75rem .9rem; background:var(--hc-sky);
+  border-bottom:2px solid var(--hc-line); overflow:hidden; isolation:isolate;
+}
+.hc-bar::before, .hc-bar::after{
+  content:''; position:absolute; z-index:-1; border-radius:999px; background:rgba(255, 255, 255, .7);
+  box-shadow:14px -6px 0 2px rgba(255, 255, 255, .7), 30px 0 0 -2px rgba(255, 255, 255, .7);
+  animation:hcCloud 18s linear infinite;
+}
+.hc-bar::before{ width:26px; height:12px; top:12px; left:58%; }
+.hc-bar::after{ width:20px; height:9px; top:38px; left:20%; opacity:.6; animation-duration:26s; animation-delay:-9s; }
+:root:not([data-theme="light"]) .hc-bar::before, :root:not([data-theme="light"]) .hc-bar::after{ opacity:.12; }
+@keyframes hcCloud{ from{ translate:-60px 0; } to{ translate:200px 0; } }
+.hc-av{
+  position:relative; flex:none; width:44px; height:44px; border-radius:50%;
+  background:#fff; border:2px solid var(--hc-line); box-shadow:2px 2px 0 var(--hc-line);
+}
+.hc-av img{ position:absolute; left:50%; top:54%; width:34px; height:auto; translate:-50% -50%; }
+.hc-av .hc-wink{ opacity:0; }
+/* she winks on and off while she's typing, like she's talking */
+.hen-chat.talking .hc-wink{ animation:hcTalk .5s steps(1) infinite; }
+.hen-chat.talking .hc-face{ animation:hcTalk .5s steps(1) infinite reverse; }
+@keyframes hcTalk{ 0%{ opacity:0; } 50%{ opacity:1; } }
+.hc-online{ position:absolute; right:-2px; bottom:-1px; width:12px; height:12px; border-radius:50%; background:#3ddc84; border:2px solid var(--hc-line); }
+.hc-who{ flex:1; display:flex; flex-direction:column; gap:.1rem; min-width:0; }
+.hc-name{ font-family:'DotempDemo', monospace; font-size:1.15rem; line-height:1.1; color:var(--hc-ink); }
+.hc-sub{ font-size:.72rem; font-weight:500; color:var(--hc-soft); }
+.hc-x{
+  flex:none; width:30px; height:30px; display:grid; place-items:center;
+  border:2px solid var(--hc-line); border-radius:50%; background:var(--hc-bg); color:var(--hc-ink);
+  font-size:1.05rem; line-height:1; cursor:pointer; box-shadow:2px 2px 0 var(--hc-line);
+  transition:translate .12s ease, box-shadow .12s ease;
+}
+.hc-x:hover{ translate:-1px -1px; box-shadow:3px 3px 0 var(--hc-line); }
+.hc-x:active{ translate:1px 1px; box-shadow:0 0 0 var(--hc-line); }
+
+/* the conversation. a faint dot grid, like notebook paper */
+.hc-log{
+  flex:1; min-height:160px; overflow-y:auto; overscroll-behavior:contain;
+  padding:.9rem .85rem .6rem; display:flex; flex-direction:column; gap:.5rem;
+  background-image:radial-gradient(rgba(var(--hc-dot, 20, 32, 43), .08) 1px, transparent 1.2px);
+  background-size:14px 14px;
+}
+:root:not([data-theme="light"]) .hc-log{ --hc-dot:168, 218, 220; }
+.hc-row{ display:flex; align-items:flex-end; gap:.4rem; animation:hcMsg .22s ease-out; }
+.hc-row.you{ justify-content:flex-end; }
+.hc-mini{ flex:none; width:24px; height:auto; margin-bottom:2px; }
+/* only the first of a run of her messages gets her little face */
+.hc-row.hen + .hc-row.hen .hc-mini{ visibility:hidden; }
+.hc-msg{ margin:0; max-width:80%; padding:.55rem .75rem; font-size:.85rem; line-height:1.45; border:1.5px solid var(--hc-line); overflow-wrap:anywhere; }
+.hc-row.hen .hc-msg{ background:var(--hc-hen); border-radius:16px 16px 16px 5px; }
+.hc-row.you .hc-msg{ background:var(--hc-you); color:var(--hc-you-ink); border-radius:16px 16px 5px 16px; }
+.hc-msg p{ margin:0; }
+.hc-msg p + p{ margin-top:.45rem; }
+.hc-msg a{ color:inherit; font-weight:600; text-decoration:underline; text-decoration-color:var(--hc-acc); text-decoration-thickness:2px; text-underline-offset:2px; }
+.hc-msg strong{ font-weight:700; }
+.hc-caret{ display:inline-block; width:2px; height:1em; margin-left:1px; vertical-align:-2px; background:currentColor; animation:hcBlink .8s steps(1) infinite; }
+@keyframes hcBlink{ 50%{ opacity:0; } }
+@keyframes hcMsg{ from{ opacity:0; translate:0 4px; } to{ opacity:1; translate:0 0; } }
+.hc-dots{ display:inline-flex; gap:3px; padding:.25rem 0; }
+.hc-dots i{ width:6px; height:6px; border-radius:50%; background:currentColor; opacity:.35; animation:hcDot 1s ease-in-out infinite; }
 .hc-dots i:nth-child(2){ animation-delay:.15s; }
 .hc-dots i:nth-child(3){ animation-delay:.3s; }
-@keyframes hcDot{ 0%, 60%, 100%{ opacity:.3; transform:none; } 30%{ opacity:.9; transform:translateY(-2px); } }
-.hc-chips{ display:flex; flex-wrap:wrap; gap:.3rem; padding:.45rem .85rem .8rem; border-top:1px solid rgba(var(--muted-rgb), .1); }
-.hc-chips:empty{ display:none; }
-.hc-chip{ border:1px solid rgba(var(--rail-accent-rgb), .35); background:transparent; color:inherit; font:500 .76rem/1.2 'Satoshi', sans-serif; padding:.32rem .6rem; border-radius:999px; cursor:pointer; transition:background .15s ease, scale .12s ease; }
-.hc-chip:hover, .hc-chip:focus-visible{ background:rgba(var(--rail-accent-rgb), .14); }
-.hc-chip:active{ scale:.96; }
-:root[data-theme="light"] .hen-chat{ background:rgba(255, 255, 255, .98); color:var(--ink-soft); border-color:var(--line); box-shadow:0 18px 50px rgba(20, 40, 60, .18); }
-/* phones: no rail beside her, so it's a little sheet along the bottom,
-   over the menu drawer she lives in (that's z 900) */
+@keyframes hcDot{ 0%, 60%, 100%{ opacity:.35; transform:none; } 30%{ opacity:1; transform:translateY(-2px); } }
+
+/* follow-up questions ride under her answer, lined up with her bubble */
+.hc-follow{ display:flex; flex-wrap:wrap; gap:.4rem; padding-left:28px; animation:hcMsg .22s ease-out; }
+.hc-chip{
+  display:inline-flex; align-items:center; gap:.35rem;
+  border:1.5px solid var(--hc-line); background:var(--hc-bg); color:var(--hc-ink);
+  font:600 .76rem/1.2 'Satoshi', sans-serif; padding:.4rem .7rem; border-radius:999px; cursor:pointer;
+  box-shadow:2px 2px 0 var(--hc-line); text-align:left;
+  transition:translate .12s ease, box-shadow .12s ease, background .15s ease;
+}
+.hc-chip::before{ content:'\2726'; color:var(--hc-acc); font-size:.7rem; }
+.hc-chip:hover, .hc-chip:focus-visible{ translate:-1px -1px; box-shadow:3px 3px 0 var(--hc-line); background:var(--hc-hen); }
+.hc-chip:active{ translate:1px 1px; box-shadow:0 0 0 var(--hc-line); }
+.hc-chip:focus-visible{ outline:2px solid var(--hc-acc); outline-offset:2px; }
+
+/* type your own question */
+.hc-compose{ display:flex; gap:.45rem; padding:.65rem .75rem .75rem; border-top:2px solid var(--hc-line); background:var(--hc-bg); }
+.hc-compose input{
+  flex:1; min-width:0; border:1.5px solid var(--hc-line); border-radius:999px;
+  padding:.55rem .9rem; background:var(--hc-bg); color:var(--hc-ink);
+  font:500 .84rem 'Satoshi', sans-serif;
+}
+.hc-compose input::placeholder{ color:var(--hc-soft); }
+.hc-compose input:focus{ outline:2px solid var(--hc-acc); outline-offset:1px; }
+.hc-compose button{
+  flex:none; width:38px; height:38px; display:grid; place-items:center; cursor:pointer;
+  border:2px solid var(--hc-line); border-radius:50%; background:var(--hc-acc); color:#0b1620;
+  box-shadow:2px 2px 0 var(--hc-line); transition:translate .12s ease, box-shadow .12s ease;
+}
+.hc-compose button:hover{ translate:-1px -1px; box-shadow:3px 3px 0 var(--hc-line); }
+.hc-compose button:active{ translate:1px 1px; box-shadow:0 0 0 var(--hc-line); }
+.hc-compose svg{ width:16px; height:16px; }
+/* phones: no rail beside her, so it's a sheet along the bottom, over the
+   menu drawer she lives in (that's z 900). 16px input so ios doesn't zoom */
 @media (max-width: 920px){
-  .hen-chat{ left:12px !important; right:12px; bottom:12px !important; width:auto; z-index:950; }
+  .hen-chat{ left:12px !important; right:12px; bottom:12px !important; width:auto; z-index:950; max-height:min(560px, calc(100dvh - 24px)); }
+  .hc-compose input{ font-size:16px; }
 }
 @media (prefers-reduced-motion: reduce){
-  .walker-alert{ animation:alertIn .01s linear 2.5s forwards; }
-  .hen-chat, .hc-msg{ animation:none; }
-  .hc-dots i{ animation:none; }
+  .wb-in{ animation:wbIn .01s linear 2.5s forwards; }
+  .hen-chat, .hc-row, .hc-follow, .hc-bar::before, .hc-bar::after{ animation:none; }
+  .hc-dots i, .wb-dots i, .hc-caret{ animation:none; }
+  .hen-chat.talking .hc-wink, .hen-chat.talking .hc-face{ animation:none; }
 }
 
 /* short laptop screens (1366x768 and friends): the rail was only ever a
@@ -3610,7 +3727,7 @@ body::after{
   .sidebar .btn-cta-secondary{ padding-top:.55rem; padding-bottom:.55rem; }
   .rail-pitch{ margin-bottom:.3rem; }
 }
-@media (prefers-reduced-motion: reduce){ .walker{ animation:none; translate:.25rem 0; } }
+@media (prefers-reduced-motion: reduce){ .walker, .walker-sprite{ animation:none; } .walker{ translate:.25rem 0; } }
 </style>
 </head>
 <body>
@@ -4017,20 +4134,32 @@ body::after{
                  and leg picked from a library of all 8 drawn frames to match
                  a clean walk cycle, then nudged at the joint. 16 frames -->
             <div class="rail-walk">
-                <button class="walker" type="button" aria-label="say hi to mini hen" aria-haspopup="dialog" aria-expanded="false" aria-controls="henChat">
-                    <span class="walker-alert" aria-hidden="true">!</span>
+                <button class="walker" type="button" aria-label="chat with mini hen" aria-haspopup="dialog" aria-expanded="false" aria-controls="henChat">
+                    <span class="walker-sprite" aria-hidden="true"></span>
+                    <span class="walker-bubble" aria-hidden="true"><span class="wb-in"><span class="wb-txt">!</span></span></span>
                 </button>
             </div>
-            <!-- the little chat she opens. scripted, no ai, every answer is
-                 stuff that's already on the site -->
+            <!-- the little chat she opens. scripted, no ai: a web of questions
+                 and answers (all stuff that's already on the site) that
+                 branches off whatever you asked last -->
             <div class="hen-chat" id="henChat" role="dialog" aria-label="chat with mini hen" hidden>
                 <div class="hc-bar">
-                    <img src="/sky/henhead.webp" alt="" width="22" height="20">
-                    <span class="hc-title">mini hen</span>
+                    <span class="hc-av">
+                        <img class="hc-face" src="/sky/henhead.webp" alt="" width="220" height="201">
+                        <img class="hc-wink" src="/sky/henwink.webp" alt="" width="220" height="201">
+                        <span class="hc-online"></span>
+                    </span>
+                    <span class="hc-who">
+                        <span class="hc-name">mini hen</span>
+                        <span class="hc-sub">henri&euml;tta's sidekick &middot; always online</span>
+                    </span>
                     <button class="hc-x" type="button" aria-label="close chat">&times;</button>
                 </div>
                 <div class="hc-log" aria-live="polite"></div>
-                <div class="hc-chips"></div>
+                <form class="hc-compose" autocomplete="off">
+                    <input type="text" maxlength="140" placeholder="ask me anything&hellip;" aria-label="ask mini hen a question">
+                    <button type="submit" aria-label="send"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg></button>
+                </form>
             </div>
             <div class="sb-foot">
                 <div class="sb-foot-row">
@@ -6734,70 +6863,263 @@ document.addEventListener('click', e => {
   frame(performance.now());
 })();
 
-/* mini hen's chat. click her and she types back. it's all scripted, the
-   questions are buttons so there's nothing to type and no wrong answers */
+/* mini hen's chat. click her and she types back. no ai: it's a web of
+   questions, each answer offers a couple of follow-ups based on what you
+   just asked, nothing gets offered twice, and you can type too (keywords
+   route you to the closest answer). she talks about henriëtta in third
+   person, she's the sidekick */
 (function(){
   const btn = document.querySelector('.walker');
   const box = document.getElementById('henChat');
   if (!btn || !box) return;
   document.body.appendChild(box);        // fixed position, so out of the rail
-  const log = box.querySelector('.hc-log'), chips = box.querySelector('.hc-chips');
+  const log = box.querySelector('.hc-log');
+  const form = box.querySelector('.hc-compose');
+  const input = form.querySelector('input');
+  const bub = btn.querySelector('.wb-txt');
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  try { if (sessionStorage.getItem('henChatSeen')) btn.classList.add('said-hi'); } catch {}
+  const wait = ms => new Promise(r => setTimeout(r, still ? 0 : ms));
 
-  const facts = [
-    'she was on CTV three times in 2025, for Skrimp',
-    'she\'s a hackathon and game jam winner',
-    'she was a Women of the Year nominee for 2026',
-    'she\'s probably running 47 browser tabs rn',
-    'she turns caffeine into shipped products',
-  ];
-  let fact = Math.random() * facts.length | 0;
-  const mail = '<a href="mailto:henrietta@skrimp.ai">henrietta@skrimp.ai</a>';
-  const topics = [
-    { q: 'what is she looking for?', a: () => ['winter 2027 roles!! \u2728', 'she\'s a design engineer, so anywhere design and code meet. ' + mail + ' if that\'s you'] },
-    { q: 'where should I start?', a: () => ['trove! 0 to 10,250 users in five months', '<button class="hc-go" type="button" data-go="trove">open trove \u2192</button>'] },
-    { q: 'tell me something random', a: () => [facts[fact++ % facts.length]] },
-    { q: 'how do I reach her?', a: () => ['email\'s fastest: ' + mail, 'or <a href="https://www.linkedin.com/in/henriettavanniekerk" target="_blank" rel="noopener">linkedin</a>'] },
-  ];
+  const MAIL = '[henrietta@skrimp.ai](mailto:henrietta@skrimp.ai)';
 
-  const add = (html, who) => {
-    const m = document.createElement('p');
-    m.className = 'hc-msg hc-' + who; m.innerHTML = html;
-    log.appendChild(m); log.scrollTop = log.scrollHeight;
+  // the script. id is how answers point at each other, q is the chip label,
+  // match is what routes a typed question here, next is the follow-ups, and
+  // go opens a page (through the same router as the tiles) after she answers
+  const S = [
+    // the three openers
+    { id: 'who', q: 'who is henriëtta?', match: ['who is', 'who\'s', 'what does do', 'what do you do', 'design engineer'],
+      a: 'a design engineer: she doesn\'t stop at the mockup, and she doesn\'t write code with no thought for the person using it. she founded **skrimp**, she\'s cto of **path to menzoberranzan**, and she was hire #1 at **trove**.',
+      next: ['code', 'skrimp', 'origin'] },
+    { id: 'start', q: 'where should I start?', match: ['start', 'best', 'portfolio', 'project', 'work', 'show me'],
+      a: 'depends what you\'re into! big numbers, something with heart, or something fun?',
+      next: ['numbers', 'heart', 'playful'] },
+    { id: 'looking', q: 'what is she looking for?', match: ['looking for', 'hiring', 'hire her', 'job', 'role', 'available', 'opportunit', 'winter', '2027', 'contract', 'full-time', 'full time'],
+      a: '**winter 2027 roles**, full-time or contract. design engineering, anywhere design and code meet. she graduates from waterloo in december 2026.',
+      next: ['base', 'hire', 'reach'] },
+
+    // the "where should I start" branches
+    { id: 'numbers', q: 'big numbers pls', match: ['numbers', 'growth', 'users', 'metrics', 'impact'],
+      a: 'trove! she was hire #1 and took it from one validated feature to **10,250 users** and 3× weekly growth in five months. 1,331 commits in 18 weeks, more than anyone else on the repo.',
+      next: ['troveHow', 'troveGo'] },
+    { id: 'heart', q: 'something with heart', match: ['heart', 'meaningful', 'impact', 'health', 'postpartum'],
+      a: 'my auntie: the first ai postpartum companion, built for a 3am brain, not ideal conditions. you just call or text it. built in 36 hours, and it won technova 2025.',
+      next: ['auntieGo', 'awards'] },
+    { id: 'playful', q: 'something fun', match: ['fun', 'game jam', 'cozy'],
+      a: 'equinox! a cozy 3d puzzle game made by 14 people in 2 weeks. it won comfy winter jam 2025, 1st of 88. she built the player controller and interactions in godot.',
+      next: ['equinoxGo', 'games'] },
+
+    // the projects
+    { id: 'trove', q: 'tell me about trove', match: ['trove'],
+      a: 'she was hire #1 on trove, a social story app on web and ios. took it from one validated feature to **10,250 users** and 3× weekly growth in five months.',
+      next: ['troveHow', 'troveGo'] },
+    { id: 'troveHow', q: 'what did she build there?', match: ['pipeline', 'llm', 'eval', 'sprite'],
+      a: 'the story pipeline: an llm writes it, simulated players play it start to finish, it gets scored on its weakest moment and revised before a human signs off. plus a sprite compositor that replaced 392 hand-drawn assets with a handful of anchors.',
+      next: ['troveGo', 'code'] },
+    { id: 'troveGo', q: 'open trove', go: 'trove', a: 'opening trove for you ✨' },
+    { id: 'skrimp', q: 'what\'s skrimp?', match: ['skrimp', 'grocery', 'groceries', 'meal', 'startup', 'founder', 'ctv'],
+      a: 'her startup! a live ai grocery app across ontario that plans meals from what\'s on sale and what\'s already in your fridge. 2,000+ users, and families save $50 to $100 a week.',
+      next: ['skrimpMoney', 'skrimpGo'] },
+    { id: 'skrimpMoney', q: 'who backs skrimp?', match: ['fund', 'backed', 'money', 'investor', 'velocity'],
+      a: 'conrad school\'s e co-op ($5k, twice), velocity\'s cornerstone award, the jain family award for entrepreneurship, and kwc municipal governments. ctv has covered it three times too.',
+      next: ['skrimpGo', 'lead'] },
+    { id: 'skrimpGo', q: 'open skrimp', go: 'skrimp', a: 'opening skrimp ✨' },
+    { id: 'ptm', q: 'what\'s path to menzoberranzan?', match: ['menzo', 'ptm', 'path to', 'baldur', 'bg3', 'mod', 'cto', 'volunteer'],
+      a: 'a volunteer expansion for baldur\'s gate 3: 140+ contributors, 1,700 patreon members, covered by kotaku and thegamer. she\'s cto. she inherited it collapsing and moved an 80gb+ repo onto self-hosted forgejo with git lfs.',
+      next: ['ptmAudio', 'ptmGo'] },
+    { id: 'ptmAudio', q: 'anything cool she shipped there?', match: ['audio', 'skunkworks', 'composer', 'tool'],
+      a: 'her skunkworks team shipped a tool that solved a 16-year-old problem in bg3 audio modding. a multi-step manual slog for composers is now one click.',
+      next: ['ptmGo', 'games'] },
+    { id: 'ptmGo', q: 'open path to menzoberranzan', go: 'menzo', a: 'opening path to menzoberranzan ✨' },
+    { id: 'auntieGo', q: 'open my auntie', go: 'myauntie', match: ['auntie', 'technova'], a: 'opening my auntie ✨' },
+    { id: 'equinoxGo', q: 'open equinox', go: 'equinox', match: ['equinox', 'godot'], a: 'opening equinox ✨' },
+
+    // hiring
+    { id: 'base', q: 'where is she based?', match: ['based', 'where is she', 'location', 'remote', 'relocat', 'move', 'canada', 'waterloo', 'toronto', 'live'],
+      a: 'kitchener-waterloo, canada 🍁 she\'s up for roles in canada or remote, and happy to travel for work. she\'s just staying put in kw.',
+      next: ['hire', 'reach'] },
+    { id: 'hire', q: 'why should I hire her?', match: ['why should', 'why her', 'strength', 'good at', 'convince'],
+      a: 'she ships the thing, not just the mockup of the thing. 10,250 users at trove, 2,000+ on skrimp, 140 volunteers shipping into one build at ptm. and she leads: 6 interns at skrimp, six departments at ptm.',
+      next: ['awards', 'lead', 'reach'] },
+    { id: 'awards', q: 'has she won stuff?', match: ['award', 'won', 'win', 'prize', 'hackathon', 'nominee', 'woman of the year', 'women of the year'],
+      a: 'technova 2025 (my auntie), comfy winter jam 2025 (equinox, 1st of 88), the jain family award for entrepreneurship, velocity\'s cornerstone award, and a kw oktoberfest women of the year nomination for 2026.',
+      next: ['heart', 'playful', 'reach'] },
+    { id: 'lead', q: 'how does she lead teams?', match: ['lead', 'team', 'manage', 'mentor', 'intern', 'collaborat'],
+      a: 'she managed 6 first-year engineering interns at skrimp across two co-op terms, and at ptm she keeps 140 volunteers across six departments shipping into one build. her trick: systems simple enough for juniors to reason about under pressure.',
+      next: ['ptm', 'hire'] },
+    { id: 'code', q: 'does she actually code?', match: ['code', 'coding', 'program', 'engineer', 'stack', 'react', 'typescript', 'language', 'rust', 'technical', 'develop'],
+      a: 'every day. react, typescript, next.js, three.js, convex, firestore, godot, lua. lately she\'s been learning **rust** and hardware development for her capstone, and having way too much fun with it.',
+      next: ['capstone', 'site', 'troveHow'] },
+    { id: 'capstone', q: 'what\'s her capstone?', match: ['capstone', 'handoff', 'hardware', 'paramedic', 'firefighter', 'hospital'],
+      a: 'lost in handoff: what paramedics and firefighters learn at the scene, and whether it actually reaches the hospital. it\'s still cooking, which is why it says "coming soon" on the home page.',
+      next: ['looking', 'site'] },
+    { id: 'site', q: 'how did she make this site?', match: ['site', 'website', 'portfolio built', 'three.js', 'threejs', 'made this', 'mini hen', 'who are you'],
+      a: 'hand-coded! a three.js sky, a pixel-meets-serif type system, a girl falling through the north star, and me: a 16-frame walk cycle puppeted out of her own drawings.',
+      next: ['code', 'fun'] },
+    { id: 'reach', q: 'how do I reach her?', match: ['contact', 'email', 'reach', 'linkedin', 'get in touch', 'message'],
+      a: 'email\'s fastest: ' + MAIL + '. or [linkedin](https://www.linkedin.com/in/henriettavanniekerk). tell her mini hen sent you ✨',
+      next: ['resume'] },
+    { id: 'resume', q: 'can I see her résumé?', go: 'resume', match: ['resume', 'résumé', 'cv'], a: 'opening her résumé ✨' },
+
+    // her, off the clock
+    { id: 'origin', q: 'how\'d she get into this?', match: ['get into', 'got into', 'background', 'story', 'started', 'why design'],
+      a: 'sideways! she trained herself to really *see* first: how light pulls through curtain fabric, how shadow gives a sketch weight. software showed up through aesthetics.',
+      next: ['from', 'fun'] },
+    { id: 'from', q: 'where is she from?', match: ['from', 'south africa', 'springbok', 'rugby', 'grew up', 'grow up', 'hometown'],
+      a: 'south africa 🏉 the springboks won their 2023 world cup knockouts by one point, three matches running, and she has not been normal about it since.',
+      next: ['fun', 'games'] },
+    { id: 'fun', q: 'what\'s she into outside work?', match: ['outside', 'hobb', 'free time', 'for fun', 'weekend', 'lift', 'gym'],
+      a: 'games, cosmic horror, lifting (since 2021), and the springboks. she likes systems that shouldn\'t work but do.',
+      next: ['games', 'books', 'from'] },
+    { id: 'games', q: 'what does she play?', match: ['play', 'games', 'gaming', 'steam', 'cyberpunk', 'elden', 'rivals'],
+      a: 'cyberpunk 2077 (**570 hours**) and baldur\'s gate 3 (**543**, and she\'s cto of a bg3 expansion, so that tracks). then hogwarts legacy, marvel rivals, stardew, and lately the blood of dawnwalker. plus hundreds of hours of skyrim and fallout on xbox.',
+      next: ['elden', 'cozy', 'cowork'] },
+    { id: 'elden', q: 'has she 100%\'d anything?', match: ['100%', 'elden', 'achievement', 'completion', 'platinum'],
+      a: 'elden ring. all 42 of 42 achievements. no notes.',
+      next: ['cozy', 'ptm'] },
+    { id: 'cozy', q: 'cozy games or scary games?', match: ['cozy', 'scary', 'horror game', 'stardew', 'fnaf', 'freddy'],
+      a: 'both!! stardew valley and castle crashers on one side, five nights at freddy\'s, little nightmares and still wakes the deep on the other. and she builds the cozy kind: equinox won comfy winter jam.',
+      next: ['equinoxGo', 'books'] },
+    { id: 'cowork', q: 'weirdest steam stat?', match: ['weird', 'steam stat', 'co-working', 'coworking', 'on-together'],
+      a: '236 hours in on-together, a virtual co-working game. so yes, she games while she works. by working.',
+      next: ['code', 'reach'] },
+    { id: 'books', q: 'what\'s she reading?', match: ['read', 'book', 'horror', 'master and margarita'],
+      a: 'the master and margarita right now. she\'s into cosmic horror, narrative ux, and anything with a system hiding under the story.',
+      next: ['games', 'origin'] },
+
+    // the nudge pair, only ever offered together after a longer chat
+    { id: 'nudgeYes', q: 'yes, let\'s talk', a: 'yay!! ' + MAIL + ' is the fastest way. tell her mini hen sent you ✨', next: [] },
+    { id: 'nudgeNo', q: 'maybe later', a: 'no rush! what else do you wanna know?', next: [] },
+  ];
+  const byId = Object.fromEntries(S.map(x => [x.id, x]));
+  const OPENERS = ['who', 'start', 'looking'];
+  const NUDGE = ['nudgeYes', 'nudgeNo'];
+  const HELLO = ['hiii! I\'m mini hen 👋', 'henriëtta\'s sidekick. ask me anything about her, or tap a question ↓'];
+  const FALLBACK = 'ooh, that one\'s above my pay grade (I\'m like 90 pixels tall). ask her yourself: ' + MAIL;
+
+  // what this chat has already covered, so nothing's offered twice
+  const asked = new Set();
+  let answered = 0, nudged = false, busy = false;
+  const fresh = id => !asked.has(id) && !NUDGE.includes(id);
+
+  // tiny markdown: **bold**, *italic*, [links](...)
+  const esc = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const md = t => esc(t)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\(((?:https?:|mailto:)[^)\s]+)\)/g, (m, txt, url) =>
+      `<a href="${url}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${txt}</a>`);
+
+  // a typed question goes to: an exact chip, a greeting, the best keyword hit, or the fallback
+  function find(text){
+    const raw = text.toLowerCase().trim();
+    const exact = S.find(x => x.q.toLowerCase() === raw);
+    if (exact) return exact;
+    if (/^(hi+|hey+|hello|yo|sup)\b/.test(raw)) return { a: 'hiii! ask me about her work, what she\'s looking for, or what she does for fun.', next: [] };
+    // strip the filler first, so "tell me about her startup" is just
+    // "startup". if nothing's left, they just want to know about her
+    const t = filler(raw);
+    if (!t.replace(/[^a-z0-9]/g, '')) return byId.who;
+    // then the longest keyword that hits wins, so specific beats generic
+    let best = null, len = 0;
+    for (const x of S){
+      if (NUDGE.includes(x.id)) continue;
+      for (const k of x.keys) if (k.length > len && t.includes(k)){ best = x; len = k.length; }
+    }
+    return best || { a: FALLBACK, next: [] };
+  }
+  function filler(t){
+    return t.replace(/\b(can you |could you )?(tell me( more)?|talk|what about|about)\b/g, ' ')
+            .replace(/\b(her|she|henri[eë]tta)\b/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  // keywords get the same cleanup so "hire her" still matches "hire".
+  // a one letter leftover would match everything, so those go
+  S.forEach(x => { x.keys = (x.match || []).map(filler).filter(k => k.length > 1); });
+
+  const scroll = () => { log.scrollTop = log.scrollHeight; };
+  function row(who){
+    const r = document.createElement('div');
+    r.className = 'hc-row ' + who;
+    if (who === 'hen') r.innerHTML = '<img class="hc-mini" src="/sky/henhead.webp" alt="" width="220" height="201">';
+    const m = document.createElement('div');
+    m.className = 'hc-msg';
+    r.appendChild(m); log.appendChild(r); scroll();
     return m;
-  };
-  // she "types" each line: dots for a beat (longer for longer lines), then the text
-  let timer = 0;
-  function hen(lines){
-    chips.innerHTML = '';
-    const next = () => {
-      if (!lines.length) return offer();
-      const line = lines.shift();
-      const dots = add('<span class="hc-dots"><i></i><i></i><i></i></span>', 'hen');
-      timer = setTimeout(() => {
-        dots.innerHTML = line; log.scrollTop = log.scrollHeight;
-        timer = setTimeout(next, still ? 0 : 250);
-      }, still ? 0 : Math.min(1100, 380 + line.length * 9));
-    };
-    next();
   }
-  function offer(){
-    chips.innerHTML = '';
-    topics.forEach(t => {
+
+  // the bubble over her head in the rail mirrors what she's up to
+  const short = () => getComputedStyle(btn).getPropertyValue('--side').trim() !== '0px';
+  function say(mode){
+    if (mode === 'typing') bub.innerHTML = '<span class="wb-dots"><i></i><i></i><i></i></span>';
+    else bub.textContent = mode === 'hover' ? (short() ? 'chat?' : 'wanna chat?') : mode === 'open' ? '♡' : '!';
+  }
+
+  // dots for a beat, then the answer types out word by word
+  async function hen(text){
+    box.classList.add('talking'); say('typing');
+    const m = row('hen');
+    m.innerHTML = '<span class="hc-dots"><i></i><i></i><i></i></span>';
+    await wait(Math.min(900, 350 + text.length * 3));
+    const words = text.split(/(\s+)/);
+    if (still) m.innerHTML = '<p>' + md(text) + '</p>';
+    else for (let i = 1; i <= words.length; i += 2){
+      m.innerHTML = '<p>' + md(words.slice(0, i).join('')) + '<span class="hc-caret"></span></p>';
+      scroll();
+      await wait(22);
+    }
+    m.innerHTML = '<p>' + md(text) + '</p>';
+    scroll();
+    box.classList.remove('talking'); say(box.hidden ? '!' : 'open');
+  }
+
+  // follow-ups: this answer's own first, minus anything asked already. if
+  // that leaves fewer than two, top up with questions nobody's touched yet,
+  // ones that keep the chat going before ones that leave for a page
+  function offer(ids, keep){
+    let list = keep ? ids.slice() : (ids || []).filter(fresh);
+    for (const leaves of [false, true]){
+      for (const x of S){
+        if (keep || list.length >= 2) break;
+        if (fresh(x.id) && !list.includes(x.id) && !!x.go === leaves) list.push(x.id);
+      }
+    }
+    list = list.slice(0, 3);
+    if (!list.length) return;
+    const f = document.createElement('div');
+    f.className = 'hc-follow';
+    list.forEach(id => {
       const c = document.createElement('button');
-      c.type = 'button'; c.className = 'hc-chip'; c.textContent = t.q;
-      c.onclick = () => { add(t.q, 'you'); hen(t.a()); };
-      chips.appendChild(c);
+      c.type = 'button'; c.className = 'hc-chip'; c.textContent = byId[id].q;
+      c.onclick = () => ask(byId[id]);
+      f.appendChild(c);
     });
-    // the chips coming back squeeze the log, so keep her last line in view
-    log.scrollTop = log.scrollHeight;
+    log.appendChild(f); scroll();
   }
-  // "open trove" goes through the same router as the tiles
-  log.addEventListener('click', e => {
-    const go = e.target.closest('[data-go]');
-    if (go) { close(); window.closeSidebar?.(); window.routeTo?.(go.dataset.go); }   // closes the phone menu too
-  });
+
+  async function ask(item, typed){
+    if (busy) return;
+    busy = true;
+    log.querySelectorAll('.hc-follow').forEach(f => f.remove());   // old chips go once you pick
+    row('you').textContent = typed || item.q;
+    if (item.id) asked.add(item.id);
+    await wait(250);
+    await hen(item.a);
+    busy = false;
+    // some answers walk you to the page
+    if (item.go){
+      await wait(700);
+      close(); window.closeSidebar?.(); window.routeTo?.(item.go);
+      return;
+    }
+    // a longer chat earns one nudge toward the real her
+    if (++answered >= 5 && !nudged){
+      nudged = true; busy = true;
+      await wait(400);
+      await hen('you\'ve asked me a LOT about her 👀 wanna say hi to her properly?');
+      busy = false;
+      return offer(NUDGE, true);
+    }
+    offer(item.next);
+  }
 
   // next to the rail on desktop, lined up with her feet
   function place(){
@@ -6807,23 +7129,37 @@ document.addEventListener('click', e => {
     box.style.left = Math.round(rail.right + 14) + 'px';
     box.style.bottom = Math.max(12, Math.round(innerHeight - strip.bottom)) + 'px';
   }
-  function open(){
+  async function open(){
     place();
     box.hidden = false;
     btn.setAttribute('aria-expanded', 'true');
-    btn.classList.add('said-hi');
-    try { sessionStorage.setItem('henChatSeen', '1'); } catch {}
-    if (!log.childElementCount) hen(['hiii! I\'m mini hen \ud83d\udc4b', 'I pace around down here while henri\u00ebtta works. ask me stuff']);
-    (chips.querySelector('button') || box.querySelector('.hc-x')).focus({ preventScroll: true });
+    say('open');
+    if (matchMedia('(pointer: fine)').matches) input.focus({ preventScroll: true });
+    if (log.childElementCount) return;
+    busy = true;
+    for (const line of HELLO) await hen(line);
+    busy = false;
+    offer(OPENERS, true);
   }
   function close(refocus){
     if (box.hidden) return;
     box.hidden = true;
     btn.setAttribute('aria-expanded', 'false');
+    say('!');
     if (refocus) btn.focus({ preventScroll: true });
   }
+
   btn.addEventListener('click', () => box.hidden ? open() : close());
+  btn.addEventListener('pointerenter', () => { if (box.hidden) say('hover'); });
+  btn.addEventListener('pointerleave', () => { if (box.hidden) say('!'); });
   box.querySelector('.hc-x').addEventListener('click', () => close(true));
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const t = input.value.trim();
+    if (!t || busy) return;
+    input.value = '';
+    ask(find(t), t);
+  });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !box.hidden) close(true); });
   // clicking anywhere else closes it
   addEventListener('pointerdown', e => {
