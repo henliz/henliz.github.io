@@ -4831,8 +4831,10 @@ const eul = (x,y,z)=>new THREE.Euler(
         // texture, the same overlay trick MyAuntie's screenshot uses
         domScene:'field',
         models:[
+          // a 30s cut of the case study's clip that fades back into its first
+          // frame so the loop doesn't jump. half the size of the full one
           {url:'/models/iphone.glb', scale:0.019*1.5, baseEuler:[0, 15, 10], pos:[0,0,0],
-           screen:{ video:'/trove/vid/ob-play.mp4', mesh:'Wallpaper', aspect:362/814 }}
+           screen:{ video:'/trove/vid/ob-play-loop.mp4', mesh:'Wallpaper', aspect:362/814 }}
         ],
         driftAmp:0.13, fitScale:0.86,
         theme:{ accent:'236, 127, 14', accent2:'253, 213, 84', scene:'trove' },
