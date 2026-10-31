@@ -13,8 +13,8 @@
         } catch (e) { document.documentElement.setAttribute('data-theme', 'light'); }
       })();
     </script>
-    <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <!-- icons: minified and deferred, createIcons runs on window load -->
+    <script defer src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.min.js"></script>
     <title>About Me — Henriëtta van Niekerk</title>
     <meta name="description" content="Henriëtta van Niekerk is a design engineer and founder in Waterloo, Ontario, building systems that carry the load instead of the person.">
     <link rel="canonical" href="https://henliz.github.io/about/">
@@ -3478,9 +3478,14 @@ body::after{
 .ns-hen img{ position:absolute; inset:0; width:100%; height:100%; opacity:0; }
 .ns-hen img.on{ opacity:1; }
 :root[data-theme="dark"] .ns-hen{ filter:saturate(.8) brightness(.92) drop-shadow(0 18px 28px rgba(0,0,0,.4)); }
+/* phones: there's no room beside the headline, and behind or in front of
+   it she just fights the words. so she gets her own clear band between the
+   headline and the table and falls through that (the js moves the sky down
+   to start under the headline) */
 @media (max-width: 920px){
-  .ns-sky{ width:58%; height:340px; }
-  .ns-hen{ width:clamp(130px, 34vw, 190px); right:6%; }
+  .ns-headline-block{ margin-bottom:clamp(230px, 62vw, 340px); }
+  .ns-sky{ width:100%; height:300px; }
+  .ns-hen{ width:clamp(150px, 42vw, 220px); right:calc(50% - clamp(150px, 42vw, 220px) / 2); }
 }
 
 /* rail walker: chibi her pacing back and forth on the divider line above
@@ -3495,21 +3500,30 @@ body::after{
    walks always match whatever height she ended up with. she's a bit taller
    than her strip (--reach) and stands up into the empty air under the nav,
    which costs the rail no height */
-.rail-walk{ position:relative; flex:0 1000 calc(112px + .3rem); min-height:0; max-height:calc(112px + .3rem);
+.rail-walk{ position:relative; flex:0 1000 calc(150px + .3rem); min-height:0; max-height:calc(150px + .3rem);
   margin-top:auto; pointer-events:none; container-type:size; }
 :root:not([data-pane-open]) .rail-walk + .sb-foot{ margin-top:0 !important; }
 /* homepage only, never inside a case study (or about / resume) */
 :root[data-pane-open] .rail-walk{ display:none; }
+/* the button is her + her speech bubble. the button does the pacing and the
+   sprite inside does the stepping and turning around, so the bubble rides
+   along with her without getting mirrored on the walk back.
+   her height leaves --bub of room over her head for the bubble, so her and
+   the bubble together are what has to fit. less room just means a smaller
+   her, never a bubble poking up into the nav */
 .walker{
   --reach: 22px;
-  --h: calc(100cqh - .3rem + var(--reach));
+  --bub: 40px;
+  --h: calc(100cqh - .3rem + var(--reach) - var(--bub));
   --w: calc(var(--h) * 168 / 255);
   position:absolute; left:0; bottom:-2px; height:var(--h); width:var(--w);
+  border:0; padding:0; margin:0; background:none; cursor:pointer; pointer-events:auto;
+  animation:chibiPace 11s linear infinite;
+}
+.walker-sprite{
+  position:absolute; inset:0;
   background:url('/sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat;
-  animation:
-    chibiWalk .96s steps(16) infinite,
-    chibiPace 11s linear infinite,
-    chibiFace 11s step-end infinite;
+  animation:chibiWalk .96s steps(16) infinite, chibiFace 11s step-end infinite;
 }
 @keyframes chibiWalk{ to{ background-position:calc(100% * 16 / 15) 0; } }
 /* across to the far side, then back the same way */
@@ -3518,7 +3532,184 @@ body::after{
   50%      { translate: calc(100cqw - var(--w) - .25rem) 0; }
 }
 @keyframes chibiFace{ 0% { scale: 1 1; } 50% { scale: -1 1; } }
-@container (max-height: 54px){ .walker{ display:none; } }
+/* she stops while you're on her (a moving target is no fun to click) and
+   while you two are chatting */
+.walker:hover, .walker:hover .walker-sprite,
+.walker:focus-visible, .walker:focus-visible .walker-sprite,
+.walker.asking, .walker.asking .walker-sprite,
+.walker[aria-expanded="true"], .walker[aria-expanded="true"] .walker-sprite{ animation-play-state:paused; }
+.walker:focus-visible{ outline:none; }
+.walker:focus-visible .wb-in{ outline:2px solid var(--rail-accent); outline-offset:3px; }
+
+/* her speech bubble. a little white sticker: ink outline, hard offset
+   shadow, pixel font. "!" by default, "chat to hen?" after the first click
+   (the second one opens the chat), typing dots while she's answering you,
+   a heart while the chat's open. --shift nudges it back inside the strip
+   near either end, the tail slides the other way to keep pointing at her */
+.walker-bubble{ position:absolute; left:50%; bottom:calc(100% + 6px); translate:calc(-50% + var(--shift, 0px)) 0; }
+.wb-in{
+  position:relative; display:flex; align-items:center; justify-content:center;
+  min-width:32px; height:32px; padding:0 .6rem; white-space:nowrap;
+  font:1.05rem/1 'DotempDemo', monospace; color:#14202b;
+  background:#fff; border:2px solid #14202b; border-radius:12px;
+  box-shadow:2px 3px 0 #14202b;
+  transform-origin:50% 100%; opacity:0;
+  animation:wbIn .45s cubic-bezier(.34, 1.5, .64, 1) 2.5s forwards, wbBob 1.8s ease-in-out 2.95s infinite;
+}
+/* the tail: a rotated square showing two of its borders, so it reads as a
+   little V of outline poking out of the bubble */
+.wb-in::before{
+  content:''; position:absolute; left:calc(50% - var(--shift, 0px)); top:100%; width:9px; height:9px; margin:-5px 0 0 -5.5px;
+  background:#fff; border:2px solid #14202b; border-top:0; border-left:0; rotate:45deg;
+}
+.walker.asking .wb-in{ font:600 .72rem/1 'Satoshi', sans-serif; padding:0 .65rem; height:28px; }
+.wb-dots{ display:inline-flex; gap:3px; }
+.wb-dots i{ width:5px; height:5px; border-radius:50%; background:currentColor; animation:hcDot 1s ease-in-out infinite; }
+.wb-dots i:nth-child(2){ animation-delay:.15s; }
+.wb-dots i:nth-child(3){ animation-delay:.3s; }
+@keyframes wbIn{ from{ opacity:0; transform:translateY(8px) scale(.5); } to{ opacity:1; transform:none; } }
+@keyframes wbBob{ 0%, 100%{ translate:0 0; } 50%{ translate:0 -3px; } }
+/* too short to fit her and the bubble at a readable size: she steps out */
+@container (max-height: 62px){ .walker{ display:none; } }
+
+/* the chat window. same sticker look as her bubble: ink outline, hard
+   shadow, a little sky up top with her in it. sits just right of the rail
+   with its bottom lined up with her (the js places it) and pops up out of
+   her corner */
+.hen-chat{
+  --hc-bg:#fbfdfe; --hc-ink:#14202b; --hc-soft:#5b6c79; --hc-line:#14202b;
+  --hc-hen:#eaf5fa; --hc-you:#14202b; --hc-you-ink:#fff; --hc-acc:#2a9d8f;
+  --hc-sky:linear-gradient(180deg, #b9e1f2, #e4f4fa);
+  position:fixed; left:300px; bottom:24px; z-index:60;
+  width:min(340px, calc(100vw - 24px));
+  display:flex; flex-direction:column; max-height:min(560px, calc(100vh - 40px));
+  background:var(--hc-bg); color:var(--hc-ink);
+  border:2px solid var(--hc-line); border-radius:22px;
+  box-shadow:4px 5px 0 var(--hc-line), 0 24px 60px rgba(20, 40, 60, .25);
+  font-family:'Satoshi', sans-serif; overflow:hidden;
+  transform-origin:left bottom;
+  animation:hcIn .32s cubic-bezier(.34, 1.4, .64, 1);
+}
+:root:not([data-theme="light"]) .hen-chat{
+  --hc-bg:#0d1820; --hc-ink:#eef6f8; --hc-soft:#93a9b6; --hc-line:#03070a;
+  --hc-hen:#16303f; --hc-you:#bfe6f0; --hc-you-ink:#0b1620; --hc-acc:#66d9cc;
+  --hc-sky:linear-gradient(180deg, #1c4560, #11293a);
+  border-color:rgba(168, 218, 220, .35);
+}
+.hen-chat[hidden]{ display:none; }
+:root[data-pane-open] .hen-chat{ display:none; }
+@keyframes hcIn{ from{ opacity:0; transform:translateY(10px) scale(.9); } to{ opacity:1; transform:none; } }
+
+/* header: her in a little sky, two clouds drifting behind */
+.hc-bar{
+  position:relative; display:flex; align-items:center; gap:.7rem;
+  padding:.9rem .85rem .85rem .95rem; background:var(--hc-sky);
+  border-bottom:2px solid var(--hc-line); overflow:hidden; isolation:isolate;
+}
+.hc-bar::before, .hc-bar::after{
+  content:''; position:absolute; z-index:-1; border-radius:999px; background:rgba(255, 255, 255, .7);
+  box-shadow:14px -6px 0 2px rgba(255, 255, 255, .7), 30px 0 0 -2px rgba(255, 255, 255, .7);
+  animation:hcCloud 18s linear infinite;
+}
+.hc-bar::before{ width:26px; height:12px; top:12px; left:58%; }
+.hc-bar::after{ width:20px; height:9px; top:38px; left:20%; opacity:.6; animation-duration:26s; animation-delay:-9s; }
+:root:not([data-theme="light"]) .hc-bar::before, :root:not([data-theme="light"]) .hc-bar::after{ opacity:.12; }
+@keyframes hcCloud{ from{ translate:-60px 0; } to{ translate:200px 0; } }
+.hc-av{
+  position:relative; flex:none; width:42px; height:42px; border-radius:50%;
+  background:#fff; border:2px solid var(--hc-line); box-shadow:2px 2px 0 var(--hc-line);
+}
+.hc-av img{ position:absolute; left:50%; top:54%; width:28px; height:auto; translate:-50% -50%; }
+.hc-av .hc-wink{ opacity:0; }
+/* she winks on and off while she's typing, like she's talking */
+.hen-chat.talking .hc-wink{ animation:hcTalk .5s steps(1) infinite; }
+.hen-chat.talking .hc-face{ animation:hcTalk .5s steps(1) infinite reverse; }
+@keyframes hcTalk{ 0%{ opacity:0; } 50%{ opacity:1; } }
+.hc-online{ position:absolute; right:-2px; bottom:-1px; width:12px; height:12px; border-radius:50%; background:#3ddc84; border:2px solid var(--hc-line); }
+.hc-who{ flex:1; display:flex; flex-direction:column; gap:.1rem; min-width:0; }
+.hc-name{ font-family:'DotempDemo', monospace; font-size:1.15rem; line-height:1.1; color:var(--hc-ink); }
+.hc-sub{ font-size:.72rem; font-weight:500; color:var(--hc-soft); }
+.hc-x{
+  flex:none; width:30px; height:30px; display:grid; place-items:center;
+  border:2px solid var(--hc-line); border-radius:50%; background:var(--hc-bg); color:var(--hc-ink);
+  font-size:1.05rem; line-height:1; cursor:pointer; box-shadow:2px 2px 0 var(--hc-line);
+  transition:translate .12s ease, box-shadow .12s ease;
+}
+.hc-x:hover{ translate:-1px -1px; box-shadow:3px 3px 0 var(--hc-line); }
+.hc-x:active{ translate:1px 1px; box-shadow:0 0 0 var(--hc-line); }
+
+/* the conversation. a faint dot grid, like notebook paper */
+.hc-log{
+  flex:1; min-height:160px; overflow-y:auto; overscroll-behavior:contain;
+  padding:.9rem .85rem .6rem; display:flex; flex-direction:column; gap:.5rem;
+  background-image:radial-gradient(rgba(var(--hc-dot, 20, 32, 43), .08) 1px, transparent 1.2px);
+  background-size:14px 14px;
+}
+:root:not([data-theme="light"]) .hc-log{ --hc-dot:168, 218, 220; }
+.hc-row{ display:flex; align-items:flex-end; gap:.4rem; animation:hcMsg .22s ease-out; }
+.hc-row.you{ justify-content:flex-end; }
+.hc-mini{ flex:none; width:24px; height:auto; margin-bottom:2px; }
+/* only the first of a run of her messages gets her little face */
+.hc-row.hen + .hc-row.hen .hc-mini{ visibility:hidden; }
+.hc-msg{ margin:0; max-width:80%; padding:.55rem .75rem; font-size:.85rem; line-height:1.45; border:1.5px solid var(--hc-line); overflow-wrap:anywhere; }
+.hc-row.hen .hc-msg{ background:var(--hc-hen); border-radius:16px 16px 16px 5px; }
+.hc-row.you .hc-msg{ background:var(--hc-you); color:var(--hc-you-ink); border-radius:16px 16px 5px 16px; }
+.hc-msg p{ margin:0; }
+.hc-msg p + p{ margin-top:.45rem; }
+.hc-msg a{ color:inherit; font-weight:600; text-decoration:underline; text-decoration-color:var(--hc-acc); text-decoration-thickness:2px; text-underline-offset:2px; }
+.hc-msg strong{ font-weight:700; }
+.hc-caret{ display:inline-block; width:2px; height:1em; margin-left:1px; vertical-align:-2px; background:currentColor; animation:hcBlink .8s steps(1) infinite; }
+@keyframes hcBlink{ 50%{ opacity:0; } }
+@keyframes hcMsg{ from{ opacity:0; translate:0 4px; } to{ opacity:1; translate:0 0; } }
+.hc-dots{ display:inline-flex; gap:3px; padding:.25rem 0; }
+.hc-dots i{ width:6px; height:6px; border-radius:50%; background:currentColor; opacity:.35; animation:hcDot 1s ease-in-out infinite; }
+.hc-dots i:nth-child(2){ animation-delay:.15s; }
+.hc-dots i:nth-child(3){ animation-delay:.3s; }
+@keyframes hcDot{ 0%, 60%, 100%{ opacity:.35; transform:none; } 30%{ opacity:1; transform:translateY(-2px); } }
+
+/* follow-up questions ride under her answer, lined up with her bubble */
+.hc-follow{ display:flex; flex-wrap:wrap; gap:.4rem; padding-left:28px; animation:hcMsg .22s ease-out; }
+.hc-chip{
+  display:inline-flex; align-items:center; gap:.35rem;
+  border:1.5px solid var(--hc-line); background:var(--hc-bg); color:var(--hc-ink);
+  font:600 .76rem/1.2 'Satoshi', sans-serif; padding:.4rem .7rem; border-radius:999px; cursor:pointer;
+  box-shadow:2px 2px 0 var(--hc-line); text-align:left;
+  transition:translate .12s ease, box-shadow .12s ease, background .15s ease;
+}
+.hc-chip::before{ content:'\2726'; color:var(--hc-acc); font-size:.7rem; }
+.hc-chip:hover, .hc-chip:focus-visible{ translate:-1px -1px; box-shadow:3px 3px 0 var(--hc-line); background:var(--hc-hen); }
+.hc-chip:active{ translate:1px 1px; box-shadow:0 0 0 var(--hc-line); }
+.hc-chip:focus-visible{ outline:2px solid var(--hc-acc); outline-offset:2px; }
+
+/* type your own question */
+.hc-compose{ display:flex; gap:.45rem; padding:.65rem .75rem .75rem; border-top:2px solid var(--hc-line); background:var(--hc-bg); }
+.hc-compose input{
+  flex:1; min-width:0; border:1.5px solid var(--hc-line); border-radius:999px;
+  padding:.55rem .9rem; background:var(--hc-bg); color:var(--hc-ink);
+  font:500 .84rem 'Satoshi', sans-serif;
+}
+.hc-compose input::placeholder{ color:var(--hc-soft); }
+.hc-compose input:focus{ outline:2px solid var(--hc-acc); outline-offset:1px; }
+.hc-compose button{
+  flex:none; width:38px; height:38px; display:grid; place-items:center; cursor:pointer;
+  border:2px solid var(--hc-line); border-radius:50%; background:var(--hc-acc); color:#0b1620;
+  box-shadow:2px 2px 0 var(--hc-line); transition:translate .12s ease, box-shadow .12s ease;
+}
+.hc-compose button:hover{ translate:-1px -1px; box-shadow:3px 3px 0 var(--hc-line); }
+.hc-compose button:active{ translate:1px 1px; box-shadow:0 0 0 var(--hc-line); }
+.hc-compose svg{ width:16px; height:16px; }
+/* phones: no rail beside her, so it's a sheet along the bottom, over the
+   menu drawer she lives in (that's z 900). 16px input so ios doesn't zoom */
+@media (max-width: 920px){
+  .hen-chat{ left:12px !important; right:12px; bottom:12px !important; width:auto; z-index:950; max-height:min(560px, calc(100dvh - 24px)); }
+  .hc-compose input{ font-size:16px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .wb-in{ animation:wbIn .01s linear 2.5s forwards; }
+  .hen-chat, .hc-row, .hc-follow, .hc-bar::before, .hc-bar::after{ animation:none; }
+  .hc-dots i, .wb-dots i, .hc-caret{ animation:none; }
+  .hen-chat.talking .hc-wink, .hen-chat.talking .hc-face{ animation:none; }
+}
 
 /* short laptop screens (1366x768 and friends): the rail was only ever a
    few px too tall, so tighten the spacing that has slack instead of
@@ -3530,7 +3721,7 @@ body::after{
   .sidebar .btn-cta-secondary{ padding-top:.55rem; padding-bottom:.55rem; }
   .rail-pitch{ margin-bottom:.3rem; }
 }
-@media (prefers-reduced-motion: reduce){ .walker{ animation:none; translate:.25rem 0; } }
+@media (prefers-reduced-motion: reduce){ .walker, .walker-sprite{ animation:none; } .walker{ translate:.25rem 0; } }
 </style>
 </head>
 <body>
@@ -3578,6 +3769,136 @@ body::after{
 <p>Pulling the chair out for you</p>
 </div>
 <script>document.getElementById("http-readable").remove();</script>
+
+    <!-- the intro: she falls through the sky while the page loads, then the
+         clouds part and you land on the page. scroll up past the top and
+         it plays again -->
+    <div id="scene-overlay" role="status" aria-label="Loading">
+      <div class="intro-sky"></div>
+      <div class="intro-cloud far" style="--x:4vw;--w:56vw;--t:6.5s;--d:-1.2s;--o:.6;--s:-1"></div>
+      <div class="intro-cloud far" style="--x:56vw;--w:48vw;--t:7.5s;--d:-4.6s;--o:.55;--s:1"></div>
+      <div class="intro-cloud far" style="--x:-14vw;--w:40vw;--t:6s;--d:-5.2s;--o:.5;--s:-1"></div>
+      <div class="intro-cloud cb" style="--x:58vw;--w:44vw;--t:7s;--d:-1s;--o:.8;--s:1"></div>
+      <div class="intro-cloud ca" style="--x:-12vw;--w:56vw;--t:6.4s;--d:-3.6s;--o:.85;--s:-1"></div>
+      <div class="intro-cloud cc" style="--x:30vw;--w:52vw;--t:7.6s;--d:-5.8s;--o:.75;--s:1"></div>
+      <div class="intro-cloud cb" style="--x:-6vw;--w:40vw;--t:6.8s;--d:-6.4s;--o:.8;--s:-1"></div>
+      <div class="intro-cloud ca" style="--x:62vw;--w:50vw;--t:6.2s;--d:-4.4s;--o:.85;--s:1"></div>
+      <div class="intro-fall">
+        <img class="on" src="/sky/hen-fall-1.webp" alt="">
+        <img src="/sky/hen-fall-1s.webp" alt="">
+        <img src="/sky/hen-fall-15.webp" alt="">
+        <img src="/sky/hen-fall-2s.webp" alt="">
+        <img src="/sky/hen-fall-2.webp" alt="">
+      </div>
+      <div class="intro-cloud cc front" style="--x:-30vw;--w:68vw;--t:4.6s;--d:-1.6s;--s:-1"></div>
+      <div class="intro-cloud ca front" style="--x:64vw;--w:66vw;--t:5s;--d:-3.8s;--s:1"></div>
+      <div class="intro-cloud cb front" style="--x:16vw;--w:46vw;--t:5.6s;--d:-.4s;--o:.8;--s:-1"></div>
+      <div class="intro-bar"><i id="overlay-bar"></i></div>
+    </div>
+
+    <script>
+      (function () {
+        const overlay = document.getElementById('scene-overlay');
+        const bar     = document.getElementById('overlay-bar');
+        const fall    = overlay.querySelector('.intro-fall');
+        const frames  = [...fall.querySelectorAll('img')];
+        const calm    = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const MIN_MS  = calm ? 0 : 1600;        // always long enough to see her fall
+        let ready = false, minDone = false, open = true;
+
+        // her kick goes one way, like the north star: pose 1 while she
+        // falls, 1.5 once loading is underway, 2 as she drops into the
+        // clouds. a smear frame flashes between drawn poses. frames are
+        // indexed 0 = 1, 1 = smear, 2 = 1.5, 3 = smear, 4 = 2. nothing swaps
+        // until all five are decoded, so it never flashes an empty frame
+        const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
+        const decoded = Promise.all(frames.map(f => f.decode ? f.decode().catch(() => {}) : null));
+        let pose = 0, smearT = 0, midT = 0;
+        function setPose(next) {
+          if (calm || next <= pose) return;
+          decoded.then(() => {
+            if (!open || next <= pose) return;
+            show(next - 1); pose = next;
+            clearTimeout(smearT); smearT = setTimeout(() => show(pose), 55);
+          });
+        }
+        function resetPose() { clearTimeout(smearT); clearTimeout(midT); pose = 0; show(0); }
+        // 1.5 at 40% loaded, or after a beat if loading is quick
+        function startFall() { resetPose(); midT = setTimeout(() => setPose(2), 900); }
+
+        function part() {
+          if (!open) return;
+          bar.style.transform = 'scaleX(1)';
+          overlay.classList.add('parting');
+          setPose(2); setTimeout(() => setPose(4), 160);   // full kick on the way in
+          setTimeout(() => {
+            overlay.classList.add('hidden');
+            overlay.setAttribute('aria-hidden', 'true');
+            open = false;
+          }, 850);
+        }
+        function maybePart() { if (ready && minDone) part(); }
+
+        // first load: part once the on screen tiles are ready (the tile
+        // module posts progress and then modelsReady), never before MIN_MS
+        window.addEventListener('message', function (e) {
+          const d = e.data || {};
+          if (d.type === 'tileProgress') {
+            bar.style.transform = 'scaleX(' + Math.max(.08, d.p) + ')';
+            if (d.p >= .4) setPose(2);
+          }
+          if (d.type === 'modelsReady') { ready = true; maybePart(); }
+        });
+        // only the homepage gets the intro. a direct link (/trove/ etc)
+        // goes straight in
+        const home = /^\/(index\.html)?$/.test(location.pathname);
+        if (!home) {
+          // no fade either, or you'd see a flash of sky on the way in
+          open = false;
+          overlay.style.transition = 'none';
+          overlay.classList.add('parting', 'hidden');
+          overlay.setAttribute('aria-hidden', 'true');
+          requestAnimationFrame(() => requestAnimationFrame(() => overlay.style.transition = ''));
+        } else {
+          setTimeout(() => { minDone = true; maybePart(); }, MIN_MS);
+          // don't hold people in the sky for long. on a phone over 4g the
+          // first tile could take 8s+ and the intro just sat there, so it
+          // waits at most 3.5s, then parts anyway. tiles still loading
+          // fade in by themselves once they're ready
+          setTimeout(() => { ready = true; minDone = true; maybePart(); }, 3500);
+          startFall();
+        }
+
+        // scroll up past the top: the clouds close back in, she falls
+        // through again, then they part. rate limited
+        let pull = 0, lastPlay = 0;
+        function replay() {
+          const now = performance.now();
+          if (open || now - lastPlay < 3500 || calm) return;
+          if (document.documentElement.hasAttribute('data-pane-open')) return;   // not over a case study
+          lastPlay = now; open = true; pull = 0;
+          overlay.removeAttribute('aria-hidden');
+          overlay.classList.remove('hidden', 'parting');
+          // restart her drop in
+          fall.style.animation = 'none'; void fall.offsetWidth; fall.style.animation = '';
+          startFall();
+          setTimeout(part, 2000);   // drop in, fall for a beat, then part
+        }
+        function atTop() {
+          const sc = window.scroller || document.getElementById('contentCard');
+          return !sc || (sc.scrollTop || 0) <= 2;
+        }
+        addEventListener('wheel', e => {
+          if (e.deltaY < 0 && atTop()) { pull += -e.deltaY; if (pull > 220) replay(); }
+          else pull = 0;
+        }, { passive: true });
+        let ty = null;
+        addEventListener('touchstart', e => { ty = atTop() ? e.touches[0].clientY : null; }, { passive: true });
+        addEventListener('touchmove', e => {
+          if (ty !== null && e.touches[0].clientY - ty > 110) { ty = null; replay(); }
+        }, { passive: true });
+      })();
+    </script>
 
     <!--
         Liquid glass SVG displacement filter.
@@ -3647,7 +3968,7 @@ body::after{
 
         <nav class="navbar">
             <a href="#home" class="logo" onclick="scrollToTop()">
-                <img src="/HenLogo.png" alt="Henlogo">
+                <img src="favicon.png" alt="" loading="lazy">
             </a>
             <ul class="nav-links">
                 <li><a href="/resume/">Resume</a></li>
@@ -3741,7 +4062,34 @@ body::after{
                  built from her own drawings: one steady body, and every arm
                  and leg picked from a library of all 8 drawn frames to match
                  a clean walk cycle, then nudged at the joint. 16 frames -->
-            <div class="rail-walk" aria-hidden="true"><div class="walker"></div></div>
+            <div class="rail-walk">
+                <button class="walker" type="button" aria-label="chat with mini hen" aria-haspopup="dialog" aria-expanded="false" aria-controls="henChat">
+                    <span class="walker-sprite" aria-hidden="true"></span>
+                    <span class="walker-bubble" aria-hidden="true"><span class="wb-in"><span class="wb-txt">!</span></span></span>
+                </button>
+            </div>
+            <!-- the little chat she opens. scripted, no ai: a web of questions
+                 and answers (all stuff that's already on the site) that
+                 branches off whatever you asked last -->
+            <div class="hen-chat" id="henChat" role="dialog" aria-label="chat with mini hen" hidden>
+                <div class="hc-bar">
+                    <span class="hc-av">
+                        <img class="hc-face" src="/sky/henhead.webp" alt="" width="220" height="201">
+                        <img class="hc-wink" src="/sky/henwink.webp" alt="" width="220" height="201">
+                        <span class="hc-online"></span>
+                    </span>
+                    <span class="hc-who">
+                        <span class="hc-name">mini hen</span>
+                        <span class="hc-sub">henri&euml;tta's sidekick &middot; always online</span>
+                    </span>
+                    <button class="hc-x" type="button" aria-label="close chat">&times;</button>
+                </div>
+                <div class="hc-log" aria-live="polite"></div>
+                <form class="hc-compose" autocomplete="off">
+                    <input type="text" maxlength="140" placeholder="ask me anything&hellip;" aria-label="ask mini hen a question">
+                    <button type="submit" aria-label="send"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg></button>
+                </form>
+            </div>
             <div class="sb-foot">
                 <div class="sb-foot-row">
                     <!-- one pill: the label swaps for the socials on hover -->
@@ -4542,6 +4890,9 @@ body::after{
     <script>
     </script>
 
+    <!-- smooth scroll lib, loaded right before the script that sets it up
+         (it used to sit in the head and block the whole first paint) -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script>
     /* ============================================================
        Lenis — butter smooth scroll
@@ -4616,131 +4967,6 @@ body::after{
     })();
     </script>
 
-    <!-- the intro: she falls through the sky while the page loads, then the
-         clouds part and you land on the page. scroll up past the top and
-         it plays again -->
-    <div id="scene-overlay" role="status" aria-label="Loading">
-      <div class="intro-sky"></div>
-      <div class="intro-cloud far" style="--x:4vw;--w:56vw;--t:6.5s;--d:-1.2s;--o:.6;--s:-1"></div>
-      <div class="intro-cloud far" style="--x:56vw;--w:48vw;--t:7.5s;--d:-4.6s;--o:.55;--s:1"></div>
-      <div class="intro-cloud far" style="--x:-14vw;--w:40vw;--t:6s;--d:-5.2s;--o:.5;--s:-1"></div>
-      <div class="intro-cloud cb" style="--x:58vw;--w:44vw;--t:7s;--d:-1s;--o:.8;--s:1"></div>
-      <div class="intro-cloud ca" style="--x:-12vw;--w:56vw;--t:6.4s;--d:-3.6s;--o:.85;--s:-1"></div>
-      <div class="intro-cloud cc" style="--x:30vw;--w:52vw;--t:7.6s;--d:-5.8s;--o:.75;--s:1"></div>
-      <div class="intro-cloud cb" style="--x:-6vw;--w:40vw;--t:6.8s;--d:-6.4s;--o:.8;--s:-1"></div>
-      <div class="intro-cloud ca" style="--x:62vw;--w:50vw;--t:6.2s;--d:-4.4s;--o:.85;--s:1"></div>
-      <div class="intro-fall">
-        <img class="on" src="/sky/hen-fall-1.webp" alt="">
-        <img src="/sky/hen-fall-1s.webp" alt="">
-        <img src="/sky/hen-fall-15.webp" alt="">
-        <img src="/sky/hen-fall-2s.webp" alt="">
-        <img src="/sky/hen-fall-2.webp" alt="">
-      </div>
-      <div class="intro-cloud cc front" style="--x:-30vw;--w:68vw;--t:4.6s;--d:-1.6s;--s:-1"></div>
-      <div class="intro-cloud ca front" style="--x:64vw;--w:66vw;--t:5s;--d:-3.8s;--s:1"></div>
-      <div class="intro-cloud cb front" style="--x:16vw;--w:46vw;--t:5.6s;--d:-.4s;--o:.8;--s:-1"></div>
-      <div class="intro-bar"><i id="overlay-bar"></i></div>
-    </div>
-
-    <script>
-      (function () {
-        const overlay = document.getElementById('scene-overlay');
-        const bar     = document.getElementById('overlay-bar');
-        const fall    = overlay.querySelector('.intro-fall');
-        const frames  = [...fall.querySelectorAll('img')];
-        const calm    = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const MIN_MS  = calm ? 0 : 1600;        // always long enough to see her fall
-        let ready = false, minDone = false, open = true;
-
-        // her kick goes one way, like the north star: pose 1 while she
-        // falls, 1.5 once loading is underway, 2 as she drops into the
-        // clouds. a smear frame flashes between drawn poses. frames are
-        // indexed 0 = 1, 1 = smear, 2 = 1.5, 3 = smear, 4 = 2. nothing swaps
-        // until all five are decoded, so it never flashes an empty frame
-        const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
-        const decoded = Promise.all(frames.map(f => f.decode ? f.decode().catch(() => {}) : null));
-        let pose = 0, smearT = 0, midT = 0;
-        function setPose(next) {
-          if (calm || next <= pose) return;
-          decoded.then(() => {
-            if (!open || next <= pose) return;
-            show(next - 1); pose = next;
-            clearTimeout(smearT); smearT = setTimeout(() => show(pose), 55);
-          });
-        }
-        function resetPose() { clearTimeout(smearT); clearTimeout(midT); pose = 0; show(0); }
-        // 1.5 at 40% loaded, or after a beat if loading is quick
-        function startFall() { resetPose(); midT = setTimeout(() => setPose(2), 900); }
-
-        function part() {
-          if (!open) return;
-          bar.style.transform = 'scaleX(1)';
-          overlay.classList.add('parting');
-          setPose(2); setTimeout(() => setPose(4), 160);   // full kick on the way in
-          setTimeout(() => {
-            overlay.classList.add('hidden');
-            overlay.setAttribute('aria-hidden', 'true');
-            open = false;
-          }, 850);
-        }
-        function maybePart() { if (ready && minDone) part(); }
-
-        // first load: part once the on screen tiles are ready (the tile
-        // module posts progress and then modelsReady), never before MIN_MS
-        window.addEventListener('message', function (e) {
-          const d = e.data || {};
-          if (d.type === 'tileProgress') {
-            bar.style.transform = 'scaleX(' + Math.max(.08, d.p) + ')';
-            if (d.p >= .4) setPose(2);
-          }
-          if (d.type === 'modelsReady') { ready = true; maybePart(); }
-        });
-        // only the homepage gets the intro. a direct link (/trove/ etc)
-        // goes straight in
-        const home = /^\/(index\.html)?$/.test(location.pathname);
-        if (!home) {
-          // no fade either, or you'd see a flash of sky on the way in
-          open = false;
-          overlay.style.transition = 'none';
-          overlay.classList.add('parting', 'hidden');
-          overlay.setAttribute('aria-hidden', 'true');
-          requestAnimationFrame(() => requestAnimationFrame(() => overlay.style.transition = ''));
-        } else {
-          setTimeout(() => { minDone = true; maybePart(); }, MIN_MS);
-          setTimeout(() => { ready = true; minDone = true; maybePart(); }, 8000);   // safety net
-          startFall();
-        }
-
-        // scroll up past the top: the clouds close back in, she falls
-        // through again, then they part. rate limited
-        let pull = 0, lastPlay = 0;
-        function replay() {
-          const now = performance.now();
-          if (open || now - lastPlay < 3500 || calm) return;
-          if (document.documentElement.hasAttribute('data-pane-open')) return;   // not over a case study
-          lastPlay = now; open = true; pull = 0;
-          overlay.removeAttribute('aria-hidden');
-          overlay.classList.remove('hidden', 'parting');
-          // restart her drop in
-          fall.style.animation = 'none'; void fall.offsetWidth; fall.style.animation = '';
-          startFall();
-          setTimeout(part, 2000);   // drop in, fall for a beat, then part
-        }
-        function atTop() {
-          const sc = window.scroller || document.getElementById('contentCard');
-          return !sc || (sc.scrollTop || 0) <= 2;
-        }
-        addEventListener('wheel', e => {
-          if (e.deltaY < 0 && atTop()) { pull += -e.deltaY; if (pull > 220) replay(); }
-          else pull = 0;
-        }, { passive: true });
-        let ty = null;
-        addEventListener('touchstart', e => { ty = atTop() ? e.touches[0].clientY : null; }, { passive: true });
-        addEventListener('touchmove', e => {
-          if (ty !== null && e.touches[0].clientY - ty > 110) { ty = null; replay(); }
-        }, { passive: true });
-      })();
-    </script>
 
 <script>
 /* North star — scroll-triggered scramble headline */
@@ -4823,8 +5049,10 @@ const eul = (x,y,z)=>new THREE.Euler(
         // texture, the same overlay trick MyAuntie's screenshot uses
         domScene:'field',
         models:[
+          // a 30s cut of the case study's clip that fades back into its first
+          // frame so the loop doesn't jump. half the size of the full one
           {url:'/models/iphone.glb', scale:0.019*1.5, baseEuler:[0, 15, 10], pos:[0,0,0],
-           screen:{ video:'/trove/vid/ob-play.mp4', mesh:'Wallpaper', aspect:362/814 }}
+           screen:{ video:'/trove/vid/ob-play-loop.mp4', mesh:'Wallpaper', aspect:362/814 }}
         ],
         driftAmp:0.13, fitScale:0.86,
         theme:{ accent:'236, 127, 14', accent2:'253, 213, 84', scene:'trove' },
@@ -4863,8 +5091,8 @@ const eul = (x,y,z)=>new THREE.Euler(
         driftAmp:0.10, fitScale:1.06,
         // swapped: the thinker stands with the groceries, the celebrant with the food
         decals:[
-          {url:'/SkrimpThinking.png',  size:[2.80,3.36], pos:[-2.70,1.08,2.6], rotY:0.30},
-          {url:'/SkrimpCelebrate.png', size:[3.25,3.90], pos:[ 4.35,0.32,4.6], rotY:-0.26}
+          {url:'/SkrimpThinking.webp',  size:[2.80,3.36], pos:[-2.70,1.08,2.6], rotY:0.30},
+          {url:'/SkrimpCelebrate.webp', size:[3.25,3.90], pos:[ 4.35,0.32,4.6], rotY:-0.26}
         ]
       },
       {
@@ -5179,9 +5407,8 @@ stations.forEach((cfg,i) => {
          <span class="mascot-lift">
            <img class="mascot-still" src="/mascots/${m.key}-standing.webp" alt="" loading="lazy"
                 style="width:calc(${m.h}cqh * ${m.sw} / ${m.sh})">
-           <span class="mascot-fall" style="
-             --ff:${m.ff}; --fa:${m.fa.toFixed(4)}; --fs:${m.fs};
-             background-image:url('/mascots/${m.key}-fall.webp')"></span>
+           <span class="mascot-fall" data-bg="/mascots/${m.key}-fall.webp" style="
+             --ff:${m.ff}; --fa:${m.fa.toFixed(4)}; --fs:${m.fs}"></span>
          </span>
        </span>`).join('');
 
@@ -5285,8 +5512,21 @@ stations.forEach((cfg,i) => {
     hop.at = home;                         // where he is now, in % of tile width
     let wx = 0, busy = false;              // offset from home, same units
 
+    // his hop sheet loads after the intro, he just stands until it's in
+    const fall = hop.querySelector('.mascot-fall');
+    let sheet = false;
+    const loadSheet = () => {
+      if (sheet || !fall?.dataset.bg) return;
+      sheet = 'loading';
+      const im = new Image();
+      im.onload = () => { fall.style.backgroundImage = `url('${fall.dataset.bg}')`; sheet = true; };
+      im.src = fall.dataset.bg;
+    };
+    addEventListener('message', e => { if (e.data?.type === 'modelsReady') setTimeout(loadSheet, 1500); });
+    setTimeout(loadSheet, 9000);   // in case the intro never posts
+
     const jump = () => {
-      if (busy || !tile) return;
+      if (busy || !tile || sheet !== true) return;
       const W = tile.clientWidth; if (!W) return;
       // mostly little hops, occasionally a big one that actually travels
       const power = Math.random() < 0.72 ? Math.random() * 0.45
@@ -5553,6 +5793,14 @@ stations.forEach((cfg,i) => {
     let done = false;
     return () => { if (done) return; done = true; if (--view.pending === 0) settle(); };
   };
+  // everything below only starts when load() runs: straight away for tiles
+  // on the first screen, otherwise when the tile is about a screen away
+  // (see the end of this script). on a phone that's the difference between
+  // pulling every model on the page up front and pulling one
+  if (cfg.cover) view.cover = true;
+  view.load = () => {
+  if (view.loadStarted) return;
+  view.loadStarted = true;
   setTimeout(settle, 8000);
   {
     // the dom scene's own art (css backgrounds incl ::before/::after, imgs)
@@ -5593,7 +5841,6 @@ stations.forEach((cfg,i) => {
   if (cfg.cover) {
     // nothing for the shared canvas to draw — the tile is its own image, and
     // the hover-video layer sits on top of it like it does everywhere else
-    view.cover = true;
   } else if (cfg.parallax) {
     // Equinox: three stacked billboards, nudged by pointer instead of camera azimuth
     view.layers = [];
@@ -5662,6 +5909,7 @@ stations.forEach((cfg,i) => {
       rel();
     }, undefined, rel);
   }
+  };
 
   // ---- hover + drag-to-orbit, per tile ----
   cell.addEventListener('pointerenter', () => view.hover = 1);
@@ -6011,6 +6259,18 @@ firstScreen = views.filter(v => {
   return r.width && r.top < innerHeight && r.bottom > 0;
 });
 if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'modelsReady' }, '*'); }
+
+// first screen loads now, the rest when they're within about a screen of
+// being scrolled into view
+firstScreen?.forEach(v => v.load());
+{
+  const lazyObs = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const v = views.find(x => x.cell === e.target);
+    if (v) { v.load(); lazyObs.unobserve(e.target); }
+  }), { root: document.getElementById('contentCard'), rootMargin: '100% 0px' });
+  views.forEach(v => { if (!v.loadStarted) lazyObs.observe(v.cell); });
+}
 
 </script>
     <div id="parisModal" class="modal" role="dialog" aria-modal="true">
@@ -6478,8 +6738,25 @@ document.addEventListener('click', e => {
   // the window ends exactly where the system matrix starts, so she can
   // never drift over the table whatever the screen size
   const matrix = sec.querySelector('.ns-matrix-wrap');
+  const head = sec.querySelector('.ns-headline');
   function fit(){
-    const h = matrix.getBoundingClientRect().top - sky.getBoundingClientRect().top - 8;
+    // offsetLeft ignores her drift (that's a translate), so this doesn't
+    // wobble as she falls. a fifth of her overlapping is the magazine look
+    // (she drifts left a bit as she falls, so it ends up a touch more).
+    // more than that and the words just sit on top of her
+    if (innerWidth > 920){
+      const room = sky.getBoundingClientRect().left + hen.offsetLeft + hen.offsetWidth * .2
+                 - head.getBoundingClientRect().left;
+      const mw = Math.max(420, Math.min(900, Math.round(room)));
+      if (Math.abs(mw - (parseFloat(head.style.maxWidth) || 0)) > 4) head.style.maxWidth = mw + 'px';
+    } else {
+      if (head.style.maxWidth) head.style.maxWidth = '';
+      // phones: her window starts just under the headline
+      const top = Math.round(head.getBoundingClientRect().bottom - sec.getBoundingClientRect().top + 8);
+      if (Math.abs(top - (parseFloat(sky.style.top) || 0)) > 2) sky.style.top = top + 'px';
+    }
+    if (innerWidth > 920 && sky.style.top) sky.style.top = '';
+    const h =matrix.getBoundingClientRect().top - sky.getBoundingClientRect().top - 8;
     if (h > 200 && Math.abs(h - sky.clientHeight) > 2) sky.style.height = h + 'px';
   }
   function frame(now){
@@ -6511,7 +6788,367 @@ document.addEventListener('click', e => {
     (window.scroller || window).addEventListener('scroll', once, { passive: true });
     addEventListener('scroll', once, { passive: true });
   }
+  addEventListener('resize', () => { if (!raf) frame(performance.now()); });
   frame(performance.now());
+})();
+
+/* mini hen's chat. click her and she types back. no ai: it's a web of
+   questions, each answer offers a couple of follow-ups based on what you
+   just asked, nothing gets offered twice, and you can type too (keywords
+   route you to the closest answer). she talks about henriëtta in third
+   person, she's the sidekick */
+(function(){
+  const btn = document.querySelector('.walker');
+  const box = document.getElementById('henChat');
+  if (!btn || !box) return;
+  document.body.appendChild(box);        // fixed position, so out of the rail
+  const log = box.querySelector('.hc-log');
+  const form = box.querySelector('.hc-compose');
+  const input = form.querySelector('input');
+  const bub = btn.querySelector('.wb-txt');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wait = ms => new Promise(r => setTimeout(r, still ? 0 : ms));
+
+  const MAIL = '[henrietta@skrimp.ai](mailto:henrietta@skrimp.ai)';
+
+  // the script. id is how answers point at each other, q is the chip label,
+  // match is what routes a typed question here, a is her answer (a list is
+  // several messages in a row), next is the follow-ups, and go opens a page
+  // (through the same router as the tiles) after she answers
+  const S = [
+    // the three openers
+    { id: 'who', q: 'who is henriëtta?', match: ['who is', 'who\'s', 'what does do', 'what do you do', 'design engineer'],
+      a: ['she\'s a design engineer, so she designs the thing and then builds it too.',
+          'right now she runs **skrimp** (her startup) and she\'s cto of **path to menzoberranzan**. before that she was hire #1 at **trove**.'],
+      next: ['code', 'skrimp', 'origin'] },
+    { id: 'start', q: 'where should I start?', match: ['start', 'best', 'portfolio', 'project', 'work', 'show me'],
+      a: ['depends what you\'re into!', 'big numbers, something with heart, or something fun?'],
+      next: ['numbers', 'heart', 'playful'] },
+    { id: 'looking', q: 'what is she looking for?', match: ['looking for', 'hiring', 'hire her', 'job', 'role', 'available', 'opportunit', 'winter', '2027', 'contract', 'full-time', 'full time'],
+      a: ['**winter 2027** roles, full-time or contract!',
+          'she\'s happiest early on a product, where the person designing it is the same person shipping it. founding teams, 0 to 1, small teams that move fast.',
+          'ai products, games, and tools people lean on when life gets messy are her kind of problem. she graduates from waterloo in december 2026.'],
+      next: ['base', 'hire', 'reach'] },
+
+    // the "where should I start" branches
+    { id: 'numbers', q: 'big numbers pls', match: ['numbers', 'growth', 'users', 'metrics', 'impact'],
+      a: ['trove! she was hire #1.',
+          'she took it from one validated feature to **10,250 users** and 3× weekly growth in five months.',
+          '1,331 commits in 18 weeks, more than anyone else on the repo.'],
+      next: ['troveHow', 'troveGo'] },
+    { id: 'heart', q: 'something with heart', match: ['heart', 'meaningful', 'impact', 'health', 'postpartum'],
+      a: ['my auntie: the first ai postpartum companion.',
+          'it\'s built for a 3am brain, not ideal conditions. you just call or text it. made in 36 hours, and it won technova 2025.'],
+      next: ['auntieGo', 'awards'] },
+    { id: 'playful', q: 'something fun', match: ['fun', 'game jam', 'cozy'],
+      a: ['equinox! a cozy 3d puzzle game made by 14 people in 2 weeks.',
+          'it won comfy winter jam 2025, 1st of 88. she built the player controller and all the interactions in godot.'],
+      next: ['equinoxGo', 'games'] },
+
+    // the projects
+    { id: 'trove', q: 'tell me about trove', match: ['trove'],
+      a: ['she was hire #1 at trove, a social story app on web and ios.',
+          'in five months she took it from one validated feature to **10,250 users** and 3× weekly growth.'],
+      next: ['troveHow', 'troveGo'] },
+    { id: 'troveHow', q: 'what did she build there?', match: ['pipeline', 'llm', 'eval', 'sprite'],
+      a: ['the story pipeline. an llm writes each story, simulated players play it start to finish, and it gets scored on its weakest moment and revised before a human signs off.',
+          'she also built a sprite compositor that replaced 392 hand-drawn assets with a handful of anchors.'],
+      next: ['troveGo', 'code'] },
+    { id: 'troveGo', q: 'open trove', go: 'trove', a: 'opening trove for you ✨' },
+    { id: 'skrimp', q: 'what\'s skrimp?', match: ['skrimp', 'grocery', 'groceries', 'meal', 'startup', 'founder', 'ctv'],
+      a: ['her startup!',
+          'a live ai grocery app across ontario. it plans your meals from what\'s on sale and what\'s already in your fridge.',
+          '2,000+ users, and families save $50 to $100 a week.'],
+      next: ['skrimpMoney', 'skrimpGo'] },
+    { id: 'skrimpMoney', q: 'who backs skrimp?', match: ['fund', 'backed', 'money', 'investor', 'velocity'],
+      a: ['conrad school\'s e co-op ($5k, twice), velocity\'s cornerstone award, the jain family award for entrepreneurship, and kwc municipal governments.',
+          'and ctv has covered it three times 📺'],
+      next: ['skrimpGo', 'lead'] },
+    { id: 'skrimpGo', q: 'open skrimp', go: 'skrimp', a: 'opening skrimp ✨' },
+    { id: 'ptm', q: 'what\'s path to menzoberranzan?', match: ['menzo', 'ptm', 'path to', 'baldur', 'bg3', 'mod', 'cto', 'volunteer'],
+      a: ['a volunteer expansion for baldur\'s gate 3! 140+ contributors, 1,700 patreon members, covered by kotaku and thegamer.',
+          'she\'s cto. she inherited it collapsing and moved an 80gb+ repo onto self-hosted forgejo with git lfs.'],
+      next: ['ptmAudio', 'ptmGo'] },
+    { id: 'ptmAudio', q: 'anything cool she shipped there?', match: ['audio', 'skunkworks', 'composer', 'tool'],
+      a: ['her skunkworks team shipped a tool that solved a 16-year-old problem in bg3 audio modding.',
+          'what used to be a multi-step manual slog for composers is now one click.'],
+      next: ['ptmGo', 'games'] },
+    { id: 'ptmGo', q: 'open path to menzoberranzan', go: 'menzo', a: 'opening path to menzoberranzan ✨' },
+    { id: 'auntieGo', q: 'open my auntie', go: 'myauntie', match: ['auntie', 'technova'], a: 'opening my auntie ✨' },
+    { id: 'equinoxGo', q: 'open equinox', go: 'equinox', match: ['equinox', 'godot'], a: 'opening equinox ✨' },
+
+    // hiring
+    { id: 'base', q: 'where is she based?', match: ['based', 'where is she', 'location', 'remote', 'relocat', 'move', 'canada', 'waterloo', 'toronto', 'live'],
+      a: ['kitchener-waterloo, canada 🍁',
+          'she\'s up for roles in canada or remote, and happy to travel for work. she\'s just staying put in kw.'],
+      next: ['hire', 'reach'] },
+    { id: 'hire', q: 'why should I hire her?', match: ['why should', 'why her', 'strength', 'good at', 'convince'],
+      a: ['she ships the thing, not just the mockup of the thing.',
+          '10,250 users at trove, 2,000+ on skrimp, and 140 volunteers shipping into one build at ptm.',
+          'and she leads: 6 interns at skrimp, six departments at ptm.'],
+      next: ['awards', 'lead', 'reach'] },
+    { id: 'awards', q: 'has she won stuff?', match: ['award', 'won', 'win', 'prize', 'hackathon', 'nominee', 'woman of the year', 'women of the year'],
+      a: ['a few 🏆',
+          'technova 2025 (my auntie), comfy winter jam 2025 (equinox, 1st of 88), the jain family award for entrepreneurship, and velocity\'s cornerstone award.',
+          'and a kw oktoberfest women of the year nomination for 2026.'],
+      next: ['heart', 'playful', 'reach'] },
+    { id: 'lead', q: 'how does she lead teams?', match: ['lead', 'team', 'manage', 'mentor', 'intern', 'collaborat'],
+      a: ['at skrimp she managed 6 first-year engineering interns across two co-op terms.',
+          'at ptm she keeps 140 volunteers across six departments shipping into one build. she sets things up so juniors can figure stuff out under pressure without waiting on her.'],
+      next: ['ptm', 'hire'] },
+    { id: 'code', q: 'does she actually code?', match: ['code', 'coding', 'program', 'engineer', 'stack', 'react', 'typescript', 'python', 'language', 'rust', 'technical', 'develop'],
+      a: ['every day!',
+          'react, typescript, next.js, python, three.js, convex, firestore, godot, lua.',
+          'lately she\'s been learning **rust** and hardware development for her capstone, and having way too much fun with it.'],
+      next: ['capstone', 'site', 'troveHow'] },
+    { id: 'capstone', q: 'what\'s her capstone?', match: ['capstone', 'handoff', 'hardware', 'paramedic', 'firefighter', 'hospital'],
+      a: ['lost in handoff: what paramedics and firefighters learn at the scene, and whether it actually reaches the hospital.',
+          'it\'s still cooking, which is why it says "coming soon" on the home page.'],
+      next: ['looking', 'site'] },
+    { id: 'site', q: 'how did she make this site?', match: ['site', 'website', 'portfolio built', 'three.js', 'threejs', 'made this', 'mini hen', 'who are you'],
+      a: ['hand-coded!',
+          'a three.js sky, a pixel-meets-serif type system, a girl falling through the north star...',
+          'and me: a 16-frame walk cycle puppeted out of her own drawings.'],
+      next: ['code', 'fun'] },
+    { id: 'reach', q: 'how do I reach her?', match: ['contact', 'email', 'reach', 'linkedin', 'get in touch', 'message'],
+      a: ['email\'s fastest: ' + MAIL,
+          'or [linkedin](https://www.linkedin.com/in/henriettavanniekerk). tell her mini hen sent you ✨'],
+      next: ['resume'] },
+    { id: 'resume', q: 'can I see her résumé?', go: 'resume', match: ['resume', 'résumé', 'cv'], a: 'opening her résumé ✨' },
+
+    // her, off the clock
+    { id: 'origin', q: 'how\'d she get into this?', match: ['get into', 'got into', 'background', 'story', 'started', 'why design'],
+      a: ['sideways!',
+          'she trained herself to really *see* first: how light pulls through curtain fabric, how shadow gives a sketch weight. software showed up through aesthetics.'],
+      next: ['from', 'fun'] },
+    { id: 'from', q: 'where is she from?', match: ['from', 'south africa', 'springbok', 'rugby', 'grew up', 'grow up', 'hometown'],
+      a: ['south africa 🏉',
+          'the springboks won their 2023 world cup knockouts by one point, three matches running, and she has not been normal about it since.'],
+      next: ['fun', 'games'] },
+    { id: 'fun', q: 'what\'s she into outside work?', match: ['outside', 'hobb', 'free time', 'for fun', 'weekend', 'lift', 'gym', 'weightlifting'],
+      a: ['games (a lot of games), cosmic horror, weightlifting since 2021, and the springboks.'],
+      next: ['games', 'books', 'from'] },
+    { id: 'games', q: 'what does she play?', match: ['play', 'games', 'gaming', 'steam', 'cyberpunk', 'elden', 'rivals'],
+      a: ['cyberpunk 2077: **570 hours**. baldur\'s gate 3: **543** (she\'s cto of a bg3 expansion, so that tracks).',
+          'then hogwarts legacy, marvel rivals, stardew, and lately the blood of dawnwalker.',
+          'plus hundreds of hours of skyrim and fallout on xbox 🎮'],
+      next: ['elden', 'cozy', 'cowork'] },
+    { id: 'elden', q: 'has she 100%\'d anything?', match: ['100%', 'elden', 'achievement', 'completion', 'platinum'],
+      a: ['elden ring.', 'all 42 of 42 achievements. no notes.'],
+      next: ['cozy', 'ptm'] },
+    { id: 'cozy', q: 'cozy games or scary games?', match: ['cozy', 'scary', 'horror game', 'stardew', 'fnaf', 'freddy'],
+      a: ['both!!',
+          'stardew valley and castle crashers on one side, five nights at freddy\'s, little nightmares and still wakes the deep on the other.',
+          'and she makes the cozy kind: equinox won comfy winter jam.'],
+      next: ['equinoxGo', 'books'] },
+    { id: 'cowork', q: 'weirdest steam stat?', match: ['weird', 'steam stat', 'co-working', 'coworking', 'on-together'],
+      a: ['236 hours in on-together, a virtual co-working game.', 'so yes, she games while she works. by working.'],
+      next: ['code', 'reach'] },
+    { id: 'books', q: 'what\'s she reading?', match: ['read', 'book', 'horror', 'master and margarita'],
+      a: ['the master and margarita, right now.', 'she\'s big on cosmic horror and anything narrative-driven.'],
+      next: ['games', 'origin'] },
+
+    // the nudge pair, only ever offered together after a longer chat
+    { id: 'nudgeYes', q: 'yes, let\'s talk', a: ['yay!!', MAIL + ' is the fastest way. tell her mini hen sent you ✨'], next: [] },
+    { id: 'nudgeNo', q: 'maybe later', a: 'no rush! what else do you wanna know?', next: [] },
+  ];
+  const byId = Object.fromEntries(S.map(x => [x.id, x]));
+  const OPENERS = ['who', 'start', 'looking'];
+  const NUDGE = ['nudgeYes', 'nudgeNo'];
+  const HELLO = ['hiii! I\'m mini hen 👋', 'henriëtta\'s sidekick. ask me anything about her, or tap a question ↓'];
+  const FALLBACK = 'ooh, that one\'s above my pay grade (I\'m like 90 pixels tall). ask her yourself: ' + MAIL;
+
+  // what this chat has already covered, so nothing's offered twice
+  const asked = new Set();
+  let answered = 0, nudged = false, busy = false;
+  const fresh = id => !asked.has(id) && !NUDGE.includes(id);
+
+  // tiny markdown: **bold**, *italic*, [links](...)
+  const esc = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const md = t => esc(t)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\(((?:https?:|mailto:)[^)\s]+)\)/g, (m, txt, url) =>
+      `<a href="${url}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${txt}</a>`);
+
+  // a typed question goes to: an exact chip, a greeting, the best keyword hit, or the fallback
+  function find(text){
+    const raw = text.toLowerCase().trim();
+    const exact = S.find(x => x.q.toLowerCase() === raw);
+    if (exact) return exact;
+    if (/^(hi+|hey+|hello|yo|sup)\b/.test(raw)) return { a: 'hiii! ask me about her work, what she\'s looking for, or what she does for fun.', next: [] };
+    // strip the filler first, so "tell me about her startup" is just
+    // "startup". if nothing's left, they just want to know about her
+    const t = filler(raw);
+    if (!t.replace(/[^a-z0-9]/g, '')) return byId.who;
+    // then the longest keyword that hits wins, so specific beats generic
+    let best = null, len = 0;
+    for (const x of S){
+      if (NUDGE.includes(x.id)) continue;
+      for (const k of x.keys) if (k.length > len && t.includes(k)){ best = x; len = k.length; }
+    }
+    return best || { a: FALLBACK, next: [] };
+  }
+  function filler(t){
+    return t.replace(/\b(can you |could you )?(tell me( more)?|talk|what about|about)\b/g, ' ')
+            .replace(/\b(her|she|henri[eë]tta)\b/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+  // keywords get the same cleanup so "hire her" still matches "hire".
+  // a one letter leftover would match everything, so those go
+  S.forEach(x => { x.keys = (x.match || []).map(filler).filter(k => k.length > 1); });
+
+  const scroll = () => { log.scrollTop = log.scrollHeight; };
+  function row(who){
+    const r = document.createElement('div');
+    r.className = 'hc-row ' + who;
+    if (who === 'hen') r.innerHTML = '<img class="hc-mini" src="/sky/henhead.webp" alt="" width="220" height="201">';
+    const m = document.createElement('div');
+    m.className = 'hc-msg';
+    r.appendChild(m); log.appendChild(r); scroll();
+    return m;
+  }
+
+  // the bubble over her head in the rail mirrors what she's up to
+  const bubble = btn.querySelector('.walker-bubble');
+  function say(mode){
+    btn.classList.toggle('asking', mode === 'ask');
+    if (mode === 'typing') bub.innerHTML = '<span class="wb-dots"><i></i><i></i><i></i></span>';
+    else bub.textContent = mode === 'ask' ? 'chat to hen?' : mode === 'open' ? '♡' : '!';
+    fit();
+  }
+  // keep a wide bubble inside the strip when she's near either end. only
+  // while she's stopped, a walking her would leave the nudge behind
+  function fit(){
+    bubble.style.setProperty('--shift', '0px');
+    if (bub.textContent === '!') return;
+    const strip = btn.parentElement.getBoundingClientRect(), b = bubble.getBoundingClientRect();
+    const shift = Math.max(0, strip.left + 2 - b.left) - Math.max(0, b.right - strip.right + 2);
+    bubble.style.setProperty('--shift', Math.round(shift) + 'px');
+  }
+
+  // dots for a beat, then the answer types out word by word
+  async function hen(text){
+    box.classList.add('talking'); say('typing');
+    const m = row('hen');
+    m.innerHTML = '<span class="hc-dots"><i></i><i></i><i></i></span>';
+    await wait(Math.min(900, 350 + text.length * 3));
+    const words = text.split(/(\s+)/);
+    if (still) m.innerHTML = '<p>' + md(text) + '</p>';
+    else for (let i = 1; i <= words.length; i += 2){
+      m.innerHTML = '<p>' + md(words.slice(0, i).join('')) + '<span class="hc-caret"></span></p>';
+      scroll();
+      await wait(22);
+    }
+    m.innerHTML = '<p>' + md(text) + '</p>';
+    scroll();
+    box.classList.remove('talking'); say(box.hidden ? '!' : 'open');
+  }
+
+  // follow-ups: this answer's own first, minus anything asked already. if
+  // that leaves fewer than two, top up with questions nobody's touched yet,
+  // ones that keep the chat going before ones that leave for a page
+  function offer(ids, keep){
+    let list = keep ? ids.slice() : (ids || []).filter(fresh);
+    for (const leaves of [false, true]){
+      for (const x of S){
+        if (keep || list.length >= 2) break;
+        if (fresh(x.id) && !list.includes(x.id) && !!x.go === leaves) list.push(x.id);
+      }
+    }
+    list = list.slice(0, 3);
+    if (!list.length) return;
+    const f = document.createElement('div');
+    f.className = 'hc-follow';
+    list.forEach(id => {
+      const c = document.createElement('button');
+      c.type = 'button'; c.className = 'hc-chip'; c.textContent = byId[id].q;
+      c.onclick = () => ask(byId[id]);
+      f.appendChild(c);
+    });
+    log.appendChild(f); scroll();
+  }
+
+  async function ask(item, typed){
+    if (busy) return;
+    busy = true;
+    log.querySelectorAll('.hc-follow').forEach(f => f.remove());   // old chips go once you pick
+    row('you').textContent = typed || item.q;
+    if (item.id) asked.add(item.id);
+    await wait(250);
+    for (const line of [].concat(item.a)) await hen(line);
+    busy = false;
+    // some answers walk you to the page
+    if (item.go){
+      await wait(700);
+      close(); window.closeSidebar?.(); window.routeTo?.(item.go);
+      return;
+    }
+    // a longer chat earns one nudge toward the real her
+    if (++answered >= 5 && !nudged){
+      nudged = true; busy = true;
+      await wait(400);
+      await hen('you\'ve asked me a LOT about her 👀 wanna say hi to her properly?');
+      busy = false;
+      return offer(NUDGE, true);
+    }
+    offer(item.next);
+  }
+
+  // next to the rail on desktop, lined up with her feet
+  function place(){
+    if (innerWidth <= 920) return;
+    const rail = document.getElementById('sidebar').getBoundingClientRect();
+    const strip = btn.parentElement.getBoundingClientRect();
+    box.style.left = Math.round(rail.right + 14) + 'px';
+    box.style.bottom = Math.max(12, Math.round(innerHeight - strip.bottom)) + 'px';
+  }
+  async function open(){
+    place();
+    box.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    say('open');
+    if (matchMedia('(pointer: fine)').matches) input.focus({ preventScroll: true });
+    if (log.childElementCount) return;
+    busy = true;
+    for (const line of HELLO) await hen(line);
+    busy = false;
+    offer(OPENERS, true);
+  }
+  function close(refocus){
+    if (box.hidden) return;
+    box.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    say('!');
+    if (refocus) btn.focus({ preventScroll: true });
+  }
+
+  // first click: she stops and asks. second click: the chat opens. if you
+  // leave her hanging she shrugs it off after a few seconds and walks on
+  let asking = 0;
+  btn.addEventListener('click', () => {
+    if (!box.hidden) return close();
+    if (!asking){
+      say('ask');
+      asking = setTimeout(() => { asking = 0; if (box.hidden) say('!'); }, 5000);
+      return;
+    }
+    clearTimeout(asking); asking = 0;
+    open();
+  });
+  box.querySelector('.hc-x').addEventListener('click', () => close(true));
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const t = input.value.trim();
+    if (!t || busy) return;
+    input.value = '';
+    ask(find(t), t);
+  });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !box.hidden) close(true); });
+  // clicking anywhere else closes it
+  addEventListener('pointerdown', e => {
+    if (!box.hidden && !box.contains(e.target) && !btn.contains(e.target)) close();
+  });
+  addEventListener('resize', () => { if (!box.hidden) place(); });
 })();
 
 /* a live waterloo clock next to featured work. tiny detail, reads as care */
