@@ -3508,14 +3508,12 @@ body::after{
 /* the button is her + her speech bubble. the button does the pacing and the
    sprite inside does the stepping and turning around, so the bubble rides
    along with her without getting mirrored on the walk back.
-   her height leaves --bub of room over her head for the bubble so it never
-   pokes up into the nav. on short screens the bubble moves beside her head
-   instead (see the container query) and she walks --side less far so it
-   always fits */
+   her height leaves --bub of room over her head for the bubble, so her and
+   the bubble together are what has to fit. less room just means a smaller
+   her, never a bubble poking up into the nav */
 .walker{
   --reach: 22px;
-  --bub: 44px;
-  --side: 0px;
+  --bub: 40px;
   --h: calc(100cqh - .3rem + var(--reach) - var(--bub));
   --w: calc(var(--h) * 168 / 255);
   position:absolute; left:0; bottom:-2px; height:var(--h); width:var(--w);
@@ -3531,21 +3529,24 @@ body::after{
 /* across to the far side, then back the same way */
 @keyframes chibiPace{
   0%, 100% { translate: .25rem 0; }
-  50%      { translate: calc(100cqw - var(--w) - var(--side) - .25rem) 0; }
+  50%      { translate: calc(100cqw - var(--w) - .25rem) 0; }
 }
 @keyframes chibiFace{ 0% { scale: 1 1; } 50% { scale: -1 1; } }
 /* she stops while you're on her (a moving target is no fun to click) and
    while you two are chatting */
 .walker:hover, .walker:hover .walker-sprite,
 .walker:focus-visible, .walker:focus-visible .walker-sprite,
+.walker.asking, .walker.asking .walker-sprite,
 .walker[aria-expanded="true"], .walker[aria-expanded="true"] .walker-sprite{ animation-play-state:paused; }
 .walker:focus-visible{ outline:none; }
 .walker:focus-visible .wb-in{ outline:2px solid var(--rail-accent); outline-offset:3px; }
 
 /* her speech bubble. a little white sticker: ink outline, hard offset
-   shadow, pixel font. "!" by default, "wanna chat?" when you hover her,
-   typing dots while she's answering you, a heart while the chat's open */
-.walker-bubble{ position:absolute; left:50%; bottom:calc(100% + 6px); translate:-50% 0; pointer-events:none; }
+   shadow, pixel font. "!" by default, "chat to hen?" after the first click
+   (the second one opens the chat), typing dots while she's answering you,
+   a heart while the chat's open. --shift nudges it back inside the strip
+   near either end, the tail slides the other way to keep pointing at her */
+.walker-bubble{ position:absolute; left:50%; bottom:calc(100% + 6px); translate:calc(-50% + var(--shift, 0px)) 0; }
 .wb-in{
   position:relative; display:flex; align-items:center; justify-content:center;
   min-width:32px; height:32px; padding:0 .6rem; white-space:nowrap;
@@ -3558,25 +3559,18 @@ body::after{
 /* the tail: a rotated square showing two of its borders, so it reads as a
    little V of outline poking out of the bubble */
 .wb-in::before{
-  content:''; position:absolute; left:50%; top:100%; width:9px; height:9px; margin:-5px 0 0 -5.5px;
+  content:''; position:absolute; left:calc(50% - var(--shift, 0px)); top:100%; width:9px; height:9px; margin:-5px 0 0 -5.5px;
   background:#fff; border:2px solid #14202b; border-top:0; border-left:0; rotate:45deg;
 }
+.walker.asking .wb-in{ font:600 .72rem/1 'Satoshi', sans-serif; padding:0 .65rem; height:28px; }
 .wb-dots{ display:inline-flex; gap:3px; }
 .wb-dots i{ width:5px; height:5px; border-radius:50%; background:currentColor; animation:hcDot 1s ease-in-out infinite; }
 .wb-dots i:nth-child(2){ animation-delay:.15s; }
 .wb-dots i:nth-child(3){ animation-delay:.3s; }
 @keyframes wbIn{ from{ opacity:0; transform:translateY(8px) scale(.5); } to{ opacity:1; transform:none; } }
 @keyframes wbBob{ 0%, 100%{ translate:0 0; } 50%{ translate:0 -3px; } }
-/* short rails: no room over her head, so the bubble sits beside it
-   instead, tail pointing back at her, and she stops short of the far edge
-   so it never gets cut off */
-@container (max-height: 120px){
-  .walker{ --bub:0px; --side:64px; }
-  .walker-bubble{ left:calc(100% - 2px); bottom:auto; top:6px; translate:none; }
-  .wb-in{ transform-origin:0 50%; }
-  .wb-in::before{ left:0; top:50%; margin:-5px 0 0 -6px; border:2px solid #14202b; border-top:0; border-right:0; }
-}
-@container (max-height: 54px){ .walker{ display:none; } }
+/* too short to fit her and the bubble at a readable size: she steps out */
+@container (max-height: 62px){ .walker{ display:none; } }
 
 /* the chat window. same sticker look as her bubble: ink outline, hard
    shadow, a little sky up top with her in it. sits just right of the rail
@@ -3609,7 +3603,7 @@ body::after{
 /* header: her in a little sky, two clouds drifting behind */
 .hc-bar{
   position:relative; display:flex; align-items:center; gap:.7rem;
-  padding:.8rem .8rem .75rem .9rem; background:var(--hc-sky);
+  padding:.9rem .85rem .85rem .95rem; background:var(--hc-sky);
   border-bottom:2px solid var(--hc-line); overflow:hidden; isolation:isolate;
 }
 .hc-bar::before, .hc-bar::after{
@@ -3622,10 +3616,10 @@ body::after{
 :root:not([data-theme="light"]) .hc-bar::before, :root:not([data-theme="light"]) .hc-bar::after{ opacity:.12; }
 @keyframes hcCloud{ from{ translate:-60px 0; } to{ translate:200px 0; } }
 .hc-av{
-  position:relative; flex:none; width:44px; height:44px; border-radius:50%;
+  position:relative; flex:none; width:42px; height:42px; border-radius:50%;
   background:#fff; border:2px solid var(--hc-line); box-shadow:2px 2px 0 var(--hc-line);
 }
-.hc-av img{ position:absolute; left:50%; top:54%; width:34px; height:auto; translate:-50% -50%; }
+.hc-av img{ position:absolute; left:50%; top:54%; width:28px; height:auto; translate:-50% -50%; }
 .hc-av .hc-wink{ opacity:0; }
 /* she winks on and off while she's typing, like she's talking */
 .hen-chat.talking .hc-wink{ animation:hcTalk .5s steps(1) infinite; }
@@ -6818,51 +6812,66 @@ document.addEventListener('click', e => {
   const MAIL = '[henrietta@skrimp.ai](mailto:henrietta@skrimp.ai)';
 
   // the script. id is how answers point at each other, q is the chip label,
-  // match is what routes a typed question here, next is the follow-ups, and
-  // go opens a page (through the same router as the tiles) after she answers
+  // match is what routes a typed question here, a is her answer (a list is
+  // several messages in a row), next is the follow-ups, and go opens a page
+  // (through the same router as the tiles) after she answers
   const S = [
     // the three openers
     { id: 'who', q: 'who is henriëtta?', match: ['who is', 'who\'s', 'what does do', 'what do you do', 'design engineer'],
-      a: 'a design engineer: she doesn\'t stop at the mockup, and she doesn\'t write code with no thought for the person using it. she founded **skrimp**, she\'s cto of **path to menzoberranzan**, and she was hire #1 at **trove**.',
+      a: ['she\'s a design engineer, so she designs the thing and then builds it too.',
+          'right now she runs **skrimp** (her startup) and she\'s cto of **path to menzoberranzan**. before that she was hire #1 at **trove**.'],
       next: ['code', 'skrimp', 'origin'] },
     { id: 'start', q: 'where should I start?', match: ['start', 'best', 'portfolio', 'project', 'work', 'show me'],
-      a: 'depends what you\'re into! big numbers, something with heart, or something fun?',
+      a: ['depends what you\'re into!', 'big numbers, something with heart, or something fun?'],
       next: ['numbers', 'heart', 'playful'] },
     { id: 'looking', q: 'what is she looking for?', match: ['looking for', 'hiring', 'hire her', 'job', 'role', 'available', 'opportunit', 'winter', '2027', 'contract', 'full-time', 'full time'],
-      a: '**winter 2027 roles**, full-time or contract. design engineering, anywhere design and code meet. she graduates from waterloo in december 2026.',
+      a: ['**winter 2027** roles, full-time or contract!',
+          'she\'s happiest early on a product, where the person designing it is the same person shipping it. founding teams, 0 to 1, small teams that move fast.',
+          'ai products, games, and tools people lean on when life gets messy are her kind of problem. she graduates from waterloo in december 2026.'],
       next: ['base', 'hire', 'reach'] },
 
     // the "where should I start" branches
     { id: 'numbers', q: 'big numbers pls', match: ['numbers', 'growth', 'users', 'metrics', 'impact'],
-      a: 'trove! she was hire #1 and took it from one validated feature to **10,250 users** and 3× weekly growth in five months. 1,331 commits in 18 weeks, more than anyone else on the repo.',
+      a: ['trove! she was hire #1.',
+          'she took it from one validated feature to **10,250 users** and 3× weekly growth in five months.',
+          '1,331 commits in 18 weeks, more than anyone else on the repo.'],
       next: ['troveHow', 'troveGo'] },
     { id: 'heart', q: 'something with heart', match: ['heart', 'meaningful', 'impact', 'health', 'postpartum'],
-      a: 'my auntie: the first ai postpartum companion, built for a 3am brain, not ideal conditions. you just call or text it. built in 36 hours, and it won technova 2025.',
+      a: ['my auntie: the first ai postpartum companion.',
+          'it\'s built for a 3am brain, not ideal conditions. you just call or text it. made in 36 hours, and it won technova 2025.'],
       next: ['auntieGo', 'awards'] },
     { id: 'playful', q: 'something fun', match: ['fun', 'game jam', 'cozy'],
-      a: 'equinox! a cozy 3d puzzle game made by 14 people in 2 weeks. it won comfy winter jam 2025, 1st of 88. she built the player controller and interactions in godot.',
+      a: ['equinox! a cozy 3d puzzle game made by 14 people in 2 weeks.',
+          'it won comfy winter jam 2025, 1st of 88. she built the player controller and all the interactions in godot.'],
       next: ['equinoxGo', 'games'] },
 
     // the projects
     { id: 'trove', q: 'tell me about trove', match: ['trove'],
-      a: 'she was hire #1 on trove, a social story app on web and ios. took it from one validated feature to **10,250 users** and 3× weekly growth in five months.',
+      a: ['she was hire #1 at trove, a social story app on web and ios.',
+          'in five months she took it from one validated feature to **10,250 users** and 3× weekly growth.'],
       next: ['troveHow', 'troveGo'] },
     { id: 'troveHow', q: 'what did she build there?', match: ['pipeline', 'llm', 'eval', 'sprite'],
-      a: 'the story pipeline: an llm writes it, simulated players play it start to finish, it gets scored on its weakest moment and revised before a human signs off. plus a sprite compositor that replaced 392 hand-drawn assets with a handful of anchors.',
+      a: ['the story pipeline. an llm writes each story, simulated players play it start to finish, and it gets scored on its weakest moment and revised before a human signs off.',
+          'she also built a sprite compositor that replaced 392 hand-drawn assets with a handful of anchors.'],
       next: ['troveGo', 'code'] },
     { id: 'troveGo', q: 'open trove', go: 'trove', a: 'opening trove for you ✨' },
     { id: 'skrimp', q: 'what\'s skrimp?', match: ['skrimp', 'grocery', 'groceries', 'meal', 'startup', 'founder', 'ctv'],
-      a: 'her startup! a live ai grocery app across ontario that plans meals from what\'s on sale and what\'s already in your fridge. 2,000+ users, and families save $50 to $100 a week.',
+      a: ['her startup!',
+          'a live ai grocery app across ontario. it plans your meals from what\'s on sale and what\'s already in your fridge.',
+          '2,000+ users, and families save $50 to $100 a week.'],
       next: ['skrimpMoney', 'skrimpGo'] },
     { id: 'skrimpMoney', q: 'who backs skrimp?', match: ['fund', 'backed', 'money', 'investor', 'velocity'],
-      a: 'conrad school\'s e co-op ($5k, twice), velocity\'s cornerstone award, the jain family award for entrepreneurship, and kwc municipal governments. ctv has covered it three times too.',
+      a: ['conrad school\'s e co-op ($5k, twice), velocity\'s cornerstone award, the jain family award for entrepreneurship, and kwc municipal governments.',
+          'and ctv has covered it three times 📺'],
       next: ['skrimpGo', 'lead'] },
     { id: 'skrimpGo', q: 'open skrimp', go: 'skrimp', a: 'opening skrimp ✨' },
     { id: 'ptm', q: 'what\'s path to menzoberranzan?', match: ['menzo', 'ptm', 'path to', 'baldur', 'bg3', 'mod', 'cto', 'volunteer'],
-      a: 'a volunteer expansion for baldur\'s gate 3: 140+ contributors, 1,700 patreon members, covered by kotaku and thegamer. she\'s cto. she inherited it collapsing and moved an 80gb+ repo onto self-hosted forgejo with git lfs.',
+      a: ['a volunteer expansion for baldur\'s gate 3! 140+ contributors, 1,700 patreon members, covered by kotaku and thegamer.',
+          'she\'s cto. she inherited it collapsing and moved an 80gb+ repo onto self-hosted forgejo with git lfs.'],
       next: ['ptmAudio', 'ptmGo'] },
     { id: 'ptmAudio', q: 'anything cool she shipped there?', match: ['audio', 'skunkworks', 'composer', 'tool'],
-      a: 'her skunkworks team shipped a tool that solved a 16-year-old problem in bg3 audio modding. a multi-step manual slog for composers is now one click.',
+      a: ['her skunkworks team shipped a tool that solved a 16-year-old problem in bg3 audio modding.',
+          'what used to be a multi-step manual slog for composers is now one click.'],
       next: ['ptmGo', 'games'] },
     { id: 'ptmGo', q: 'open path to menzoberranzan', go: 'menzo', a: 'opening path to menzoberranzan ✨' },
     { id: 'auntieGo', q: 'open my auntie', go: 'myauntie', match: ['auntie', 'technova'], a: 'opening my auntie ✨' },
@@ -6870,59 +6879,77 @@ document.addEventListener('click', e => {
 
     // hiring
     { id: 'base', q: 'where is she based?', match: ['based', 'where is she', 'location', 'remote', 'relocat', 'move', 'canada', 'waterloo', 'toronto', 'live'],
-      a: 'kitchener-waterloo, canada 🍁 she\'s up for roles in canada or remote, and happy to travel for work. she\'s just staying put in kw.',
+      a: ['kitchener-waterloo, canada 🍁',
+          'she\'s up for roles in canada or remote, and happy to travel for work. she\'s just staying put in kw.'],
       next: ['hire', 'reach'] },
     { id: 'hire', q: 'why should I hire her?', match: ['why should', 'why her', 'strength', 'good at', 'convince'],
-      a: 'she ships the thing, not just the mockup of the thing. 10,250 users at trove, 2,000+ on skrimp, 140 volunteers shipping into one build at ptm. and she leads: 6 interns at skrimp, six departments at ptm.',
+      a: ['she ships the thing, not just the mockup of the thing.',
+          '10,250 users at trove, 2,000+ on skrimp, and 140 volunteers shipping into one build at ptm.',
+          'and she leads: 6 interns at skrimp, six departments at ptm.'],
       next: ['awards', 'lead', 'reach'] },
     { id: 'awards', q: 'has she won stuff?', match: ['award', 'won', 'win', 'prize', 'hackathon', 'nominee', 'woman of the year', 'women of the year'],
-      a: 'technova 2025 (my auntie), comfy winter jam 2025 (equinox, 1st of 88), the jain family award for entrepreneurship, velocity\'s cornerstone award, and a kw oktoberfest women of the year nomination for 2026.',
+      a: ['a few 🏆',
+          'technova 2025 (my auntie), comfy winter jam 2025 (equinox, 1st of 88), the jain family award for entrepreneurship, and velocity\'s cornerstone award.',
+          'and a kw oktoberfest women of the year nomination for 2026.'],
       next: ['heart', 'playful', 'reach'] },
     { id: 'lead', q: 'how does she lead teams?', match: ['lead', 'team', 'manage', 'mentor', 'intern', 'collaborat'],
-      a: 'she managed 6 first-year engineering interns at skrimp across two co-op terms, and at ptm she keeps 140 volunteers across six departments shipping into one build. her trick: systems simple enough for juniors to reason about under pressure.',
+      a: ['at skrimp she managed 6 first-year engineering interns across two co-op terms.',
+          'at ptm she keeps 140 volunteers across six departments shipping into one build. she sets things up so juniors can figure stuff out under pressure without waiting on her.'],
       next: ['ptm', 'hire'] },
-    { id: 'code', q: 'does she actually code?', match: ['code', 'coding', 'program', 'engineer', 'stack', 'react', 'typescript', 'language', 'rust', 'technical', 'develop'],
-      a: 'every day. react, typescript, next.js, three.js, convex, firestore, godot, lua. lately she\'s been learning **rust** and hardware development for her capstone, and having way too much fun with it.',
+    { id: 'code', q: 'does she actually code?', match: ['code', 'coding', 'program', 'engineer', 'stack', 'react', 'typescript', 'python', 'language', 'rust', 'technical', 'develop'],
+      a: ['every day!',
+          'react, typescript, next.js, python, three.js, convex, firestore, godot, lua.',
+          'lately she\'s been learning **rust** and hardware development for her capstone, and having way too much fun with it.'],
       next: ['capstone', 'site', 'troveHow'] },
     { id: 'capstone', q: 'what\'s her capstone?', match: ['capstone', 'handoff', 'hardware', 'paramedic', 'firefighter', 'hospital'],
-      a: 'lost in handoff: what paramedics and firefighters learn at the scene, and whether it actually reaches the hospital. it\'s still cooking, which is why it says "coming soon" on the home page.',
+      a: ['lost in handoff: what paramedics and firefighters learn at the scene, and whether it actually reaches the hospital.',
+          'it\'s still cooking, which is why it says "coming soon" on the home page.'],
       next: ['looking', 'site'] },
     { id: 'site', q: 'how did she make this site?', match: ['site', 'website', 'portfolio built', 'three.js', 'threejs', 'made this', 'mini hen', 'who are you'],
-      a: 'hand-coded! a three.js sky, a pixel-meets-serif type system, a girl falling through the north star, and me: a 16-frame walk cycle puppeted out of her own drawings.',
+      a: ['hand-coded!',
+          'a three.js sky, a pixel-meets-serif type system, a girl falling through the north star...',
+          'and me: a 16-frame walk cycle puppeted out of her own drawings.'],
       next: ['code', 'fun'] },
     { id: 'reach', q: 'how do I reach her?', match: ['contact', 'email', 'reach', 'linkedin', 'get in touch', 'message'],
-      a: 'email\'s fastest: ' + MAIL + '. or [linkedin](https://www.linkedin.com/in/henriettavanniekerk). tell her mini hen sent you ✨',
+      a: ['email\'s fastest: ' + MAIL,
+          'or [linkedin](https://www.linkedin.com/in/henriettavanniekerk). tell her mini hen sent you ✨'],
       next: ['resume'] },
     { id: 'resume', q: 'can I see her résumé?', go: 'resume', match: ['resume', 'résumé', 'cv'], a: 'opening her résumé ✨' },
 
     // her, off the clock
     { id: 'origin', q: 'how\'d she get into this?', match: ['get into', 'got into', 'background', 'story', 'started', 'why design'],
-      a: 'sideways! she trained herself to really *see* first: how light pulls through curtain fabric, how shadow gives a sketch weight. software showed up through aesthetics.',
+      a: ['sideways!',
+          'she trained herself to really *see* first: how light pulls through curtain fabric, how shadow gives a sketch weight. software showed up through aesthetics.'],
       next: ['from', 'fun'] },
     { id: 'from', q: 'where is she from?', match: ['from', 'south africa', 'springbok', 'rugby', 'grew up', 'grow up', 'hometown'],
-      a: 'south africa 🏉 the springboks won their 2023 world cup knockouts by one point, three matches running, and she has not been normal about it since.',
+      a: ['south africa 🏉',
+          'the springboks won their 2023 world cup knockouts by one point, three matches running, and she has not been normal about it since.'],
       next: ['fun', 'games'] },
-    { id: 'fun', q: 'what\'s she into outside work?', match: ['outside', 'hobb', 'free time', 'for fun', 'weekend', 'lift', 'gym'],
-      a: 'games, cosmic horror, lifting (since 2021), and the springboks. she likes systems that shouldn\'t work but do.',
+    { id: 'fun', q: 'what\'s she into outside work?', match: ['outside', 'hobb', 'free time', 'for fun', 'weekend', 'lift', 'gym', 'weightlifting'],
+      a: ['games (a lot of games), cosmic horror, weightlifting since 2021, and the springboks.'],
       next: ['games', 'books', 'from'] },
     { id: 'games', q: 'what does she play?', match: ['play', 'games', 'gaming', 'steam', 'cyberpunk', 'elden', 'rivals'],
-      a: 'cyberpunk 2077 (**570 hours**) and baldur\'s gate 3 (**543**, and she\'s cto of a bg3 expansion, so that tracks). then hogwarts legacy, marvel rivals, stardew, and lately the blood of dawnwalker. plus hundreds of hours of skyrim and fallout on xbox.',
+      a: ['cyberpunk 2077: **570 hours**. baldur\'s gate 3: **543** (she\'s cto of a bg3 expansion, so that tracks).',
+          'then hogwarts legacy, marvel rivals, stardew, and lately the blood of dawnwalker.',
+          'plus hundreds of hours of skyrim and fallout on xbox 🎮'],
       next: ['elden', 'cozy', 'cowork'] },
     { id: 'elden', q: 'has she 100%\'d anything?', match: ['100%', 'elden', 'achievement', 'completion', 'platinum'],
-      a: 'elden ring. all 42 of 42 achievements. no notes.',
+      a: ['elden ring.', 'all 42 of 42 achievements. no notes.'],
       next: ['cozy', 'ptm'] },
     { id: 'cozy', q: 'cozy games or scary games?', match: ['cozy', 'scary', 'horror game', 'stardew', 'fnaf', 'freddy'],
-      a: 'both!! stardew valley and castle crashers on one side, five nights at freddy\'s, little nightmares and still wakes the deep on the other. and she builds the cozy kind: equinox won comfy winter jam.',
+      a: ['both!!',
+          'stardew valley and castle crashers on one side, five nights at freddy\'s, little nightmares and still wakes the deep on the other.',
+          'and she makes the cozy kind: equinox won comfy winter jam.'],
       next: ['equinoxGo', 'books'] },
     { id: 'cowork', q: 'weirdest steam stat?', match: ['weird', 'steam stat', 'co-working', 'coworking', 'on-together'],
-      a: '236 hours in on-together, a virtual co-working game. so yes, she games while she works. by working.',
+      a: ['236 hours in on-together, a virtual co-working game.', 'so yes, she games while she works. by working.'],
       next: ['code', 'reach'] },
     { id: 'books', q: 'what\'s she reading?', match: ['read', 'book', 'horror', 'master and margarita'],
-      a: 'the master and margarita right now. she\'s into cosmic horror, narrative ux, and anything with a system hiding under the story.',
+      a: ['the master and margarita, right now.', 'she\'s big on cosmic horror and anything narrative-driven.'],
       next: ['games', 'origin'] },
 
     // the nudge pair, only ever offered together after a longer chat
-    { id: 'nudgeYes', q: 'yes, let\'s talk', a: 'yay!! ' + MAIL + ' is the fastest way. tell her mini hen sent you ✨', next: [] },
+    { id: 'nudgeYes', q: 'yes, let\'s talk', a: ['yay!!', MAIL + ' is the fastest way. tell her mini hen sent you ✨'], next: [] },
     { id: 'nudgeNo', q: 'maybe later', a: 'no rush! what else do you wanna know?', next: [] },
   ];
   const byId = Object.fromEntries(S.map(x => [x.id, x]));
@@ -6982,10 +7009,21 @@ document.addEventListener('click', e => {
   }
 
   // the bubble over her head in the rail mirrors what she's up to
-  const short = () => getComputedStyle(btn).getPropertyValue('--side').trim() !== '0px';
+  const bubble = btn.querySelector('.walker-bubble');
   function say(mode){
+    btn.classList.toggle('asking', mode === 'ask');
     if (mode === 'typing') bub.innerHTML = '<span class="wb-dots"><i></i><i></i><i></i></span>';
-    else bub.textContent = mode === 'hover' ? (short() ? 'chat?' : 'wanna chat?') : mode === 'open' ? '♡' : '!';
+    else bub.textContent = mode === 'ask' ? 'chat to hen?' : mode === 'open' ? '♡' : '!';
+    fit();
+  }
+  // keep a wide bubble inside the strip when she's near either end. only
+  // while she's stopped, a walking her would leave the nudge behind
+  function fit(){
+    bubble.style.setProperty('--shift', '0px');
+    if (bub.textContent === '!') return;
+    const strip = btn.parentElement.getBoundingClientRect(), b = bubble.getBoundingClientRect();
+    const shift = Math.max(0, strip.left + 2 - b.left) - Math.max(0, b.right - strip.right + 2);
+    bubble.style.setProperty('--shift', Math.round(shift) + 'px');
   }
 
   // dots for a beat, then the answer types out word by word
@@ -7037,7 +7075,7 @@ document.addEventListener('click', e => {
     row('you').textContent = typed || item.q;
     if (item.id) asked.add(item.id);
     await wait(250);
-    await hen(item.a);
+    for (const line of [].concat(item.a)) await hen(line);
     busy = false;
     // some answers walk you to the page
     if (item.go){
@@ -7084,9 +7122,19 @@ document.addEventListener('click', e => {
     if (refocus) btn.focus({ preventScroll: true });
   }
 
-  btn.addEventListener('click', () => box.hidden ? open() : close());
-  btn.addEventListener('pointerenter', () => { if (box.hidden) say('hover'); });
-  btn.addEventListener('pointerleave', () => { if (box.hidden) say('!'); });
+  // first click: she stops and asks. second click: the chat opens. if you
+  // leave her hanging she shrugs it off after a few seconds and walks on
+  let asking = 0;
+  btn.addEventListener('click', () => {
+    if (!box.hidden) return close();
+    if (!asking){
+      say('ask');
+      asking = setTimeout(() => { asking = 0; if (box.hidden) say('!'); }, 5000);
+      return;
+    }
+    clearTimeout(asking); asking = 0;
+    open();
+  });
   box.querySelector('.hc-x').addEventListener('click', () => close(true));
   form.addEventListener('submit', e => {
     e.preventDefault();
