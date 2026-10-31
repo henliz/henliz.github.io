@@ -3525,6 +3525,81 @@ body::after{
 @keyframes chibiFace{ 0% { scale: 1 1; } 50% { scale: -1 1; } }
 @container (max-height: 54px){ .walker{ display:none; } }
 
+/* she's clickable. the strip stays click-through, only she catches the
+   pointer, and she stops walking while you're on her so she's not a moving
+   target */
+.walker{ border:0; padding:0; margin:0; cursor:pointer; pointer-events:auto; }
+.walker:hover, .walker:focus-visible, .walker[aria-expanded="true"]{ animation-play-state:paused; }
+.walker:focus-visible{ outline:2px solid var(--rail-accent); outline-offset:3px; border-radius:6px; }
+/* the "!" over her head. she's mirrored on the walk back but a "!" doesn't
+   care. it shows up a beat after the page settles, and once you've said hi
+   it's gone for the visit */
+.walker-alert{
+  position:absolute; left:50%; bottom:calc(100% + 4px);
+  width:20px; height:22px; margin-left:-10px;
+  display:grid; place-items:center;
+  font:700 .8rem/1 'Satoshi', sans-serif; color:#0b1218;
+  background:#fff; border-radius:8px;
+  box-shadow:0 3px 10px rgba(20, 40, 60, .25);
+  opacity:0; animation:alertIn .35s cubic-bezier(.34, 1.4, .64, 1) 2.5s forwards, alertBob 1.6s ease-in-out 2.85s infinite;
+}
+/* the little tail pointing down at her */
+.walker-alert::after{ content:''; position:absolute; top:100%; left:50%; margin-left:-4px; border:4px solid transparent; border-top-color:#fff; }
+.walker.said-hi .walker-alert{ display:none; }
+@keyframes alertIn{ from{ opacity:0; transform:translateY(6px) scale(.6); } to{ opacity:1; transform:none; } }
+@keyframes alertBob{ 0%, 100%{ translate:0 0; } 50%{ translate:0 -3px; } }
+
+/* the chat window. sits just right of the rail, bottom lined up with her
+   (the js places it), and pops up out of her corner */
+.hen-chat{
+  position:fixed; left:300px; bottom:24px; z-index:60;
+  width:min(300px, calc(100vw - 24px));
+  display:flex; flex-direction:column; max-height:min(470px, calc(100vh - 48px));
+  background:rgba(5, 9, 15, .96); color:rgba(240, 242, 240, .9);
+  border:1px solid rgba(var(--muted-rgb), .18); border-radius:16px;
+  box-shadow:0 18px 50px rgba(0, 0, 0, .35);
+  font-family:'Satoshi', sans-serif;
+  transform-origin:left bottom;
+  animation:hcIn .28s cubic-bezier(.34, 1.3, .64, 1);
+}
+.hen-chat[hidden]{ display:none; }
+:root[data-pane-open] .hen-chat{ display:none; }
+@keyframes hcIn{ from{ opacity:0; transform:translateY(8px) scale(.92); } to{ opacity:1; transform:none; } }
+.hc-bar{ display:flex; align-items:center; gap:.5rem; padding:.6rem .7rem .55rem .85rem; border-bottom:1px solid rgba(var(--muted-rgb), .12); }
+.hc-bar img{ width:22px; height:auto; }
+.hc-title{ flex:1; font-family:'DotempDemo', monospace; font-size:.95rem; color:var(--ink); }
+.hc-x{ width:26px; height:26px; border:0; border-radius:8px; background:transparent; color:inherit; font-size:1.2rem; line-height:1; cursor:pointer; opacity:.7; }
+.hc-x:hover, .hc-x:focus-visible{ opacity:1; background:rgba(var(--muted-rgb), .12); }
+.hc-log{ flex:1; min-height:120px; overflow-y:auto; padding:.8rem .85rem .4rem; display:flex; flex-direction:column; gap:.4rem; overscroll-behavior:contain; }
+.hc-msg{ margin:0; max-width:85%; padding:.5rem .7rem; border-radius:14px; font-size:.84rem; line-height:1.4; animation:hcMsg .2s ease-out; }
+.hc-hen{ align-self:flex-start; background:rgba(var(--muted-rgb), .12); border-bottom-left-radius:4px; }
+.hc-you{ align-self:flex-end; background:rgba(var(--rail-accent-rgb), .16); border-bottom-right-radius:4px; }
+.hc-msg a, .hc-go{ color:var(--rail-accent); text-decoration:underline; text-underline-offset:2px; }
+.hc-go{ border:0; padding:0; background:none; font:inherit; cursor:pointer; }
+@keyframes hcMsg{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:none; } }
+/* her typing dots */
+.hc-dots{ display:inline-flex; gap:3px; padding:.2rem 0; }
+.hc-dots i{ width:5px; height:5px; border-radius:50%; background:currentColor; opacity:.4; animation:hcDot 1s ease-in-out infinite; }
+.hc-dots i:nth-child(2){ animation-delay:.15s; }
+.hc-dots i:nth-child(3){ animation-delay:.3s; }
+@keyframes hcDot{ 0%, 60%, 100%{ opacity:.3; transform:none; } 30%{ opacity:.9; transform:translateY(-2px); } }
+.hc-chips{ display:flex; flex-wrap:wrap; gap:.3rem; padding:.45rem .85rem .8rem; border-top:1px solid rgba(var(--muted-rgb), .1); }
+.hc-chips:empty{ display:none; }
+.hc-chip{ border:1px solid rgba(var(--rail-accent-rgb), .35); background:transparent; color:inherit; font:500 .76rem/1.2 'Satoshi', sans-serif; padding:.32rem .6rem; border-radius:999px; cursor:pointer; transition:background .15s ease, scale .12s ease; }
+.hc-chip:hover, .hc-chip:focus-visible{ background:rgba(var(--rail-accent-rgb), .14); }
+.hc-chip:active{ scale:.96; }
+:root[data-theme="light"] .hen-chat{ background:rgba(255, 255, 255, .98); color:var(--ink-soft); border-color:var(--line); box-shadow:0 18px 50px rgba(20, 40, 60, .18); }
+/* phones: no rail beside her, so it's a little sheet along the bottom,
+   over the menu drawer she lives in (that's z 900) */
+@media (max-width: 920px){
+  .hen-chat{ left:12px !important; right:12px; bottom:12px !important; width:auto; z-index:950; }
+}
+@media (prefers-reduced-motion: reduce){
+  .walker-alert{ animation:alertIn .01s linear 2.5s forwards; }
+  .hen-chat, .hc-msg{ animation:none; }
+  .hc-dots i{ animation:none; }
+}
+
 /* short laptop screens (1366x768 and friends): the rail was only ever a
    few px too tall, so tighten the spacing that has slack instead of
    letting it scroll. text sizes don't change, just the air around them */
@@ -3941,7 +4016,22 @@ body::after{
                  built from her own drawings: one steady body, and every arm
                  and leg picked from a library of all 8 drawn frames to match
                  a clean walk cycle, then nudged at the joint. 16 frames -->
-            <div class="rail-walk" aria-hidden="true"><div class="walker"></div></div>
+            <div class="rail-walk">
+                <button class="walker" type="button" aria-label="say hi to mini hen" aria-haspopup="dialog" aria-expanded="false" aria-controls="henChat">
+                    <span class="walker-alert" aria-hidden="true">!</span>
+                </button>
+            </div>
+            <!-- the little chat she opens. scripted, no ai, every answer is
+                 stuff that's already on the site -->
+            <div class="hen-chat" id="henChat" role="dialog" aria-label="chat with mini hen" hidden>
+                <div class="hc-bar">
+                    <img src="/sky/henhead.webp" alt="" width="22" height="20">
+                    <span class="hc-title">mini hen</span>
+                    <button class="hc-x" type="button" aria-label="close chat">&times;</button>
+                </div>
+                <div class="hc-log" aria-live="polite"></div>
+                <div class="hc-chips"></div>
+            </div>
             <div class="sb-foot">
                 <div class="sb-foot-row">
                     <!-- one pill: the label swaps for the socials on hover -->
@@ -6642,6 +6732,104 @@ document.addEventListener('click', e => {
   }
   addEventListener('resize', () => { if (!raf) frame(performance.now()); });
   frame(performance.now());
+})();
+
+/* mini hen's chat. click her and she types back. it's all scripted, the
+   questions are buttons so there's nothing to type and no wrong answers */
+(function(){
+  const btn = document.querySelector('.walker');
+  const box = document.getElementById('henChat');
+  if (!btn || !box) return;
+  document.body.appendChild(box);        // fixed position, so out of the rail
+  const log = box.querySelector('.hc-log'), chips = box.querySelector('.hc-chips');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  try { if (sessionStorage.getItem('henChatSeen')) btn.classList.add('said-hi'); } catch {}
+
+  const facts = [
+    'she was on CTV three times in 2025, for Skrimp',
+    'she\'s a hackathon and game jam winner',
+    'she was a Women of the Year nominee for 2026',
+    'she\'s probably running 47 browser tabs rn',
+    'she turns caffeine into shipped products',
+  ];
+  let fact = Math.random() * facts.length | 0;
+  const mail = '<a href="mailto:henrietta@skrimp.ai">henrietta@skrimp.ai</a>';
+  const topics = [
+    { q: 'what is she looking for?', a: () => ['winter 2027 roles!! \u2728', 'she\'s a design engineer, so anywhere design and code meet. ' + mail + ' if that\'s you'] },
+    { q: 'where should I start?', a: () => ['trove! 0 to 10,250 users in five months', '<button class="hc-go" type="button" data-go="trove">open trove \u2192</button>'] },
+    { q: 'tell me something random', a: () => [facts[fact++ % facts.length]] },
+    { q: 'how do I reach her?', a: () => ['email\'s fastest: ' + mail, 'or <a href="https://www.linkedin.com/in/henriettavanniekerk" target="_blank" rel="noopener">linkedin</a>'] },
+  ];
+
+  const add = (html, who) => {
+    const m = document.createElement('p');
+    m.className = 'hc-msg hc-' + who; m.innerHTML = html;
+    log.appendChild(m); log.scrollTop = log.scrollHeight;
+    return m;
+  };
+  // she "types" each line: dots for a beat (longer for longer lines), then the text
+  let timer = 0;
+  function hen(lines){
+    chips.innerHTML = '';
+    const next = () => {
+      if (!lines.length) return offer();
+      const line = lines.shift();
+      const dots = add('<span class="hc-dots"><i></i><i></i><i></i></span>', 'hen');
+      timer = setTimeout(() => {
+        dots.innerHTML = line; log.scrollTop = log.scrollHeight;
+        timer = setTimeout(next, still ? 0 : 250);
+      }, still ? 0 : Math.min(1100, 380 + line.length * 9));
+    };
+    next();
+  }
+  function offer(){
+    chips.innerHTML = '';
+    topics.forEach(t => {
+      const c = document.createElement('button');
+      c.type = 'button'; c.className = 'hc-chip'; c.textContent = t.q;
+      c.onclick = () => { add(t.q, 'you'); hen(t.a()); };
+      chips.appendChild(c);
+    });
+    // the chips coming back squeeze the log, so keep her last line in view
+    log.scrollTop = log.scrollHeight;
+  }
+  // "open trove" goes through the same router as the tiles
+  log.addEventListener('click', e => {
+    const go = e.target.closest('[data-go]');
+    if (go) { close(); window.closeSidebar?.(); window.routeTo?.(go.dataset.go); }   // closes the phone menu too
+  });
+
+  // next to the rail on desktop, lined up with her feet
+  function place(){
+    if (innerWidth <= 920) return;
+    const rail = document.getElementById('sidebar').getBoundingClientRect();
+    const strip = btn.parentElement.getBoundingClientRect();
+    box.style.left = Math.round(rail.right + 14) + 'px';
+    box.style.bottom = Math.max(12, Math.round(innerHeight - strip.bottom)) + 'px';
+  }
+  function open(){
+    place();
+    box.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    btn.classList.add('said-hi');
+    try { sessionStorage.setItem('henChatSeen', '1'); } catch {}
+    if (!log.childElementCount) hen(['hiii! I\'m mini hen \ud83d\udc4b', 'I pace around down here while henri\u00ebtta works. ask me stuff']);
+    (chips.querySelector('button') || box.querySelector('.hc-x')).focus({ preventScroll: true });
+  }
+  function close(refocus){
+    if (box.hidden) return;
+    box.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    if (refocus) btn.focus({ preventScroll: true });
+  }
+  btn.addEventListener('click', () => box.hidden ? open() : close());
+  box.querySelector('.hc-x').addEventListener('click', () => close(true));
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !box.hidden) close(true); });
+  // clicking anywhere else closes it
+  addEventListener('pointerdown', e => {
+    if (!box.hidden && !box.contains(e.target) && !btn.contains(e.target)) close();
+  });
+  addEventListener('resize', () => { if (!box.hidden) place(); });
 })();
 
 /* a live waterloo clock next to featured work. tiny detail, reads as care */
