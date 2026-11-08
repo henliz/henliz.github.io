@@ -1,0 +1,1304 @@
+<title>Lost in Handoff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@600&family=JetBrains+Mono:wght@400;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&display=swap">
+<style>
+/* layout: a fixed 1920x1080 stage, scaled to fit, one slide at a time.
+   print-shop look: newsprint paper, carbon ink, one halftone ramp
+   (yellow -> orange -> red) that only appears where something is lost. */
+:root{
+  --paper:#f6eeda; --paper-2:#fffaf0; --ink:#1a1410; --ink-2:#3a2f26; --muted:#73614a;
+  --night:#14100c; --night-2:#241c15; --on-night:#f6eeda; --on-night-2:#cdbd9f; --on-night-3:#9a8a6e;
+  --red:#b5362a; --deep:#8e1b1b; --orange:#dd7a35; --yellow:#f0bb3e; --steel:#2b4a6b; --lost:#a99d88;
+  --display:'Anton', Impact, 'Arial Narrow', sans-serif;
+  --body:'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:#0b0907;color:var(--ink);font-family:var(--body);overflow:hidden;margin:0}
+#deck{position:fixed;inset:0;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--paper)}
+.slide{position:absolute;inset:0;visibility:hidden;opacity:0;overflow:hidden}
+.slide.on{visibility:visible}
+.paper{background:var(--paper);color:var(--ink)}
+.paper2{background:var(--paper-2);color:var(--ink)}
+.night{background:var(--night);color:var(--on-night)}
+.redbg{background:var(--red);color:#fffaf0}
+/* the halftone strip that heads every slide */
+.strip{position:absolute;left:0;right:0;top:0;height:14px;
+  background:radial-gradient(circle,rgba(20,16,12,.2) 1.1px,transparent 1.4px) 0 0/6px 6px,
+  linear-gradient(90deg,var(--paper) 0%,var(--yellow) 38%,var(--orange) 68%,var(--red) 100%)}
+.night .strip{background:radial-gradient(circle,rgba(0,0,0,.35) 1.1px,transparent 1.4px) 0 0/6px 6px,
+  linear-gradient(90deg,var(--night) 0%,var(--yellow) 38%,var(--orange) 68%,var(--red) 100%)}
+.redbg .strip{background:radial-gradient(circle,rgba(0,0,0,.25) 1.1px,transparent 1.4px) 0 0/6px 6px,
+  linear-gradient(90deg,var(--yellow) 0%,var(--orange) 50%,var(--deep) 100%)}
+.abs{position:absolute}
+.eyebrow{font:900 24px/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin:0}
+.night .eyebrow{color:var(--yellow)}
+.redbg .eyebrow{color:#fbe2c8}
+h1,h2,h3,p{margin:0}
+.d{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.95;letter-spacing:.005em}
+.h2{font-size:92px}
+.body{font-size:32px;line-height:1.4}
+.small{font-size:24px;line-height:1.35}
+.src{position:absolute;left:128px;bottom:56px;width:1664px;font:400 22px/1.3 var(--body);color:var(--muted)}
+.night .src{color:var(--on-night-3)}
+.redbg .src{color:#fbe2c8}
+.num{font-family:var(--display);font-variant-numeric:tabular-nums;line-height:1}
+.mono{font-family:var(--mono)}
+.mask{overflow:hidden;display:block}
+.photo{position:absolute;border:10px solid #fffdf6;box-shadow:0 18px 40px rgba(20,14,8,.28);object-fit:cover}
+.tape{position:absolute;width:120px;height:34px;background:rgba(240,187,62,.55);mix-blend-mode:multiply}
+/* hud */
+#hud{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));display:flex;gap:8px;align-items:center;z-index:20;
+  font:600 13px/1 var(--body);color:#cdbd9f;opacity:.35;transition:opacity .3s}
+#hud:hover,#hud:focus-within{opacity:1}
+#hud button{all:unset;cursor:pointer;padding:7px 10px;border-radius:999px;background:rgba(36,28,21,.85);color:#f6eeda}
+#hud button:focus-visible{outline:2px solid #f0bb3e;outline-offset:2px}
+#count{font-variant-numeric:tabular-nums;padding:0 6px}
+#notes{position:fixed;left:0;right:0;bottom:0;z-index:15;max-height:38vh;overflow:auto;
+  padding:18px max(16px,env(safe-area-inset-left,0px)) calc(52px + env(safe-area-inset-bottom,0px));
+  background:rgba(20,16,12,.94);color:#f6eeda;font:400 18px/1.55 var(--body);border-top:3px solid #b5362a}
+#notes b{color:#f0bb3e;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:13px;display:block;margin-bottom:6px}
+#notes p{max-width:1100px}
+#help{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:30;background:#14100c;color:#f6eeda;
+  border:1px solid #3a2f26;padding:22px 26px;font:400 16px/1.7 var(--body);max-width:min(92vw,460px)}
+#help kbd{font:700 13px var(--mono);background:#241c15;border:1px solid #3a2f26;padding:1px 6px;margin-right:6px}
+#grain{position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;z-index:9}
+aside.notes{display:none}
+.mtl{font:700 26px/1.25 var(--body);display:flex;justify-content:space-between;gap:12px;margin:0}
+.mtl span{font-family:var(--display);font-weight:400;font-size:30px;color:var(--red);white-space:nowrap}
+.mte{font:400 21px/1.4 var(--body);color:var(--ink-2);margin:4px 0 0}
+.mte b{color:var(--ink)} .mte i{color:#a6521c}
+
+/* who-pays slides */
+.crow{display:flex;justify-content:space-between;align-items:baseline;gap:24px;border-bottom:2px solid #e2d3ae;padding:7px 0}
+.crow .crl{font:700 30px/1.25 var(--body)}
+.crow .crf{font:400 21px/1.4 var(--body);color:var(--ink-2);margin-top:2px}
+.crow .crf b{color:var(--ink)} .crow .crf i{color:#a6521c}
+.crow .num{font-size:48px;white-space:nowrap}
+.ncl{list-style:none;margin:8px 0 0;padding:0;font:400 25px/1.35 var(--body);color:var(--ink-2)}
+.ncl li{margin-top:4px}
+.seg{display:block;height:100%}
+/* typed-three-times slide */
+.rlab{font:900 22px/1.2 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--yellow)}
+.sys{display:flex;align-items:center;background:var(--night-2);border:1px solid #3a2f26}
+.sysn{width:290px;align-self:stretch;display:flex;align-items:center;padding:0 22px;border-right:1px solid #3a2f26;font:700 25px/1.25 var(--body);color:var(--on-night)}
+.sys .typ{flex:1;padding:0 26px;font:400 23px/1.6 var(--mono);color:var(--on-night-2);white-space:nowrap}
+.sysk{width:120px;text-align:center;font:400 54px var(--display);color:var(--yellow)}
+#errBar{position:absolute;left:300px;right:130px;top:12px;bottom:12px;display:flex;align-items:center;gap:16px;padding:0 16px;background:#efe6d2;color:var(--ink);border:2px solid var(--red);box-shadow:0 14px 34px rgba(0,0,0,.55)}
+/* loops slide */
+.lpt{font:900 24px var(--body);letter-spacing:.1em;text-transform:uppercase}
+.lpq{font:italic 600 28px var(--body);color:var(--ink)}
+.lpq span{font:600 20px var(--body);font-style:normal;color:var(--muted);margin-left:10px}
+.lrow{display:flex;align-items:center;margin-top:16px}
+.lc{box-sizing:border-box;width:362px;height:124px;flex-shrink:0;background:var(--paper-2);border-top:6px solid;padding:16px 22px;display:flex;gap:14px;box-shadow:0 8px 20px rgba(26,20,16,.08)}
+.lc p{font:400 25px/1.3 var(--body)}
+.lcn{font:400 40px/1 var(--display)}
+.la{flex-shrink:0;fill:none;stroke:var(--c);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.lret{display:block;fill:none;stroke:var(--c);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.lagain{position:absolute;left:50%;transform:translateX(-50%);bottom:-6px;background:var(--paper);padding:0 16px;font:italic 400 22px var(--body);color:var(--muted)}
+
+/* shared pieces for the one-idea slides */
+.tracker{position:absolute;left:128px;top:46px;width:1664px;display:flex;justify-content:space-between;font:700 15px/1 var(--body);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);--tbg:var(--paper)}
+.tracker::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:currentColor;opacity:.25}
+.tracker span{position:relative;display:flex;align-items:center;gap:8px;padding:0 10px;background:var(--tbg);opacity:.45}
+.tracker span:first-child{padding-left:0} .tracker span:last-child{padding-right:0}
+.tracker i{width:11px;height:11px;border-radius:50%;border:2px solid currentColor;box-sizing:border-box}
+.tracker .past{opacity:.8} .tracker .past i{background:currentColor}
+.tracker .now{opacity:1;color:var(--red)} .tracker .now i{background:currentColor;box-shadow:0 0 0 4px rgba(181,54,42,.22)}
+.paper2 .tracker{--tbg:var(--paper-2)} .night .tracker{color:var(--on-night-3);--tbg:var(--night)} .night .tracker .now{color:var(--yellow)} .night .tracker .now i{box-shadow:0 0 0 4px rgba(240,187,62,.22)}
+.q{font-family:var(--body);font-style:italic;font-weight:600;line-height:1.15;color:var(--ink)}
+.night .q{color:var(--on-night)}
+.qby{font:600 24px var(--body);color:var(--muted)} .night .qby{color:var(--on-night-3)}
+.figcap{font:400 19px/1.35 var(--body);color:var(--muted)} .figcap b{color:var(--ink-2)}
+.card{background:var(--paper-2);padding:30px 34px;box-shadow:0 10px 26px rgba(26,20,16,.08);box-sizing:border-box}
+.paper2 .card{background:#fff} .night .card{background:var(--night-2);box-shadow:none;border:1px solid #3a2f26}
+#cmRow{display:flex;justify-content:space-between}
+#cmRow::before{content:"";position:absolute;left:0;right:0;top:10px;height:2px;background:#3a2f26}
+.cm{position:relative;width:170px;padding-top:40px}
+.cm i{position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;background:var(--on-night-3)}
+.cmfire::after{content:"";position:absolute;left:0;right:-17px;top:8px;height:6px;background:var(--orange)}
+.cmfire:nth-child(6)::after{right:0}
+.cmfire i{background:var(--orange);z-index:1}
+.cmn{font:400 64px/1 var(--display);color:var(--on-night)} .cmfire .cmn{color:var(--orange)}
+.cmt{font:700 26px/1.2 var(--body);color:#fffaf0;margin-top:10px}
+.cms{font:400 21px/1.35 var(--body);color:var(--on-night-3);margin-top:8px}
+.tick{display:flex;align-items:center;gap:18px;font:700 30px/1 var(--body);padding:13px 0;border-bottom:1px dashed #d8c9a8}
+.tick i{position:relative;width:26px;height:26px;border:3px solid var(--red);border-radius:4px;flex-shrink:0}
+.tick i::after{content:"";position:absolute;left:6px;top:1px;width:7px;height:13px;border:solid var(--red);border-width:0 4px 4px 0;transform:rotate(45deg)}
+.blist{list-style:none;padding:0;margin:18px 0 0}
+.blist li{font:400 32px/1.35 var(--body);padding:16px 0;border-bottom:2px solid #e2d3ae}
+.ice{left:128px;width:1664px;display:flex;align-items:center;gap:40px;padding:0 36px;border-left:8px solid;box-sizing:border-box}
+.icel{width:300px;flex-shrink:0}
+.icet{font:400 28px/1.42 var(--body);color:var(--on-night)}
+.larc{fill:none;stroke:var(--c);stroke-width:6;stroke-linecap:round}
+.lchev{fill:none;stroke:var(--c);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.lnode{translate:-50% -50%;width:270px;text-align:center;background:var(--paper);padding:12px 14px;font:700 27px/1.25 var(--body)}
+.lnode span{display:block;font:400 34px/1 var(--display);color:var(--muted);margin-bottom:6px}
+.lmid{width:240px;text-align:center}
+.hring{fill:none;stroke-width:6}
+.hlab{translate:-50% -50%;font:900 22px var(--body);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.hcore{translate:-50% -50%;background:var(--ink);color:var(--paper);font:700 28px/1.2 var(--body);text-align:center;padding:18px 28px;border-radius:999px}
+.fs{text-align:center;padding:10px 12px}
+.fsy{font:400 88px/1 var(--display);white-space:nowrap}
+.fsy sub{font-size:.45em;vertical-align:baseline}
+.fsd{font:400 20px/1.3 var(--body);color:var(--muted);margin-top:12px;width:160px;margin-left:auto;margin-right:auto}
+.fop{font:400 64px/1.4 var(--display);color:var(--muted)}
+.fsl{outline:4px solid var(--red);outline-offset:6px;background:rgba(181,54,42,.07)} .fsl .fsy,.fsl .fsd{color:var(--red)} .fsl .fsd{font-weight:700}
+.hev{top:330px;width:214px}
+.hy{font-size:60px}
+.hev i{display:block;width:22px;height:22px;border-radius:50%;background:var(--red);margin:20px 0 22px}
+.ht{font:400 27px/1.36 var(--body);color:var(--ink-2)}
+.frow{display:flex;gap:40px;align-items:baseline;padding:15px 0;border-bottom:2px solid #e2d3ae}
+.frn{width:420px;flex-shrink:0;font:700 31px/1.25 var(--body)}
+.frw{font:400 27px/1.38 var(--body);color:var(--ink-2)}
+.crit{width:800px;display:flex;gap:28px;align-items:baseline}
+.crit .num{font-size:64px;color:var(--red);width:56px;flex-shrink:0}
+.crit p:last-child{font:400 32px/1.35 var(--body)}
+.nxr{border-top:3px solid #3a2f26;padding:18px 0 22px}
+.nxd{font:900 22px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--yellow)}
+.nxt{font:400 30px/1.4 var(--body);color:var(--on-night-2);margin-top:8px}
+.mrow{left:128px;width:1664px;display:flex;gap:56px;align-items:baseline}
+.mlab{width:250px;flex-shrink:0;font:900 24px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--on-night-3)}
+.mtxt{font:400 40px/1.3 var(--body);color:var(--on-night-2)}
+.mbig .mlab{color:var(--yellow)}
+.mbig .mtxt{font:400 68px/1.06 var(--display);text-transform:uppercase;color:#fffaf0}
+.pv{left:940px;width:852px}
+.pv p:last-child{font:400 27px/1.4 var(--body);margin-top:6px}
+.doc path{fill:none;stroke:var(--on-night-3);stroke-width:4;stroke-dasharray:12 10}
+.doc text{font:400 90px var(--display);fill:var(--on-night-3)}
+.doc.got path{fill:var(--yellow);stroke:var(--yellow);stroke-dasharray:none}
+.doc.got line{stroke:var(--ink);stroke-width:6;stroke-linecap:round}
+
+.refs{position:absolute;left:128px;top:250px;width:1664px;columns:2;column-gap:72px;font:400 21px/1.36 var(--body);color:var(--ink-2)}
+.refs h3{font:900 18px/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin:0 0 8px;break-after:avoid}
+.refs ul{list-style:none;margin:0 0 22px;padding:0}
+.refs li{margin:0 0 7px;padding-left:16px;text-indent:-16px;break-inside:avoid}
+.refs .tag{font:700 15px var(--mono);color:var(--muted);letter-spacing:.04em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div id="deck"><div id="stage">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="hInk1" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><circle cx="4.5" cy="4.5" r="1.6" fill="#1a1410"/></pattern><pattern id="hInk2" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><circle cx="4.5" cy="4.5" r="2.9" fill="#1a1410"/></pattern><pattern id="hRed2" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><circle cx="4.5" cy="4.5" r="3.1" fill="#8e1b1b"/></pattern><pattern id="hYel" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><circle cx="4.5" cy="4.5" r="2.6" fill="#f0bb3e"/></pattern><pattern id="hSteel" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><circle cx="4.0" cy="4.0" r="2.3" fill="#2b4a6b"/></pattern><pattern id="hPaper" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><circle cx="4.5" cy="4.5" r="2.2" fill="#fbe2c8"/></pattern></defs></svg>
+
+<!-- cover -->
+<section class="slide paper" id="cover" data-steps="0">
+  <!-- the proposal cover art, with its header and blurb painted over in the card's white -->
+  <img class="abs" id="coverArt" src="img/cover-art.jpg" alt="Lost in Handoff: a paramedic and a firefighter reading a clipboard together, halftone collage" style="left:-8px;top:-14px;width:1936px;height:1113px">
+  <div class="abs" style="left:122px;top:150px;width:962px;height:140px;background:#fff"></div>
+  <div class="abs" style="left:122px;top:788px;width:650px;height:250px;background:#fff"></div>
+  <div class="abs" id="coverHead" style="left:140px;top:178px;width:910px">
+    <p class="eyebrow" style="font-size:38px;letter-spacing:.02em;color:var(--deep)">Problem pitch · Semifinal</p>
+    <div style="display:flex;justify-content:space-between;margin-top:12px;font:400 25px var(--body);color:var(--ink)"><span>Conrad School · Quantum Valley</span><span>November 2026</span></div>
+  </div>
+  <div class="abs" id="coverSub" style="left:140px;top:806px;width:600px">
+    <p style="font:400 30px/1.32 var(--body);color:var(--ink)">The first responder who hears a patient’s story is the one nobody downstream gets to ask.</p>
+    <p style="font:700 24px/1.35 var(--body);margin-top:22px">Henriëtta van Niekerk</p>
+    <p style="font:400 22px/1.35 var(--body);color:var(--muted)">with GBDA 402 Team 5: Zubi, Alita, Cindy, Chrisandra</p>
+  </div>
+  <aside class="notes">Hi, I’m Hen. This fall I spent my time in fire halls, ambulances and ER interviews. I want to start with one patient.</aside>
+</section>
+
+<!-- hook -->
+<section class="slide night" id="hook" data-steps="2">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:128px">One patient, one missing sentence</p>
+  <h2 class="abs d lead" style="left:128px;top:180px;width:1080px;font-size:104px;color:var(--on-night)">The ER found out what happened when her dad walked in.</h2>
+  <p class="abs" data-in="1" style="left:128px;top:540px;width:1040px;font:400 32px/1.42 var(--body);color:var(--on-night-2)">A young woman arrives on stroke protocol: confused, “previously healthy.” Full stroke workup, CT and all. It’s clear. Then her father arrives on his own. She drank every day. The likely cause was a withdrawal seizure.</p>
+  <p class="abs" data-step="1" style="left:128px;top:800px;width:1040px;font:italic 600 36px/1.3 var(--body);color:#fffaf0">Her doctor’s point: the system shouldn’t need safeguards to catch what better information would have prevented.</p>
+  <div class="abs" data-step="2" style="left:1290px;top:180px;width:502px;height:740px;background:var(--red);padding:52px;box-sizing:border-box;display:flex;flex-direction:column;gap:22px">
+    <p class="eyebrow" style="color:#fbe2c8">Who arrives by ambulance</p>
+    <p style="font:700 44px/1.12 var(--body);color:#fffaf0">The patients most likely to have a medication problem, and least able to tell you their history.</p>
+    <p class="small" style="color:#fbe2c8;font-weight:600">Hohl et al., validated Canadian ED decision rule</p>
+    <div style="height:2px;background:#e98a6e"></div>
+    <p style="font:700 40px/1.12 var(--body);color:#fffaf0">“It’s a broken telephone.”</p>
+    <p class="small" style="color:#fbe2c8;font-weight:600">Faith, ER nurse</p>
+  </div>
+  <p class="src">Emergency physician interview, Oct 7, 2026 · ER nurse interview, Oct 21, 2026 · Hohl et al. (via our systems map)</p>
+  <aside class="notes">A young woman was brought into the ER on stroke protocol. She was confused, and as far as anyone knew, healthy. The team did everything right: a full stroke workup, a CT. It came back clear. Then her dad walked in and told them she drank every day. That one sentence changed everything. It was most likely a withdrawal seizure. [click] Nobody made a mistake. But it shouldn’t take a CT to learn what her family already knew. [click] And ambulance patients are the most likely to have a medication problem, and the least able to tell you their history.</aside>
+</section>
+
+<!-- problem statement -->
+<section class="slide paper" id="problem" data-steps="0">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">The problem</p>
+  <h2 class="abs d lead" style="left:128px;top:180px;width:1600px;font-size:104px">Responders can’t confirm that what they learned on scene reached the next person.</h2>
+  <p class="abs" data-in="1" style="left:128px;top:560px;width:1240px;font:400 36px/1.4 var(--body);color:var(--ink-2)"><b style="color:var(--ink)">Our argument:</b> the story is complete at the scene, it’s lost on the way out, and it’s lost at a link nobody measures, so nobody pays to fix it.</p>
+  <p class="abs" data-in="2" style="left:128px;top:820px;font:700 22px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--paper-2);background:var(--ink);padding:12px 22px">Health Futures</p>
+  <p class="src">Problem statement from our QVI application and GBDA 402 capstone, Fall 2026</p>
+
+  <aside class="notes">So here’s the problem. The first responder who hears a patient’s story is the one nobody downstream gets to ask.</aside>
+</section>
+
+<!-- the chain -->
+<section class="slide paper" id="chain" data-steps="2">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">The handoff chain</p>
+  <h2 class="abs d h2" style="left:128px;top:154px;width:1664px;font-size:84px">Fullest at the scene. Thinnest at the doctor.</h2>
+  <canvas class="abs" id="cvChain" width="1664" height="380" style="left:128px;top:282px;width:1664px;height:380px"></canvas>
+  <div id="stations"></div>
+  <!-- under the bracket, clear of the band and the station labels -->
+  <div class="abs" id="gapBox" style="left:438px;top:834px;width:500px;display:flex;justify-content:center;align-items:baseline;gap:16px">
+    <p style="font:700 22px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Reaches paramedics</p>
+    <p class="num" id="gapNum" style="font-size:60px;width:120px;color:var(--red)">??%</p>
+  </div>
+  <svg class="abs" id="gapBracket" width="320" height="36" viewBox="0 0 320 36" style="left:528px;top:790px;overflow:visible"><path d="M4 4 V22 H316 V4" fill="none" stroke="#b5362a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <p class="abs" id="gapLabel" style="left:398px;top:912px;width:580px;text-align:center;font:900 22px/1.25 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--red)">The link nobody has measured</p>
+  <p class="abs" id="augie" style="left:1000px;top:792px;width:792px;font:italic 400 28px/1.35 var(--body);color:var(--ink)">“We give them this much information, the ambulance takes that … and then they give this information to the doctor.”<br><span style="font:600 21px var(--body);font-style:normal;color:var(--muted)">Augie, volunteer firefighter, Woolwich Township</span></p>
+  <p class="src">Band thickness and dropped facts are illustrative. Measured loss exists only from paramedic to ER. 12 of 25 paramedics rate dispatch information 1–2 out of 5.</p>
+  <aside class="notes">This is how the story moves. Fire usually gets there first, so fire hears the most. Then every handoff loses a little more. [click] So how much of what fire knows reaches paramedics? [click] Nobody knows.</aside>
+</section>
+
+<!-- 72.9% -->
+<section class="slide paper" id="m729" data-steps="2">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Measured one link downstream: paramedic to ER</p>
+  <p class="abs num" data-in="1" style="left:120px;top:210px;font-size:240px;color:var(--red)"><span id="m7n">72.9</span>%</p>
+  <p class="abs" data-in="2" style="left:128px;top:470px;width:820px;font:700 44px/1.25 var(--body)">of what paramedics say at a trauma handover is received and written into the hospital chart.</p>
+  <p class="abs small" data-in="2" style="left:128px;top:640px;color:var(--muted)">Carter et al., 2009, video-recorded handovers</p>
+  <p class="abs" data-step="1" style="left:128px;top:760px;width:820px;font:400 36px/1.4 var(--body)">Picture 100 facts said out loud. <b style="color:var(--red)">27 never reach the chart.</b></p>
+  <div class="abs" data-step="2" style="left:128px;top:870px;width:860px;display:flex;gap:28px;align-items:baseline;border-top:3px solid var(--ink);padding-top:12px"><p class="num" style="font-size:64px;color:var(--red);flex-shrink:0">10 of 28</p><p style="font:400 24px/1.35 var(--body)">times low blood pressure was said, it was received. Glasgow Coma Scale: 10 of 22. Pulse: 13 of 49.</p></div>
+  <svg class="abs" id="dots100" width="640" height="640" viewBox="0 0 640 640" style="left:1152px;top:250px" aria-label="100 dots, one per fact said at handover"></svg>
+  <p class="src">Carter, Davis, Evans and Cone, Prehospital Emergency Care 13(3), 2009 · 100 dots = 100 facts · grey = never charted</p>
+
+  <aside class="notes">We do know what happens one step later. When researchers filmed paramedics handing trauma patients to the ER, only 72.9% of what they said made it into the chart. [click] That’s 27 of every hundred facts. [click] Low blood pressure was said 28 times and written down 10.</aside>
+</section>
+
+<!-- the gap -->
+<section class="slide redbg" id="gap" data-steps="0">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:128px">Fire → paramedic</p>
+  <h2 class="abs d lead" id="gapTitle" style="left:128px;top:178px;width:1664px;font-size:150px;line-height:.92;color:#fffaf0">The first link has never been measured</h2>
+  <svg class="abs" data-in="1" width="1664" height="230" viewBox="0 0 1664 230" style="left:128px;top:560px" role="img" aria-label="fire to paramedics is unmeasured; paramedics to the ER chart is 72.9%">
+    <line x1="150" y1="80" x2="670" y2="80" stroke="#fbe2c8" stroke-width="6" stroke-dasharray="16 14" stroke-linecap="round"/>
+    <line x1="790" y1="80" x2="1310" y2="80" stroke="#fffaf0" stroke-width="6"/>
+    <circle cx="90" cy="80" r="56" fill="#fffaf0"/><circle cx="730" cy="80" r="56" fill="#fffaf0"/><circle cx="1370" cy="80" r="56" fill="#fffaf0"/>
+    <g font-family="Anton, sans-serif" fill="#8e1b1b" text-anchor="middle" font-size="30"><text x="90" y="92">1</text><text x="730" y="92">2</text><text x="1370" y="92">3</text></g>
+    <g font-family="Anton, sans-serif" fill="#fffaf0" text-anchor="middle" font-size="40"><text x="90" y="188">FIRE</text><text x="730" y="188">PARAMEDICS</text><text x="1370" y="188">ER CHART</text></g>
+    <circle cx="410" cy="80" r="54" fill="#f0bb3e"/><text x="410" y="108" text-anchor="middle" font-family="Anton, sans-serif" font-size="80" fill="#1a1410">?</text>
+    <text x="410" y="174" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-weight="900" font-size="22" letter-spacing="2" fill="#fbe2c8">NEVER MEASURED</text>
+    <rect x="930" y="46" width="240" height="68" rx="34" fill="#fffaf0"/><text x="1050" y="96" text-anchor="middle" font-family="Anton, sans-serif" font-size="44" fill="#8e1b1b">72.9%</text>
+    <text x="1050" y="174" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-weight="900" font-size="22" letter-spacing="2" fill="#fbe2c8">CARTER ET AL., 2009</text>
+  </svg>
+  <p class="abs" data-in="2" style="left:128px;top:820px;width:1560px;font:400 30px/1.4 var(--body);color:#fbe2c8">The closest study looks at ambulance-to-specialist handover in Scotland. And both EMS and ER staff rate their own handoffs far better than trained observers do (Panchal et al., 1,091 transfers), so the people closest to the gap are the last to see it.</p>
+  <p class="src">Lost in Handoff systems map: the fire → paramedic link is the identified gap</p>
+  <aside class="notes">The step before that, fire to paramedics, has never been studied. And everyone rates their own handoff better than observers do, so nobody inside sees it.</aside>
+</section>
+
+<!-- fieldwork -->
+<section class="slide paper" id="field" data-steps="0">
+  <div class="strip"></div>
+  <img class="photo" data-r="-2.5" src="img/f-crew.jpg" alt="Henriëtta with a Cambridge Fire crew at a station" style="left:940px;top:118px;width:840px;height:494px">
+  <img class="photo" data-r="3" src="img/f-amb.jpg" alt="Henriëtta inside an ambulance during a paramedic station visit" style="left:930px;top:590px;width:280px;height:373px">
+  <img class="photo" data-r="-3" src="img/f-gear.jpg" alt="Henriëtta trying on bunker gear at a fire station" style="left:1236px;top:618px;width:258px;height:344px">
+  <img class="photo" data-r="2" src="img/f-truck.jpg" alt="Woolwich Township Maryhill fire truck in the station bay" style="left:1514px;top:660px;width:280px;height:210px">
+  <div class="tape" style="left:1290px;top:104px;transform:rotate(-6deg)"></div>
+  <p class="abs eyebrow" style="left:128px;top:128px">Fieldwork · Sep 30 to Nov 2, 2026</p>
+  <h2 class="abs d" style="left:128px;top:170px;width:760px;font-size:96px">We went where the story starts</h2>
+  <div class="abs" id="fieldStats" style="left:128px;top:420px;width:740px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;gap:26px;align-items:baseline"><p class="num" style="width:140px;flex-shrink:0;font-size:72px;color:var(--red)" data-to="16">0</p><p style="font:400 30px/1.3 var(--body)">interview and listening sessions, 18 people</p></div>
+    <div style="display:flex;gap:26px;align-items:baseline"><p class="num" style="width:140px;flex-shrink:0;font-size:72px;color:var(--red)" data-to="12">0</p><p style="font:400 30px/1.3 var(--body)">firefighters and officers in Woolwich and Cambridge</p></div>
+    <div style="display:flex;gap:26px;align-items:baseline"><p class="num" style="width:140px;flex-shrink:0;font-size:72px;color:var(--red)" data-to="6">0</p><p style="font:400 30px/1.3 var(--body)">a paramedic, 2 ER physicians, 3 ER nurses</p></div>
+    <div style="display:flex;gap:26px;align-items:baseline"><p class="num" style="width:140px;flex-shrink:0;font-size:72px;color:var(--red)" data-to="29">0</p><p style="font:400 30px/1.3 var(--body)">survey responses: 25 paramedics, 4 ER nurses</p></div>
+  </div>
+  <p class="abs figcap" style="left:930px;top:990px;width:860px"><b>Figure.</b> Station visits: a Cambridge Fire crew, an ambulance, bunker gear, Maryhill’s rescue truck.</p>
+  <p class="src" style="width:760px">Capstone Network Notes · Scene-to-Hospital Handoff Survey, Oct 2026</p>
+  <aside class="notes">So we went to the people holding the story: sixteen sessions in Woolwich, Cambridge and Guelph, and a survey of twenty-nine paramedics and nurses.</aside>
+</section>
+
+<!-- arrival and first contact -->
+<section class="slide paper" id="arrival" data-steps="0">
+  <div class="strip"></div>
+  <div class="tracker" data-at="2"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Steps 3 and 4 · Arrival and first contact</p>
+  <h2 class="abs d lead" style="left:128px;top:154px;width:1664px;font-size:92px">Fire gets there first, and hears the most</h2>
+  <div class="abs" data-in="1" style="left:128px;top:290px;width:760px">
+    <p class="num" style="font-size:230px;color:var(--red)">10–30</p>
+    <p style="font:700 40px var(--body);margin-top:4px">minutes</p>
+    <p style="font:400 30px/1.4 var(--body);color:var(--ink-2);margin-top:8px">that fire can be the only crew with the patient, depending on the city</p>
+  </div>
+  <div class="abs" data-in="2" style="left:128px;top:790px;width:760px;display:grid;grid-template-columns:1fr 1fr;gap:40px">
+    <div style="border-top:3px solid var(--ink);padding-top:14px"><p class="num" style="font-size:72px;color:var(--red)">57%</p><p style="font:400 23px/1.35 var(--body)">of Cambridge Fire’s 2022 calls were medical</p></div>
+    <div style="border-top:3px solid var(--ink);padding-top:14px"><p class="num" style="font-size:72px;color:var(--red)">41%</p><p style="font:400 23px/1.35 var(--body)">of urban Ontario fire calls are medical</p></div>
+  </div>
+  <div class="abs card" style="left:980px;top:296px;width:812px;padding:30px 36px;background:#fffdf6;border-top:8px solid var(--red)">
+    <p class="eyebrow" style="color:var(--muted)">What the captain collects before paramedics arrive</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;column-gap:36px;margin-top:10px"><p class="tick" data-in="3"><i></i>Family and witnesses</p><p class="tick" data-in="3"><i></i>Medical history</p><p class="tick" data-in="4"><i></i>Medications</p><p class="tick" data-in="4"><i></i>Allergies</p><p class="tick" data-in="5"><i></i>What led up to it</p><p class="tick" data-in="5"><i></i>Health card and ID</p><p class="tick" data-in="6"><i></i>Who’s in the room</p><p class="tick" data-in="6"><i></i>Vitals</p></div>
+  </div>
+  <p class="abs q" data-in="7" style="left:980px;top:700px;width:812px;font-size:40px">“You think of the things that you do every day and amp that up 20 fold.”</p>
+  <p class="abs qby" data-in="7" style="left:980px;top:810px">Mr. Gallagher, Maryhill, on what he calls controlled chaos</p>
+  <p class="src">Fire crew interviews, Sep–Nov 2026 · City of Cambridge Fire Department annual report (2022) · AMEMSO (2011)</p>
+  <aside class="notes">Fire is often alone with the patient for ten to thirty minutes. In that time the captain gathers meds, allergies and history while running the scene.</aside>
+</section>
+
+<!-- the doctor doesn't know -->
+<section class="slide paper" id="doctor" data-steps="0">
+  <div class="strip"></div>
+  <p class="abs q lead" style="left:128px;top:110px;width:1664px;font-size:72px">“The doctor doesn’t know what it looked like when you arrived there.”</p>
+  <p class="abs qby" data-in="1" style="left:128px;top:300px">Firefighter, Maryhill</p>
+  <img class="abs" data-in="2" src="img/truck-cut.png" alt="Woolwich Township Maryhill rescue truck, cut out and printed as a two-colour halftone" style="left:1000px;top:400px;width:800px">
+  <p class="abs figcap" data-in="2" style="left:1000px;top:940px;width:800px;text-align:center"><b>Figure.</b> Maryhill’s rescue truck, Woolwich Township Fire.</p>
+  <div class="abs" data-in="3" style="left:128px;top:420px;width:780px;border-top:4px solid var(--ink);padding-top:18px"><p class="num" style="font-size:150px;color:var(--red)">~3 in 4</p><p style="font:400 30px/1.38 var(--body);margin-top:6px">ER physicians say vital information is at least sometimes missing at handover</p></div>
+  <div class="abs" data-in="4" style="left:128px;top:760px;width:780px;border-top:4px solid var(--ink);padding-top:18px"><p class="num" style="font-size:90px;color:var(--red)">~1 in 4</p><p style="font:400 26px/1.38 var(--body);margin-top:4px">EMS providers feel ER staff pay enough attention to their handoff</p></div>
+  <p class="src" style="width:820px">Maryhill listening session, Oct 2026 · survey data cited in Goldberg et al., 2017</p>
+  <aside class="notes">A Maryhill firefighter told us the doctor never sees what the scene looked like. Doctors agree: about three in four say key information is sometimes missing.</aside>
+</section>
+
+<!-- where the story lives -->
+<section class="slide paper2" id="storage" data-steps="3">
+  <div class="strip"></div>
+  <div class="tracker" data-at="4"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Step 5 · Gloves and paper</p>
+  <h2 class="abs d h2" style="left:128px;top:154px;width:1664px">The story lives on gloves and paper</h2>
+  <img class="photo" src="img/form-scene.jpg" alt="Woolwich Fire Department paper On Scene Information Sheet" style="left:128px;top:330px;width:330px;height:440px;transform:rotate(-1.5deg)">
+  <img class="photo" src="img/form-mvc.jpg" alt="Woolwich Township paper crash information form" style="left:500px;top:350px;width:330px;height:440px;transform:rotate(1deg)">
+  <img class="photo" src="img/form-pcr.jpg" alt="A patient care report web form open on a phone" style="left:872px;top:330px;width:330px;height:440px;transform:rotate(-.5deg)">
+  <svg class="abs" id="annot" width="1920" height="1080" viewBox="0 0 1920 1080" style="left:0;top:0;pointer-events:none"></svg>
+  <p class="abs ann" id="ann1" style="left:150px;top:806px;width:320px;font:700 26px/1.25 var(--body);color:var(--red)">Paper. Rewritten later from memory.</p>
+  <p class="abs ann" id="ann2" style="left:520px;top:826px;width:320px;font:700 26px/1.25 var(--body);color:var(--red)">A second form for the same call.</p>
+  <p class="abs ann" id="ann3" style="left:890px;top:806px;width:320px;font:700 26px/1.25 var(--body);color:var(--red)">Typed in after the call. Never sent to paramedics.</p>
+  <div class="abs sq" style="left:1300px;top:300px;width:492px">
+    <svg width="330" height="440" viewBox="0 0 480 640" role="img" aria-label="a gloved hand with the drug count written on it, partly rubbed away" style="display:block;margin:0 auto">
+      <defs><clipPath id="gloveClip"><rect x="128" y="112" width="58" height="260" rx="29" transform="rotate(-6 157 242)"/><rect x="196" y="70" width="60" height="292" rx="30"/><rect x="264" y="92" width="58" height="272" rx="29" transform="rotate(5 293 228)"/><rect x="330" y="160" width="50" height="212" rx="25" transform="rotate(12 355 266)"/><rect x="40" y="300" width="60" height="200" rx="30" transform="rotate(-42 70 400)"/><path d="M118 300 L392 300 L388 520 C386 560 350 586 300 586 L200 586 C150 586 120 560 118 520 Z"/><rect x="128" y="572" width="250" height="66" rx="10"/></clipPath></defs>
+      <g fill="#1a1410" stroke="#1a1410" stroke-width="14" stroke-linejoin="round"><rect x="128" y="112" width="58" height="260" rx="29" transform="rotate(-6 157 242)"/><rect x="196" y="70" width="60" height="292" rx="30"/><rect x="264" y="92" width="58" height="272" rx="29" transform="rotate(5 293 228)"/><rect x="330" y="160" width="50" height="212" rx="25" transform="rotate(12 355 266)"/><rect x="40" y="300" width="60" height="200" rx="30" transform="rotate(-42 70 400)"/><path d="M118 300 L392 300 L388 520 C386 560 350 586 300 586 L200 586 C150 586 120 560 118 520 Z"/><rect x="128" y="572" width="250" height="66" rx="10"/></g>
+      <g fill="#d3dfea"><rect x="128" y="112" width="58" height="260" rx="29" transform="rotate(-6 157 242)"/><rect x="196" y="70" width="60" height="292" rx="30"/><rect x="264" y="92" width="58" height="272" rx="29" transform="rotate(5 293 228)"/><rect x="330" y="160" width="50" height="212" rx="25" transform="rotate(12 355 266)"/><rect x="40" y="300" width="60" height="200" rx="30" transform="rotate(-42 70 400)"/><path d="M118 300 L392 300 L388 520 C386 560 350 586 300 586 L200 586 C150 586 120 560 118 520 Z"/><rect x="128" y="572" width="250" height="66" rx="10"/></g>
+      <g clip-path="url(#gloveClip)"><rect x="318" y="0" width="200" height="640" fill="url(#hSteel)" opacity=".55"/><rect x="0" y="560" width="480" height="80" fill="url(#hSteel)" opacity=".45"/></g>
+      <g stroke="#9fb3c6" stroke-width="4"><path d="M140 596 v34"/><path d="M180 596 v34"/><path d="M220 596 v34"/><path d="M260 596 v34"/><path d="M300 596 v34"/><path d="M340 596 v34"/></g>
+      <g font-family="Caveat, cursive" font-weight="600" fill="#1a1410" transform="rotate(-5 250 420)">
+        <text x="140" y="372" font-size="50">NARCAN ×2</text>
+        <text x="140" y="430" font-size="50">EPI 1 · 14:32</text>
+        <text x="140" y="488" font-size="50">BP 90/60</text>
+      </g>
+      <ellipse cx="300" cy="474" rx="92" ry="30" transform="rotate(-8 300 474)" fill="#d3dfea" opacity=".82"/>
+    </svg>
+    <p style="font:700 28px/1.3 var(--body);margin-top:18px">The drug count, how many doses of Narcan or epi, lives in a head or on a glove.</p>
+    <p class="small" style="color:var(--muted);margin-top:8px;font-size:20px">Paramedics elsewhere do it too: gloves and scrap paper are “easily lost” (Wilson et al., UK), and memory is the most common way handover information is carried (Critcomms, Scotland, n = 190).</p>
+  </div>
+  <p class="src">Station visits and documentation walkthroughs, Woolwich and Cambridge, Oct 2026</p>
+  <aside class="notes">And that version lives on paper. [click] A scene sheet. [click] A second form for the same call. [click] A report paramedics never see. The drug count often lives on a glove.</aside>
+</section>
+
+<!-- survey -->
+<section class="slide paper" id="survey" data-steps="2">
+  <div class="strip"></div>
+  <div class="tracker" data-at="5"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Step 6 · The handoff · survey of 25 paramedics, 4 ER nurses</p>
+  <h2 class="abs d h2" style="left:128px;top:154px;width:1664px">Said once, out loud, in about a minute</h2>
+  <svg class="abs" id="dots25" width="560" height="460" viewBox="0 0 560 460" style="left:96px;top:330px" aria-label="25 dots, one per paramedic"></svg>
+  <div class="abs" id="d25cap" style="left:128px;top:804px;width:600px;display:flex;gap:22px;align-items:center"><span id="d25n" class="num" style="width:100px;flex-shrink:0;font-size:92px;color:var(--red)">25</span><span id="d25t" style="font:700 30px/1.25 var(--body)">get fire’s information as a verbal report</span></div>
+  <div class="abs" style="left:800px;top:344px;width:992px;height:432px;display:flex;flex-direction:column;justify-content:space-between">
+    <div class="srow" style="display:flex;gap:30px;align-items:center;border-bottom:2px solid #e2d3ae;padding-bottom:22px"><p class="num" style="width:230px;flex-shrink:0;font-size:80px;color:var(--red);white-space:nowrap">~70 s</p><p style="flex:1;font:400 30px/1.35 var(--body)">median EMS handoff (66–76 s): everything fire learned, said while the patient is moved</p></div>
+    <div class="srow" style="display:flex;gap:30px;align-items:center;border-bottom:2px solid #e2d3ae;padding-bottom:28px"><p class="num" style="width:230px;flex-shrink:0;font-size:80px;color:var(--red)">3 / 4</p><p style="flex:1;font:400 30px/1.35 var(--body)">ER nurses name medical history as what’s missing or wrong when the patient arrives</p></div>
+    <div class="srow" style="display:flex;gap:30px;align-items:center;"><p class="num" style="width:230px;flex-shrink:0;font-size:80px;color:var(--red)">7 / 25</p><p style="flex:1;font:400 30px/1.35 var(--body)">ask the patient everything again themselves, even after fire’s report</p></div>
+  </div>
+  <p class="src">Scene-to-Hospital Handoff Survey, Oct 2026, N = 29. Ratings, not a clinical audit.</p>
+  <aside class="notes">Then it’s handed over out loud, in about a minute. [click] Twenty of the twenty-five paramedics we surveyed get fire’s information by voice only. [click]</aside>
+</section>
+
+<!-- helmet -->
+<section class="slide redbg" id="helmet" data-steps="0">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:128px">When a sentence can’t carry it</p>
+  <h2 class="abs d lead" id="helmetT" style="left:128px;top:190px;width:1000px;font-size:170px;line-height:.92;color:#fffaf0">“The helmet tells the story.”</h2>
+  <p class="abs" id="helmetB" data-in="1" style="left:128px;top:720px;width:980px;font:400 36px/1.4 var(--body);color:#fffaf0">After a motorcycle crash, Maryhill crews send the rider’s helmet to the hospital with the patient. When words can’t carry the scene, fire hands over objects.</p>
+  <img class="abs" data-in="2" src="img/helmet-cut.png" alt="A black full-face motorcycle helmet after a crash, the visor and chin bar scraped white" style="left:1270px;top:200px;height:700px">
+  <p class="abs figcap" data-in="2" style="left:1170px;top:916px;width:700px;text-align:center;color:#fbe2c8"><b style="color:#fffaf0">Figure.</b> A helmet after a frontal crash: the scrapes show where it hit. Photo: Todd Vierling, public domain.</p>
+  <p class="src">Volunteer firefighter listening session, Maryhill, Oct 2026</p>
+  <aside class="notes">So crews improvise. Maryhill sends a crash victim’s helmet to the hospital, because the damage tells the doctor what words can’t.</aside>
+</section>
+
+<!-- what a picture tells the ER -->
+<section class="slide paper2" id="photo" data-steps="1">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">What a picture tells the ER</p>
+  <h2 class="abs d lead" style="left:128px;top:154px;width:1664px;font-size:92px">The scene explains the patient</h2>
+  <img class="abs" data-in="1" src="img/crash-duo.jpg" alt="The front end of a car after a head-on crash, engine exposed and crushed" style="left:128px;top:300px;width:740px;border:10px solid #fffdf6;box-shadow:0 18px 40px rgba(20,14,8,.22);box-sizing:border-box">
+  <p class="abs figcap" data-in="1" style="left:128px;top:806px;width:740px"><b>Figure.</b> A car after a head-on crash. Photo: Guy Cobb, public domain.</p>
+  <div class="abs pv" data-in="2" style="top:300px"><p class="eyebrow">ER physician · Waterloo</p><p>A crash patient was being treated as a cardiac arrest. The paramedic’s photos showed only minor damage, not enough to explain how sick the patient was. That sent the team looking for another cause: an asthma attack that <b>caused</b> the crash. The photos changed the treatment.</p></div>
+  <div class="abs pv" data-in="3" style="top:530px"><p class="eyebrow">ER physician</p><p>Speed, seatbelt, airbags, ejection: mechanism tells the team what to look for before imaging. Police photos hold it, with no path to the ER.</p></div>
+  <div class="abs pv" data-in="4" style="top:720px"><p class="eyebrow">Paramedic · Guelph, and Breslau Fire</p><p>Scene photos should travel with the handoff. A photo of the wreck can move a crash patient up triage.</p></div>
+  <p class="abs" data-step="1" style="left:128px;top:880px;width:1664px;font:700 30px/1.3 var(--body)">Precedent: <span style="color:var(--red)">Seattle Fire already shares scene photos with Medic One physicians</span> (NFPA best practice). In Ontario there’s no path at all.</p>
+  <p class="src">Emergency physician interviews, Oct 7 and Oct 15, 2026 · paramedic interview, Oct 2026 · City of Seattle, Emergency Scene Cameras, 2018</p>
+  <aside class="notes">A Waterloo ER doctor was treating a crash patient for cardiac arrest. The paramedic had photos of the car, and the damage was minor, not enough to explain how sick the patient was. So they looked for another cause: an asthma attack had caused the crash. The photos changed the treatment. [click] Seattle Fire already shares scene photos with doctors. Ontario has no way to.</aside>
+</section>
+
+<!-- step 8 · paperwork -->
+<section class="slide night" id="paperwork" data-steps="1">
+  <div class="strip"></div>
+  <div class="tracker" data-at="7"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Step 8 · Paperwork, hours later</p>
+  <h2 class="abs d lead" style="left:128px;top:154px;width:1664px;font-size:92px;color:var(--on-night)">The same call, typed into three systems</h2>
+  <div class="abs card sysc" data-in="1" style="left:128px;top:300px;width:520px;height:400px"><p class="num" style="font-size:150px;color:transparent;-webkit-text-stroke:3px var(--yellow)">1</p><p style="font:700 34px/1.2 var(--body);color:#fffaf0;margin-top:18px">Ontario Fire Marshal call report</p><p style="font:400 27px/1.38 var(--body);color:var(--on-night-2);margin-top:12px">Required for every call. The call number doesn’t carry over.</p></div>
+  <div class="abs card sysc" data-in="2" style="left:700px;top:300px;width:520px;height:400px"><p class="num" style="font-size:150px;color:transparent;-webkit-text-stroke:3px var(--yellow)">2</p><p style="font:700 34px/1.2 var(--body);color:#fffaf0;margin-top:18px">Township records system</p><p style="font:400 27px/1.38 var(--body);color:var(--on-night-2);margin-top:12px">Same names and plates, copied in again.</p></div>
+  <div class="abs card sysc" data-in="3" style="left:1272px;top:300px;width:520px;height:400px"><p class="num" style="font-size:150px;color:transparent;-webkit-text-stroke:3px var(--yellow)">3</p><p style="font:700 34px/1.2 var(--body);color:#fffaf0;margin-top:18px">Training system</p><p style="font:400 27px/1.38 var(--body);color:var(--on-night-2);margin-top:12px">Its own login, and the same details again.</p></div>
+  <p class="abs q" data-step="1" style="left:128px;top:770px;width:1600px;font-size:42px;color:#fffaf0">“It would be nice if a lot of the stuff carried over … I have to plug my name in every time … This is how archaic this is.”</p>
+  <p class="abs qby" data-step="1" style="left:128px;top:880px">Acting captain, Cambridge Fire, walking us through all three</p>
+  <p class="src">Cambridge Fire documentation walkthrough, Nov 2, 2026</p>
+
+  <aside class="notes">Hours later, the same call gets typed into three systems that don’t talk. [click] One acting captain types his own name into every one.</aside>
+</section>
+
+<!-- step 9 · silence -->
+<section class="slide night" id="silence" data-steps="1">
+  <div class="strip"></div>
+  <div class="tracker" data-at="8"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Step 9 · Silence</p>
+  <p class="abs q lead" style="left:128px;top:180px;width:1000px;font-size:58px;color:var(--on-night)">“We don’t get a lot of feedback. We don’t know how the person is. We might know where they went. But we don’t know.”</p>
+  <p class="abs qby" data-in="1" style="left:128px;top:420px">Tom, deputy chief, Woolwich Township</p>
+  <p class="abs" data-in="2" style="left:128px;top:500px;width:980px;font:400 30px/1.42 var(--body);color:var(--on-night-2)">Fire learns how a call ended only if a crew member knows the patient, or someone in the community tells them. No formal channel exists.</p>
+  <p class="abs d" data-step="1" style="left:128px;top:700px;width:1000px;font-size:80px;color:var(--yellow)">A loop that never closes can’t be corrected.</p>
+  <svg class="abs" data-in="3" width="700" height="520" viewBox="0 0 700 520" style="left:1140px;top:300px" role="img" aria-label="fire hands to paramedics, paramedics to the hospital; how it ended never travels back to fire">
+    <defs><marker id="arrY" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#f0bb3e"/></marker></defs>
+    <g font-family="Anton, sans-serif" font-size="27" text-anchor="middle">
+      <rect x="0" y="60" width="190" height="90" rx="45" fill="#f0bb3e"/><text x="95" y="115" fill="#1a1410">FIRE</text>
+      <rect x="255" y="60" width="190" height="90" rx="45" fill="none" stroke="#f0bb3e" stroke-width="5"/><text x="350" y="115" fill="#f6eeda">PARAMEDICS</text>
+      <rect x="510" y="60" width="190" height="90" rx="45" fill="none" stroke="#f0bb3e" stroke-width="5"/><text x="605" y="115" fill="#f6eeda">HOSPITAL</text>
+    </g>
+    <g stroke="#f0bb3e" stroke-width="6" fill="none" marker-end="url(#arrY)"><path d="M196 105 H244"/><path d="M451 105 H499"/></g>
+    <path d="M605 156 C605 330 420 380 290 380" fill="none" stroke="#6b5d4b" stroke-width="6" stroke-dasharray="3 16" stroke-linecap="round"/>
+    <circle cx="232" cy="380" r="40" fill="#f0bb3e"/><text x="232" y="404" text-anchor="middle" font-family="Anton, sans-serif" font-size="64" fill="#1a1410">?</text>
+    <path d="M190 380 C120 380 95 300 95 196" fill="none" stroke="#3a2f26" stroke-width="6" stroke-dasharray="3 16" stroke-linecap="round"/>
+    <text x="440" y="460" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-weight="900" font-size="22" letter-spacing="2" fill="#9a8a6e">HOW IT ENDED NEVER COMES BACK</text>
+  </svg>
+  <p class="src">Listening sessions, Maryhill and Cambridge, Oct 2026</p>
+
+  <aside class="notes">And fire almost never finds out what happened to the patient. [click] So nobody sees what’s lost.</aside>
+</section>
+
+<!-- boundaries -->
+<section class="slide paper" id="roots" data-steps="2">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Root causes, from our systems map</p>
+  <h2 class="abs d h2" style="left:128px;top:154px;width:1664px">Nobody is careless. The system is split.</h2>
+  <svg class="abs" width="1920" height="420" viewBox="0 0 1920 420" style="left:0;top:300px" aria-label="the story line frays at each boundary between services">
+    <defs>
+      <!-- user-space regions: a flat line has no height, so a %-sized
+           filter region would be empty and the line would vanish -->
+      <filter id="fray1" filterUnits="userSpaceOnUse" x="660" y="110" width="600" height="160"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="1"/><feDisplacementMap in="SourceGraphic" scale="0"/></filter>
+      <filter id="fray2" filterUnits="userSpaceOnUse" x="1222" y="110" width="600" height="160"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="0"/></filter>
+    </defs>
+    <rect x="128" y="40" width="540" height="300" fill="#efe3c6"/><rect x="690" y="40" width="540" height="300" fill="#efe3c6"/><rect x="1252" y="40" width="540" height="300" fill="#efe3c6"/>
+    <path id="seg0" d="M150 190 H668" stroke="#1a1410" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <path id="seg1" d="M690 190 H1230" stroke="#dd7a35" stroke-width="10" stroke-linecap="round" fill="none" filter="url(#fray1)"/>
+    <path id="seg2" d="M1252 190 H1770" stroke="#b5362a" stroke-width="10" stroke-linecap="round" fill="none" filter="url(#fray2)"/>
+    <line x1="679" y1="20" x2="679" y2="360" stroke="#b5362a" stroke-width="3" stroke-dasharray="10 9"/>
+    <line x1="1241" y1="20" x2="1241" y2="360" stroke="#b5362a" stroke-width="3" stroke-dasharray="10 9"/>
+  </svg>
+  <p class="abs d" style="left:160px;top:360px;font-size:48px">Fire</p><p class="abs small" style="left:160px;top:416px;color:var(--muted)">Municipal · MFIPPA</p>
+  <p class="abs d" style="left:722px;top:360px;font-size:48px">Paramedics</p><p class="abs small" style="left:722px;top:416px;color:var(--muted)">Region + province · PHIPA</p>
+  <p class="abs d" style="left:1284px;top:360px;font-size:48px">Hospital</p><p class="abs small" style="left:1284px;top:416px;color:var(--muted)">Province · PHIPA</p>
+  <p class="abs small" style="left:160px;top:540px;width:480px;color:var(--ink-2)">Notes on gloves and paper. Volunteer crews form on the fly.</p>
+  <p class="abs small" style="left:722px;top:540px;width:480px;color:var(--ink-2)">ePCR on a Toughbook. Prehos, an Ontario ePCR, collapsed in 2026 with a month’s notice for ~22 services.</p>
+  <p class="abs small" style="left:1284px;top:540px;width:480px;color:var(--ink-2)">Takes no electronic feed from either. Records arrive by fax.</p>
+  <p class="abs bnd" style="left:520px;top:668px;width:320px;text-align:center;font:900 24px/1.25 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--red)">Two privacy laws</p>
+  <p class="abs bnd" style="left:1082px;top:668px;width:320px;text-align:center;font:900 24px/1.25 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--red)">No shared record</p>
+  <div class="abs" id="belief" style="box-sizing:border-box;left:128px;top:760px;width:1664px;background:var(--ink);padding:36px 44px;display:flex;gap:40px;align-items:center">
+    <p style="width:280px;font:900 24px/1.3 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--yellow)">The belief underneath</p>
+    <p style="flex:1;font:400 32px/1.35 var(--body);color:var(--paper)">Every agency protects its own liability first. Continuity of care becomes someone else’s problem when the patient leaves its hands.</p>
+  </div>
+  <p class="src">Lost in Handoff systems map · Armstrong, Village Report (Jun 20, 2026) · Kirkham, Canadian Healthcare Technology (Jun 24, 2026)</p>
+  <aside class="notes">Why hasn’t anyone fixed this? It isn’t carelessness. [click] Fire and paramedics fall under two different privacy laws, [click] no record moves between them, and every agency protects its own liability first.</aside>
+</section>
+
+<!-- loop R1 -->
+<section class="slide paper" id="r1" data-steps="0">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Loop R1 · reinforcing · from our systems map</p>
+  <h2 class="abs d lead" style="left:128px;top:170px;width:760px;font-size:88px">Good enough to never get replaced</h2>
+  <p class="abs" data-in="1" style="left:128px;top:540px;width:720px;font:400 30px/1.42 var(--body);color:var(--ink-2)">Paper, gloves and memory get treated as good enough because they mostly get the allergy across. So nobody funds a shared tool or shared training, and crews keep relying on paper, gloves and memory.</p>
+  <div class="abs" data-in="2" style="left:128px;top:820px;width:720px"><p class="q" style="font-size:40px">“It’s always been this way.”</p><p class="qby" style="margin-top:8px">Firefighter, Breslau</p></div>
+  <svg class="abs lsvg" width="1920" height="1080" viewBox="0 0 1920 1080" style="left:0;top:0;--c:#c4621f" aria-hidden="true"><path class="larc" d="M1370.0 320.0 A290 290 0 0 1 1660.0 610.0"/><path class="larc" d="M1660.0 610.0 A290 290 0 0 1 1370.0 900.0"/><path class="larc" d="M1370.0 900.0 A290 290 0 0 1 1080.0 610.0"/><path class="larc" d="M1080.0 610.0 A290 290 0 0 1 1370.0 320.0"/><path class="lchev" d="M-11 -10 L4 0 L-11 10" transform="translate(1575.1 404.9) rotate(45)"/><path class="lchev" d="M-11 -10 L4 0 L-11 10" transform="translate(1575.1 815.1) rotate(135)"/><path class="lchev" d="M-11 -10 L4 0 L-11 10" transform="translate(1164.9 815.1) rotate(225)"/><path class="lchev" d="M-11 -10 L4 0 L-11 10" transform="translate(1164.9 404.9) rotate(315)"/></svg>
+  <div class="abs lmid" style="left:1250px;top:530px;color:#c4621f"><p class="d" style="font-size:120px">R</p><p class="small" style="font-weight:700;letter-spacing:.1em;text-transform:uppercase">reinforcing</p></div>
+  <p class="abs lnode" style="left:1370px;top:320px"><span>1</span>Paper, gloves and memory mostly work</p>
+  <p class="abs lnode" style="left:1660px;top:610px"><span>2</span>No pressure to fund a shared tool</p>
+  <p class="abs lnode" style="left:1370px;top:900px"><span>3</span>No shared handoff training</p>
+  <p class="abs lnode" style="left:1080px;top:610px"><span>4</span>Crews fall back on what they know</p>
+  <p class="src">Lost in Handoff systems map, loop R1 · Breslau and Maryhill listening sessions, Oct 2026</p>
+
+  <aside class="notes">And the workarounds mostly work, so there’s never enough pressure to replace them.</aside>
+</section>
+
+<!-- patients carry the risk -->
+<section class="slide night" id="stakes" data-steps="0">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Who gets hurt</p>
+  <h2 class="abs d lead" style="left:128px;top:154px;width:1664px;font-size:92px;color:var(--on-night)">Patients carry the risk</h2>
+  <div class="abs" data-in="1" style="left:128px;top:290px;width:1060px"><p class="num" style="font-size:170px;color:var(--yellow)">53.6%</p><p style="font:400 30px/1.38 var(--body);color:var(--on-night-2);margin-top:8px">of admitted patients have an unintended medication discrepancy, most often a regular medication left out. Over a third of those could cause moderate to severe harm.</p></div>
+  <div class="abs" data-in="2" style="left:128px;top:690px;width:500px;border-top:3px solid #3a2f26;padding-top:14px"><p class="num" style="font-size:96px;color:var(--yellow)">&gt;1 in 4</p><p style="font:400 24px/1.38 var(--body);color:var(--on-night-2);margin-top:4px">hospital prescribing errors trace to incomplete medication histories</p></div>
+  <div class="abs" data-in="2" style="left:688px;top:690px;width:500px;border-top:3px solid #3a2f26;padding-top:14px"><p class="num" style="font-size:96px;color:var(--yellow)">1 in 9</p><p style="font:400 24px/1.38 var(--body);color:var(--on-night-2);margin-top:4px">Canadian ER visits are medication-related; ~70% preventable</p></div>
+  <div class="abs" data-in="3" style="left:1290px;top:270px;width:440px;text-align:center">
+    <svg width="420" height="560" viewBox="0 0 420 560" role="img" aria-label="a prescription bottle of warfarin">
+      <defs><clipPath id="btlClip"><rect x="90" y="150" width="240" height="370" rx="22"/></clipPath></defs>
+      <rect x="90" y="150" width="240" height="370" rx="22" fill="#dd7a35"/>
+      <g clip-path="url(#btlClip)"><rect x="262" y="150" width="80" height="370" fill="url(#hRed2)"/><rect x="108" y="168" width="18" height="334" rx="9" fill="#fffaf0" opacity=".35"/></g>
+      <rect x="70" y="80" width="280" height="86" rx="16" fill="#fffaf0"/>
+      <g stroke="#cdbd9f" stroke-width="4"><path d="M86 90 v62"/><path d="M102 90 v62"/><path d="M118 90 v62"/><path d="M134 90 v62"/><path d="M150 90 v62"/><path d="M166 90 v62"/><path d="M182 90 v62"/><path d="M198 90 v62"/><path d="M214 90 v62"/><path d="M230 90 v62"/><path d="M246 90 v62"/><path d="M262 90 v62"/><path d="M278 90 v62"/><path d="M294 90 v62"/><path d="M310 90 v62"/><path d="M326 90 v62"/></g>
+      <rect x="112" y="250" width="196" height="196" rx="6" fill="#fffaf0"/>
+      <text x="128" y="296" font-family="Anton, sans-serif" font-size="36" fill="#b5362a">Rx</text>
+      <text x="128" y="336" font-family="Source Sans 3, sans-serif" font-weight="700" font-size="24" fill="#1a1410">WARFARIN 5 MG</text>
+      <text x="128" y="366" font-family="Source Sans 3, sans-serif" font-size="19" fill="#3a2f26">Take 1 tablet daily</text>
+      <g stroke="#cdbd9f" stroke-width="4"><path d="M128 398 h160"/><path d="M128 420 h110"/></g>
+      <ellipse cx="368" cy="512" rx="26" ry="15" fill="#f0bb3e" transform="rotate(-20 368 512)"/>
+      <ellipse cx="392" cy="540" rx="26" ry="15" fill="#f0bb3e" transform="rotate(14 392 540)"/>
+    </svg>
+    <p style="font:italic 400 22px var(--body);color:var(--on-night-3);margin-top:8px">The pill bottle fire saw on the kitchen counter</p>
+  </div>
+  <p class="src">Cornish et al., 2005 · Tam et al., CMAJ 2005 · Zed, Hohl et al., CMAJ 2008</p>
+  <aside class="notes">But patients pay for “mostly.” Over half of admitted patients have a mistake in their medication list, usually a regular medication left off: the pill bottle fire saw on the counter.</aside>
+</section>
+
+<!-- who pays 1 of 3 -->
+<section class="slide paper" id="costFire" data-steps="1">
+  <img class="abs cpanel" src="img/gear-cut.png" alt="Henriëtta in borrowed bunker gear and helmet at a fire station, cut out and printed as a two-colour halftone" style="left:1330px;top:110px;height:860px">
+  <p class="abs figcap cpanel" style="left:1240px;top:986px;width:600px;text-align:center"><b>Figure.</b> Henriëtta in borrowed bunker gear on a station visit.</p>
+  <div class="strip"></div>
+  <div class="abs chead" style="left:128px;top:112px;width:1000px">
+    <p class="eyebrow">Who pays · 1 of 3</p>
+    <h2 class="d h2" style="margin-top:14px">Fire</h2>
+    <p class="small" style="color:var(--muted);font-weight:600;margin-top:10px">Municipal budget · first on scene, the fullest account</p>
+  </div>
+  <p class="abs num" style="left:122px;top:318px;font-size:190px;color:#a6521c">$<span class="cn" data-to="9.0" data-dec="1">9.0</span>M</p>
+  <p class="abs chead" style="left:128px;top:512px;width:1000px;font:400 28px/1.35 var(--body)">a year across Canada, and a floor: only what we could count and source. <span style="color:var(--muted)">41.7M people × 21 fire medical calls per 1,000 = 886k calls.</span></p>
+  <div class="abs" style="left:128px;top:604px;width:1000px">
+    <div class="crow"><div><p class="crl">Re-typing the same call</p><p class="crf"><b>886k</b> calls × (<i>6.8 min</i> re-entry + <i>35%</i> given care × <i>11.3 min</i> report) × <b>$53/hr</b></p></div><p class="num" style="color:#a6521c">$8.3M</p></div>
+    <div class="crow"><div><p class="crl">Harm while fire has the patient</p><p class="crf"><b>886k</b> × <i>35%</i> × <i>0.38%</i> adverse events × <i>21%</i> tied to missing info × <b>$2,710</b></p></div><p class="num" style="color:#a6521c">$0.6M</p></div>
+  </div>
+  <div class="abs clater" style="left:128px;top:816px;width:1000px;border-left:6px solid var(--yellow);padding:4px 0 4px 28px">
+    <p class="eyebrow" style="color:var(--muted);font-size:20px">Not in this number</p>
+    <ul class="ncl"><li>Reports rebuilt from memory when a coroner or court asks</li><li>Hazards fire saw that never reach paramedics</li><li>Crews who never learn how the patient did</li></ul>
+  </div>
+  <p class="src" style="width:1060px">Bold = measured or published · <i style="color:#a6521c">orange</i> = our assumption · inputs at their medians over 200,000 runs</p>
+  <aside class="notes">I built a cost model, with every formula on the slide. Fire spends about nine million a year, mostly retyping calls. [click] That’s a minimum.</aside>
+</section>
+
+<!-- who pays 2 of 3 -->
+<section class="slide paper" id="costPara" data-steps="1">
+  <img class="abs cpanel" src="img/ambulance-cut.png" alt="Inside an ambulance, stretcher and monitor, printed as a two-colour halftone that fades into the page" style="left:1196px;top:70px;height:940px">
+  <div class="strip"></div>
+  <div class="abs chead" style="left:128px;top:112px;width:1000px">
+    <p class="eyebrow">Who pays · 2 of 3</p>
+    <h2 class="d h2" style="margin-top:14px">Paramedics</h2>
+    <p class="small" style="color:var(--muted);font-weight:600;margin-top:10px">Regional + provincial budget, split about 50/50</p>
+  </div>
+  <p class="abs num" style="left:122px;top:318px;font-size:190px;color:var(--orange)">$<span class="cn" data-to="44" data-dec="0">44</span>M</p>
+  <p class="abs chead" style="left:128px;top:512px;width:1000px;font:400 28px/1.35 var(--body)">a year across Canada. Most of it is patients who get worse in their care. <span style="color:var(--muted)">41.7M people × 64 ambulance patients per 1,000 = 2.65M patients.</span></p>
+  <div class="abs" style="left:128px;top:604px;width:1000px">
+    <div class="crow"><div><p class="crl">Harm while they have the patient</p><p class="crf"><b>2.65M</b> patients × <b>2.2%</b> adverse events × <i>21%</i> tied to missing info × <b>$2,710</b></p></div><p class="num" style="color:var(--orange)">$31M</p></div>
+    <div class="crow"><div><p class="crl">Time</p><p class="crf"><b>2.65M</b> × <i>50%</i> arrive incomplete × <i>2.3 min</i> at handover × <b>$195/hr</b> = $9.9M<br>+ re-asking on scene $1.1M + hospital callbacks $1.7M</p></div><p class="num" style="color:var(--orange)">$12.7M</p></div>
+  </div>
+  <div class="abs clater" style="left:128px;top:846px;width:1000px;border-left:6px solid var(--orange);padding:4px 0 4px 28px">
+    <p class="eyebrow" style="color:var(--muted);font-size:20px">Not in this number</p>
+    <ul class="ncl"><li>Paramedics can be decertified over documentation gaps</li><li>Services stranded when an ePCR vendor folds: Prehos, 2026, ~22 services, a month’s notice</li></ul>
+  </div>
+  <p class="src" style="width:1060px">Bold = measured or published · <i style="color:#a6521c">orange</i> = our assumption · inputs at their medians over 200,000 runs</p>
+  <aside class="notes">Paramedics spend about forty-four million, mostly on patients who get worse in their care. [click]</aside>
+</section>
+
+<!-- who pays 3 of 3 -->
+<section class="slide paper" id="costHosp" data-steps="1">
+  <div class="abs cpanel" style="left:1240px;top:0;width:680px;height:1080px;background:var(--red)"></div>
+  <img class="abs cpanel" src="img/er-duo.jpg" alt="An emergency department ambulance entrance, printed as a two-colour halftone" style="left:1300px;top:96px;width:560px;border:8px solid #fffaf0;box-sizing:border-box">
+  <p class="abs figcap cpanel" style="left:1300px;top:526px;width:560px;color:#fbe2c8"><b style="color:#fffaf0">Figure.</b> An ER ambulance entrance. Photo: Wikimedia Commons, public domain.</p>
+  <div class="abs clater" style="left:1310px;top:610px;width:540px;color:#fffaf0">
+    <p class="num" style="font-size:180px;color:var(--yellow)">74%</p>
+    <p style="font:700 40px/1.25 var(--body);margin-top:18px">of the whole cost lands here, on the service that sees the patient last.</p>
+  </div>
+  <div class="strip"></div>
+  <div class="abs chead" style="left:128px;top:112px;width:1000px">
+    <p class="eyebrow">Who pays · 3 of 3</p>
+    <h2 class="d h2" style="margin-top:14px">Hospitals</h2>
+    <p class="small" style="color:var(--muted);font-weight:600;margin-top:10px">Provincial budget · furthest from the scene</p>
+  </div>
+  <p class="abs num" style="left:122px;top:296px;font-size:190px;color:var(--red)">$<span class="cn" data-to="151" data-dec="0">151</span>M</p>
+  <p class="abs body chead" style="left:128px;top:488px;width:1000px">a year across Canada, for a story that was complete at the scene.</p>
+  <div class="abs" style="left:128px;top:540px;width:1000px">
+    <div class="crow"><div><p class="crl">Medication and treatment harm</p><p class="crf"><b>2.65M</b> × (<i>0.33%</i> × <b>$9,270</b> drug harm + <i>0.14%</i> × <b>$6,780</b> delayed treatment)</p></div><p class="num" style="color:var(--red)">$107M</p></div>
+    <div class="crow"><div><p class="crl">Nurse, physician and clerk time</p><p class="crf"><b>1.3M</b> incomplete × (<i>5.5 min</i> × <b>$72/hr</b> nurse + <i>3.3 min</i> × <i>$203/hr</i> MD)<br>+ <b>2.65M</b> faxed reports × <i>4.5 min</i> × <i>$31/hr</i> clerk</p></div><p class="num" style="color:var(--red)">$29.8M</p></div>
+    <div class="crow"><div><p class="crl">Extra tests</p><p class="crf"><b>2.65M</b> × <i>1.4%</i> × <b>$304</b>, from a CT to a full workup</p></div><p class="num" style="color:var(--red)">$11.3M</p></div>
+    <div class="crow"><div><p class="crl">Records sent to the wrong hospital</p><p class="crf"><b>2.65M</b> × <b>0.073%</b> (Hamilton’s rate) × <b>$214</b></p></div><p class="num" style="color:var(--red)">$0.4M</p></div>
+  </div>
+
+  <p class="src" style="width:1060px">Bold = measured or published · <i style="color:#a6521c">orange</i> = our assumption · inputs at their medians over 200,000 runs</p>
+  <aside class="notes">Hospitals spend about a hundred and fifty-one million. [click] That’s three-quarters of the total.</aside>
+</section>
+
+<!-- all three together -->
+<section class="slide paper" id="total" data-steps="1">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">All three together</p>
+  <h2 class="abs d h2" style="left:128px;top:154px;width:1664px">What losing the story costs Canada</h2>
+  <p class="abs num" style="left:122px;top:270px;font-size:230px;color:var(--red);letter-spacing:-.01em">$<span id="totN">209</span>M</p>
+  <p class="abs body" id="totCap" style="left:128px;top:500px;width:1000px">a year, most likely. <b>80% of model runs land between $161M and $269M.</b> Ontario alone: about $88M.</p>
+  <div class="abs" id="totHours" style="left:1180px;top:296px;width:612px;border-top:3px solid var(--ink);padding-top:18px"><p class="num" style="font-size:96px"><span id="hrsN">643</span>k hrs</p><p class="small" style="margin-top:6px">of staff time a year, about 348 full-time jobs</p></div>
+  <!-- one bar, three payers: widths are each median's share of their sum -->
+  <p class="abs slab" style="left:128px;top:640px;font:700 28px var(--body)">Fire <span class="num" style="font-size:34px;color:#a6521c">$9M</span></p>
+  <div class="abs" id="totBar" style="left:128px;top:684px;width:1664px;height:64px;display:flex">
+    <i class="seg" style="width:4.4%;background:var(--yellow)"></i><i class="seg" style="width:21.7%;background:var(--orange)"></i><i class="seg" style="width:73.9%;background:var(--red)"></i>
+  </div>
+  <p class="abs slab" style="left:201px;top:762px;font:700 28px var(--body)">Paramedics <span class="num" style="font-size:34px;color:#a6521c">$44M</span></p>
+  <p class="abs slab" style="left:562px;top:762px;font:700 28px var(--body)">Hospitals <span class="num" style="font-size:34px;color:var(--red)">$151M</span></p>
+  <p class="abs" id="world" style="left:128px;top:850px;width:1664px;font:400 50px/1.05 var(--display);text-transform:uppercase;color:var(--ink)">The people who capture the story pay to capture it. <span style="color:var(--red)">The people who pay for losing it never see where it was lost.</span></p>
+  <p class="src" style="bottom:28px">Our model: 200,000 runs over sourced ranges (formulas on the three cost slides)</p>
+  <aside class="notes">That’s about two hundred and nine million a year in Canada. [click] And the people who collect the story aren’t the people who pay for losing it.</aside>
+</section>
+
+<!-- history -->
+<section class="slide paper" id="history" data-steps="1">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">History</p>
+  <h2 class="abs d lead" style="left:128px;top:154px;width:1664px;font-size:92px">Two decades of fixing the wrong layer</h2>
+  <div class="abs" style="left:128px;top:430px;width:1664px;height:3px;background:var(--ink)"></div>
+  <div class="abs hev" data-in="1" style="left:128px"><p class="d hy">2005</p><i></i><p class="ht">Half of admitted patients have a medication discrepancy</p></div>
+  <div class="abs hev" data-in="2" style="left:366px"><p class="d hy">2009</p><i></i><p class="ht">Only 72.9% of handover information reaches the chart</p></div>
+  <div class="abs hev" data-in="3" style="left:604px"><p class="d hy">2018</p><i></i><p class="ht">Coroner’s inquest: a shared radio channel, not a shared record</p></div>
+  <div class="abs hev" data-in="4" style="left:842px"><p class="d hy">2022</p><i></i><p class="ht">ESO buys Interdev; paramedic records consolidate</p></div>
+  <div class="abs hev" data-in="5" style="left:1080px"><p class="d hy">2024</p><i></i><p class="ht">Privacy penalties begin: up to $500,000</p></div>
+  <div class="abs hev" data-in="6" style="left:1318px"><p class="d hy">2025</p><i></i><p class="ht">Paramedic reports must hold up as evidence</p></div>
+  <div class="abs hev" data-in="7" style="left:1556px"><p class="d hy">2026</p><i></i><p class="ht">Prehos collapses; ~22 services scramble</p></div>
+  <p class="abs" data-in="8" style="left:128px;top:660px;width:1664px;font:700 36px/1.3 var(--body)">Every fix so far improved one agency’s record or the radio between them. <span style="color:var(--red)">None created a record that crosses custody.</span></p>
+  <div class="abs" data-step="1" style="left:128px;top:790px;width:1664px;display:flex;gap:36px;align-items:center;background:var(--ink);padding:26px 36px;box-sizing:border-box"><p class="eyebrow" style="color:var(--yellow);flex-shrink:0">Why now</p><p style="font:400 30px/1.35 var(--body);color:var(--paper)">After Prehos collapsed, about 22 paramedic services are choosing new records systems <b style="color:#fffaf0">right now</b>. The next record gets built either way.</p></div>
+  <p class="src">Cornish 2005 · Carter 2009 · Ontario coroner’s inquest 2018 · ESO 2022 · PHIPA · Documentation Standards v4.0 · Armstrong 2026 · Kirkham 2026</p>
+
+  <aside class="notes">Twenty years of fixes improved one agency’s records or the radio between them. None created a record that moves between services. [click] And right now, about twenty-two paramedic services are choosing new systems.</aside>
+</section>
+
+<!-- what's been tried -->
+<section class="slide paper2" id="failed" data-steps="1">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Failure analysis</p>
+  <h2 class="abs d lead" style="left:128px;top:154px;width:1664px;font-size:84px">What’s been tried, and where it fell short</h2>
+  <div class="abs" style="left:128px;top:282px;width:1664px">
+    <div class="frow" data-in="1"><p class="frn">Prehos ePCR</p><p class="frw">Served one custodian’s workflow. Collapsed in 2026, leaving ~22 services starting over.</p></div>
+    <div class="frow" data-in="2"><p class="frn">Single-agency tools</p><p class="frw">ImageTrend Elite Rescue, Medic Clipboard: built for one agency’s record. What fire learns never enters them.</p></div>
+    <div class="frow" data-in="3"><p class="frn">Paper, gloves and memory</p><p class="frw">Easily lost, can’t be audited, and exposed under Documentation Standards v4.0.</p></div>
+    <div class="frow" data-in="5"><p class="frn">Radio interoperability</p><p class="frw">The 2018 inquest’s fix. Better talk between agencies at dispatch, still no shared patient record.</p></div>
+    <div class="frow" data-in="6"><p class="frn">A med list in the fridge</p><p class="frw">Nobody kept the lists updated. “You could get false information.”</p></div>
+    <div class="frow" data-in="7"><p class="frn">A newer app, a work order</p><p class="frw">Each added a step to the call. Neither became habit.</p></div>
+  </div>
+  <p class="abs" data-step="1" style="left:128px;top:860px;width:1664px;font:400 52px/1.1 var(--display);text-transform:uppercase;color:var(--red)">Tools that add a step get dropped. Tools that remove one stay.</p>
+  <p class="src">Armstrong 2026 · ImageTrend · Digital EMS Solutions · Fitzpatrick et al., 2018 · Carter 2009 · Ontario coroner’s inquest 2018 · fire crew interviews</p>
+
+  <aside class="notes">Fire’s own history has a rule. [click] Tools that add a step get dropped. Tools that remove one stay.</aside>
+</section>
+
+<!-- criteria -->
+<section class="slide paper" id="criteria" data-steps="0">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">What a good solution needs</p>
+  <h2 class="abs d lead" style="left:128px;top:154px;width:1664px;font-size:92px">Anything that fixes this has to</h2>
+  <div class="abs crit" data-in="1" style="left:128px;top:296px"><p class="num">1</p><div><p style="font:700 34px/1.2 var(--body)">Cross custody lawfully</p><p style="font:400 26px/1.35 var(--body);color:var(--ink-2);margin-top:4px">each organization sets its own retention</p></div></div>
+  <div class="abs crit" data-in="2" style="left:128px;top:456px"><p class="num">2</p><div><p style="font:700 34px/1.2 var(--body)">Responder reviews first</p><p style="font:400 26px/1.35 var(--body);color:var(--ink-2);margin-top:4px">nothing is shared unreviewed</p></div></div>
+  <div class="abs crit" data-in="3" style="left:128px;top:616px"><p class="num">3</p><div><p style="font:700 34px/1.2 var(--body)">Fit a 70-second handoff</p><p style="font:400 26px/1.35 var(--body);color:var(--ink-2);margin-top:4px">gloves on, zero added time on scene</p></div></div>
+  <div class="abs crit" data-in="4" style="left:128px;top:776px"><p class="num">4</p><div><p style="font:700 34px/1.2 var(--body)">Each team gets what it needs</p><p style="font:400 26px/1.35 var(--body);color:var(--ink-2);margin-top:4px">a paramedic and an ER physician need different things</p></div></div>
+  <div class="abs crit" data-in="5" style="left:992px;top:296px"><p class="num">5</p><div><p style="font:700 34px/1.2 var(--body)">Work with no signal</p><p style="font:400 26px/1.35 var(--body);color:var(--ink-2);margin-top:4px">and log who saw what</p></div></div>
+  <div class="abs crit" data-in="6" style="left:992px;top:456px"><p class="num">6</p><div><p style="font:700 34px/1.2 var(--body)">Collect the minimum</p><p style="font:400 26px/1.35 var(--body);color:var(--ink-2);margin-top:4px">no diagnosis, affordable for a volunteer hall</p></div></div>
+  <div class="abs crit" data-in="7" style="left:992px;top:616px"><p class="num">7</p><div><p style="font:700 34px/1.2 var(--body)">Be testable</p><p style="font:400 26px/1.35 var(--body);color:var(--ink-2);margin-top:4px">count what reaches the next person</p></div></div>
+  <p class="src">Constraints set by responders in our interviews and survey · QVI failure analysis</p>
+
+  <aside class="notes">So anything new has to be legal across services, work with gloves on, and add no time on scene.</aside>
+</section>
+
+<!-- problem, mistake, why now -->
+<section class="slide night" id="mistake" data-steps="2">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Lost in Handoff</p>
+  <div class="abs mrow" data-in="1" style="top:200px"><p class="mlab">The problem</p><p class="mtxt">The first responder who hears the patient’s story is the one nobody downstream gets to ask.</p></div>
+  <div class="abs mrow mbig" data-step="1" style="top:390px"><p class="mlab">The mistake</p><p class="mtxt">Everyone measures the handoff at the hospital door. The story is lost one link earlier, at the scene, where nobody measures it and nobody pays for it.</p></div>
+  <div class="abs mrow" data-step="2" style="top:740px"><p class="mlab">Why now</p><p class="mtxt">Paramedic services are rebuilding their records after Prehos. The next system gets built either way.</p></div>
+  <aside class="notes">So here’s the mistake. [click] Everyone measures the handoff at the hospital door. But the story is lost one step earlier, where nobody measures it and nobody pays for it. [click] And the next system is being built either way.</aside>
+</section>
+
+<!-- the ask -->
+<section class="slide paper" id="ask" data-steps="1">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">What the $7,500 is for</p>
+  <h2 class="abs d lead" style="left:128px;top:154px;width:1664px;font-size:92px">Measure the first link</h2>
+  <div class="abs" data-in="1" style="left:128px;top:320px;width:1664px;height:64px;display:flex"><i class="seg" style="width:33.33%;background:var(--red)"></i><i class="seg" style="width:26.67%;background:var(--orange)"></i><i class="seg" style="width:26.67%;background:var(--steel)"></i><i class="seg" style="width:13.33%;background:var(--yellow)"></i></div>
+  <p class="abs" data-in="1" style="left:128px;top:398px;width:1664px;font:700 22px var(--body);color:var(--ink-2)">With the stations already working with us: <b style="color:var(--red)">Woolwich · Cambridge · Guelph</b>, and more across Ontario soon.</p>
+  <div class="abs" data-in="2" style="left:128px;top:460px;width:386px">
+    <svg width="60" height="60" viewBox="0 0 64 64" style="color:var(--red)" aria-hidden="true"><path d="M4 32 C16 12 48 12 60 32 C48 52 16 52 4 32 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><circle cx="32" cy="32" r="10" fill="currentColor"/></svg>
+    <p class="num" style="font-size:64px;margin-top:12px">$2,500</p>
+    <p style="font:700 30px/1.2 var(--body);margin-top:6px">Measure the first link</p>
+    <p style="font:400 24px/1.4 var(--body);color:var(--ink-2);margin-top:8px">Scenario sessions with partner crews, counting what actually reaches the paramedic.</p>
+  </div>
+  <div class="abs" data-in="3" style="left:554px;top:460px;width:386px">
+    <svg width="60" height="60" viewBox="0 0 64 64" style="color:var(--orange)" aria-hidden="true"><path d="M24 6 H40 M28 6 V24 L10 54 C8 58 10 60 14 60 H50 C54 60 56 58 54 54 L36 24 V6" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><path d="M17 44 H47" stroke="currentColor" stroke-width="5"/></svg>
+    <p class="num" style="font-size:64px;margin-top:12px">$2,000</p>
+    <p style="font:700 30px/1.2 var(--body);margin-top:6px">Build a cheap test</p>
+    <p style="font:400 24px/1.4 var(--body);color:var(--ink-2);margin-top:8px">A low-cost “will this work” capture test, run with partner stations.</p>
+  </div>
+  <div class="abs" data-in="4" style="left:980px;top:460px;width:386px">
+    <svg width="60" height="60" viewBox="0 0 64 64" style="color:var(--steel)" aria-hidden="true"><path d="M32 6 V58 M14 58 H50 M10 18 H54" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M10 18 L2 38 H18 Z M54 18 L46 38 H62 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>
+    <p class="num" style="font-size:64px;margin-top:12px">$2,000</p>
+    <p style="font:700 30px/1.2 var(--body);margin-top:6px">Map the legal path</p>
+    <p style="font:400 24px/1.4 var(--body);color:var(--ink-2);margin-top:8px">A privacy-law review of how a fire record can lawfully reach paramedics (MFIPPA to PHIPA), and a draft sharing agreement partners can sign.</p>
+  </div>
+  <div class="abs" data-in="5" style="left:1406px;top:460px;width:386px">
+    <svg width="60" height="60" viewBox="0 0 64 64" style="color:var(--yellow)" aria-hidden="true"><path d="M4 46 H60 M4 46 C14 22 50 22 60 46 M18 46 V34 M32 46 V28 M46 46 V34" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
+    <p class="num" style="font-size:64px;margin-top:12px">$1,000</p>
+    <p style="font:700 30px/1.2 var(--body);margin-top:6px">Bridge the services</p>
+    <p style="font:400 24px/1.4 var(--body);color:var(--ink-2);margin-top:8px">One joint fire, paramedic and ER session to agree what must travel, and the findings shared back.</p>
+  </div>
+  <div class="abs" data-step="1" style="left:128px;top:850px;width:1664px;display:flex;gap:28px;align-items:center;background:var(--ink);padding:26px 36px;box-sizing:border-box">
+    <p class="num" style="font-size:56px;color:var(--yellow);flex-shrink:0">L</p>
+    <p style="font:700 32px/1.3 var(--body);color:var(--paper)">The first measured share of fire’s account that reaches the paramedic: the number nobody has, so the people who pay can see where the story is lost.</p>
+  </div>
+  <aside class="notes">The seventy-five hundred dollars measures that first handoff with our partner stations in Woolwich, Cambridge and Guelph. It also funds a cheap capture test, a legal review of how fire can share a record, and one session with all three services. [click] What comes out is a number nobody has.</aside>
+</section>
+
+<!-- close -->
+<section class="slide night" id="close" data-steps="0">
+  <canvas class="abs" id="cvClose" width="1920" height="300" style="left:0;top:780px;width:1920px;height:300px"></canvas>
+  <p class="abs eyebrow" style="left:128px;top:128px">Lost in Handoff</p>
+  <h2 class="abs d lead" id="closeTitle" style="left:128px;top:176px;width:1560px;font-size:108px;color:var(--on-night)">The story is never lost at the scene. It’s lost on the way out.</h2>
+  <p class="abs" style="left:128px;top:800px;font:700 28px var(--body);color:#fffaf0">Henriëtta van Niekerk · henliz.github.io/lost-in-handoff</p>
+  <div class="abs" data-in="1" style="left:128px;top:480px;width:1664px;display:grid;grid-template-columns:repeat(3,1fr);gap:44px">
+    <div style="border-top:4px solid var(--yellow);padding-top:18px"><p class="d" style="font-size:52px;color:#fffaf0">Complete at the scene</p><p style="font:400 26px/1.38 var(--body);color:var(--on-night-2);margin-top:10px">Fire is first, and holds the fullest account anyone will ever have.</p></div>
+    <div style="border-top:4px solid var(--orange);padding-top:18px"><p class="d" style="font-size:52px;color:#fffaf0">Lost at the first link</p><p style="font:400 26px/1.38 var(--body);color:var(--on-night-2);margin-top:10px">Only 72.9% reaches the chart, and the link before it has never been measured.</p></div>
+    <div style="border-top:4px solid #e0624c;padding-top:18px"><p class="d" style="font-size:52px;color:#fffaf0">Paid for downstream</p><p style="font:400 26px/1.38 var(--body);color:var(--on-night-2);margin-top:10px">About $209M a year in Canada, three-quarters of it at hospitals.</p></div>
+  </div>
+  <aside class="notes">The story isn’t lost at the scene. It’s lost on the way out, and everyone downstream pays for it. Thank you.</aside>
+</section>
+
+<!-- appendix · sources -->
+<section class="slide paper2" id="refs1" data-steps="0">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Appendix · sources 1 of 2</p>
+  <h2 class="abs d" style="left:128px;top:150px;width:1664px;font-size:64px">Handoff loss, volumes and unit costs</h2>
+  <div class="refs">
+    <h3>Information loss at handoff</h3>
+    <ul>
+      <li>Carter et al., 2009. 72.9% of what paramedics say at handover reaches the hospital chart. <span class="tag">MEASURED</span></li>
+      <li>Cram et al., 2017. Written paramedic record present at first physician assessment 15.7–24.4% of the time. <span class="tag">MEASURED</span></li>
+      <li>CAEP review (Javidan et al.). Up to 30% of information lost at EMS-to-hospital handover. <span class="tag">MEASURED</span></li>
+      <li>Panchal et al., 2015. EMS and ED staff rate their own handoffs far better than observers (n = 1,091). <span class="tag">MEASURED</span></li>
+      <li>EMS handoff studies, via our systems map. Median handoff 66–76 seconds. <span class="tag">MEASURED</span></li>
+      <li>No peer-reviewed study isolates loss at the fire-to-paramedic link. <span class="tag">GAP</span></li>
+    </ul>
+    <h3>Volumes</h3>
+    <ul>
+      <li>City of Cambridge Fire Dept, 2022 annual report: 7,911 calls, 4,546 medical. <span class="tag">MEASURED</span></li>
+      <li>Fraser Institute: Toronto Fire 109,463 responses, ~44% medical. <span class="tag">MEASURED</span></li>
+      <li>AMEMSO, 2011: medical tiered response = 41% of urban Ontario fire calls. <span class="tag">MEASURED</span></li>
+      <li>Ontario Ombudsman: paramedics attend 1M+ patients a year. <span class="tag">MEASURED</span></li>
+      <li>Hamilton Paramedic Service, 2024 annual report: 61,054 transports. <span class="tag">MEASURED</span></li>
+      <li>Statistics Canada and Ontario profile, Jul 1 2025: Canada 41.65M, Ontario 16.26M; Cambridge 138,479 (2021 census). <span class="tag">MEASURED</span></li>
+      <li>CAFC census 2022: ~126,000 firefighters, 71% volunteer. <span class="tag">MEASURED</span></li>
+    </ul>
+    <h3>Unit costs and wages</h3>
+    <ul>
+      <li>Ontario Auditor General, 2013: land ambulance $156–$247 per vehicle-hour; Region of Waterloo $187. <span class="tag">MEASURED</span></li>
+      <li>Job Bank, Nov 2025: primary care paramedic $30.75–$50.81/hr. <span class="tag">MEASURED</span></li>
+      <li>Owen Sound arbitration 2026: first-class firefighter $121,099 base; volunteers $17–$29/hr. <span class="tag">MEASURED</span></li>
+      <li>Ontario Hospital Association, 2025: RN average salary $112,476. <span class="tag">MEASURED</span></li>
+      <li>Ontario Auditor General, 2023: ED visit ~$165 direct; CIHI full cost $304. <span class="tag">MEASURED</span></li>
+      <li>CMAJ Open appendix: CT scan $99.25 total cost. <span class="tag">MEASURED</span></li>
+      <li>Ontario ED physician hourly rate, not published; we use $150–$260/hr. <span class="tag">OURS</span></li>
+    </ul>
+  </div>
+  <aside class="notes">Appendix: sources for handoff loss, volumes and unit costs. Every figure on the earlier slides traces to one of these. Tags: measured means counted or published; ours means our own assumption.</aside>
+</section>
+
+<section class="slide paper2" id="refs2" data-steps="0">
+  <div class="strip"></div>
+  <p class="abs eyebrow" style="left:128px;top:112px">Appendix · sources 2 of 2</p>
+  <h2 class="abs d" style="left:128px;top:150px;width:1664px;font-size:64px">Harm, the wider system, and our own work</h2>
+  <div class="refs">
+    <h3>Harm and its cost</h3>
+    <ul>
+      <li>Swedish trigger-tool study, BMC Emergency Medicine 2019: 4.3 adverse events per 100 ambulance missions. <span class="tag">MEASURED</span></li>
+      <li>Qatar national EMS: 2.48 adverse events per 10,000 encounters (lower bound). <span class="tag">MEASURED</span></li>
+      <li>Cornish et al., 2005: 53.6% of patients have an unintended medication discrepancy at admission. <span class="tag">MEASURED</span></li>
+      <li>Tam et al., 2005 (CMAJ): over a quarter of hospital prescribing errors trace to incomplete medication histories. <span class="tag">MEASURED</span></li>
+      <li>Ontario ADR study (PMC3714138): $7,528 per drug-related hospitalization, 2007$. <span class="tag">MEASURED</span></li>
+      <li>Zed, Hohl et al., CMAJ 2008: 1 in 9 Canadian ED visits medication-related, ~70% preventable. <span class="tag">MEASURED</span></li>
+      <li>Hohl et al., 2011 (via ISMP Canada): preventable drug-related hospitalizations ~$2.6B a year. <span class="tag">MODELLED</span></li>
+      <li>CPSI, 2017: ~400,000 preventable patient-safety incidents a year, ~$6,800 each. <span class="tag">MODELLED</span></li>
+      <li>OECD, 2022: unsafe care 3M+ deaths a year, over US$1T full economic cost. <span class="tag">MODELLED</span></li>
+      <li>WHO Medication Without Harm: medication errors ~US$42B a year. <span class="tag">MODELLED</span></li>
+    </ul>
+    <h3>System and policy</h3>
+    <ul>
+      <li>Hamilton Spectator, Feb 8 2024: 162 patients’ records sent to the wrong hospitals over four years. <span class="tag">MEASURED</span></li>
+      <li>Ontario Ambulance Documentation Standards v4.0: paramedics can be decertified over documentation gaps. <span class="tag">MEASURED</span></li>
+      <li>PHIPA administrative penalties since Jan 1 2024: up to $500,000 per organization. <span class="tag">MEASURED</span></li>
+      <li>Armstrong, Village Report; Kirkham, Canadian Healthcare Technology, Jun 2026: Prehos ePCR collapse, ~22 services. <span class="tag">MEASURED</span></li>
+      <li>Ontario coroner’s inquest, 2018: 27 recommendations (19 provincial, 8 municipal). <span class="tag">MEASURED</span></li>
+      <li>ESO, 2022: acquires Interdev Technologies. Information and Privacy Commissioner of Ontario, Jan 2026: AI scribe guidance. <span class="tag">MEASURED</span></li>
+      <li>Fitzpatrick et al., 2018: memory is the most common way handover information is carried. Hou et al., 2026: AI from 911 to hospital. <span class="tag">MEASURED</span></li>
+      <li>IBM Cost of a Data Breach 2024: CA$6.32M average Canadian breach. <span class="tag">MEASURED</span></li>
+    </ul>
+    <h3>Our fieldwork and model</h3>
+    <ul>
+      <li>16 interview and listening sessions, 18 people, Woolwich, Cambridge and Guelph, Sep 30 – Nov 2, 2026. <span class="tag">INTERVIEW</span></li>
+      <li>Scene-to-Hospital Handoff Survey, Oct 2026, N = 29 (25 paramedics, 4 ER nurses). <span class="tag">SURVEY</span></li>
+      <li>Lost in Handoff systems map, henliz.github.io/lost-in-handoff. <span class="tag">OURS</span></li>
+      <li>Hohl et al.: ambulance arrivals most likely to have a medication problem. Goldberg et al., 2017: ED physician and EMS handoff perceptions. Wilson et al., BMC Emergency Medicine: glove and scrap-paper workarounds. Seattle Fire, Emergency Scene Cameras, 2018. <span class="tag">MEASURED</span></li>
+      <li>Photos: car crash by Guy Cobb; crashed helmet by Todd Vierling; ER ambulance entrance, Glens Falls Hospital. Both public domain, Wikimedia Commons. <span class="tag">IMAGE</span></li>
+      <li>Cost model: 200,000-run Monte Carlo over the ranges above (cost_model.py). <span class="tag">OURS</span></li>
+    </ul>
+  </div>
+  <aside class="notes">Appendix: sources for harm, the wider system, and our own fieldwork and model.</aside>
+</section>
+
+<svg id="grain" width="1920" height="1080" aria-hidden="true"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .09 0"/></filter><rect width="1920" height="1080" filter="url(#g)"/></svg>
+</div></div>
+
+<div id="notes" hidden><b>Speaker notes</b><p id="notesText"></p></div>
+<div id="help" hidden>
+  <kbd>→</kbd><kbd>Space</kbd> next build or slide<br>
+  <kbd>←</kbd> previous slide<br>
+  <kbd>N</kbd> speaker notes · <kbd>F</kbd> fullscreen · <kbd>?</kbd> this help
+</div>
+<nav id="hud" aria-label="Deck controls">
+  <button id="bPrev" aria-label="Previous">←</button>
+  <span id="count">1 / 30</span>
+  <button id="bNext" aria-label="Next">→</button>
+  <button id="bNotes" aria-label="Speaker notes">Notes</button>
+  <button id="bFull" aria-label="Fullscreen">Full</button>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrambleTextPlugin.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/DrawSVGPlugin.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/MotionPathPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+<script>
+(() => {
+gsap.registerPlugin(SplitText, ScrambleTextPlugin, DrawSVGPlugin, MotionPathPlugin);
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const stage = $('#stage'), slides = $$('.slide');
+const EASE = { out: 'expo.out', inout: 'power3.inOut', soft: 'power2.out', spring: 'back.out(1.6)' };
+
+// fit the 1920x1080 stage into the window
+function fit() {
+  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  stage.style.transform = `translate(${(innerWidth - 1920 * s) / 2}px, ${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+}
+addEventListener('resize', fit); fit();
+
+// a count-up that lands exactly
+// tweens the text itself (not a callback), so jumping a slide to its end
+// state still lands the final number
+function countTo(el, to, dur = 1.6, dec = 0) {
+  return gsap.fromTo(el, { textContent: 0 }, { textContent: to, duration: dur, ease: 'power4.out',
+    modifiers: { textContent: v => (+v).toFixed(dec) } });
+}
+const seeded = s => () => (s = (s * 16807) % 2147483647) / 2147483647;
+
+// ── ambient loops: only the visible slide's runs ───────────────────────
+const loops = {};
+let activeLoop = null;
+gsap.ticker.add((t, dt) => { if (activeLoop && !document.hidden) activeLoop(t, dt / 1000); });
+
+// halftone field: hex-offset dots whose size follows a ramp plus slow drift
+function halftone(cv, { order = () => 1, ramp = x => x }) {
+  const ctx = cv.getContext('2d'), W = cv.width, H = cv.height, S = 18;
+  const rnd = seeded(11), jit = [];
+  for (let i = 0; i < 6000; i++) jit.push([(rnd() - .5) * 260, (rnd() - .5) * 260]);
+  const cols = ['#f0bb3e', '#dd7a35', '#b5362a'];
+  return t => {
+    ctx.clearRect(0, 0, W, H);
+    const k = order(t); let i = 0;
+    for (let y = S / 2; y < H; y += S) for (let x = S / 2 + ((y / S | 0) % 2) * S / 2; x < W; x += S, i++) {
+      const g = ramp(x / W, y / H);
+      if (g <= .02) continue;
+      const n = .62 + .38 * Math.sin(x * .011 + t * .5) * Math.cos(y * .014 - t * .37);
+      const r = Math.max(0, g * n * S * .5);
+      const j = jit[i % jit.length], px = x + j[0] * (1 - k), py = y + j[1] * (1 - k);
+      ctx.fillStyle = cols[Math.min(2, (g * 2.9) | 0)];
+      ctx.beginPath(); ctx.arc(px, py, r, 0, 6.283); ctx.fill();
+    }
+  };
+}
+let closeStart = 0;
+loops.close = halftone($('#cvClose'), { order: t => Math.min(1, Math.max(0, (t - closeStart) / 10)) ** 2 * (3 - 2 * Math.min(1, Math.max(0, (t - closeStart) / 10))), ramp: (x, y) => Math.max(0, y - .15) * (.4 + .6 * x) });
+
+// the chain: the story as a band of facts. thin from dispatch, thick once
+// fire is on scene, then thinner at every handoff after. facts that don't
+// make it across a handoff drop out and fall grey
+const ST = [
+  { x: 110, n: 'Caller & dispatch', s: 'Only what a frightened caller said' },
+  { x: 400, n: 'Fire', s: 'First on scene. The fullest account.' },
+  { x: 700, n: 'Paramedics', s: 'Hear it once, out loud' },
+  { x: 1000, n: 'Triage nurse', s: 'A report, then a second one' },
+  { x: 1300, n: 'Clerk & fax', s: 'Written record, hours or days later' },
+  { x: 1580, n: 'ER physician', s: 'Hears what’s left' }];
+// how much of the story there is after each station (fire = 1)
+const TH = [0.22, 1.0, 0.7, 0.5, 0.36, 0.28];
+const stHost = $('#stations');
+ST.forEach((s, i) => {
+  const d = document.createElement('div');
+  d.className = 'abs st';
+  d.style.cssText = `left:${128 + s.x - 135}px;top:676px;width:270px;text-align:center`;
+  d.innerHTML = `<p class="d" style="font-size:36px;${i === 1 ? 'color:var(--red)' : ''}">${s.n}</p><p style="font:400 21px/1.3 var(--body);color:var(--muted);margin-top:6px">${s.s}</p>`;
+  stHost.appendChild(d);
+});
+(() => {
+  const cv = $('#cvChain'), ctx = cv.getContext('2d'), W = cv.width, H = cv.height, MID = H / 2, HALF = 150;
+  const rnd = seeded(5);
+  const smooth = e => e * e * (3 - 2 * e);
+  // band thickness at x: steps between stations, eased over 80px
+  const thick = x => {
+    let t = TH[0] * Math.min(1, x / 110 + .25);
+    for (let i = 1; i < ST.length; i++) {
+      const e = Math.max(0, Math.min(1, (x - ST[i].x + 40) / 80));
+      t = t + (TH[i] - TH[i - 1]) * smooth(e);
+    }
+    return Math.max(.05, t);
+  };
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const col = x => { const t = x / W; return t < .45 ? [lerp(240, 221, t / .45), lerp(187, 122, t / .45), lerp(62, 53, t / .45)] : [lerp(221, 181, (t - .45) / .55), lerp(122, 54, (t - .45) / .55), lerp(53, 42, (t - .45) / .55)]; };
+  const POOL = 1600, P = [];
+  for (let i = 0; i < POOL; i++) P.push({ on: 0 });
+  const free = () => P.find(p => !p.on);
+  const born = (p, x, lane, fade) => Object.assign(p, { on: 1, x, lane, v: 80 + rnd() * 30, alive: 1, vy: 0, a: fade ? 0 : 1, seg: ST.reduce((k, s, i) => x > s.x ? i : k, -1), ph: rnd() * 6.28, y: 0 });
+  // pre-fill so the band is already flowing when the slide opens
+  for (let x = 0; x < W; x += 3) {
+    const n = Math.round(thick(x) * 2.2 + rnd() * .6);
+    for (let k = 0; k < n; k++) { const p = free(); if (p) born(p, x, rnd() * 2 - 1); }
+  }
+  let acc = 0;
+  loops.chain = (t, dt) => {
+    ctx.clearRect(0, 0, W, H);
+    // the band
+    ctx.beginPath();
+    for (let x = 0; x <= W; x += 8) ctx.lineTo(x, MID - thick(x) * HALF);
+    for (let x = W; x >= 0; x -= 8) ctx.lineTo(x, MID + thick(x) * HALF);
+    ctx.closePath();
+    const g = ctx.createLinearGradient(0, 0, W, 0);
+    g.addColorStop(0, 'rgba(240,187,62,.16)'); g.addColorStop(.3, 'rgba(221,122,53,.2)'); g.addColorStop(1, 'rgba(181,54,42,.12)');
+    ctx.fillStyle = g; ctx.fill();
+    ctx.strokeStyle = 'rgba(26,20,16,.12)'; ctx.lineWidth = 1.5; ctx.stroke();
+    // station rules
+    ST.forEach((s, i) => { ctx.fillStyle = i === 1 ? '#b5362a' : '#c9b48c'; ctx.fillRect(s.x - 1, 6, 2, H - 12); });
+    // a steady trickle in from dispatch
+    acc += dt * 26;
+    while (acc > 1) { acc--; const p = free(); if (p) born(p, 0, rnd() * 2 - 1); }
+    for (const p of P) {
+      if (!p.on) continue;
+      p.x += p.v * dt;
+      if (p.alive) {
+        const seg = ST.reduce((k, s, i) => p.x > s.x ? i : k, -1);
+        if (seg > p.seg) {
+          const before = seg > 0 ? TH[seg - 1] : TH[0], after = TH[seg], r = after / before;
+          p.seg = seg;
+          if (r < 1 && rnd() > r) { p.alive = 0; p.y = MID + p.lane * thick(p.x - 4) * HALF; }
+          if (r > 1) { // fire adds what it gathers on scene
+            let extra = r - 1;
+            while (extra > 0) { if (rnd() < extra) { const q = free(); if (q) { born(q, p.x, rnd() * 2 - 1, true); q.seg = seg; } } extra -= 1; }
+          }
+        }
+        p.a = Math.min(1, p.a + dt * 2.5);
+        const y = MID + p.lane * thick(p.x) * HALF * .92 + Math.sin(t * 2 + p.ph) * 2.5;
+        const [r, gg, b] = col(p.x);
+        ctx.fillStyle = `rgba(${r | 0},${gg | 0},${b | 0},${p.a})`;
+        ctx.beginPath(); ctx.arc(p.x, y, 3.1, 0, 6.283); ctx.fill();
+      } else {
+        p.vy += 240 * dt; p.y += p.vy * dt; p.a -= dt * .85; p.v *= .97;
+        ctx.fillStyle = `rgba(169,157,136,${Math.max(0, p.a)})`;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 2.8, 0, 6.283); ctx.fill();
+      }
+      if (p.x > W + 8 || p.a < 0 || p.y > H + 8) p.on = 0;
+    }
+  };
+})();
+
+// fray boil on the boundary slide: a few seeds stepped like hand-drawn line art
+(() => {
+  const t1 = $('#fray1 feTurbulence'), t2 = $('#fray2 feTurbulence');
+  let last = 0, s = 0;
+  loops.roots = t => { if (t - last > .11) { last = t; s = (s + 1) % 4; t1.setAttribute('seed', s + 1); t2.setAttribute('seed', s + 5); } };
+})();
+
+// the one-call tracker: the same nine steps on every step slide
+const STEPS = ['The page', 'On the way', 'Arrival', 'First contact', 'Gloves and paper', 'The handoff', 'Clean-up', 'Paperwork', 'Silence'];
+$$('.tracker').forEach(t => {
+  const at = +t.dataset.at;
+  t.innerHTML = STEPS.map((s, i) => `<span class="${i < at ? 'past' : i === at ? 'now' : ''}"><i></i>${i + 1} ${s}</span>`).join('');
+});
+
+// ── scenes: one paused timeline per slide, one addPause per build ─────
+const scenes = {};
+
+scenes.cover = () => {
+  const tl = gsap.timeline({ paused: true });
+  tl.from('#coverArt', { scale: 1.03, transformOrigin: '70% 50%', duration: 2.4, ease: 'power2.out' })
+    .from('#coverHead', { opacity: 0, y: 12, duration: .7, ease: EASE.soft }, .35)
+    .from('#coverSub', { opacity: 0, y: 12, duration: .7, ease: EASE.soft }, .5);
+  return tl;
+};
+
+scenes.chain = () => {
+  const tl = gsap.timeline({ paused: true });
+  tl.from('.st', { y: 30, opacity: 0, duration: .7, ease: EASE.soft, stagger: .1 })
+    .set('#gapNum', { textContent: '??%' }, 0)
+    .set(['#gapLabel', '#augie'], { opacity: 0 }, 0).set('#gapBracket path', { drawSVG: '0%' }, 0)
+    .from('#gapBox', { opacity: 0, duration: .6 }, .5)
+    // the "reaches paramedics" figure can't settle: it keeps guessing until
+    // the next click. it lives outside the timeline so the timeline ends
+    .call(() => { gsap.to('#gapNum', { scrambleText: { text: '73%', chars: '0123456789?', speed: .6 }, duration: 3, ease: 'none', repeat: -1, yoyo: true, repeatDelay: .2 }); }, null, .6)
+    .addPause()
+    .to('#gapNum', { scrambleText: { text: '—', chars: '0123456789?', speed: .9 }, duration: .9, overwrite: true })
+    .to('#gapBracket path', { drawSVG: '100%', duration: 1.1, ease: EASE.inout }, '<')
+    .to('#gapLabel', { opacity: 1, duration: .5 }, '-=.3')
+    .addPause()
+    .to('#augie', { opacity: 1, duration: .8 });
+  return tl;
+};
+
+scenes.telephone = () => {
+  const tl = gsap.timeline({ paused: true });
+  const rows = $$('#telephone .tel'), who = $$('#telephone .tel-who');
+  const text = ['Penicillin allergy · on warfarin · fell, down about 4 min · daughter has the med list',
+    'allergic to something? · on a blood thinner · fell · family has meds',
+    'fall · on thinners?',
+    'pt stable. fall.'];
+  rows.forEach((r, i) => r.textContent = i ? '' : text[0]);
+  gsap.set(who.slice(1), { opacity: 0 });
+  tl.from(rows[0], { opacity: 0, duration: .8 }).from(who[0], { opacity: 0, duration: .6 }, 0);
+  for (let i = 1; i < 4; i++) {
+    tl.addPause()
+      .to(who[i], { opacity: 1, duration: .4 })
+      .set(rows[i], { textContent: text[i - 1] }, '<')
+      .to(rows[i], { scrambleText: { text: text[i], chars: '▒░·_', revealDelay: .25, speed: .5 }, duration: 1.6, ease: 'none' }, '<');
+  }
+  return tl;
+};
+
+scenes.field = () => {
+  const tl = gsap.timeline({ paused: true });
+  $$('#field .photo').forEach((p, i) => tl.fromTo(p, { y: -120, rotate: +p.dataset.r * 4, opacity: 0 }, { y: 0, rotate: +p.dataset.r, opacity: 1, duration: .9, ease: 'back.out(1.3)' }, .1 + i * .18));
+  tl.from('#field .tape', { scaleX: 0, duration: .4 }, .9)
+    .from('#fieldStats > div', { opacity: 0, x: -20, duration: .5, stagger: .12 }, .3);
+  $$('#field [data-to]').forEach((el, i) => tl.add(countTo(el, +el.dataset.to, 1.2), .4 + i * .12));
+  return tl;
+};
+
+scenes.storage = () => {
+  const svg = $('#annot'); svg.innerHTML = '';
+  const rc = rough.svg(svg), o = { stroke: '#b5362a', strokeWidth: 4, roughness: 2.2, bowing: 2 };
+  const marks = [
+    rc.ellipse(293, 520, 380, 520, o),
+    rc.path('M 822 880 C 872 868 880 832 848 800', o),
+    rc.path('M 900 800 Q 1040 790 1180 802', { ...o, strokeWidth: 5 })
+  ];
+  marks.forEach(m => svg.appendChild(m));
+  const paths = marks.map(m => $$('path', m));
+  const tl = gsap.timeline({ paused: true });
+  tl.from('#storage .photo', { y: 40, opacity: 0, duration: .7, stagger: .12, ease: EASE.soft })
+    .from('#storage .sq', { opacity: 0, x: 30, duration: .6, stagger: .15 }, .4)
+    .set(paths.flat(), { drawSVG: '0%' }, 0).set('.ann', { opacity: 0 }, 0);
+  paths.forEach((ps, i) => tl.addPause().to(ps, { drawSVG: '100%', duration: .8, ease: EASE.inout }).to('#ann' + (i + 1), { opacity: 1, duration: .4 }, '-=.3'));
+  return tl;
+};
+
+scenes.survey = () => {
+  const svg = $('#dots25'); svg.innerHTML = '';
+  const dots = [];
+  for (let i = 0; i < 25; i++) {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    const x = 56 + (i % 5) * 112, y = 50 + (i / 5 | 0) * 90;
+    g.innerHTML = `<circle cx="${x}" cy="${y - 14}" r="13"/><path d="M${x - 24} ${y + 30} a24 24 0 0 1 48 0 z"/>`;
+    g.setAttribute('fill', '#b5362a'); svg.appendChild(g); dots.push(g);
+  }
+  const off = [dots[3], dots[9], dots[12], dots[16], dots[23]];
+  const tl = gsap.timeline({ paused: true });
+  gsap.set('#d25n', { textContent: '25' }); gsap.set('#d25t', { textContent: 'get fire’s information as a verbal report' });
+  tl.from(dots, { opacity: 0, scale: .4, transformOrigin: '50% 50%', duration: .5, stagger: .03, ease: EASE.spring })
+    .from('#d25cap', { opacity: 0, duration: .5 }, .6)
+    .set('.srow', { opacity: 0, x: 30 }, 0)
+    .addPause()
+    .to(off, { attr: { fill: '#cfc3a8' }, duration: .6, stagger: .08 })
+    .add(countTo($('#d25n'), 20, .8), '<')
+    .set('#d25t', { textContent: 'get a verbal report and nothing else' })
+    .addPause()
+    .to('.srow', { opacity: 1, x: 0, duration: .6, stagger: .18, ease: EASE.soft });
+  return tl;
+};
+
+scenes.roots = () => {
+  const tl = gsap.timeline({ paused: true });
+  const d1 = $('#fray1 feDisplacementMap'), d2 = $('#fray2 feDisplacementMap');
+  d1.setAttribute('scale', 0); d2.setAttribute('scale', 0);
+  tl.set(['#seg0', '#seg1', '#seg2'], { drawSVG: '0%' })
+    .set(['.bnd', '#belief'], { opacity: 0 })
+    .to('#seg0', { drawSVG: '100%', duration: 1.1, ease: EASE.inout }, .3)
+    .to('#seg1', { drawSVG: '100%', duration: 1.1, ease: EASE.inout }, 1.3)
+    .to('#seg2', { drawSVG: '100%', duration: 1.1, ease: EASE.inout }, 2.3)
+    .addPause()
+    .to(d1, { attr: { scale: 14 }, duration: 1.4, ease: EASE.soft })
+    .to(d2, { attr: { scale: 30 }, duration: 1.4, ease: EASE.soft }, '<.3')
+    .to('.bnd', { opacity: 1, duration: .5, stagger: .2 }, '<')
+    .addPause()
+    .to('#belief', { opacity: 1, duration: .7 });
+  return tl;
+};
+
+
+// the three who-pays slides share one build: number counts up, rows follow,
+// one click shows what the number leaves out
+const costScene = id => () => {
+  const tl = gsap.timeline({ paused: true }), n = $(`#${id} .cn`);
+  tl.from(`#${id} .cpanel`, { opacity: 0, duration: 1, ease: 'power1.out' })
+    .from(`#${id} .chead`, { opacity: 0, y: 12, duration: .6, ease: EASE.soft }, 0)
+    .add(countTo(n, +n.dataset.to, 1.6, +n.dataset.dec), .1)
+    .from(`#${id} .crow`, { opacity: 0, y: 14, duration: .55, ease: EASE.soft, stagger: { each: .14, ease: 'power1.in' } }, .5)
+    .set(`#${id} .clater`, { opacity: 0 }, 0)
+    .addPause()
+    .to(`#${id} .clater`, { opacity: 1, duration: .6 });
+  return tl;
+};
+scenes.costFire = costScene('costFire');
+scenes.costPara = costScene('costPara');
+scenes.costHosp = costScene('costHosp');
+
+scenes.total = () => {
+  const tl = gsap.timeline({ paused: true }), segs = $$('#total .seg'), labs = $$('#total .slab');
+  tl.add(countTo($('#totN'), 209, 2.2), 0)
+    .from('#totCap', { opacity: 0, y: 12, duration: .6, ease: EASE.soft }, .4)
+    .from('#totHours', { opacity: 0, duration: .6 }, .6)
+    .add(countTo($('#hrsN'), 643, 1.6), .6);
+  // the three payers join one bar in the order the patient meets them
+  [[0, .5, .7], [1, .8, 1.1], [2, 1.2, 1.7]].forEach(([i, d, at]) => {
+    tl.from(segs[i], { scaleX: 0, transformOrigin: '0 50%', duration: d, ease: EASE.inout }, at)
+      .from(labs[i], { opacity: 0, duration: .45 }, at + d * .5);
+  });
+  tl.set('#world', { opacity: 0 }, 0)
+    .addPause()
+    .to('#world', { opacity: 1, duration: .6 })
+    .from('.wl', { y: 24, duration: .7, stagger: .15, ease: EASE.soft }, '<');
+  return tl;
+};
+
+scenes.pocket = () => {
+  const tl = gsap.timeline({ paused: true });
+  const a = new SplitText('#pocketA', { type: 'lines', mask: 'lines' }), b = new SplitText('#pocketB', { type: 'lines', mask: 'lines' });
+  tl.from(a.lines, { yPercent: 105, duration: 1, ease: EASE.out, stagger: .12 })
+    .from(b.lines, { yPercent: 105, duration: 1, ease: EASE.out, stagger: .12 }, 1.1)
+    .from('#pocketC', { opacity: 0, duration: .7 }, 2.1);
+  return tl;
+};
+
+// most slides share one build: the .lead headline rises line by line, the
+// [data-in] groups follow in order with gaps that shrink as they go, and
+// each [data-step=k] waits for click k
+function autoScene(id, extra) {
+  return () => {
+    const root = $('#' + id), tl = gsap.timeline({ paused: true });
+    const lead = $('.lead', root);
+    if (lead) tl.from(new SplitText(lead, { type: 'lines', mask: 'lines' }).lines, { yPercent: 105, duration: 1, ease: EASE.out, stagger: .12 }, 0);
+    const groups = [...new Set($$('[data-in]', root).map(e => +e.dataset.in))].sort((a, b) => a - b);
+    const t0 = lead ? .45 : .15;
+    groups.forEach((g, i) => tl.from($$(`[data-in="${g}"]`, root), { opacity: 0, y: 14, duration: .6, ease: EASE.soft }, t0 + Math.pow(i, .82) * .24));
+    if (extra) extra(tl, root);
+    const steps = +root.dataset.steps || 0;
+    for (let k = 1; k <= steps; k++) {
+      const els = $$(`[data-step="${k}"]`, root);
+      tl.set(els, { opacity: 0 }, 0).addPause();
+      if (els.length) tl.fromTo(els, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .6, ease: EASE.soft, stagger: .12 });
+      if (extra && extra.step) extra.step(tl, root, k);
+    }
+    return tl;
+  };
+}
+
+scenes.mtime = autoScene('mtime', tl => {
+  tl.fromTo('#tRing', { drawSVG: '0%' }, { drawSVG: '100%', duration: 2.2, ease: 'power1.inOut' }, .4)
+    .add(countTo($('#tNum'), 70, 2.2), .4);
+});
+
+scenes.m729 = () => {
+  const svg = $('#dots100'); svg.innerHTML = '';
+  const rnd = seeded(29), lostIdx = new Set([...Array(100).keys()].sort(() => rnd() - .5).slice(0, 27));
+  const dots = [], lost = [];
+  for (let i = 0; i < 100; i++) {
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', 32 + (i % 10) * 64); c.setAttribute('cy', 32 + (i / 10 | 0) * 64); c.setAttribute('r', 24); c.setAttribute('fill', '#b5362a');
+    svg.appendChild(c); dots.push(c); if (lostIdx.has(i)) lost.push(c);
+  }
+  const extra = tl => {
+    tl.from(dots, { scale: 0, transformOrigin: '50% 50%', duration: .45, ease: 'power3.out', stagger: { each: .007 } }, .3)
+      .add(countTo($('#m7n'), 72.9, 1.6, 1), .2);
+  };
+  extra.step = tl => tl.to(lost, { attr: { fill: '#d6cbb2' }, y: 8, duration: .7, ease: EASE.soft, stagger: { each: .025, from: 'random' } }, '<');
+  return autoScene('m729', extra)();
+};
+
+// a loop builds the way it reads: node, arrow to the next node, and round
+const loopScene = id => autoScene(id, (tl, root) => {
+  const arcs = $$('.larc', root), chev = $$('.lchev', root), nodes = $$('.lnode', root), t = .8;
+  tl.from(nodes[0], { opacity: 0, scale: .92, duration: .45, ease: 'power2.out' }, t);
+  arcs.forEach((a, i) => {
+    const at = t + .3 + i * .6;
+    tl.from(a, { drawSVG: '0%', duration: .55, ease: 'power1.inOut' }, at).from(chev[i], { opacity: 0, duration: .2 }, at + .4);
+    if (nodes[i + 1]) tl.from(nodes[i + 1], { opacity: 0, scale: .92, duration: .45, ease: 'power2.out' }, at + .45);
+  });
+  tl.from($('.lmid', root), { opacity: 0, duration: .6 }, t + .3 + 4 * .6);
+});
+scenes.r1 = loopScene('r1'); scenes.r2 = loopScene('r2');
+
+scenes.close = autoScene('close', (tl, root) => {
+  tl.from($$('canvas ~ p:last-of-type', root), { opacity: 0, duration: .6 }, 1);
+});
+
+// ── deck engine ───────────────────────────────────────────────────────
+const cache = {};
+let cur = -1, step = 0, tl = null;
+const count = $('#count'), notesBox = $('#notes'), notesText = $('#notesText');
+
+function show(n, atEnd) {
+  n = Math.max(0, Math.min(slides.length - 1, n));
+  const prev = slides[cur], next = slides[n], id = next.id;
+  if (prev && prev !== next) { gsap.to(prev, { opacity: 0, duration: .35, onComplete: () => prev.classList.remove('on') }); }
+  if (tl) tl.pause();
+  next.classList.add('on');
+  gsap.fromTo(next, { opacity: 0 }, { opacity: 1, duration: .45, ease: 'power1.out' });
+  cur = n; step = 0;
+  if (!cache[id]) cache[id] = (scenes[id] || autoScene(id))();
+  tl = cache[id] || null;
+  if (tl) {
+    if (atEnd || RM) { tl.progress(1, true); step = +next.dataset.steps; }
+    else tl.restart();
+  }
+  if (id === 'close') closeStart = gsap.ticker.time;
+  activeLoop = loops[id] || null;
+  if (RM && activeLoop) { activeLoop(5, 0); activeLoop = null; }
+  count.textContent = `${n + 1} / ${slides.length}`;
+  notesText.textContent = (next.querySelector('aside.notes') || {}).textContent || '';
+  try { history.replaceState(null, '', '#s' + (n + 1)); } catch (e) {}
+}
+function forward() {
+  const steps = +slides[cur].dataset.steps || 0;
+  if (tl && step < steps && !RM) { step++; tl.play(); }
+  else if (cur < slides.length - 1) show(cur + 1);
+}
+function back() { if (cur > 0) show(cur - 1, true); }
+
+addEventListener('keydown', e => {
+  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); forward(); }
+  else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); back(); }
+  else if (e.key === 'n' || e.key === 'N') notesBox.hidden = !notesBox.hidden;
+  else if (e.key === 'f' || e.key === 'F') full();
+  else if (e.key === '?') $('#help').hidden = !$('#help').hidden;
+  else if (e.key === 'Home') show(0);
+  else if (e.key === 'End') show(slides.length - 1, true);
+});
+$('#deck').addEventListener('click', e => { if (e.clientX < innerWidth * .2) back(); else forward(); });
+$('#bPrev').onclick = back; $('#bNext').onclick = forward;
+$('#bNotes').onclick = () => notesBox.hidden = !notesBox.hidden;
+function full() { const d = document.documentElement; (document.fullscreenElement ? document.exitFullscreen() : d.requestFullscreen?.())?.catch?.(() => {}); }
+$('#bFull').onclick = full;
+let tx = null;
+addEventListener('touchstart', e => tx = e.touches[0].clientX, { passive: true });
+addEventListener('touchend', e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) dx < 0 ? forward() : back(); tx = null; }, { passive: true });
+
+// #s5 opens slide 5; #s5end opens it with every build already done
+const hm = /^#s(\d+)(end)?$/.exec(location.hash);
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => show(hm ? +hm[1] - 1 : 0, !!(hm && hm[2])));
+})();
+</script>
