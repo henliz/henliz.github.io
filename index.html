@@ -536,7 +536,7 @@
   /* on desktop the intro lives in the rail, this slot only fills on a phone */
   .work-intro{display:none}
   @media (max-width: 920px){
-    .work-intro{display:block;padding:3.4rem 0 1.2rem}
+    .work-intro{display:block;padding:1.1rem 0 1rem}   /* the menu button sits top right now, so no clearance needed */
     .work-intro .display-name{margin-bottom:.9rem;line-height:.94}
     .work-intro .name-first{font-size:clamp(2.3rem,11vw,3.2rem)}
     .work-intro .name-last{font-size:clamp(1.35rem,6.2vw,1.9rem);letter-spacing:.05em}
@@ -2516,7 +2516,7 @@
         .sb-toggle {
             display: none;
             position: fixed;
-            top: 0.85rem; left: 0.85rem;
+            top: 0.85rem; right: 0.85rem;   /* right side on a phone, out of the name's way */
             z-index: 1100;
             width: 42px; height: 42px;
             align-items: center;
@@ -2545,9 +2545,11 @@
                 width: min(330px, 86vw);
                 height: calc(100dvh - var(--gap) * 2);
                 padding-top: 4.2rem;   /* clear the drawer toggle */
-                transform: translateX(-108%);
+                /* the menu button is top right, so the drawer comes in from the right */
+                left: auto; right: var(--gap);
+                transform: translateX(108%);
                 transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
-                box-shadow: 18px 0 60px rgba(0,0,0,0.7);
+                box-shadow: -18px 0 60px rgba(0,0,0,0.7);
             }
             .sidebar.open { transform: none; }
             .case-pane { left: 0; }
@@ -3051,7 +3053,7 @@
         position: absolute; inset: 0; z-index: 8;
         opacity: 1; transition: opacity .3s ease;
     }
-    .cell:hover .tf-tots { opacity: 0; }
+    .cell:hover .tf-tots, .cell.is-focus .tf-tots { opacity: 0; }
 
     /* ---- the phones. Plain CSS, no canvas: same build as the case study's ---- */
     .tf-phone {
@@ -3082,7 +3084,7 @@
         background: radial-gradient(closest-side, rgba(38,66,26,.42), transparent 76%);
         transition: opacity .3s ease;
     }
-    .cell:hover .tf-shadow { opacity: 0; }
+    .cell:hover .tf-shadow, .cell.is-focus .tf-shadow { opacity: 0; }
 
     /* on hover: creamsicle, and the one phone becomes two */
     .tf-cream {
@@ -3093,7 +3095,7 @@
             radial-gradient(88% 64% at 50% 114%, rgba(255,246,228,.74), transparent 74%),
             linear-gradient(168deg,#ff8a24 0%,#ffa140 24%,#ffb75f 48%,#ffce8b 72%,#ffe9c8 100%);
     }
-    .cell:hover .tf-cream { opacity: 1; }
+    .cell:hover .tf-cream, .cell.is-focus .tf-cream { opacity: 1; }
     /* Deliberately bigger than the tile. Two phones at readable size do not
        both fit inside a 5:3 box, so they don't try: one is cut off at the top
        and the other at the bottom, staggered, and between them you can read
@@ -3110,7 +3112,7 @@
     .tf-pair .tf-screen { aspect-ratio: 9 / 18.5; }
     .tf-pair .tf-phone:first-child { left: 10cqw; top: 2cqh; transform: rotate(-9deg); }
     .tf-pair .tf-phone:last-child  { right: 10cqw; top: 5cqh; transform: rotate(9deg); z-index: 1; }
-    .cell:hover .tf-pair { opacity: 1; transform: scale(1); }
+    .cell:hover .tf-pair, .cell.is-focus .tf-pair { opacity: 1; transform: scale(1); }
 
     @media (max-width: 700px) {
         .tf-tots { display: none; }        /* the tile gets small; they read as clutter */
@@ -3472,6 +3474,13 @@
   .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox, .t-handoff{
     grid-column: 1 / -1 !important;
   }
+  /* one column on a phone, so every study gets the same tall square */
+  .bento-grid .tile{ aspect-ratio:1 / 1 !important; }
+  /* the covers are wider than a square: keep handoff's title (left) in
+     frame. equinox's banner is far too wide, so phones get a square cover
+     built from the game's own layers (sky, tower + title, snow) */
+  .t-handoff .eq-cover{ background-position:12% center; }
+  .t-equinox .eq-cover{ background-image:url('equinox/cover-square.webp') !important; background-position:center; }
 }
 
 /* small text
@@ -6258,6 +6267,8 @@ stations.forEach((cfg,i) => {
       // moving onto it would otherwise count as leaving
       cell.addEventListener('mouseenter', () => cell.classList.add('is-video'));
       cell.addEventListener('mouseleave', () => cell.classList.remove('is-video'));
+      cell.addEventListener('alt:on', () => cell.classList.add('is-video'));
+      cell.addEventListener('alt:off', () => cell.classList.remove('is-video'));
     }
     const box = cell.querySelector('.tile-video[data-kind]');
     if (!box) return;
@@ -6420,6 +6431,9 @@ stations.forEach((cfg,i) => {
       cell.addEventListener('mouseenter', mount);
       cell.addEventListener('mouseleave', unmount);
     }
+    // phones have no hover: the tile in focus plays instead (see focusTiles)
+    cell.addEventListener('alt:on', mount);
+    cell.addEventListener('alt:off', unmount);
   })();
 
   const el = cell.querySelector('.tile');
@@ -6659,7 +6673,7 @@ stations.forEach((cfg,i) => {
         onScreen = e.isIntersecting; sync();
       }), {threshold: 0.15}).observe(el);
     }
-    if (pair.length && !reduce && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    if (pair.length && !reduce) {
       const at = v => +v.dataset.start || 0;
       /* preload is none, so currentTime is not settable until metadata
          lands — hence the guard and the loadedmetadata pass */
@@ -6669,17 +6683,24 @@ stations.forEach((cfg,i) => {
         v.addEventListener('loadedmetadata', () => home(v));
         v.addEventListener('ended', () => { home(v); v.play().catch(() => {}); });
       });
-      cell.addEventListener('mouseenter', () => {
+      const on = () => {
         cell.classList.add('is-video');
         pair.forEach(v => {
           if (v.readyState && v.currentTime < at(v)) home(v);
           v.play().catch(() => {});
         });
-      });
-      cell.addEventListener('mouseleave', () => {
+      };
+      const off = () => {
         cell.classList.remove('is-video');
         pair.forEach(v => { v.pause(); home(v); });
-      });
+      };
+      if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        cell.addEventListener('mouseenter', on);
+        cell.addEventListener('mouseleave', off);
+      }
+      // phones have no hover: the tile in focus gets the same swap
+      cell.addEventListener('alt:on', on);
+      cell.addEventListener('alt:off', off);
     }
   }
 });
@@ -6967,6 +6988,51 @@ packGrid();
 const packRO = new ResizeObserver(() => requestAnimationFrame(packGrid));
 for (const c of grid.children) packRO.observe(c);
 packMQ.addEventListener('change', packGrid);
+
+/* phones have no hover, so the tile nearest the middle of the screen gets
+   its alternate view (the demo clip, or trove's two phones). one at a time:
+   a new one taking focus hands the old one back first */
+(function focusTiles(){
+  const touch = matchMedia('(hover: none)');
+  const sc = document.getElementById('contentCard');
+  let cur = null, raf = 0;
+  const set = next => {
+    if (next === cur) return;
+    if (cur){ cur.classList.remove('is-focus'); cur.dispatchEvent(new Event('alt:off')); }
+    cur = next;
+    if (cur){ cur.classList.add('is-focus'); cur.dispatchEvent(new Event('alt:on')); }
+  };
+  // a tile has to rise past the middle a bit (to 42% down the screen) before
+  // it swaps, and has to hold there a beat, so the cover gets seen first
+  let wait = 0, want = null;
+  const settle = next => {
+    if (next === want) return;
+    want = next; clearTimeout(wait);
+    wait = setTimeout(() => set(want), next ? 380 : 0);
+  };
+  const pick = () => {
+    raf = 0;
+    if (!touch.matches){ settle(null); return; }
+    const mid = innerHeight * .42;
+    let best = null, bd = Infinity;
+    for (const c of grid.children){
+      const r = (c.querySelector('.tile') || c).getBoundingClientRect();
+      if (!r.height || r.bottom < 0 || r.top > innerHeight) continue;
+      // it has to be mostly on screen to count, not just peeking in
+      const seen = (Math.min(r.bottom, innerHeight) - Math.max(r.top, 0)) / r.height;
+      if (seen < .75) continue;
+      const d = Math.abs((r.top + r.bottom) / 2 - mid);
+      if (d < bd){ bd = d; best = c; }
+    }
+    settle(best);
+  };
+  const ask = () => { if (!raf) raf = requestAnimationFrame(pick); };
+  sc?.addEventListener('scroll', ask, { passive: true });
+  addEventListener('scroll', ask, { passive: true });
+  addEventListener('resize', ask);
+  touch.addEventListener('change', ask);
+  setTimeout(ask, 600);
+})();
 
 // which tiles the cover has to wait for: whatever's on screen right now
 firstScreen = views.filter(v => {
