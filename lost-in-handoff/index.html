@@ -124,6 +124,12 @@
   }
 
   #map-wrap{ position:absolute; inset:0; }
+  /* ?embed: the map on its own, for the case study. no header, hint or
+     legend, and it animates itself (see the embed block at the bottom) */
+  html.embed header, html.embed .hint, html.embed .halftone-strip, html.embed .legend{ display:none !important; }
+  html.embed .flow{ fill:none; pointer-events:none; stroke-dasharray:2 16; stroke-linecap:round; animation:flow 1.6s linear infinite; }
+  @keyframes flow{ to{ stroke-dashoffset:-18; } }
+  @media (prefers-reduced-motion:reduce){ html.embed .flow{ animation:none; display:none; } }
   #map{ width:100%; height:100%; display:block; cursor:grab; }
   #map.grabbing{ cursor:grabbing; }
 
@@ -140,6 +146,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Source+Sans+3:wght@400;600;700;800&display=swap">
 </head>
 <body>
+<script>if(/[?&]embed\b/.test(location.search)) document.documentElement.classList.add('embed');</script>
 
 <div class="halftone-strip"></div>
 
@@ -1443,7 +1450,8 @@
         y0=Math.min(y0,d.y-hh); y1=Math.max(y1,d.y+hh);
       });
       var vw=svgEl.clientWidth, vh=svgEl.clientHeight;
-      var topMargin = vw > 760 ? 110 : 0, rightMargin = vw > 760 ? 300 : 0;
+      var embed = document.documentElement.classList.contains('embed');
+      var topMargin = !embed && vw > 760 ? 110 : 0, rightMargin = !embed && vw > 760 ? 300 : 0;
       var fw = Math.max(vw - rightMargin, 200), fh = Math.max(vh - topMargin, 200);
       var bw=x1-x0, bh=y1-y0;
       var scale=Math.min(fw/bw, fh/bh)*0.90;
@@ -1454,6 +1462,43 @@
     fit(false);
     document.getElementById("btn-fit").addEventListener("click", function(){ fit(true); });
     window.addEventListener("resize", function(){ fit(false); });
+
+    // ?embed: the map tells its own story. it ripples out from the core loss
+    // one hop at a time, then the causal links start flowing in the direction
+    // of cause, and the camera drifts in on the core and back out, forever
+    if(document.documentElement.classList.contains('embed')){
+      var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var hop = {}, q = ["core"]; hop.core = 0;
+      while(q.length){
+        var cur = q.shift();
+        EDGES.forEach(function(l){
+          var a = l.source.id, b = l.target.id, nxt = a === cur ? b : (b === cur ? a : null);
+          if(nxt && hop[nxt] === undefined){ hop[nxt] = hop[cur] + 1; q.push(nxt); }
+        });
+      }
+      var far = 0; NODES.forEach(function(d){ if(hop[d.id] === undefined) hop[d.id] = 6; far = Math.max(far, hop[d.id]); });
+      var STEP = calm ? 0 : 650;
+      node.style("opacity", calm ? 1 : 0).transition().delay(function(d){ return 200 + hop[d.id] * STEP; }).duration(500).style("opacity", 1);
+      link.style("opacity", calm ? 1 : 0).transition().delay(function(l){ return 200 + Math.max(hop[l.source.id], hop[l.target.id]) * STEP + 250; }).duration(500).style("opacity", 1);
+      // the floating chips (link labels, loop names) come in once the web is drawn
+      labelG.style("opacity", calm ? 1 : 0).transition().delay(300 + (far + 1) * STEP).duration(700).style("opacity", 1);
+      if(!calm){
+        // a dashed overlay on every plain causal link, so cause visibly runs one way
+        linkG.selectAll("path.flow").data(EDGES.filter(function(l){ var k = edgeKind(l); return k === "cause" || k === "loop" || l.hero; }))
+          .join("path").attr("class", "flow")
+          .attr("d", function(l){ return link.filter(function(m){ return m === l; }).attr("d"); })
+          .attr("stroke", "rgba(255,250,240,.85)").attr("stroke-width", 1.4)
+          .style("opacity", 0).transition().delay(400 + (far + 1) * STEP).duration(800).style("opacity", 1);
+        var drift = function(){
+          var base = d3.zoomTransform(svgEl), k = base.k * 1.55, vw = svgEl.clientWidth, vh = svgEl.clientHeight;
+          var inT = d3.zoomIdentity.translate(vw / 2 - k * coreNode.x, vh / 2 - k * coreNode.y).scale(k);
+          svg.transition().delay(1800).duration(5000).ease(d3.easeCubicInOut).call(zoom.transform, inT)
+             .transition().delay(2600).duration(5000).ease(d3.easeCubicInOut).call(zoom.transform, base)
+             .on("end", function(){ setTimeout(drift, 3000); });
+        };
+        setTimeout(drift, 600 + (far + 1) * STEP);
+      }
+    }
 
     // Exports the whole map as plain JSON, including every node's click-in
     // sources and each loop's full narrative, so someone can paste the

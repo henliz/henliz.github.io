@@ -967,6 +967,36 @@ figure{
   .case-title{ font-size:clamp(1.75rem,7.4vw,2.4rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
 }
 </style>
+
+  <style>
+  /* no side bars. a coloured stripe down the left of a callout reads as
+     generated in 2026, so callouts are whole soft cards with the label as a
+     small eyebrow, and quotes get a big quotation mark instead of a rule.
+     loaded last so it wins over each component's own border-left */
+  .highlight-box, .must-haves-card, .quote-card, .confidentiality-notice{
+    border-left-width:1px !important;
+    border:1px solid rgba(var(--accent-rgb),.18) !important;
+    border-radius:14px !important;
+    background:rgba(var(--accent-rgb),.07) !important;
+  }
+  .confidentiality-notice{ border-color:rgba(var(--notice-rgb, var(--accent-rgb)),.45) !important; background:rgba(var(--notice-rgb, var(--accent-rgb)),.08) !important; }
+  .highlight-box{ padding:1.1rem 1.3rem 1.2rem !important; }
+  .highlight-box > strong:first-child{
+    display:block !important; margin-bottom:.45rem !important;
+    font-size:.68rem !important; letter-spacing:.14em !important; text-transform:uppercase !important;
+    color:rgb(var(--accent-rgb)) !important; font-weight:800 !important;
+  }
+  .pull-quote{
+    border-left:0 !important; position:relative;
+    padding:1.6rem 0 0 0 !important; margin-left:0 !important;
+  }
+  .pull-quote::before{
+    content:'\201C'; position:absolute; left:-.05em; top:-.35em;
+    font:400 4.2rem/1 Georgia,'Times New Roman',serif;
+    color:rgba(var(--accent-rgb),.55); pointer-events:none;
+  }
+  .plain-list li{ border-left:0 !important; padding:.9rem 1.1rem !important; border-radius:14px; background:rgba(var(--accent-rgb),.07); border:1px solid rgba(var(--accent-rgb),.16); }
+  </style>
 </head>
 <body>
 
@@ -1464,6 +1494,10 @@ size 48221184
       if (footer && mount) {
         footer.id = 'contact';
         mount.replaceWith(footer);
+        // the guestbook's code isn't copied with the footer, so load it here
+        if (footer.querySelector('[data-guestbook]') && !document.querySelector('script[src="/js/guestbook.js"]')) {
+          const gs = document.createElement('script'); gs.src = '/js/guestbook.js'; document.body.appendChild(gs);
+        }
         const hydrate = () => (window.lucide && window.lucide.createIcons());
         if (document.readyState === 'complete') hydrate();
         else window.addEventListener('load', hydrate, { once:true });

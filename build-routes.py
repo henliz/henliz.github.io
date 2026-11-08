@@ -37,6 +37,8 @@ ROUTES = {
    "Running a volunteer studio of 140+ contributors on an undocumented engine, funded by 1,700 Patreon members. Technical direction case study by Henriëtta van Niekerk, CTO."),
  'myauntie':("MyAuntie — Henriëtta van Niekerk",
    "Postpartum support that arrives as a text, not another app to download. TechNova 2025 winner: concept to live telephony in 36 hours."),
+ 'nightingale': ("Lost in Handoff — Henriëtta van Niekerk",
+   "What a fire crew learns at the scene, and whether any of it reaches the hospital. Field research across Ontario fire, paramedic and ER teams, a cost model, and Nightingale, a wearable prototype."),
  'equinox': ("Equinox — Henriëtta van Niekerk",
    "Reading Overcomplicated Screen Transitions as a design constraint, not decoration. First of 88 at Comfy Jam Winter 2026."),
  'about':   ("About Me — Henriëtta van Niekerk",
@@ -49,7 +51,7 @@ ROUTES = {
 
 # every directory the shell loads assets from, so a copy one level down
 # still finds them
-ASSET_DIRS = ('models','field','scenes','mascots','fonts','css','js','sky','lostinhandoff','endorsements',
+ASSET_DIRS = ('models','field','scenes','mascots','fonts','css','js','sky','lostinhandoff','nightingale','endorsements',
               'equinox','trove','skrimp','menzo','myauntie','about','playground','resume')
 
 def absolutise(html: str) -> str:

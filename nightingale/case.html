@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description" content="What a fire crew learns at the scene, and whether any of it reaches the hospital. Field research across Ontario fire, paramedic and ER teams, a cost model, and Nightingale, a wearable prototype. Case study by Henriëtta van Niekerk.">
+  <link rel="canonical" href="https://henliz.github.io/nightingale/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Lost in Handoff — Henriëtta van Niekerk">
+  <meta property="og:description" content="What a fire crew learns at the scene, and whether any of it reaches the hospital. Field research across Ontario fire, paramedic and ER teams, a cost model, and Nightingale, a wearable prototype. Case study by Henriëtta van Niekerk.">
+  <meta property="og:url" content="https://henliz.github.io/nightingale/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lost in Handoff &ndash; Case Study</title>
+  <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap" rel="stylesheet" />
+
+  <style>
+/* Satoshi, self-hosted. Replaces Montserrat and Montserrat Alternates:
+   squared bowls and tight apertures agree with DotempDemo's staircase where
+   Montserrat's circles fought it, especially mid-word where the two interleave. */
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-300.woff2') format('woff2');font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-500.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-700.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('../fonts/Satoshi-900.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap}
+
+    /* ── type scale ────────────────────────────────────────────────
+       One fluid root so every rem on the page grows with the screen
+       instead of sitting at a fixed 16px. The floor and ceiling are
+       in rem, not px, so a reader who has raised their browser's
+       default font size keeps that increase (WCAG 1.4.4). */
+    html { font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem); }
+
+    @font-face {
+      font-family: 'DotempDemo';
+      src: url('../fonts/DotempDemo.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    /* Font-mix classes — matches main portfolio */
+    .px { font-family: 'DotempDemo', monospace; font-style: normal; font-weight: 400; font-size: 0.9em; }
+    .di { font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; }
+
+    :root{
+      --accent-rgb: 221,122,53;
+      --accent-soft-rgb: 240,187,62;
+      --accent-deep-rgb: 181,54,42;
+      --deep-rgb: 15,12,10;
+      --chrome-rgb: 14,9,6;
+      --lift-rgb: 255,255,255;
+      --ink-rgb: 246,238,218;
+      --sh-rgb: 0,0,0;
+      --sh-k: 1;
+      --paper: #160D08;
+      --text-primary:#f6eeda;
+      --text-secondary:#f0c48a;
+      --accent-teal:#E58A45;   /* the name is the template's; here it is the halftone orange */
+      --accent-blue:#b5362a;
+      --glass-deep-1: rgba(var(--deep-rgb),0.90);
+      --glass-deep-2: rgba(var(--deep-rgb),0.96);
+      --glass-border: rgba(var(--accent-soft-rgb),0.22);
+      --glass-highlight-1: rgba(var(--accent-soft-rgb),.10);
+      --glass-highlight-2: rgba(var(--accent-deep-rgb),.10);
+      --glass-bg: rgba(var(--deep-rgb),0.35);
+      --inner-card: rgba(var(--deep-rgb),.42);
+      --rule: rgba(var(--accent-soft-rgb),0.24);
+    }
+
+    /* ── LIGHT THEME ───────────────────────────────────────────
+       Authored dark, so light restates the same colour families
+       rather than inverting them: glass goes to paper, the deep
+       washes go pale, and every accent drops to a value that
+       clears WCAG AA on the light surface it lands on. */
+    :root[data-theme="light"] {
+      --text-primary: #1A1410;
+      --text-secondary: #8E1B1B;
+      --accent-teal: #B5362A;
+      --accent-blue: #8E1B1B;
+      --glass-deep-1: rgba(255,255,255,0.94);
+      --glass-deep-2: rgba(255,250,240,0.97);
+      --glass-border: rgba(181,54,42,0.24);
+      --glass-highlight-1: rgba(181,54,42,.07);
+      --glass-highlight-2: rgba(221,122,53,.07);
+      --glass-bg: rgba(255,255,255,0.74);
+      --inner-card: rgba(255,255,255,0.80);
+      --rule: rgba(181,54,42,0.24);
+      --accent-rgb: 181,54,42;
+      --accent-soft-rgb: 142,27,27;
+      --accent-deep-rgb: 221,122,53;
+      --deep-rgb: 246,238,218;
+      --chrome-rgb: 255,255,255;
+      --lift-rgb: 181,54,42;
+      --ink-rgb: 26,20,16;
+      --sh-rgb: 60,30,10;
+      --sh-k: .34;
+      --paper: #F6EEDA;
+    }
+
+    /* reset + base */
+    *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Satoshi',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;color:var(--text-primary)}
+    a{text-decoration:none;color:inherit}
+    ul{list-style:disc inside}
+
+    /* custom cursor */
+    .custom-cursor{position:fixed;width:20px;height:20px;background:rgba(var(--accent-rgb),.3);border:2px solid rgba(var(--accent-rgb),.8);border-radius:50%;pointer-events:none;z-index:10000;transition:width .15s ease,height .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease;transform:translate(-50%,-50%);box-shadow:0 0 15px rgba(var(--accent-rgb),.4),inset 0 0 10px rgba(var(--accent-rgb),.1)}
+    .custom-cursor.clicking{background:rgba(var(--accent-rgb),.9);border-color:rgba(var(--accent-rgb),1);transform:translate(-50%,-50%) scale(.8);box-shadow:0 0 25px rgba(var(--accent-rgb),.8),inset 0 0 15px rgba(var(--accent-rgb),.3)}
+    .custom-cursor.hovering{width:30px;height:30px;background:rgba(var(--accent-rgb),.4);border-color:rgba(var(--accent-rgb),.9);box-shadow:0 0 20px rgba(var(--accent-rgb),.6),inset 0 0 12px rgba(var(--accent-rgb),.2)}
+    *,*::before,*::after{cursor:none !important}
+
+    /* pink page tint */
+    body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;background:rgba(160,40,80,0.06);}
+    /* logo pink-shift */
+    .navbar .logo img{filter:hue-rotate(160deg) saturate(1.3) brightness(1.05) !important;transition:filter .4s ease;}
+    .navbar:not(.pill) .logo img{filter:hue-rotate(160deg) saturate(1.3) brightness(1.06) drop-shadow(0 4px 10px rgba(200,80,120,0.22)) !important;}
+
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    /* --- TYPE HIERARCHY --- */
+    h1,h2,h3,h4{font-family:'Satoshi',sans-serif}
+
+    /* Section eyebrow label */
+    .eyebrow{
+      display:block;
+      font-size:0.84rem;
+      font-weight:700;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--accent-teal);
+      margin-bottom:.6rem;
+      opacity:.85;
+    }
+
+    /* Editorial section heading — base font is overridden per-char after scramble */
+    .section-heading{
+      font-size: clamp(1.6rem,3.5vw,2.6rem);
+      
+      color:var(--text-secondary);
+      line-height:1.15;
+      margin-bottom:1.25rem;
+      font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
+      
+      letter-spacing: 0.06em;
+    }
+    /* During scramble: monospace pixel font + CA pulse */
+    .section-heading.h-scrambling{
+      font-family: 'DotempDemo', monospace !important;
+      font-style: normal !important;
+      animation: hCaScramble 0.7s ease-in-out infinite;
+    }
+    /* After settle: gentle residual CA */
+    .section-heading.h-settled{
+      animation: hCaSettle 3s ease-in-out infinite;
+    }
+
+    /* Hero title — font-mix + scramble, gradient preserved */
+    .intro-left h1{
+      letter-spacing: 0.06em;
+    }
+    .intro-left h1.h-scrambling{
+      font-family: 'DotempDemo', monospace !important;
+      font-style: normal !important;
+      animation: gradientShift 4s ease infinite, hCaScramble 0.7s ease-in-out infinite !important;
+    }
+    .intro-left h1.h-settled{
+      animation: gradientShift 4s ease infinite, hCaSettle 3s ease-in-out infinite !important;
+    }
+
+    @keyframes hCaScramble {
+      0%   { text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(102,252,241,0.55); }
+      18%  { text-shadow: 5px 0 rgba(255,30,60,0.8),  -5px 0 rgba(102,252,241,0.8);  clip-path: inset(0 0 88% 0); }
+      19%  { clip-path: inset(0 0 0 0); }
+      40%  { text-shadow: 1px 0 rgba(255,30,60,0.3),  -1px 0 rgba(102,252,241,0.3); }
+      57%  { text-shadow: 6px 0 rgba(255,30,60,0.85), -6px 0 rgba(102,252,241,0.85); clip-path: inset(72% 0 0 0); }
+      58%  { clip-path: inset(0 0 0 0); }
+      100% { text-shadow: 3px 0 rgba(255,30,60,0.55), -3px 0 rgba(102,252,241,0.55); }
+    }
+    @keyframes hCaSettle {
+      0%, 100% { text-shadow: 1.5px 0 rgba(255,30,60,0.18), -1.5px 0 rgba(102,252,241,0.18); }
+      50%       { text-shadow: 2.5px 0 rgba(255,30,60,0.28), -2.5px 0 rgba(102,252,241,0.28); }
+    }
+
+    /* Sub-heading */
+    .sub-heading{
+      font-size: clamp(1.15rem,2vw,1.5rem);
+      font-weight:600;
+      color:var(--text-secondary);
+      margin-bottom:.75rem;
+    }
+
+    /* --- HERO WRAPPER --- */
+    .hero{
+      padding: clamp(56px, 8vh, 88px) 0 0;
+      display:flex;
+      justify-content:center;
+    }
+
+    /* --- MAIN CONTAINER --- */
+    .hero-container{
+      width: min(1080px, 90vw);
+      margin: 0 auto clamp(24px, 4vh, 48px);
+      border-radius: 26px;
+      padding: clamp(18px, 2.4vw, 40px);
+      position: relative;
+      background: linear-gradient(145deg, var(--glass-deep-1), var(--glass-deep-2));
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(18px) saturate(120%);
+      -webkit-backdrop-filter: blur(18px) saturate(120%);
+      box-shadow: 0 24px 80px rgba(var(--sh-rgb), calc(.55 * var(--sh-k))), inset 0 1px 0 rgba(var(--lift-rgb),.04);
+      overflow: hidden;
+    }
+    .hero-container::before,
+    .hero-container::after{
+      content:"";
+      position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+      background:
+        radial-gradient(560px 200px at 8% -8%, var(--glass-highlight-1), transparent 60%),
+        radial-gradient(520px 180px at 108% 12%, var(--glass-highlight-2), transparent 60%);
+      mix-blend-mode:screen; opacity:.7;
+    }
+
+    /* --- HERO INTRO --- */
+    .intro{
+      display:flex; justify-content:space-between; align-items:flex-start; gap:2rem;
+      padding: 2.25rem;
+      border-bottom:1px solid var(--rule);
+      margin-bottom: clamp(24px, 4vh, 40px);
+    }
+    .intro-left{flex:1; padding-right:2rem}
+    .intro-left h1{
+      font-size: clamp(2.6rem, 7vw, 5.5rem); font-weight:800; line-height:1.05; margin-bottom:.6rem;
+      background:linear-gradient(45deg,#f0bb3e,#dd7a35,#f6eeda,#e58a45,#b5362a);
+      background-size:300% 300%;
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      animation:gradientShift 4s ease infinite;
+    }
+    .intro-left .tagline{
+      font-family: 'Bodoni Moda', serif;
+      font-style: italic;
+      font-size: clamp(1.15rem, 2.2vw, 1.65rem);
+      font-weight:400;
+      color:var(--text-secondary);
+      margin-bottom:1rem;
+      line-height:1.4;
+      letter-spacing: 0.02em;
+    }
+    .intro-right{max-width:38%; display:flex; flex-direction:column; gap:.75rem; align-items:flex-start}
+    .header-info p{font-size:.95rem; margin-bottom:.4rem; color:var(--text-primary)}
+    .header-info ul{color:var(--text-secondary); margin:.2rem 0 0 1.2rem; font-size:.9rem; line-height:1.8}
+
+    /* TL;DR pills */
+    .tldr-pills{
+      display:flex; flex-wrap:wrap; gap:6px 8px; margin-top:.85rem; padding:0; list-style:none;
+    }
+    .tldr-pills .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:0.84rem; line-height:1.15;
+      padding:4px 10px; border-radius:999px;
+      background:rgba(var(--lift-rgb),.05); border:1px solid rgba(var(--accent-soft-rgb),0.15);
+    }
+
+    /* --- OUTCOME STRIP --- */
+    /* Skrimp's skip button, in this page's own colours: a gradient pill with a
+       lift on hover and a sheen that sweeps across it. MyAuntie had no .skip-button rule at all, so it was rendering as a plain anchor. */
+    .skip-link { margin-top:1rem; display:flex; justify-content:flex-end; }
+    .skip-button {
+      display:inline-block;
+      background:linear-gradient(45deg,var(--accent-teal),var(--accent-blue));
+      color:#FFF8EE; font-size:.82rem; font-weight:700; letter-spacing:.08em;
+      text-transform:uppercase; text-decoration:none;
+      padding:.85rem 1.8rem; border:none; border-radius:50px;
+      transition:transform .3s ease, box-shadow .3s ease;
+      box-shadow:0 4px 15px rgba(var(--accent-rgb),.40);
+      position:relative; overflow:hidden;
+    }
+    .skip-button:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(var(--accent-rgb),.60); }
+    .skip-button::before {
+      content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+      transition:left .5s;
+    }
+    .skip-button:hover::before { left:100%; }
+
+    .outcome-strip{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:0;
+      border:1px solid var(--rule);
+      border-radius:16px;
+      overflow:hidden;
+      margin-bottom: clamp(32px, 5vh, 56px);
+    }
+    .outcome-item{
+      padding:1.5rem 1.25rem;
+      border-right:1px solid var(--rule);
+      display:flex; flex-direction:column; gap:.3rem;
+    }
+    .outcome-item:last-child{border-right:0}
+    .outcome-num{
+      font-family:'DotempDemo', monospace; font-style:normal; font-weight:400;
+      
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      
+      color:var(--text-secondary);
+      line-height:1;
+      letter-spacing: 0.06em;
+    }
+    .outcome-label{
+      font-size:.8rem;
+      color:var(--text-primary);
+      opacity:.75;
+      line-height:1.4;
+    }
+
+    /* --- DIVIDER --- */
+    .section-rule{
+      border:0;
+      border-top:1px solid var(--rule);
+      margin: clamp(32px, 5vh, 56px) 0;
+    }
+
+    /* shared section spacing */
+    section{width:100%;padding: clamp(32px, 5vh, 56px) 0;position:relative}
+
+    .section-content{max-width:100%;margin:0 auto;text-align:left}
+
+    /* No measure cap. Trove's prose runs the full column and this one now
+       matches; the 72ch limit is what made the page read as a narrow gutter
+       with acres of dead space either side. */
+    .section-content p{
+      font-size:clamp(.95rem,1.18vw,1.04rem);
+      line-height:1.78;
+      margin-bottom:1rem;
+      color:var(--text-primary);
+      opacity:.92;
+    }
+    .lede{
+      font-size:clamp(1.04rem,1.7vw,1.22rem); line-height:1.55; font-weight:600;
+      color:var(--text-primary); opacity:1; margin-bottom:1.1rem;
+    }
+    .cap{
+      font-size:0.84rem; color:var(--text-secondary); opacity:.8;
+      margin-top:.6rem; text-align:center;
+    }
+
+    /* --- EDITORIAL PULL QUOTES --- */
+    .pull-quote{
+      border-left:3px solid var(--accent-teal);
+      padding:.9rem 1.5rem;
+      margin:1.5rem 0;
+      font-size:1.15rem;
+      font-style:italic;
+      color:var(--text-secondary);
+      line-height:1.5;
+    }
+    .pull-quote cite{
+      display:block;
+      margin-top:.5rem;
+      font-size:.85rem;
+      font-style:normal;
+      opacity:.7;
+      color:var(--text-primary);
+    }
+
+    /* quote grid — editorial style */
+    .quote-grid{display:grid;grid-template-columns:repeat(3,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+    .quote-card{
+      border-left:2px solid var(--accent-teal);
+      padding:1.1rem 1.25rem;
+      background:rgba(var(--deep-rgb),.3);
+      border-radius:0 12px 12px 0;
+      opacity:0;transform:translateY(18px);transition:.5s;
+    }
+    .quote-text{font-size:.95rem;line-height:1.5;margin-bottom:.6rem;color:var(--text-primary);font-style:italic}
+    .quote-author{font-size:.82rem;opacity:.65;color:var(--text-secondary)}
+
+    /* --- EDITORIAL STATS --- */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:2rem}
+    .stats-card{
+      padding:1.5rem 1.1rem;
+      border-top:2px solid var(--accent-teal);
+      opacity:0;transform:translateY(20px);transition:all .5s ease;
+    }
+    .stat-number{
+      font-family:'Satoshi',sans-serif;
+      font-size:clamp(2rem, 4vw, 3rem);
+      font-weight:800;
+      color:var(--text-secondary);
+      line-height:1;
+      margin-bottom:.5rem;
+    }
+    .stats-title{font-size:.85rem;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem;line-height:1.3}
+    .stats-desc{font-size:.85rem;line-height:1.45;color:var(--text-primary);opacity:.8}
+
+    /* --- HIGHLIGHT BOX (left border editorial style) --- */
+    .highlight-box{
+      border-left:2px solid rgba(var(--accent-soft-rgb),0.45);
+      padding:1rem 1.2rem 1rem 1.35rem;
+      /* it had margin-top only and no bottom, so whatever followed sat flush
+         against it. The block is a pause in the prose; it needs air after it. */
+      margin:1.5rem 0 1.9rem;
+      background:rgba(var(--deep-rgb),.3);
+      border-radius:0 10px 10px 0;
+      font-size:.95rem;
+      line-height:1.55;
+      color:var(--text-primary);
+    }
+    .highlight-box strong{
+      color:var(--text-secondary); display:block;
+      margin-bottom:.28rem; font-weight:700;
+    }
+
+    /* --- LAYOUTS --- */
+    .two-col{display:flex;gap:2.5rem;flex-wrap:wrap;align-items:flex-start;margin-top:1.5rem}
+    .two-col > *{flex:1;min-width:260px}
+
+    .challenge-col.left img,.challenge-skinny-image{
+      width:100%;border-radius:12px;display:block;
+      box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));
+      border:1px solid var(--glass-border);
+    }
+    .challenge-skinny-image{margin-top:1rem}
+
+    .big-image{text-align:center;margin-top:2rem}
+    .big-image img{max-width:100%;border-radius:12px;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));border:1px solid var(--glass-border)}
+
+    .overview-cover{
+      width:100%;border-radius:12px;
+      box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)));
+      border:1px solid var(--glass-border);
+      margin-top:1.25rem;
+    }
+
+    /* --- CARDS (takeaways) --- */
+    .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin:0 auto}
+    .card{
+      border-top:2px solid var(--accent-teal);
+      padding:1.5rem;
+      background:rgba(var(--deep-rgb),.3);
+      border-radius:0 0 14px 14px;
+      transition:.25s;
+    }
+    .card:hover{background:rgba(var(--deep-rgb),.5)}
+    .card h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;opacity:.65;margin-bottom:.35rem;color:var(--accent-teal)}
+    .card h3{font-size:1.15rem;margin-bottom:.4rem;color:var(--text-secondary);font-family:'Satoshi',sans-serif;}
+    .card p{font-size:.95rem;line-height:1.45;color:var(--text-primary);opacity:.85}
+
+    /* --- MUST-HAVES --- */
+    .must-haves-container{
+      display:grid;
+      grid-template-columns:minmax(260px,0.85fr) 1.4fr;
+      gap:1.5rem 2rem;
+      align-items:start;
+      margin:2rem auto 0;
+    }
+    .must-haves-left{position:sticky;top:24px}
+    .must-haves-right{display:grid;grid-template-columns:1fr;gap:1rem}
+    .must-haves-card{
+      border-left:2px solid rgba(var(--accent-soft-rgb),0.3);
+      padding:1rem 1.1rem 1rem 1.25rem;
+      background:rgba(var(--deep-rgb),.25);
+      border-radius:0 10px 10px 0;
+    }
+    .must-haves-card h4{font-size:.88rem;font-weight:600;color:var(--text-secondary);margin-bottom:.4rem}
+    .must-haves-card p{font-size:.9rem;line-height:1.5;color:var(--text-primary);opacity:.85}
+
+    /* --- DESIGN PROCESS --- */
+    .process-subsection{margin-bottom:2.5rem}
+    .process-dense-row{display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;margin-top:1.5rem}
+    .process-dense-left,.process-dense-right{flex:1;min-width:240px}
+
+    .mini-images{display:flex;justify-content:center;align-items:center;gap:clamp(14px,2vw,24px);margin:1.25rem auto;max-width:min(500px,95%)}
+    .mini-images img{display:block;border-radius:12px;height:auto;max-width:100%;width:70%;box-shadow:0 8px 24px rgba(var(--sh-rgb), calc(.18 * var(--sh-k)));border:1px solid var(--glass-border)}
+    .mini-images img:nth-child(2){width:56%}
+
+    /* video embeds */
+    .video-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;margin:1.5rem auto 0;border-radius:12px;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)))}
+    .video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:12px}
+
+    /* ideation images */
+    .ideation-images{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.75rem}
+    .ideation-images img{width:48%;border-radius:12px;box-shadow:0 8px 24px rgba(var(--sh-rgb), calc(.2 * var(--sh-k)));border:1px solid var(--glass-border)}
+
+    /* reflection blocks */
+    .reflection{margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--rule)}
+    .reflection h3{font-size:1.35rem;margin-bottom:.75rem;color:var(--text-secondary);font-family:'Satoshi',sans-serif}
+    .reflection p{font-size:1rem;line-height:1.6;color:var(--text-primary);opacity:.88;margin-bottom:.75rem}
+
+    /* works cited */
+    /* ── crooked cards ────────────────────────────────────────────────
+       Ported from the Trove case study: a wrapping flex row of cards, each
+       sitting at a slightly different angle and offset, untilting on hover.
+       Built on MyAuntie's own tokens rather than Trove's, so they follow this
+       page's rose palette and its light-mode block for free. */
+    .steps{
+      display:flex; flex-wrap:wrap; gap:clamp(10px,1.4vw,18px);
+      margin:clamp(24px,3.2vh,36px) 0 clamp(14px,2vh,22px); align-items:flex-start;
+    }
+    .step-card{
+      flex:1 1 205px; min-width:190px;
+      background:var(--inner-card); border:1px solid var(--glass-border);
+      border-radius:16px; padding:1rem 1rem 1.05rem;
+      box-shadow:0 10px 30px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+    }
+    .step-card:nth-child(1){transform:rotate(-2.6deg) translateY(2px)}
+    .step-card:nth-child(2){transform:rotate(2.1deg) translateY(17px)}
+    .step-card:nth-child(3){transform:rotate(-1.8deg) translateY(6px)}
+    .step-card:nth-child(4){transform:rotate(2.7deg) translateY(21px)}
+    .step-card:nth-child(5){transform:rotate(-1.4deg) translateY(10px)}
+    .step-card:hover{
+      transform:rotate(0deg) translateY(-5px);
+      box-shadow:0 18px 44px rgba(var(--sh-rgb), calc(.32 * var(--sh-k)));
+    }
+    .step-card .n{
+      font-family:'DotempDemo',monospace; font-size:0.78rem; letter-spacing:.1em;
+      color:var(--accent-teal); display:block; margin-bottom:.32rem;
+    }
+    .step-card h4{
+      font-size:.94rem; font-weight:700; color:var(--text-primary);
+      margin-bottom:.35rem; line-height:1.25;
+    }
+    .step-card p{
+      font-size:.82rem; line-height:1.55; color:var(--text-primary);
+      opacity:.82; margin:0;
+    }
+    /* No frame around the art. The tinted box read as a second card inside the
+       card; the aspect ratio stays so a row of them keeps a common baseline. */
+    .step-card .step-art{
+      margin-top:.6rem;
+      aspect-ratio:4 / 3; display:flex; align-items:center; justify-content:center;
+      padding:.4rem 0 0;
+    }
+    .step-card .step-art img{max-width:88%; max-height:88%; width:auto; height:auto; display:block}
+
+    /* the quote and stat rows reuse the same crooked row */
+    .quote-grid, .stats-grid{
+      display:flex; flex-wrap:wrap; --g:clamp(10px,1.4vw,18px); gap:var(--g);
+      margin:clamp(22px,3vh,34px) 0 clamp(14px,2vh,22px); align-items:flex-start;
+    }
+    /* five quotes, deliberately two on the first row and three on the second.
+       Left to wrap on their own they came out four and one, with the stray
+       fifth stretching the full width. */
+    .quote-grid .quote-card{flex:0 1 auto}
+    .quote-grid .quote-card:nth-child(-n+2){flex-basis:calc(50% - var(--g) / 2)}
+    .quote-grid .quote-card:nth-child(n+3){flex-basis:calc(33.333% - var(--g) * 2 / 3)}
+    .quote-card, .stats-card{
+      flex:1 1 235px; min-width:210px;
+      background:var(--inner-card); border:1px solid var(--glass-border);
+      border-radius:16px; padding:1.05rem 1.1rem;
+      box-shadow:0 10px 30px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      transition:transform .32s cubic-bezier(.22,1,.36,1), box-shadow .32s ease;
+    }
+    /* Skrimp's angles, which are stronger than Trove's and read better on a
+       dark page. Five distinct ones so a row of four or five looks
+       hand-placed rather than like a repeating zigzag. */
+    .quote-card:nth-child(5n+1), .stats-card:nth-child(5n+1){transform:rotate(-2.6deg) translateY(2px)}
+    .quote-card:nth-child(5n+2), .stats-card:nth-child(5n+2){transform:rotate(2.1deg) translateY(17px)}
+    .quote-card:nth-child(5n+3), .stats-card:nth-child(5n+3){transform:rotate(-1.8deg) translateY(6px)}
+    .quote-card:nth-child(5n+4), .stats-card:nth-child(5n+4){transform:rotate(2.7deg) translateY(21px)}
+    .quote-card:nth-child(5n+5), .stats-card:nth-child(5n+5){transform:rotate(-1.4deg) translateY(10px)}
+    .quote-card:hover, .stats-card:hover{
+      transform:rotate(0deg) translateY(-5px);
+      box-shadow:0 18px 44px rgba(var(--sh-rgb), calc(.32 * var(--sh-k)));
+    }
+    .quote-text{font-size:.92rem; line-height:1.6; color:var(--text-primary); margin:0 0 .6rem}
+    .quote-author{font-size:0.84rem; color:var(--text-secondary); opacity:.85}
+    .stats-title{font-size:.88rem; font-weight:700; color:var(--text-primary); margin:.2rem 0 .3rem}
+    .stats-card .stat-number{
+      font-family:'DotempDemo',monospace; font-size:1.5rem; color:var(--accent-teal);
+      display:block; line-height:1;
+    }
+    .stats-desc{font-size:.8rem; line-height:1.55; color:var(--text-primary); opacity:.8; margin:0}
+
+    /* a plain wrapping image row, for the pages that have plenty of artwork */
+    .img-grid{
+      display:flex; flex-wrap:wrap; gap:clamp(12px,1.6vw,20px);
+      margin:clamp(20px,2.8vh,32px) 0 .4rem; align-items:flex-start;
+    }
+    .img-tile{flex:1 1 260px; min-width:220px; margin:0}
+    /* a full-length phone screenshot is three times taller than a slide, so it
+       takes a narrower column rather than dragging the whole row out of shape */
+    .img-tile--tall{flex:0 1 320px; min-width:220px}
+    .img-tile img{
+      width:100%; height:auto; display:block; border-radius:14px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 12px 34px rgba(var(--sh-rgb), calc(.26 * var(--sh-k)));
+    }
+    .img-tile figcaption{
+      font-size:0.84rem; color:var(--text-secondary); opacity:.8;
+      margin-top:.45rem; text-align:center;
+    }
+    .img-wide{margin:clamp(20px,2.8vh,32px) 0 .4rem}
+    .img-wide img{
+      width:100%; height:auto; display:block; border-radius:16px;
+      border:1px solid var(--glass-border);
+      box-shadow:0 14px 40px rgba(var(--sh-rgb), calc(.28 * var(--sh-k)));
+    }
+    .img-wide figcaption{
+      font-size:0.84rem; color:var(--text-secondary); opacity:.8;
+      margin-top:.5rem; text-align:center;
+    }
+    /* The flow diagram is line art, not a screenshot, so it gets no frame.
+       This has to sit AFTER .img-wide img: the two selectors have equal
+       specificity, so source order is the only thing deciding it. */
+    .img-flow img{ border:none; box-shadow:none; background:none }
+
+    /* the three intents, as pills */
+    .chip-row{display:flex; flex-wrap:wrap; gap:.5rem; margin:1rem 0 1.3rem}
+    .chip{
+      font-size:0.84rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+      padding:.42rem .8rem; border-radius:999px;
+      color:var(--accent-teal); background:var(--glass-highlight-1);
+      border:1px solid var(--glass-border);
+    }
+    @media(prefers-reduced-motion:reduce){
+      .step-card,.quote-card,.stats-card{transform:none !important}
+    }
+    @media(max-width:560px){
+      .step-card,.quote-card,.stats-card{flex:1 1 100%; transform:none !important}
+      .step-card:hover,.quote-card:hover,.stats-card:hover{transform:translateY(-3px) !important}
+    }
+
+    .works-cited{margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--rule)}
+    .works-cited h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-teal);margin-bottom:1rem}
+    .works-cited p{font-size:.82rem;line-height:1.55;color:var(--text-primary);opacity:.6;margin-bottom:.6rem}
+
+
+    /* ══ VERTICAL RHYTHM ═══════════════════════════════════════════════
+       One scale for every block in the flow. Before this each component
+       carried its own ad hoc margins and the gaps between neighbours ran
+       from -12px to +51px, including several outright collisions.
+
+       The crooked card rows are the subtle one: their cards are pushed
+       down by up to 21px with translateY, which happens AFTER layout and
+       so sits outside the container's own box. Without that added back as
+       bottom margin the next block lands on top of the lowest card. */
+    .section-content > *{ margin-top:0 }
+    .lede{ margin:0 0 1.25rem }
+
+    .steps, .quote-grid, .stats-grid, .img-grid, .img-wide, .mini-images,
+    .video-embed, .showcase, .mood-ladder, .tot-matrix-wrap, .big-image,
+    .vid-crop, .ideation-images, .process-dense-row, .role-cols, .cards,
+    .must-haves-grid, .outcome-strip, .quote-grid{
+      margin:2rem 0 1.7rem;
+    }
+    .steps, .quote-grid, .stats-grid{ margin-bottom:2.9rem }   /* + the tilt drop */
+    .steps:has(+ .cap){ margin-bottom:1.4rem }
+
+    /* a caption belongs to the thing above it, not to the paragraph below */
+    .cap, .img-grid figcaption, .img-wide figcaption{ margin-top:.55rem; margin-bottom:0 }
+    .video-embed + .cap, .mini-images + .cap, .img-wide + .cap,
+    .showcase + .cap{ margin-top:.75rem }
+    .cap + p, figcaption + p{ margin-top:1.6rem }
+
+    .highlight-box{ margin:1.9rem 0 2rem }
+    .chip-row{ margin:2rem 0 1.7rem }
+
+    /* A caption has to hug the thing it captions. Without this the media's own
+       bottom margin (27px) collapses against the caption's top margin and wins,
+       so the label floats halfway to the next paragraph. */
+    .video-embed:has(+ .cap), .mini-images:has(+ .cap),
+    .img-wide:has(+ .cap), .showcase:has(+ .cap){ margin-bottom:0 }
+    .video-embed + .cap, .mini-images + .cap,
+    .img-wide + .cap, .showcase + .cap{ margin-top:.7rem }
+    .works-cited{ margin-top:2.8rem }
+
+    /* a heading always gets clear air above it */
+    .section-heading{ margin-top:0 }
+    .section-content > p + .section-heading{ margin-top:2.4rem }
+
+    /* the skip control needs room before the story starts */
+    .skip-link{ margin:1.2rem 0 clamp(30px,4.5vh,52px) }
+
+    /* four cards in a row were nearly touching */
+    .steps, .quote-grid, .stats-grid, .img-grid{ gap:clamp(14px,1.9vw,26px) }
+
+    /* --- REVEALS --- */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease-out,transform .5s ease-out}
+    .active{opacity:1 !important;transform:translateY(0) !important}
+    /* .active above sets transform:translateY(0) !important, which flattens
+       any tilted card that also carries `reveal` — the crooked cards were
+       straightening themselves the instant they scrolled in. Skrimp hits the
+       same wall and answers it the same way: restate the tilt at equal weight. */
+    .step-card.active:nth-child(1),.quote-card.active:nth-child(5n+1),.stats-card.active:nth-child(5n+1){transform:rotate(-2.6deg) translateY(2px) !important}
+    .step-card.active:nth-child(2),.quote-card.active:nth-child(5n+2),.stats-card.active:nth-child(5n+2){transform:rotate(2.1deg) translateY(17px) !important}
+    .step-card.active:nth-child(3),.quote-card.active:nth-child(5n+3),.stats-card.active:nth-child(5n+3){transform:rotate(-1.8deg) translateY(6px) !important}
+    .step-card.active:nth-child(4),.quote-card.active:nth-child(5n+4),.stats-card.active:nth-child(5n+4){transform:rotate(2.7deg) translateY(21px) !important}
+    .step-card.active:nth-child(5),.quote-card.active:nth-child(5n+5),.stats-card.active:nth-child(5n+5){transform:rotate(-1.4deg) translateY(10px) !important}
+    .step-card.active:hover,.quote-card.active:hover,.stats-card.active:hover{
+      transform:rotate(0deg) translateY(-5px) !important;
+    }
+
+    /* --- RESPONSIVE --- */
+    @media(max-width:900px){
+      .intro-right{max-width:100%;align-items:flex-start}
+      .outcome-strip{grid-template-columns:repeat(2,1fr)}
+      .outcome-item:nth-child(2){border-right:0}
+      .outcome-item:nth-child(3){border-top:1px solid var(--rule)}
+      .outcome-item:nth-child(4){border-top:1px solid var(--rule)}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      .must-haves-container{grid-template-columns:1fr}
+      .must-haves-left{position:static}
+    }
+    @media(max-width:768px){
+      .intro{flex-direction:column;align-items:flex-start;padding:1.5rem}
+      .intro-left{padding-right:0}
+      .intro-right{max-width:100%}
+      .outcome-strip{grid-template-columns:1fr 1fr}
+      .quote-grid{grid-template-columns:1fr}
+      .stats-grid{grid-template-columns:1fr 1fr}
+      .cards{grid-template-columns:1fr}
+      .two-col{flex-direction:column}
+      .must-haves-right{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){
+      .outcome-strip{grid-template-columns:1fr}
+      .outcome-item{border-right:0;border-bottom:1px solid var(--rule)}
+      .outcome-item:last-child{border-bottom:0}
+      .stats-grid{grid-template-columns:1fr}
+    }
+      /* ── PANE MODE ─────────────────────────────────────────────
+       This page is read inside the portfolio's right-hand pane,
+       which now supplies both the paper and the tinted sky. So it
+       stops painting a floating card on a sky of its own — the
+       container is just a reading column — and it paints the paper
+       itself so it still stands up when opened standalone. */
+    html,body{background:var(--paper)}
+    /* in the pane the shell paints the paper — translucent, so the one sky
+       reads through the reading surface the way it does on the home page.
+       Standalone there is no sky behind us, so we keep painting it ourselves. */
+    html[data-embedded],html[data-embedded] body{background:transparent}
+    .hero{padding:0}
+    .hero-container{
+      /* the PANE paints the paper edge to edge; this is only the reading
+         column, centred in it — so the margins each side are paper, never
+         a second sky like the old floating card had */
+      width:100%; max-width:1180px; margin-inline:auto;
+      border:none; border-radius:0;
+      background:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+      box-shadow:none;
+      padding:clamp(30px,4.5vh,60px) clamp(22px,4vw,60px) clamp(60px,9vh,110px);
+    }
+    .hero-container::before,.hero-container::after{display:none}
+    /* nothing breaks the gutter: media is bounded by the column, not the pane */
+    .hero-container img,
+    .hero-container video,
+    .hero-container iframe,
+    .hero-container canvas{max-width:100%}
+    .hero-container img{height:auto}
+    /* a flex row of percentage-width images can still sum past its own box
+       (two at 70% each), so let the row wrap and the items shrink */
+    .hero-container [class$="-images"],
+    .hero-container .mini-images{flex-wrap:wrap}
+    .hero-container [class$="-images"] > img,
+    .hero-container .mini-images > img{min-width:0;flex-shrink:1}
+    /* flex and grid children only stay inside the column if allowed to shrink */
+    .intro-left,.intro-right,.section-content,.two-col > *{min-width:0}
+    /* the press panel was the bottom half of the hero card — that card is
+       gone, so it stops floating and takes the same measure as everything else */
+    .press-wrapper{
+      width:100%; max-width:1180px; margin-inline:auto;
+      padding:clamp(18px,2.4vw,40px) clamp(22px,4vw,60px);
+      background:none; border:none; border-radius:0; box-shadow:none;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
+    }
+    .press-wrapper::before,.press-wrapper::after{display:none}
+
+    /* ---- BANNER + META HEADER ---- */
+    .case-banner{
+      width:100%; border-radius:18px; overflow:hidden;
+      border:1px solid var(--glass-border);
+      box-shadow:0 10px 34px rgba(var(--sh-rgb), calc(.22 * var(--sh-k)));
+      margin-bottom:clamp(30px,5vh,60px);
+      background:var(--inner-card);
+    }
+    .case-banner img{display:block;width:100%;height:auto}
+    .meta-grid{
+      display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:1.6rem 2rem; margin-bottom:clamp(34px,6vh,72px);
+    }
+    .meta-col h4{
+      font-family:'Satoshi',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); margin-bottom:.8rem;
+    }
+    .meta-col p{font-size:.93rem;line-height:1.6;color:var(--text-primary)}
+    .overview-label{
+      font-family:'Satoshi',sans-serif;
+      font-size:0.78rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+      color:rgba(var(--ink-rgb),.78); display:block; margin-bottom:.9rem;
+    }
+    .overview-head{
+      font-size:clamp(1.5rem,3.1vw,2.35rem); font-weight:700; line-height:1.22;
+      color:var(--text-primary); margin-bottom:1.1rem; letter-spacing:-.01em;
+    }
+    .overview-body p{font-size:1.02rem;line-height:1.7;max-width:74ch;margin-bottom:.9rem}
+    .overview-body p:last-child{margin-bottom:0}
+    /* the banner carries the wordmark, so the heading is for screen readers */
+    .sr-only{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+    }
+    @media(max-width:900px){ .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media(max-width:560px){ .meta-grid{grid-template-columns:1fr} }
+
+    /* lost in handoff: a plain video, the embedded systems map, sub-heads, lists */
+    .video-file{margin:1.5rem auto 0;border-radius:12px;overflow:hidden;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.3 * var(--sh-k)))}
+    .video-file video{display:block;width:100%;height:auto;background:#000}
+    .map-embed{position:relative;aspect-ratio:16/10;margin:1.5rem 0 0;border-radius:14px;overflow:hidden;border:1px solid var(--glass-border);background:#f6eeda;box-shadow:0 12px 40px rgba(var(--sh-rgb), calc(.26 * var(--sh-k)))}
+    .map-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    .map-embed + .cap{margin-top:.7rem}
+    .sub-heading{font-size:clamp(1.15rem,1.6vw,1.4rem);font-weight:700;margin:2.4rem 0 .8rem;color:var(--accent-teal)}
+    .plain-list{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:.85rem}
+    .plain-list li{padding-left:1rem;border-left:2px solid var(--accent-teal)}
+    .cap a{color:var(--accent-teal);text-decoration:underline;text-underline-offset:3px}
+    .meta-list{list-style:disc;margin:0;padding-left:1.1em;display:grid;gap:.2rem;font-size:.93rem;line-height:1.5;color:var(--text-primary)}
+    .meta-list li::marker{color:var(--accent-teal)}
+    /* a real-looking sticky note: paper gradient, a strip of tape, a lifted
+       corner and a soft drop shadow, in handwriting */
+    .wip-note{
+      position:relative; width:min(300px, 86%); margin:1.4rem auto 2.6rem; padding:1.5rem 1.4rem 1.3rem;
+      background:linear-gradient(170deg,#fff6a6 0%,#fdee86 55%,#f7e270 100%);
+      color:#3a3114; font-family:'Caveat', 'Bradley Hand', cursive; font-size:1.32rem; line-height:1.18;
+      transform:rotate(-2.2deg);
+      box-shadow:0 1px 1px rgba(0,0,0,.08), 0 10px 14px -6px rgba(60,40,0,.32), 0 22px 30px -18px rgba(60,40,0,.28);
+      clip-path:polygon(0 0,100% 0,100% calc(100% - 22px),calc(100% - 22px) 100%,0 100%);
+    }
+    .wip-note::after{ /* the lifted corner */
+      content:''; position:absolute; right:0; bottom:0; width:22px; height:22px;
+      background:linear-gradient(315deg, transparent 49%, #e9d462 50%, #fff3a0 100%);
+      box-shadow:-2px -2px 4px rgba(60,40,0,.12);
+    }
+    .wip-tape{
+      position:absolute; top:-12px; left:50%; width:96px; height:26px; transform:translateX(-50%) rotate(3deg);
+      background:rgba(246,238,218,.62); box-shadow:0 1px 2px rgba(0,0,0,.12);
+      -webkit-mask:linear-gradient(90deg,transparent 0 2px,#000 2px calc(100% - 2px),transparent 0);
+    }
+    .wip-note p{ margin:0; }
+    .wip-note .wip-head{ font-weight:700; font-size:1.5rem; margin-bottom:.35rem; color:#2c2408; }
+    .wip-note .wip-sign{ text-align:right; margin-top:.4rem; }
+    @media (prefers-reduced-motion:no-preference){ .wip-note{ transition:transform .3s ease; } .wip-note:hover{ transform:rotate(-1deg) translateY(-2px); } }
+    /* the two photos of me: full colour, bigger, centred */
+    .photo-pair{justify-content:center}
+    .photo-pair .img-tile{flex:0 1 420px;max-width:46%}
+    @media (max-width:640px){ .photo-pair .img-tile{max-width:100%;flex-basis:100%} }
+    /* paired photos share one frame so a portrait shot can't drag its row out of shape */
+    .img-grid .img-tile:not(.img-tile--tall):not(.sketch) img{aspect-ratio:4/3;object-fit:cover}
+    /* sketches are shown whole, never cropped */
+    .img-grid .img-tile.sketch img{aspect-ratio:auto;object-fit:contain;background:#fff}
+    @media (max-width:640px){ .map-embed{aspect-ratio:4/5} }
+  </style>
+
+<style>
+:root{
+  /* headings break out this far. the banner breaks clamp(38px,5.4vw,96px),
+     the body breaks nothing, this sits between them.
+     swept every heading with the pixel blend already settled, since the blend
+     is wider than the serif and a pre-settle reading flatters the number.
+     menzo's 98ch line drops to a third line below ~1.3vw, so this keeps a
+     small buffer over that floor. */
+  --head-break:clamp(11px,1.5vw,27px);
+}
+/* ── the elevation pass ──────────────────────────────────────────────────
+   The writing pages were dense edge to edge: every block loud, no quiet beat
+   between them. This is the silence. Wider gutters, a real gap between a
+   section's claim and the prose under it, and media given room on both sides
+   so a loud moment reads as a moment rather than as the background.
+   Appended last, so it wins on equal specificity without touching the
+   original rules. */
+
+/* gutters: the page stops crowding its own edges */
+.hero-container{
+  width:min(1160px, 94vw) !important;
+  padding:clamp(38px,5.4vw,96px) !important;
+}
+
+/* one section per breath */
+.section-content{ padding:clamp(18px,2.2vh,30px) 0 !important; }
+/* the divider was doing all the separating, and doing it loudly. It is a
+   hairline hint between chapters now, not a horizon. */
+.section-rule{
+  margin:clamp(16px,2vh,26px) auto !important;
+  width:clamp(120px,14%,200px) !important;
+  opacity:.5;
+}
+
+/* the claim, then a beat, then the prose */
+.section-heading{
+  margin-top:0 !important;
+  margin-bottom:clamp(1.85rem,3.9vh,2.9rem) !important;
+  /* text-wrap:balance was here and it was the bug: balancing evens the line
+     lengths, which pulls the first line in and makes a two-line claim break
+     far earlier than it needs to. Headings run their full measure. */
+  font-size:clamp(1.9rem,4.1vw,3.15rem) !important;
+  line-height:1.16;
+  letter-spacing:-.018em;
+  /* no max-width. capping the measure was what made these wrap three and four
+     lines deep. a claim gets the whole column and then some. */
+  max-width:none !important;
+  /* it breaks the body's margin on BOTH sides, more than the prose and less
+     than a banner, so it runs wider than the column it introduces */
+  margin-left:calc(-1 * var(--head-break)) !important;
+  margin-right:calc(-1 * var(--head-break)) !important;
+}
+/* the small pixel font sits ON the body's margin. only the big display blend
+   gets to break the rule — a small label breaking it just reads as misaligned */
+.sub-heading{
+  max-width:none !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+.lede{ max-width:none !important; }
+.lede{
+  margin:0 0 clamp(2.6rem,5.4vh,4.1rem) !important;
+  line-height:1.5;
+}
+.section-content > p,
+.process-subsection > p{
+  margin-bottom:2.15rem;
+  line-height:1.88;
+}
+.sub-heading{ margin-top:clamp(2rem,4vh,3.2rem) !important; margin-bottom:1rem !important; }
+
+/* loud blocks get air on both sides instead of butting into the text */
+.vid-crop,
+.chart-figure,
+.showcase,
+.steps,
+.stats-grid,
+.quote-grid,
+.body-img,
+.highlight-box,
+.pull-quote,
+figure{
+  margin-top:clamp(56px,8.4vh,104px) !important;
+  margin-bottom:clamp(56px,8.4vh,104px) !important;
+}
+.steps{ row-gap:clamp(18px,2.6vh,30px) !important; }
+
+/* Every phone sits at the three-up height, whatever the arrangement — a solo
+   phone scaled to fill the row was reading as a different component. */
+.phone{ width:min(288px,80vw) !important; }
+.showcase-stage.solo .phone,
+.showcase-stage.pair .phone,
+.showcase-stage.duo .phone,
+.showcase-stage.trio .phone{ width:min(288px,80vw) !important; }
+.showcase-stage{ gap:clamp(14px,2vw,26px) !important; align-items:flex-start; }
+
+@media (max-width:760px){
+  .hero-container{ padding:clamp(20px,5vw,34px) !important; }
+  .section-content{ padding:clamp(24px,3vh,38px) 0 !important; }
+}
+
+
+/* ── things that are allowed to break the gutter ─────────────────────────
+   The banner is the splash moment and the phone mockups need the width for
+   three across. Both pull back out to the container's edges, and the phones
+   a little past, so the prose keeps its margins without cramping the art. */
+.case-banner{
+  margin-left:calc(-1 * clamp(38px,5.4vw,96px)) !important;
+  margin-right:calc(-1 * clamp(38px,5.4vw,96px)) !important;
+  width:auto !important;
+  border-radius:20px !important;
+  margin-top:0 !important;
+  margin-bottom:clamp(56px,8.4vh,104px) !important;
+}
+.showcase{
+  margin-left:calc(-1 * clamp(20px,3.4vw,62px)) !important;
+  margin-right:calc(-1 * clamp(20px,3.4vw,62px)) !important;
+}
+.showcase-stage{ flex-wrap:nowrap !important; justify-content:center; }
+
+/* ── card rows: 3 and 4 hold one line, 5 breaks 2 over 3 ─────────────────
+   They were wrapping to a widow because each card carried a max-width. The
+   row decides the width now, not the card. */
+.steps, .stats-grid, .quote-grid, .must-haves-right{
+  display:flex !important;
+  flex-wrap:wrap;
+  gap:clamp(14px,1.6vw,22px) !important;
+  align-items:stretch;
+}
+.steps > *, .stats-grid > *, .quote-grid > *{
+  max-width:none !important;
+  min-width:0 !important;
+  flex:1 1 0 !important;
+}
+/* exactly five: two, then three */
+.steps:has(> :nth-child(5)):not(:has(> :nth-child(6))) > :nth-child(-n+2),
+.stats-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) > :nth-child(-n+2),
+.quote-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) > :nth-child(-n+2){
+  flex:0 0 calc(50% - clamp(7px,.8vw,11px)) !important;
+}
+.steps:has(> :nth-child(5)):not(:has(> :nth-child(6))) > :nth-child(n+3),
+.stats-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) > :nth-child(n+3),
+.quote-grid:has(> :nth-child(5)):not(:has(> :nth-child(6))) > :nth-child(n+3){
+  flex:0 0 calc(33.333% - clamp(10px,1.1vw,15px)) !important;
+}
+/* six or more can wrap normally rather than shrink to slivers */
+.steps:has(> :nth-child(6)) > *,
+.stats-grid:has(> :nth-child(6)) > *,
+.quote-grid:has(> :nth-child(6)) > *{ flex:1 1 220px !important; }
+
+@media (max-width:820px){
+  .steps > *, .stats-grid > *, .quote-grid > *{ flex:1 1 210px !important; }
+  .steps:has(> :nth-child(5)) > *, .stats-grid:has(> :nth-child(5)) > *,
+  .quote-grid:has(> :nth-child(5)) > *{ flex:1 1 210px !important; }
+  .showcase-stage{ flex-wrap:wrap !important; }
+  .case-banner{ margin-left:calc(-1 * clamp(20px,5vw,34px)) !important;
+                margin-right:calc(-1 * clamp(20px,5vw,34px)) !important; }
+}
+
+
+/* ── corners, sharpened ──────────────────────────────────────────────────
+   Halved across the writing pages to match the shell. Phone mockups keep
+   their device radius: that one is describing an object, not styling a box. */
+.hero-container{ border-radius:14px 14px 0 0 !important; }
+.case-banner{ border-radius:10px !important; }
+.step-card, .stats-card, .quote-card, .must-haves-card,
+.glass-card, .card, .role-card, .highlight-box,
+.vid-crop, .chart-figure, .body-img, .img-tile, figure img{
+  border-radius:8px !important;
+}
+.stat, .metric, .tag, .chip{ border-radius:5px !important; }
+/* phones are describing an object, so they keep a device radius — more
+   generous than before, not less */
+.phone{ border-radius:44px !important; }
+.phone-screen{ border-radius:34px !important; }
+.showcase-stage .phone img, .showcase-stage .phone video{ border-radius:32px !important; }
+
+/* ── the case title ───────────────────────────────────────────────────────
+   a centred claim above the banner, in the pixel blend, set larger than the
+   section headings so the top of the page opens on a statement rather than
+   an image. balance is right here where it was wrong on the body headings:
+   centred type wants even line lengths, left-aligned type wants a full
+   first line. */
+.case-title{
+  display:block;
+  margin:clamp(6px,1.4vh,18px) auto clamp(40px,5.6vh,72px) !important;
+  max-width:min(940px,100%);
+  text-align:center;
+  font-size:clamp(1.85rem,4.3vw,3.2rem);
+  line-height:1.16;
+  letter-spacing:-.02em;
+  font-weight:400;
+  text-wrap:balance;
+  /* the accent ink the section headings use, NOT --text-primary, which is
+     the near-black body colour and made these read as a different page */
+  color:var(--text-secondary);
+  /* .sr-only used to clip this. make sure nothing of that survives */
+  position:static; width:auto; height:auto; overflow:visible; clip:auto;
+  white-space:normal;
+}
+@media (max-width:760px){
+  .case-title{ font-size:clamp(1.75rem,7.4vw,2.4rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
+}
+</style>
+
+  <style>
+  /* no side bars. a coloured stripe down the left of a callout reads as
+     generated in 2026, so callouts are whole soft cards with the label as a
+     small eyebrow, and quotes get a big quotation mark instead of a rule.
+     loaded last so it wins over each component's own border-left */
+  .highlight-box, .must-haves-card, .quote-card, .confidentiality-notice{
+    border-left-width:1px !important;
+    border:1px solid rgba(var(--accent-rgb),.18) !important;
+    border-radius:14px !important;
+    background:rgba(var(--accent-rgb),.07) !important;
+  }
+  .confidentiality-notice{ border-color:rgba(var(--notice-rgb, var(--accent-rgb)),.45) !important; background:rgba(var(--notice-rgb, var(--accent-rgb)),.08) !important; }
+  .highlight-box{ padding:1.1rem 1.3rem 1.2rem !important; }
+  .highlight-box > strong:first-child{
+    display:block !important; margin-bottom:.45rem !important;
+    font-size:.68rem !important; letter-spacing:.14em !important; text-transform:uppercase !important;
+    color:rgb(var(--accent-rgb)) !important; font-weight:800 !important;
+  }
+  .pull-quote{
+    border-left:0 !important; position:relative;
+    padding:1.6rem 0 0 0 !important; margin-left:0 !important;
+  }
+  .pull-quote::before{
+    content:'\201C'; position:absolute; left:-.05em; top:-.35em;
+    font:400 4.2rem/1 Georgia,'Times New Roman',serif;
+    color:rgba(var(--accent-rgb),.55); pointer-events:none;
+  }
+  .plain-list li{ border-left:0 !important; padding:.9rem 1.1rem !important; border-radius:14px; background:rgba(var(--accent-rgb),.07); border:1px solid rgba(var(--accent-rgb),.16); }
+  </style>
+</head>
+<body>
+
+  <!-- cursor -->
+  <div class="custom-cursor" id="cursor"></div>
+
+  <!-- nav include -->
+  <header class="hero" id="hero">
+    <div class="hero-container">
+
+      <!-- BANNER -->
+      <h1 class="case-title reveal">What a fire crew learns at the scene, and whether any of it reaches the hospital.</h1>
+      <figure class="case-banner reveal">
+        <img src="img/banner.webp" alt="Lost in Handoff cover: a research proposal title card beside a paramedic and a firefighter reading a clipboard, printed as a halftone collage" width="2400" height="737" fetchpriority="high">
+      </figure>
+
+      <!-- META -->
+      <div class="meta-grid reveal">
+        <div class="meta-col">
+          <h4>Project Type</h4>
+          <p>Capstone, GBDA 402.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Role</h4>
+          <ul class="meta-list">
+            <li>Product director</li>
+            <li>Fire lead</li>
+            <li>Hardware lead</li>
+            <li>Team of five, with Zubi, Alita, Cindy and Chrisandra</li>
+          </ul>
+        </div>
+        <div class="meta-col">
+          <h4>Timeline</h4>
+          <p>September 30 to November 2026, and still going.</p>
+        </div>
+        <div class="meta-col">
+          <h4>Skills &amp; Tools</h4>
+          <ul class="meta-list">
+            <li>Listening sessions and surveys</li>
+            <li>Systems mapping</li>
+            <li>Monte Carlo cost model</li>
+            <li>Raspberry Pi hardware</li>
+            <li>TypeScript and Rust</li>
+            <li>PHIPA and MFIPPA privacy design</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- OUTCOME STRIP -->
+      <div class="outcome-strip reveal">
+        <div class="outcome-item">
+          <span class="outcome-num">18</span>
+          <span class="outcome-label">people across fire halls, ambulances and two ERs, in 16 sessions</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">29</span>
+          <span class="outcome-label">survey responses from 25 paramedics and 4 ER nurses</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">72.9%</span>
+          <span class="outcome-label">of what paramedics say at handover reaches the chart, and the link before it has never been measured</span>
+        </div>
+        <div class="outcome-item">
+          <span class="outcome-num">~$209M</span>
+          <span class="outcome-label">a year across Canada, from my 200,000-run Monte Carlo cost model</span>
+        </div>
+      </div>
+
+      <div class="skip-link reveal">
+        <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+      </div>
+
+      <aside class="wip-note" aria-label="Work in progress">
+        <span class="wip-tape" aria-hidden="true"></span>
+        <p class="wip-head">heads up, this one&rsquo;s a work in progress!</p>
+        <p>We&rsquo;re still testing Nightingale with fire crews and paramedics, so I&rsquo;m still writing this up as it happens. Check back soon :)</p>
+        <p class="wip-sign">&ndash; Hen</p>
+      </aside>
+
+
+      <section id="one-patient">
+        <div class="section-content reveal">
+          <h2 class="section-heading">A young woman arrives on stroke protocol.</h2>
+          <p class="lede">The first responder who hears a patient&rsquo;s story is the one nobody downstream gets to ask.</p>
+          <p>She&rsquo;s confused and, as far as anyone knows, healthy. The ER does everything right: a full stroke workup, a CT. It&rsquo;s clear. Then her dad walks in on his own and mentions she drinks every day. That one sentence changes the picture. It was most likely a withdrawal seizure.</p>
+          <p>Nobody made a mistake. The physician who told me about her said the system shouldn&rsquo;t need safeguards to catch what better information would have prevented. Somebody at the scene could have known that sentence. Nobody downstream could ask them.</p>
+          <figure class="img-wide reveal">
+            <img src="slides/chain.webp" alt="Slide: the handoff chain from caller and dispatch through fire, paramedics, triage nurse, clerk and ER physician, drawn as a band that is fullest at the scene and thinnest at the doctor" loading="lazy">
+            <figcaption>Fullest at the scene, thinnest at the doctor. Only one link has ever been measured: 72.9% of what paramedics say at handover reaches the chart (Carter et al., 2009). Fire to paramedic has never been measured at all.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="nightingale">
+        <div class="section-content reveal">
+          <h2 class="section-heading">So we built Nightingale.</h2>
+          <p class="lede">A button-operated wearable, and a dashboard that carries the reviewed note from fire to paramedics to the ER.</p>
+          <p>At first contact the firefighter presses record, says aloud that they&rsquo;re recording for the medical record, and presses a second button to photograph a pill bottle or the scene. It stores everything on the device and syncs when it finds a network it knows. Speech becomes a draft ePCR, unsure fields get flagged instead of guessed, and the firefighter approves it before anyone else sees it. Paramedics have it before they arrive. The ER gets it by QR code and a PDF, with no new login.</p>
+          <div class="video-file reveal">
+            <video controls playsinline preload="metadata" poster="img/render-hero.webp">
+              <source src="nightingale-pitch.mp4" type="video/mp4">
+            </video>
+          </div>
+          <p class="cap">My product pitch from our MVP video, with the Nightingale film. Sound on.</p>
+          <p>Here&rsquo;s how we got there.</p>
+        </div>
+      </section>
+
+      <section id="fieldwork">
+        <div class="section-content reveal">
+          <h2 class="section-heading">I went where the story starts.</h2>
+          <p class="lede">16 sessions with 18 people in Woolwich, Cambridge and Guelph, and a survey of 29 paramedics and ER nurses.</p>
+          <p>Firefighters and officers from two volunteer halls and two career stations, a paramedic, two emergency physicians and three ER nurses. I ran most of it as listening sessions: instead of asking people to describe the process, I asked them to tell me about a call they remembered. A story puts someone back in the moment, and it surfaces the workarounds a procedure question never would.</p>
+          <div class="img-grid photo-pair reveal">
+            <figure class="img-tile img-tile--tall"><img src="img/hen-gear.webp" alt="Henri&euml;tta in borrowed bunker gear and a Maryhill helmet at the fire station" loading="lazy"><figcaption>Borrowed gear at Maryhill.</figcaption></figure>
+            <figure class="img-tile img-tile--tall"><img src="img/hen-ambulance.webp" alt="Henri&euml;tta sitting in the back of an ambulance beside the stretcher and monitor" loading="lazy"><figcaption>In the back of an ambulance on a station visit.</figcaption></figure>
+          </div>
+          <p class="cap">Everyone let me into their halls, trucks and ERs. I promised to ask before publishing any photo with them in it, so for now it&rsquo;s trucks, forms, the device, and me.</p>
+        </div>
+      </section>
+
+      <section id="the-call">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Fire hears the most, and keeps it on a glove.</h2>
+          <p class="lede">Fire is often first, and can be alone with a patient for ten to thirty minutes.</p>
+          <div class="steps reveal">
+            <div class="step-card"><span class="n">01</span><h4>The captain collects it</h4><p>Family, medications, allergies, history, the health card, while also running the scene. &ldquo;You think of the things that you do every day and amp that up 20 fold.&rdquo;</p></div>
+            <div class="step-card"><span class="n">02</span><h4>It lives on a glove</h4><p>Or a flip booklet, or a department phone. The drug count, the number crews trust least, lives in a head or on a glove.</p></div>
+            <div class="step-card"><span class="n">03</span><h4>It&rsquo;s said once</h4><p>Out loud, in about a minute, while the patient is being moved. 20 of the 25 paramedics we surveyed get it by voice only.</p></div>
+            <div class="step-card"><span class="n">04</span><h4>Then it&rsquo;s typed three times</h4><p>Into three systems that don&rsquo;t talk to each other, hours later. And fire almost never finds out how the patient did.</p></div>
+          </div>
+          <figure class="img-wide reveal">
+            <img src="slides/storage.webp" alt="Slide: the story lives on gloves and paper. A paper scene sheet, a second form for the same call, a phone report typed after the call, and a glove with a drug count written on it" loading="lazy">
+          </figure>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/form-scene.webp" alt="Woolwich Fire Department paper On Scene Information Sheet, blank" loading="lazy"><figcaption>Woolwich&rsquo;s On Scene sheet.</figcaption></figure>
+            <figure class="img-tile"><img src="img/form-mvc.webp" alt="Woolwich Township MVC Mandatory Information form, blank" loading="lazy"><figcaption>And a second form for the same call.</figcaption></figure>
+          </div>
+          <p>Because the system is broken, every hall has built its own way around it, and I started treating each workaround as a requirement somebody had already prototyped for us. Tom photographs plates and licences into his own Google Photos because handwriting fails him (&ldquo;Is that an 86 or a B6?&rdquo;). Crews bag pill bottles for the ambulance, and Maryhill sends the helmet. A firefighter-EMT up north texted a med list to the incoming paramedics from her own phone, and was told she wasn&rsquo;t allowed to.</p>
+          <p>Read together, they told us what has to travel: photos, medications, the scene itself, and the one fact that can&rsquo;t be missed. They also told us where the line is. Nobody will use a personal phone on a call (&ldquo;they could subpoena my phone&rdquo;), and nobody photographs a patient. So anything we built had to belong to the department, capture only what care needs, and stay under the responder&rsquo;s control.</p>
+          <figure class="img-wide reveal">
+            <img src="slides/helmet.webp" alt="Slide: &ldquo;The helmet tells the story.&rdquo; After a motorcycle crash, Maryhill crews send the rider&rsquo;s helmet to the hospital with the patient" loading="lazy">
+          </figure>
+          <p>The ER side is the same story in different words. The report happens at least twice at the door, the written record arrives by fax hours or days later, and the things physicians said they need most, like scene photos and the pill bottles on the counter, are the things that never travel. An ER nurse and a fire captain both called it a broken telephone, separately.</p>
+        </div>
+      </section>
+
+      <section id="why-it-stays">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Why hasn&rsquo;t anyone fixed it? Because people keep catching it.</h2>
+          <p class="lede">What holds this together isn&rsquo;t the system. It&rsquo;s people being good in a bad situation.</p>
+          <p>Firefighters get brushed off at the handoff often enough that some have learned to fight for the one fact that can&rsquo;t be missed. Ron has been told &ldquo;You&rsquo;re just firefighters.&rdquo; Jeff had a paramedic push past him mid-report at a crash. So Chris writes the allergy down on its own, separate from everything else, so that even if the paramedics cut him short he can still get it in: &ldquo;Hey, they are allergic to aspirin or something that they may give them immediately.&rdquo;</p>
+          <p>That isn&rsquo;t the system working. That&rsquo;s one captain deciding, every call, that the system won&rsquo;t be the reason someone gets the wrong drug. Every time someone like him catches it, the failure stays invisible, and an invisible failure never builds enough pressure to get fixed. Honestly, it&rsquo;s a bit of a miracle it doesn&rsquo;t go wrong more often.</p>
+          <p>Underneath that, the system is split. Fire is municipal and sits under MFIPPA. Paramedics and hospitals sit under PHIPA. No record moves between them, and every agency protects its own liability first. We mapped every cause, loop and source into one systems map.</p>
+          <div class="map-embed reveal">
+            <iframe src="/lost-in-handoff/?embed" title="Lost in Handoff systems map, animated" loading="lazy"></iframe>
+          </div>
+          <p class="cap">The systems map, rippling out from the core loss. <a href="/lost-in-handoff/" target="_blank" rel="noopener">Open the full interactive map</a>, where every node has its sources.</p>
+          <p>Fire&rsquo;s own history has a rule in it, too. A medication list kept in the fridge died because nobody updated it, and a dispatch app got embraced overnight. &ldquo;If it makes your job easier, it will be embraced.&rdquo; Tools that add a step get dropped. Tools that remove one stay.</p>
+        </div>
+      </section>
+
+      <section id="sizing">
+        <div class="section-content reveal">
+          <h2 class="section-heading">About $209M a year, and it lands on the wrong people.</h2>
+          <p class="lede">&ldquo;Information gets lost&rdquo; is a feeling, and feelings don&rsquo;t get budgets.</p>
+          <p>So I built a Monte Carlo cost model for the Conrad School pitch. Every input, from call volumes to wages to adverse-event rates, is a low, most-likely and high range tagged as measured or as my own assumption, and the model draws from all of them 200,000 times. The most likely answer is about $209M a year across Canada, with 80% of runs between $161M and $269M.</p>
+          <figure class="img-wide reveal">
+            <img src="slides/total.webp" alt="Slide: what losing the story costs Canada, about $209M a year, split across fire $9M, paramedics $44M and hospitals $151M" loading="lazy">
+            <figcaption>The people who capture the story pay to capture it. The people who pay for losing it never see where it was lost.</figcaption>
+          </figure>
+          <p>The model also showed me where to look. Almost all of its spread comes from one input nobody has measured: how much of fire&rsquo;s account never reaches the paramedic. That&rsquo;s the number the next tests are for.</p>
+        </div>
+      </section>
+
+      <section id="the-need">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Nobody asked for a wearable.</h2>
+          <p class="lede">They asked for an iPad checklist, a shared form, a printed summary, and &ldquo;something strapped to my arm and it&rsquo;s listening to all the questions.&rdquo;</p>
+          <p>Four formats, one need: capture what the crew learns once, as it happens, and get it to the next person without more work. A form or an iPad still needs a free hand at the exact moment responders have neither. And paramedics already say out loud what they&rsquo;re doing as they do it. The data is already being spoken. It just isn&rsquo;t being captured. So the brief came straight from them.</p>
+          <div class="steps reveal">
+            <div class="step-card"><span class="n">01</span><h4>Hands-free</h4><p>Nothing to manage during a call, and no screen to watch.</p></div>
+            <div class="step-card"><span class="n">02</span><h4>One press, gloves on</h4><p>&ldquo;If it&rsquo;s not easy to turn on, it&rsquo;s not going to get used.&rdquo;</p></div>
+            <div class="step-card"><span class="n">03</span><h4>Works with no signal</h4><p>&ldquo;A lot of places we&rsquo;ll go into could be heavy concrete.&rdquo;</p></div>
+            <div class="step-card"><span class="n">04</span><h4>They stay in control</h4><p>&ldquo;It can&rsquo;t make it worse.&rdquo; Photos, never video, and nothing goes anywhere unreviewed.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="build">
+        <div class="section-content reveal">
+          <h2 class="section-heading">From cardboard to V3.</h2>
+          <p class="lede">I had never built hardware before this. Everything in the build log is something I learned by getting it wrong first.</p>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/pi.webp" alt="A Raspberry Pi Zero 2 W with a heat sink, powered on" loading="lazy"><figcaption>The Pi Zero 2 W. My mom found it, after Marketplace and Amazon didn&rsquo;t.</figcaption></figure>
+            <figure class="img-tile"><img src="img/cardboard.webp" alt="The cardboard prototype: Pi, camera, breadboard and wired buttons taped into a cardboard box" loading="lazy"><figcaption>V1, cardboard and tape.</figcaption></figure>
+            <figure class="img-tile"><img src="img/solder-bench.webp" alt="A soldering bench with an iron, wire strippers, tiny buttons and the cardboard prototype" loading="lazy"><figcaption>Off the breadboard. Four wires took forever.</figcaption></figure>
+          </div>
+          <p><strong>A Pi Zero 2 W, because it&rsquo;s a real computer small enough to clip on.</strong> It records audio in 15-second pieces, keeps the sharpest frame from a photo burst, fingerprints every file and retries uploads, all at once. It runs no AI, so it can stay small, and the transcription happens on the server.</p>
+          <p><strong>The first microphone failed in my bedroom.</strong> A lavalier through a sound card came back garbled at 30 cm in the quietest room I had. If it couldn&rsquo;t work there it couldn&rsquo;t work on a scene, so I swapped it for an INMP441, a digital mic that skips the sound card entirely.</p>
+          <p><strong>Nothing is deleted until the server confirms a perfect copy.</strong> Scenes happen on highways and farms, where nobody hands over a Wi-Fi password.</p>
+          <div class="img-grid reveal">
+            <figure class="img-tile sketch"><img src="img/gear-sketch.webp" alt="Sketches of where the device attaches on a turnout coat, bunker pants and a station uniform" loading="lazy"><figcaption>Where it lives: the radio loop, the suspender strap, the belt.</figcaption></figure>
+            <figure class="img-tile sketch"><img src="img/case-sketch.webp" alt="Sketches of the case tray, lid and pressure plate, with notes on fitting the camera and mic" loading="lazy"><figcaption>My V3 case sketches.</figcaption></figure>
+          </div>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/case-v3-model.webp" alt="3D model of the V3 case, opened to show the Pi, battery and pressure plate inside" loading="lazy"><figcaption>V3, modelled around the parts.</figcaption></figure>
+            <figure class="img-tile"><img src="img/case-v3-print.webp" alt="The printed white V3 case with its cable" loading="lazy"><figcaption>And printed. Zubi did V2 and the backing for V3.</figcaption></figure>
+          </div>
+        </div>
+      </section>
+
+      <section id="dashboard">
+        <div class="section-content reveal">
+          <h2 class="section-heading">A record only helps if the next person trusts it.</h2>
+          <p class="lede">I coded dashboard V1, Alita and Chrisandra designed V2&rsquo;s flows in Figma, and I wired V3 up to the real device data.</p>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/render-transcript.webp" alt="The capture view: a live transcript from the device beside the draft ePCR" loading="lazy"><figcaption>Speech in, a draft ePCR out.</figcaption></figure>
+            <figure class="img-tile"><img src="img/render-epcr.webp" alt="The ePCR view with fields filled from the transcript and unsure fields flagged" loading="lazy"><figcaption>Unsure fields get flagged, never guessed.</figcaption></figure>
+          </div>
+          <ul class="plain-list">
+            <li><strong>Review before sharing.</strong> A physician told me his colleagues accepted their AI scribe once the reviewed note, not the recording, became the record. Nightingale works the same way.</li>
+            <li><strong>A closed loop.</strong> The paramedic accepts the record, the ER scans a QR code, and both sides see &ldquo;Received by triage.&rdquo; Nobody in this chain could ever confirm what was received.</li>
+            <li><strong>No hospital integration.</strong> Hospital systems can&rsquo;t take a feed, so the ER gets a read-only link and a printed page that rides its existing scan path.</li>
+            <li><strong>Privacy first.</strong> I owned the device&rsquo;s safety and privacy design, and Cindy and I worked through the threat model together: permission checks, encryption at rest, and append-only, hash-chained audit logs.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="maryhill">
+        <div class="section-content reveal">
+          <h2 class="section-heading">The night the Wi-Fi died.</h2>
+          <p class="lede">I can&rsquo;t record real patients, so I tested on staged calls with the people who&rsquo;d really use it.</p>
+          <p>Three calls on Maryhill&rsquo;s training nights, under a floodlight on foam mats: a cardiac arrest at a backyard barbecue, a shellfish allergy, and a dirt bike crash. During the first one, the station Wi-Fi died. Offline-first had only ever been a hypothetical, and I&rsquo;ll admit I dreaded opening the results that night. All three calls had arrived, every file stored, checked and in order.</p>
+          <figure class="img-wide reveal">
+            <img src="img/drill-cards.webp" alt="Scenario cards and printed scripts laid out on a table beside a laptop, for the staged drills" loading="lazy">
+            <figcaption>The scenario cards for the staged calls.</figcaption>
+          </figure>
+          <p>The draft caught the chief complaint, interventions and clinical details with nobody typing them, and flagged an age a bystander and a responder had given differently. At the end of the dirt bike call, a paramedic joked about the leg and everyone laughed. That joke isn&rsquo;t in the output.</p>
+          <p>It also showed me what&rsquo;s not working yet: a 30-second boot no crew will wait for, nothing reaching the server live, and no clip on the case. A captain called it &ldquo;a step in the right direction&rdquo; that could be &ldquo;very easily adopted,&rdquo; on one condition: security has to hit the mark.</p>
+        </div>
+      </section>
+
+      <section id="next">
+        <div class="section-content reveal">
+          <h2 class="section-heading">What it doesn&rsquo;t prove yet.</h2>
+          <p class="lede">Staged calls are a first signal, not a result.</p>
+          <ul class="plain-list">
+            <li><strong>Cambridge Fire&rsquo;s probationary firefighters</strong> on their own training scenarios, the first test where the script isn&rsquo;t ours. If capture slows the call or crews throw most of the draft away, the design fails and we start again.</li>
+            <li><strong>Guelph paramedics</strong>, then their station.</li>
+            <li><strong>The fixes:</strong> a standby mode for the boot time, a hotspot for live sending, a clip, and both SCBA pack types.</li>
+            <li><strong>The legal path</strong> for a fire record to reach paramedics under MFIPPA and PHIPA.</li>
+            <li><strong>The number nobody has:</strong> how much of fire&rsquo;s account actually reaches the paramedic.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="takeaways" id="takeaways">
+        <div class="section-content reveal">
+          <h2 class="section-heading">What I&rsquo;m taking from it.</h2>
+          <p class="lede">Four things I&rsquo;d carry into anything that has to be trusted.</p>
+          <div class="steps reveal">
+            <div class="step-card"><span class="n">01</span><h4>Read the need, not the solution</h4><p>Three people asked for an iPad, a form and a listening device. They were all asking for the same thing, and if I&rsquo;d built any one of them as described, I&rsquo;d have built the wrong tool.</p></div>
+            <div class="step-card"><span class="n">02</span><h4>Remove a step or don&rsquo;t bother</h4><p>Fire&rsquo;s own history is clear about this. Anything that adds work on scene gets dropped, however good it is.</p></div>
+            <div class="step-card"><span class="n">03</span><h4>Trust is the design</h4><p>Review before sharing, flagged fields instead of guesses, photos instead of video, a closed loop instead of hope. Every one of those makes the tool claim less, and every one came from someone telling me what would make them refuse to use it.</p></div>
+            <div class="step-card"><span class="n">04</span><h4>Test the failure before you need it</h4><p>The offline-first path was a hypothetical until the Wi-Fi died. It held because I&rsquo;d built for the network failing, not for it working.</p></div>
+          </div>
+          <p>The story is never lost at the scene. It&rsquo;s lost on the way out, and everyone downstream pays for it.</p>
+          <div class="works-cited reveal">
+            <h3>Works Cited</h3>
+            <p>Carter, A. J. E., Davis, K. A., Evans, L. V., &amp; Cone, D. C. (2009). Information loss in emergency medical services handover of trauma patients. <em>Prehospital Emergency Care, 13</em>(3).</p>
+            <p>Cram et al. (2017). The written paramedic record was present at first physician assessment 15.7% to 24.4% of the time.</p>
+            <p>Panchal et al. (2015). EMS and ED staff rate their own handoffs far better than trained observers do (n = 1,091).</p>
+            <p>Cornish, P. L., et al. (2005). Unintended medication discrepancies at the time of hospital admission. <em>Archives of Internal Medicine.</em></p>
+            <p>Tam, V. C., et al. (2005). Frequency, type and clinical importance of medication history errors at admission to hospital. <em>CMAJ.</em></p>
+            <p>Zed, P. J., Hohl, C. M., et al. (2008). Incidence, severity and preventability of medication-related visits to the emergency department. <em>CMAJ.</em></p>
+            <p>City of Cambridge Fire Department. (2022). <em>Annual report.</em> AMEMSO. (2011). Medical tiered response in Ontario.</p>
+            <p>Ontario Ministry of Health. <em>Ambulance Documentation Standards v4.0.</em> Armstrong (2026), Village Report; Kirkham (2026), Canadian Healthcare Technology.</p>
+            <p>Our fieldwork: 16 interview and listening sessions with 18 people in Woolwich, Cambridge and Guelph (Sep 30 to Nov 2, 2026), and the Scene-to-Hospital Handoff Survey (Oct 2026, N = 29).</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </header>
+
+  <!-- footer mount -->
+  <div id="contact"></div>
+
+  <!-- footer loader -->
+  <script>
+    (async () => {
+      const res = await fetch('/footer.html');
+      if (!res.ok) return console.warn('Footer fetch failed:', res.status);
+      const html = await res.text();
+      const doc  = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('style, link[rel="stylesheet"]').forEach(n =>
+        document.head.appendChild(n.cloneNode(true))
+      );
+      const footer = doc.querySelector('footer');
+      const mount  = document.getElementById('contact');
+      if (footer && mount) {
+        footer.id = 'contact';
+        mount.replaceWith(footer);
+        // the guestbook's code isn't copied with the footer, so load it here
+        if (footer.querySelector('[data-guestbook]') && !document.querySelector('script[src="/js/guestbook.js"]')) {
+          const gs = document.createElement('script'); gs.src = '/js/guestbook.js'; document.body.appendChild(gs);
+        }
+        const hydrate = () => (window.lucide && window.lucide.createIcons());
+        if (document.readyState === 'complete') hydrate();
+        else window.addEventListener('load', hydrate, { once:true });
+      }
+    })();
+  </script>
+
+
+
+  <!-- interactions -->
+  <script type="module">
+    // cursor
+    const cursor=document.getElementById('cursor');let mouseX=0,mouseY=0,rafId;
+    const hoverSel='a,button,.card,.quote-card,.stats-card,.must-haves-card,img';
+    function update(){cursor.style.left=mouseX+'px';cursor.style.top=mouseY+'px'}
+    addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;if(!rafId){rafId=requestAnimationFrame(()=>{update();rafId=null;});}});
+    addEventListener('mousedown',()=>cursor.classList.add('clicking'));
+    addEventListener('mouseup',()=>cursor.classList.remove('clicking'));
+    addEventListener('mouseover',e=>{if(e.target.closest(hoverSel))cursor.classList.add('hovering')});
+    addEventListener('mouseout',e=>{if(e.target.closest(hoverSel))cursor.classList.remove('hovering')});
+    addEventListener('mouseleave',()=>{cursor.style.opacity='0'});
+    addEventListener('mouseenter',()=>{cursor.style.opacity='1'});
+
+    // reveal (skip .section-heading — handled by scramble observer below)
+    /* A block taller than (viewport / threshold) can never reach that ratio,
+       so a long section used to sit at opacity 0 for ever. Menzo's migration
+       jam was 3778px against a 775px window: a ceiling of 0.205 against a
+       0.2 bar. The extra thresholds keep the callback firing while you
+       scroll, and a block too tall to qualify on its own ratio qualifies on
+       how much of the screen it fills instead. */
+    const io=new IntersectionObserver((es,o)=>{
+      es.forEach(en=>{
+        if(!en.isIntersecting) return;
+        if(en.intersectionRatio>=.2 || en.intersectionRect.height>=innerHeight*.25){en.target.classList.add('active');o.unobserve(en.target);}
+      });
+    },{threshold:[0,.05,.1,.15,.2]});
+    document.querySelectorAll('.reveal:not(.section-heading)').forEach(el=>io.observe(el));
+
+    /* Safety net. The reveal is decoration, so nothing on the page is allowed
+       to stay invisible because an observer did not fire: no scroll events
+       reach this document while it is embedded in the portfolio pane, so this
+       polls instead, and retires itself the moment everything is shown. */
+    (function(){
+      const SEL = '.reveal:not(.section-heading)';
+      let timer = 0, queued = false;
+      const sweep = () => {
+        queued = false;
+        document.querySelectorAll(SEL + ':not(.active)').forEach(el => {
+          const r = el.getBoundingClientRect();
+          /* In view, or already scrolled past. A fast scroll, a jump from the
+             contents, or a restored scroll position can carry a block from
+             below the fold to above it without the observer ever seeing it
+             intersect — and it would then sit at opacity 0 for the rest of
+             the visit, which also stops its video from ever playing. */
+          if (r.top < innerHeight * 0.92) el.classList.add('active');
+        });
+        if (!document.querySelector(SEL + ':not(.active)')) {
+          clearInterval(timer);
+          removeEventListener('scroll', onScroll);
+        }
+      };
+      /* scroll drives it so it keeps up, and the interval is the backstop;
+         both retire together the moment nothing is left hidden */
+      const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(sweep); } };
+      addEventListener('scroll', onScroll, { passive: true });
+      timer = setInterval(sweep, 250);
+      sweep();
+    })();
+
+
+    // Section heading: scramble-in, then it settles as plain pixel text
+    (function(){
+      const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$!?%&*/<>';
+      function rand(){ return CHARSET[Math.floor(Math.random()*CHARSET.length)]; }
+
+      function scramble(el, text, dur, onDone){
+        const len = text.length;
+        const revealed = new Array(len).fill(false);
+        const t0 = performance.now();
+        (function frame(now){
+          const p = Math.min(1,(now-t0)/dur);
+          const upto = Math.floor(p*len*1.15);
+          for(let i=0;i<upto;i++) if(!revealed[i]&&Math.random()<0.4) revealed[i]=true;
+          let out='';
+          for(let i=0;i<len;i++){
+            const c=text[i];
+            if(c===' '){ out+='\u00a0'; continue; }
+            out+=revealed[i]?c:rand();
+          }
+          el.textContent=out;
+          if(p<1||revealed.some(r=>!r)) requestAnimationFrame(frame);
+          else onDone();
+        })(performance.now());
+      }
+
+      function fontMix(el, text){
+        // titles used to alternate pixel + didot letters (the blend). now the
+        // whole title is one clean pixel run, .di is the pixel font. a span so
+        // a heading's own font rule can't win over it
+        const s = document.createElement('span');
+        s.className = 'di';
+        s.textContent = text;
+        el.replaceChildren(s);
+      }
+
+      const hio=new IntersectionObserver((entries,obs)=>{
+        entries.forEach(en=>{
+          if(!en.isIntersecting) return;
+          obs.unobserve(en.target);
+          const el=en.target;
+          const text=el.textContent.trim();
+          // bypass CSS reveal — the scramble IS the reveal
+          el.style.opacity='1'; el.style.transform='none';
+          el.classList.add('h-scrambling');
+          scramble(el, text, 900, ()=>{
+            el.classList.remove('h-scrambling');
+            fontMix(el, text);
+            el.classList.add('h-settled');
+          });
+        });
+      },{threshold:0.25});
+
+      document.querySelectorAll('.section-heading').forEach(h=>hio.observe(h));
+
+      // Outcome numbers — font-mix on load (no scramble, they're metrics not headings)
+      setTimeout(()=>{
+        document.querySelectorAll('.case-title,.outcome-num').forEach(el=>{
+          fontMix(el, el.textContent.trim());
+        });
+      }, 100);
+
+      // Hero h1 — scramble immediately on load (visible without scrolling)
+      const h1 = document.querySelector('.intro-left h1');
+      if(h1){
+        const h1Text = h1.textContent.trim();
+        h1.style.opacity = '1'; h1.style.transform = 'none';
+        setTimeout(()=>{
+          h1.classList.add('h-scrambling');
+          scramble(h1, h1Text, 900, ()=>{
+            h1.classList.remove('h-scrambling');
+            fontMix(h1, h1Text);
+            h1.classList.add('h-settled');
+          });
+        }, 350);
+      }
+    })();
+  </script>
+
+  <!-- QUICK LINKS WIDGET -->
+  <style>
+    html{scroll-behavior:smooth}
+    /* top:110px used to sit under the nav pill; with the nav gone it landed
+       on the copy, so the jump list moves out of the reading column */
+    #ql-widget{position:fixed;right:1.4rem;bottom:1.4rem;top:auto;z-index:900;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:.4rem}
+    /* the portfolio rail carries the contents when embedded, so the
+       floating widget would just be a second copy of the same list */
+    html[data-embedded] #ql-widget{display:none!important}
+    #ql-panel{display:flex;flex-direction:column;gap:.15rem;background:rgba(var(--chrome-rgb),.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:12px;padding:0;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.34,1.2,.64,1),opacity .22s ease,padding .25s ease;min-width:180px}
+    #ql-panel.open{max-height:min(520px, calc(100dvh - 9rem));overflow-y:auto;opacity:1;padding:.45rem}
+    #ql-panel a{display:block;font-family:'Satoshi',sans-serif;font-size:clamp(.66rem,1.6vh,.78rem);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding:clamp(.2rem,.8vh,.4rem) .7rem;border-radius:6px;transition:background .18s,color .18s}
+    #ql-panel a .ql-num{display:inline-block;min-width:1.6em;font-family:'DotempDemo',monospace;font-size:0.75rem;opacity:.45;margin-right:.25rem}
+    #ql-panel a:hover{background:var(--glass-highlight-1);color:var(--text-secondary)}
+    #ql-toggle{display:flex;align-items:center;gap:.45rem;background:rgba(var(--chrome-rgb),.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:999px;padding:.45rem 1rem;color:var(--text-primary);font-family:'Satoshi',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s}
+    #ql-toggle:hover{background:var(--glass-highlight-1);border-color:var(--rule)}
+    #ql-icon{font-size:1rem;line-height:1}
+    @media(max-width:768px){#ql-widget{right:1rem;top:auto;bottom:1.5rem;left:auto;transform:none;flex-direction:column-reverse;align-items:flex-end}#ql-panel{min-width:min(180px,80vw)}}
+  </style>
+  <div id="ql-widget">
+    <button id="ql-toggle" aria-label="Toggle section links" aria-expanded="false">
+      <span id="ql-icon">≡</span>
+      <span>Sections</span>
+    </button>
+    <div id="ql-panel"></div>
+  </div>
+  <script>
+    (function(){
+      const panel=document.getElementById('ql-panel');
+      const toggle=document.getElementById('ql-toggle');
+      const icon=document.getElementById('ql-icon');
+      let open=false;
+      function close(){open=false;panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');icon.textContent='≡';}
+      function mkLink(href,num,label,clickFn){
+        const a=document.createElement('a');
+        a.href=href;
+        a.innerHTML=`<span class="ql-num">${String(num).padStart(2,'0')}</span>${label}`;
+        a.addEventListener('click',clickFn||close);
+        return a;
+      }
+      panel.appendChild(mkLink('#',0,'Overview',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});close();}));
+      const ITEMS=[{id:'',label:'Overview',num:0}];
+      let n=1;
+      /* this page has no section eyebrows to read labels off, so they
+         live here */
+      const LABELS={
+        'one-patient':'The problem',
+        'nightingale':'Nightingale',
+        'fieldwork':'Fieldwork',
+        'why-it-stays':'Why it stays broken',
+        'the-need':'Building it',
+        'maryhill':'Testing it',
+        'takeaways':'Takeaways'
+      };
+      document.querySelectorAll('section[id]').forEach(sec=>{
+        const label=LABELS[sec.id];
+        if(!label)return;
+        const num=n++;
+        ITEMS.push({id:sec.id,label:label,num:num});
+        panel.appendChild(mkLink('#'+sec.id,num,label));
+      });
+      window.__caseToc=ITEMS;   /* the standalone rail reads the same list */
+      toggle.addEventListener('click',e=>{e.stopPropagation();open=!open;panel.classList.toggle('open',open);toggle.setAttribute('aria-expanded',open);icon.textContent=open?'×':'≡';});
+      document.addEventListener('click',e=>{if(open&&!document.getElementById('ql-widget').contains(e.target))close();});
+
+      /* embedded, the portfolio rail carries these instead of the widget:
+         hand them up, answer a request, take scroll orders, and keep the
+         rail's highlight on whatever the reader is actually looking at */
+      if(window.parent!==window){
+        const post=m=>{try{window.parent.postMessage(m,'*');}catch(e){}};
+        const sendToc=()=>post({type:'caseToc',items:ITEMS});
+        /* the browser drops programmatic smooth scrolls inside this pane,
+           so the glide is ours. scroll-behavior goes to auto for the
+           duration or every frame tries to animate on top of us. */
+        const scroller=()=>document.scrollingElement||document.documentElement;
+        const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+        let anim=0;
+        const stopGlide=()=>{
+          cancelAnimationFrame(anim);
+          scroller().style.scrollBehavior='';
+        };
+        const glide=to=>{
+          const se=scroller();
+          const from=se.scrollTop;
+          const dist=Math.max(0,Math.min(to,se.scrollHeight-innerHeight))-from;
+          if(!dist)return;
+          stopGlide();
+          se.style.scrollBehavior='auto';
+          const t0=performance.now();
+          const dur=Math.min(900,Math.max(320,Math.abs(dist)*0.45));
+          const step=now=>{
+            const t=Math.min(1,(now-t0)/dur);
+            se.scrollTop=from+dist*ease(t);
+            if(t<1)anim=requestAnimationFrame(step);
+            else se.style.scrollBehavior='';
+          };
+          anim=requestAnimationFrame(step);
+        };
+        addEventListener('wheel',stopGlide,{passive:true});
+        addEventListener('touchstart',stopGlide,{passive:true});
+        sendToc();
+        addEventListener('message',ev=>{
+          const d=ev.data;
+          if(!d||typeof d!=='object')return;
+          if(d.type==='caseTocRequest')sendToc();
+          else if(d.type==='caseScrollTo'){
+            const el=d.id?document.getElementById(d.id):null;
+            glide(el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
+          }
+        });
+        /* tell the rail which section the reader is in */
+        let last=null,ticking=false;
+        const spy=()=>{
+          ticking=false;
+          const line=innerHeight*0.32;
+          let id='';
+          for(const it of ITEMS){
+            if(!it.id)continue;
+            const el=document.getElementById(it.id);
+            if(el&&el.getBoundingClientRect().top<=line)id=it.id;
+          }
+          if(id!==last){last=id;post({type:'caseSection',id:id});}
+        };
+        addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(spy);}},{passive:true});
+        spy();
+      }
+    })();
+  </script>
+
+  <!-- theme: the portfolio shell posts its theme in, and standalone we read
+       it ourselves, so this page is never stuck in the wrong one -->
+  <script>
+    (function(){
+      function set(t){ document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+      // light is the default now; a saved choice still wins
+      var t; try { t = localStorage.getItem('theme'); } catch(e) {}
+      set(t || 'light');
+      addEventListener('message', function(e){
+        if(e && e.data && e.data.type === 'theme') set(e.data.value);
+      });
+    })();
+  </script>
+
+  <!-- cursor: the shell draws the one cursor and already listens for these,
+       so embedded we hide ours and feed it. Standalone, ours stays. -->
+  <script>
+    (function(){
+      if (window.parent === window) return;
+      document.documentElement.setAttribute('data-embedded', '');
+      var ring = document.getElementById('cursor');
+      if (ring) ring.style.display = 'none';
+      var HOVER = 'a,button,input,select,textarea,summary,[role="button"],[onclick],' +
+                  '.skip-button,.card,.role-card,.quote-card,.stats-card,.must-haves-card,' +
+                  '.glass-card,.chip,.img-tile,.spec-row,.metric,img';
+      function post(m){ try { window.parent.postMessage(m, '*'); } catch (e) {} }
+      // posted straight from the event: rAF inside a pane the browser is
+      // throttling can stall, and that shows up as a cursor that lags or sticks
+      var lx = -1, ly = -1;
+      addEventListener('mousemove', function(e){
+        if (e.clientX === lx && e.clientY === ly) return;
+        lx = e.clientX; ly = e.clientY;
+        post({type:'iframeMouse', x:lx, y:ly});
+      });
+      addEventListener('mousedown',  function(){ post({type:'iframeDown'}); });
+      addEventListener('mouseup',    function(){ post({type:'iframeUp'}); });
+      addEventListener('mouseleave', function(){ post({type:'iframeLeave'}); });
+      addEventListener('mouseover', function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:true}); });
+      addEventListener('mouseout',  function(e){ if (e.target.closest(HOVER)) post({type:'iframeHover', on:false}); });
+    })();
+  </script>
+</body>
+</html>
