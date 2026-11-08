@@ -909,81 +909,198 @@
 
         @media screen and (max-width: 600px) {
         }
-    /* the intro / loading screen
-       she falls through the sky while the page loads: clouds keep rising
-       past her (that's what reads as falling) and she kicks 1, 1.5, 2 one
-       way, same as the north star. when the first screen of tiles is ready
-       those same clouds part to the sides as she drops through the middle,
-       and the sky fades out under them, so you land on the page.
-       scrolling up past the top plays it again (see the script) */
+    /* the intro
+       scroll to start. the title puffs away into ascii as soon as you
+       scroll, then your scroll drops her: clouds stream up past her while
+       the camera circles her, colour ascii things drift by either side of
+       her (always behind her, never over her), comic panels slide through
+       with live close ups, and an ascii planet comes up to meet her. past
+       ~4/5 it finishes by itself, you crash through and land on the page.
+       scrolling up past the top puts you back in the sky */
     #scene-overlay {
       position: fixed; inset: 0; z-index: 5000; overflow: hidden;
+      touch-action: none;
       transition: opacity .35s ease, visibility 0s linear .35s;
     }
     #scene-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     #scene-overlay:not(.hidden) { transition: opacity .3s ease, visibility 0s; }
     .intro-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #9fd0ea 0%, #c8e5f3 50%, #eaf6fb 100%); }
     :root[data-theme="dark"] .intro-sky { background: linear-gradient(180deg, #0c1824 0%, #16283a 60%, #1d3349 100%); }
-
-    /* the handoff overlaps the ending: the sky starts fading out while the
-       clouds are still parting, so the page is already there as they open */
     #scene-overlay.parting .intro-sky { opacity: 0; transition: opacity .5s ease .3s; }
 
-    /* clouds rising past her, each its own size, speed, depth and start */
-    .intro-cloud {
-      position: absolute; left: var(--x); width: var(--w); aspect-ratio: 1100 / 280;
-      background: url('/field/clouds-near.webp') center / contain no-repeat;
-      opacity: var(--o, .9); top: 0; will-change: transform;
-      animation: introRise var(--t, 5s) linear var(--d, 0s) infinite;
-    }
-    .intro-cloud.far { background-image: url('/field/clouds-far.webp'); aspect-ratio: 1100 / 150; filter: blur(.5px); }
-    /* the big soft cumulus masses (/sky/cloud-a/b/c). they rise all the way
-       off the top (-100% of their own height) since they're tall */
-    .intro-cloud.ca { background-image: url('/sky/cloud-a.webp'); aspect-ratio: 1259 / 533; }
-    .intro-cloud.cb { background-image: url('/sky/cloud-b.webp'); aspect-ratio: 1015 / 314; }
-    .intro-cloud.cc { background-image: url('/sky/cloud-c.webp'); aspect-ratio: 1352 / 533; }
-    .intro-cloud.ca, .intro-cloud.cb, .intro-cloud.cc { animation-name: introRiseBig; }
-    @keyframes introRiseBig { from { transform: translateY(105vh); } to { transform: translateY(-100%); } }
-    /* the ones between her and you are a touch soft, like they're close */
-    .intro-cloud.front { z-index: 2; filter: blur(1px); }
-    #scene-overlay.parting .intro-cloud {
-      translate: calc(var(--s, 1) * 75vw) 0; opacity: 0;
-      transition: translate 1s cubic-bezier(.55,0,.3,1), opacity .4s ease .55s;
-    }
-    @keyframes introRise { from { transform: translateY(110vh); } to { transform: translateY(-40vh); } }
+    .intro-3d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .6s ease; }
+    .intro-3d.ready { opacity: 1; }
+    #scene-overlay.parting .intro-3d { opacity: 0; transition: opacity .45s ease .15s; }
 
-    /* her, bobbing in the middle. frames are swapped by the script */
-    .intro-fall {
-      position: absolute; left: 50%; top: 44%; z-index: 2;
-      width: clamp(240px, 32vw, 470px); aspect-ratio: 657 / 560;
-      translate: -50% -50%;
-      animation: introDrop .9s cubic-bezier(.22,1,.36,1) both, introBob 2.4s ease-in-out .9s infinite alternate;
-      filter: drop-shadow(0 18px 28px rgba(40, 90, 130, .2));
+    /* the title. each letter is its own span so the script can scramble
+       it into glyphs and puff it up into the sky as you start falling */
+    .intro-title {
+      position: absolute; left: 50%; top: 8vh; translate: -50% 0; z-index: 2; margin: 0;
+      text-align: center; pointer-events: none; white-space: nowrap;
+      color: var(--ink); text-shadow: 0 3px 30px rgba(255, 255, 255, .55);
     }
-    .intro-fall img { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
-    .intro-fall img.on { opacity: 1; }
-    @keyframes introDrop { from { transform: translateY(-75vh) rotate(-10deg); } to { transform: none; } }
-    @keyframes introBob { from { transform: translateY(-8px) rotate(-3deg); } to { transform: translateY(8px) rotate(3deg); } }
+    :root[data-theme="dark"] .intro-title { text-shadow: 0 3px 30px rgba(102, 252, 241, .25); }
+    .intro-title small { display: block; font: 600 clamp(.8rem, 1.3vw, 1rem)/1 'Satoshi', sans-serif; letter-spacing: .3em; text-transform: uppercase; margin-bottom: .6rem; }
+    .intro-title big { display: block; font: 400 clamp(3rem, 9vw, 8rem)/1 'DotempDemo', monospace; }
+    .intro-title span { display: inline-block; will-change: transform, opacity, filter; }
+    #scene-overlay.live .intro-title { animation: introNameIn 1.1s cubic-bezier(.16,1,.3,1) both; }
+    @keyframes introNameIn { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
 
-    .intro-bar {
-      position: absolute; left: 50%; bottom: 28px; translate: -50% 0; z-index: 4;
-      width: 112px; height: 2px; border-radius: 2px; overflow: hidden; background: rgba(255,255,255,.45);
+    /* comic panels: live close ups of her, slid across the screen while
+       you fall through their stretch. thick inky frames, halftone dots
+       behind the cutout, a second panel peeking out behind, a loud word in
+       her pixel face. what's inside is drawn live, so she blinks in there */
+    .comic {
+      --dot: #f26b5b;
+      position: absolute; left: 0; z-index: 3; pointer-events: none;
+      width: clamp(300px, 36vw, 540px);
+      opacity: 0; will-change: transform;
     }
+    .comic.top { top: 7vh; }
+    .comic.low { bottom: 15vh; }
+    .comic.on { opacity: 1; }
+    .cp {
+      position: relative; aspect-ratio: 16 / 10; overflow: hidden;
+      background-color: #fff;
+      background-image: radial-gradient(var(--dot) 30%, transparent 33%);
+      background-size: 14px 14px;
+      border: 6px solid #111; border-radius: 3px 7px 2px 6px;
+      box-shadow: 0 14px 34px rgba(20, 40, 70, .25);
+    }
+    .cp.navy { background-color: #13204a; --dot: #2a3f86; }
+    .cp.orange { background-color: #f0552c; background-image: none; }
+    .cp.back { position: absolute; inset: 0; transform: translate(-7%, -11%) rotate(-2.5deg); z-index: -1; }
+    .cp.back.lines { background-image: repeating-linear-gradient(0deg, rgba(20,30,60,.85) 0 2px, transparent 2px 5px), radial-gradient(var(--dot) 30%, transparent 33%); background-size: auto, 14px 14px; }
+    .cp canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 1; }
+    .comic .sfx {
+      position: absolute; right: -6%; bottom: -14%; margin: 0; z-index: 2; white-space: nowrap;
+      font: 400 clamp(1.8rem, 3.6vw, 3.2rem)/1 'DotempDemo', monospace;
+      color: #ffe45c; -webkit-text-stroke: 2px #111; paint-order: stroke;
+      text-shadow: 4px 4px 0 #111; transform: rotate(-6deg);
+    }
+    .comic.flip .sfx { right: auto; left: -4%; transform: rotate(5deg); }
+    /* two beats per comic. the panel peeking out behind is beat one; the
+       front panel is beat two and slaps down on top of it */
+    .cp.p2 { opacity: 0; transform: scale(.82) rotate(3deg); transition: opacity .12s ease, transform .45s cubic-bezier(.25,1.6,.5,1); }
+    .comic.two .cp.p2 { opacity: 1; transform: none; }
+    .comic .sfx:not(.s2) { right: auto; bottom: auto; left: -10%; top: 30%; transform: rotate(-8deg); }
+    .comic .sfx.s2 { opacity: 0; transition: opacity .1s ease .15s; }
+    .comic.two .sfx.s2 { opacity: 1; }
+    /* the narration box, the bit that's actually about her */
+    .cp .cap {
+      position: absolute; left: 6px; top: 6px; z-index: 3; margin: 0; max-width: 80%;
+      padding: .3em .55em; background: #ffe45c; border: 2.5px solid #111; box-shadow: 3px 3px 0 #111;
+      font: 900 italic clamp(10px, .95vw, 15px)/1.15 'Satoshi', sans-serif; letter-spacing: .04em;
+      text-transform: uppercase; color: #111;
+    }
+    .cp.p2 .cap { top: auto; left: auto; right: 6px; bottom: 6px; }
+    .comic .spark { position: absolute; z-index: 2; color: #ffe45c; -webkit-text-stroke: 1.5px #111; font: 900 1.6rem/1 'Satoshi', sans-serif; }
+    .comic.on .spark { animation: sparkTw .9s steps(2, jump-none) infinite; }
+    @keyframes sparkTw { 0%, 49% { opacity: 1; } 50%, 100% { opacity: .2; } }
+    #scene-overlay.parting .comic { opacity: 0; transition: opacity .15s ease; }
+
+    /* heart shades. hot pink pixel frames, see through halftone lenses, so
+       her eyes (and her blinking) show through. one pair rides her face in
+       the sky, another drops into the face panel */
+    .hearts { display: block; width: 100%; height: auto; shape-rendering: crispEdges; overflow: visible; }
+    #scene-overlay .hearts .ink path { stroke-width: var(--gl-ink, 6px); }
+    #scene-overlay .hearts .pink path { stroke-width: var(--gl-pink, 3px); }
+    .intro-shades { --gl-ink: 2.6px; --gl-pink: 1.2px; }
+    .intro-shades {
+      position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none;
+      width: 100px; will-change: transform;
+    }
+    .intro-shades .hearts { opacity: 0; transform: translateY(-300%); transition: opacity .15s ease, transform .3s cubic-bezier(.5,0,.75,.6); }
+    .intro-shades.on .hearts { opacity: 1; transform: none; transition: opacity .1s ease, transform .6s cubic-bezier(.25,1.6,.5,1); }
+    .cp .shades-in { position: absolute; z-index: 2; opacity: 0; transform: translate(-50%, -50%) rotate(var(--ra)); }
+    .comic.two .shades-in { animation: shadesOn .7s cubic-bezier(.25,1.5,.5,1) .15s both; }
+    @keyframes shadesOn { from { opacity: 0; transform: translate(-50%, -420%) rotate(var(--ra)); } to { opacity: 1; transform: translate(-50%, -50%) rotate(var(--ra)); } }
+
+    /* ascii props. the pen sits UNDER her (z 0, the live canvas is z 1),
+       so her fingers close over it; the hat and umbrella sit on top */
+    .cp .prop {
+      position: absolute; margin: 0; white-space: pre; opacity: 0;
+      font: 700 clamp(12px, 1.5vw, 22px)/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      transform: translate(-50%, -50%) rotate(var(--ra, 0deg));
+    }
+    .cp .prop.under { z-index: 0; }
+    .cp .prop.over { z-index: 2; }
+    .comic.two .prop.pen.held { opacity: 1; }
+    /* the pen sits under her fingers, but this copy, cut down to the bit
+       where her thumb crosses it, sits on top, so she's actually gripping it */
+    .cp .prop.pen.thumb { clip-path: inset(-30% 31% -30% 56%); }
+    .cp .prop.pen svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 0 1.5px #fff) drop-shadow(2px 3px 0 rgba(20,32,43,.25)); }
+    .comic.on .prop.pen:not(.held) { animation: penIn 1s cubic-bezier(.2,1.2,.4,1) .3s both; }
+    @keyframes penIn {
+      from { opacity: 0; transform: translate(60%, -260%) rotate(calc(var(--ra) - 40deg)); }
+      to   { opacity: 1; transform: translate(-50%, -50%) rotate(var(--ra)); }
+    }
+    .comic.on .prop.drop { animation: propDrop .6s cubic-bezier(.25,1.5,.5,1) var(--d, .2s) both; }
+    @keyframes propDrop {
+      from { opacity: 0; transform: translate(-50%, -260%) rotate(var(--ra, 0deg)); }
+      to   { opacity: 1; transform: translate(-50%, -50%) rotate(var(--ra, 0deg)); }
+    }
+
+    /* scroll to start. a glass pill that turns into the % as you fall */
+    .intro-nudge {
+      position: absolute; left: 50%; bottom: 64px; translate: -50% 0; z-index: 4;
+      display: flex; align-items: center; gap: .7rem; height: 40px; padding: 0 1.2rem;
+      border-radius: 999px; white-space: nowrap;
+      font: 600 .74rem/1 'Satoshi', sans-serif; letter-spacing: .18em; text-transform: uppercase;
+      color: #14202b; background: rgba(255, 255, 255, .55);
+      border: 1px solid rgba(255, 255, 255, .8);
+      box-shadow: 0 8px 30px rgba(40, 90, 130, .18);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      transition: opacity .4s ease;
+    }
+    :root[data-theme="dark"] .intro-nudge { color: var(--ink); background: rgba(12, 24, 36, .55); border-color: rgba(168, 218, 220, .3); }
+    .intro-nudge svg { width: 11px; height: 11px; flex: none; animation: introNudge 1.9s ease-in-out infinite; }
+    @keyframes introNudge { 0%, 100% { opacity: .55; transform: translateY(-1px); } 50% { opacity: 1; transform: translateY(2px); } }
+    .intro-nudge .pct { font-family: 'DotempDemo', monospace; letter-spacing: .06em; font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: right; }
+    .intro-nudge .falling { display: none; }
+    #scene-overlay.moving .intro-nudge .start { display: none; }
+    #scene-overlay.moving .intro-nudge .falling { display: inline-flex; gap: .5em; }
+    .intro-skip {
+      all: unset; cursor: pointer; position: absolute; left: 50%; bottom: 30px; translate: -50% 0; z-index: 4;
+      font: 500 .78rem/1 'Satoshi', sans-serif; color: rgba(20, 32, 43, .6);
+      transition: color .15s ease;
+    }
+    :root[data-theme="dark"] .intro-skip { color: rgba(var(--ink-rgb), .6); }
+    .intro-skip:hover, .intro-skip:focus-visible { color: #14202b; text-decoration: underline; text-underline-offset: 3px; }
+    :root[data-theme="dark"] .intro-skip:hover, :root[data-theme="dark"] .intro-skip:focus-visible { color: var(--ink); }
+    #scene-overlay.parting .intro-nudge, #scene-overlay.parting .intro-skip { opacity: 0; transition: opacity .2s; }
+
+    .intro-bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; height: 3px; background: rgba(255,255,255,.35); }
     .intro-bar i {
       display: block; height: 100%; width: 100%; background: rgba(var(--rail-accent-rgb, 42,157,143), .9);
-      transform: scaleX(.08); transform-origin: left; transition: transform .35s cubic-bezier(.23,1,.32,1);
+      transform: scaleX(0); transform-origin: left;
     }
-
-    /* she drops through the gap the clouds leave */
-    #scene-overlay.parting .intro-fall {
-      animation: introOut 1.05s cubic-bezier(.5,0,.8,.45) forwards;
-    }
-    @keyframes introOut { from { transform: none; } to { transform: translateY(105vh) rotate(14deg); } }
     #scene-overlay.parting .intro-bar { opacity: 0; transition: opacity .3s; }
+
+    /* the white-out as you punch through, then the page settles in */
+    .intro-flash {
+      position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0;
+      background: radial-gradient(60% 50% at 50% 50%, rgba(255,255,255,.98), rgba(234,246,251,.75) 55%, rgba(234,246,251,.2) 85%);
+    }
+    :root[data-theme="dark"] .intro-flash { background: radial-gradient(60% 50% at 50% 50%, rgba(200,235,245,.6), rgba(30,58,80,.45) 55%, transparent 85%); }
+    #scene-overlay.parting .intro-flash { animation: introFlash .8s ease-out forwards; }
+    @keyframes introFlash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+    html.intro-landing #app { animation: introLand .9s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes introLand { from { transform: scale(1.06); } to { transform: none; } }
+
     #scene-overlay.hidden * { animation-play-state: paused !important; }
 
+    @media (max-width: 640px) {
+      .intro-title { top: 9vh; }
+      .comic { width: 78vw; }
+      .comic.top { top: 8vh; }
+      .comic.low { bottom: 16vh; }
+      .comic .sfx { font-size: 1.7rem; }
+      .intro-nudge { bottom: 56px; }
+    }
     @media (prefers-reduced-motion: reduce) {
       #scene-overlay *, #scene-overlay { animation: none !important; transition: opacity .3s ease !important; }
+      html.intro-landing #app { animation: none; }
     }
 
     .testimonials-section { display: none; }
@@ -3725,29 +3842,63 @@ body::after{
 </style>
 </head>
 <body>
-    <!-- the intro: she falls through the sky while the page loads, then the
-         clouds part and you land on the page. scroll up past the top and
-         it plays again -->
-    <div id="scene-overlay" role="status" aria-label="Loading">
+    <!-- the intro: scroll to start. the title puffs away into ascii, then
+         your scroll drops her through the sky while the camera circles her,
+         past colour ascii things drifting by, with comic panels of her
+         sliding through, down onto an ascii planet. you crash through and
+         land on the page. scroll up past the top to go back up -->
+    <div id="scene-overlay" role="region" aria-label="Intro, scroll to start">
       <div class="intro-sky"></div>
-      <div class="intro-cloud far" style="--x:4vw;--w:56vw;--t:6.5s;--d:-1.2s;--o:.6;--s:-1"></div>
-      <div class="intro-cloud far" style="--x:56vw;--w:48vw;--t:7.5s;--d:-4.6s;--o:.55;--s:1"></div>
-      <div class="intro-cloud far" style="--x:-14vw;--w:40vw;--t:6s;--d:-5.2s;--o:.5;--s:-1"></div>
-      <div class="intro-cloud cb" style="--x:58vw;--w:44vw;--t:7s;--d:-1s;--o:.8;--s:1"></div>
-      <div class="intro-cloud ca" style="--x:-12vw;--w:56vw;--t:6.4s;--d:-3.6s;--o:.85;--s:-1"></div>
-      <div class="intro-cloud cc" style="--x:30vw;--w:52vw;--t:7.6s;--d:-5.8s;--o:.75;--s:1"></div>
-      <div class="intro-cloud cb" style="--x:-6vw;--w:40vw;--t:6.8s;--d:-6.4s;--o:.8;--s:-1"></div>
-      <div class="intro-cloud ca" style="--x:62vw;--w:50vw;--t:6.2s;--d:-4.4s;--o:.85;--s:1"></div>
-      <div class="intro-fall">
-        <img class="on" src="/sky/hen-fall-1.webp" alt="">
-        <img src="/sky/hen-fall-1s.webp" alt="">
-        <img src="/sky/hen-fall-15.webp" alt="">
-        <img src="/sky/hen-fall-2s.webp" alt="">
-        <img src="/sky/hen-fall-2.webp" alt="">
+      <canvas class="intro-3d" id="intro3d"></canvas>
+      <h2 class="intro-title" aria-label="come fall into hen's orbit"><small>come fall into</small><big>hen's orbit</big></h2>
+
+      <!-- her heart shades in the sky, pinned to her face by the script -->
+      <div class="intro-shades" aria-hidden="true"><svg class="hearts" viewBox="0 0 100 44" aria-hidden="true"><defs><linearGradient id="lensTint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff3d8b" stop-opacity=".5"/><stop offset="1" stop-color="#ffa3cf" stop-opacity=".2"/></linearGradient></defs><g fill="url(#lensTint)"><path class="l" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path class="l" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/></g><g class="ink" fill="none" stroke="#14202b" stroke-linejoin="miter" vector-effect="non-scaling-stroke"><path vector-effect="non-scaling-stroke" class="o" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" class="o" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" d="M9.5 13 1 10.5M44.5 13Q51.5 9.5 59 13"/></g><g class="pink" fill="none" stroke="#ff3d8b" stroke-linejoin="miter"><path vector-effect="non-scaling-stroke" class="o" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" class="o" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" d="M9.5 13 1 10.5M44.5 13Q51.5 9.5 59 13"/></g><g fill="#fff"><rect x="15" y="12" width="4" height="4"/><rect x="20" y="17" width="2.5" height="2.5"/><rect x="64" y="12" width="3.2" height="3.6"/></g></svg></div>
+
+      <!-- comic panels. data-crop is the box on the 657x560 cutout the panel
+           shows (live, so she blinks in it), data-at/data-span the stretch
+           of the fall it slides through, data-dir 1 = in from the right. -->
+      <div class="comic top flip" data-at=".03" data-span=".19" data-dir="1" data-crop="425,200,200,125" data-crop2="460,402,200,125" aria-hidden="true">
+        <div class="cp back p1"><p class="cap">talks the talk...</p></div>
+        <div class="cp p2"><p class="cap">...walks the walk.</p></div>
+        <span class="spark" style="left:-5%;top:-9%">✦</span><span class="spark" style="right:5%;top:-13%">✧</span>
+        <p class="sfx">click!</p><p class="sfx s2">clack!</p>
       </div>
-      <div class="intro-cloud cc front" style="--x:-30vw;--w:68vw;--t:4.6s;--d:-1.6s;--s:-1"></div>
-      <div class="intro-cloud ca front" style="--x:64vw;--w:66vw;--t:5s;--d:-3.8s;--s:1"></div>
-      <div class="intro-cloud cb front" style="--x:16vw;--w:46vw;--t:5.6s;--d:-.4s;--o:.8;--s:-1"></div>
+      <div class="comic low" data-at=".24" data-span=".19" data-dir="-1" data-crop="0,30,290,181.25" data-crop2="35,85,210,131.25" data-face aria-hidden="true">
+        <div class="cp back p1"><p class="cap">takes the work seriously...</p></div>
+        <div class="cp p2"><p class="cap">...never herself.</p>
+          <div class="shades-in" style="left:50.3%;top:53%;width:58.7%;--ra:-11deg"><svg class="hearts" viewBox="0 0 100 44" aria-hidden="true"><g fill="url(#lensTint)"><path class="l" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path class="l" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/></g><g class="ink" fill="none" stroke="#14202b" stroke-linejoin="miter" vector-effect="non-scaling-stroke"><path vector-effect="non-scaling-stroke" class="o" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" class="o" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" d="M9.5 13 1 10.5M44.5 13Q51.5 9.5 59 13"/></g><g class="pink" fill="none" stroke="#ff3d8b" stroke-linejoin="miter"><path vector-effect="non-scaling-stroke" class="o" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" class="o" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" d="M9.5 13 1 10.5M44.5 13Q51.5 9.5 59 13"/></g><g fill="#fff"><rect x="15" y="12" width="4" height="4"/><rect x="20" y="17" width="2.5" height="2.5"/><rect x="64" y="12" width="3.2" height="3.6"/></g></svg></div>
+        </div>
+        <span class="spark" style="right:-5%;top:-8%">✦</span><span class="spark" style="left:12%;bottom:-11%">♡</span>
+        <p class="sfx">hi ♡</p><p class="sfx s2">boop!</p>
+      </div>
+      <div class="comic low" data-at=".45" data-span=".18" data-dir="-1" data-crop="250,-25,290,181.25" data-crop2="300,-10,200,125" aria-hidden="true">
+        <div class="cp back p1"><p class="cap">words first...</p>
+          <div class="prop under pen" style="left:48.4%;top:38.7%;width:35.5%;--ra:70deg"><svg viewBox="-1 -3 103 13" aria-hidden="true"><g stroke="#14202b" stroke-width="1.4" stroke-linejoin="round"><rect x="0" y="1" width="20" height="7" rx="2.5" fill="#ff5c9a"/><rect x="20" y="1" width="52" height="7" fill="#2fd0bd"/><rect x="4" y="-1.6" width="15" height="2.6" rx="1" fill="#ffc531"/><rect x="72" y="1.4" width="6" height="6.2" fill="#ffc531"/><path d="M78 1.4 94 3.8v1.4L78 7.6z" fill="#ffe2bf"/><path d="M94 3.8 100 4.5 94 5.2z" fill="#14202b"/></g><path d="M58 1v7M62 1v7M66 1v7" stroke="#14202b" stroke-width=".7" opacity=".35"/><g fill="#fff" opacity=".6"><rect x="22" y="2.4" width="34" height="1.2"/><rect x="2.5" y="2.4" width="15" height="1.2"/></g></svg></div>
+          <div class="prop over pen thumb" style="left:48.4%;top:38.7%;width:35.5%;--ra:70deg"><svg viewBox="-1 -3 103 13" aria-hidden="true"><g stroke="#14202b" stroke-width="1.4" stroke-linejoin="round"><rect x="0" y="1" width="20" height="7" rx="2.5" fill="#ff5c9a"/><rect x="20" y="1" width="52" height="7" fill="#2fd0bd"/><rect x="4" y="-1.6" width="15" height="2.6" rx="1" fill="#ffc531"/><rect x="72" y="1.4" width="6" height="6.2" fill="#ffc531"/><path d="M78 1.4 94 3.8v1.4L78 7.6z" fill="#ffe2bf"/><path d="M94 3.8 100 4.5 94 5.2z" fill="#14202b"/></g><path d="M58 1v7M62 1v7M66 1v7" stroke="#14202b" stroke-width=".7" opacity=".35"/><g fill="#fff" opacity=".6"><rect x="22" y="2.4" width="34" height="1.2"/><rect x="2.5" y="2.4" width="15" height="1.2"/></g></svg></div>
+        </div>
+        <div class="cp p2"><p class="cap">...then the build.</p>
+          <div class="prop under pen held" style="left:45.2%;top:44.2%;width:51.5%;--ra:70deg"><svg viewBox="-1 -3 103 13" aria-hidden="true"><g stroke="#14202b" stroke-width="1.4" stroke-linejoin="round"><rect x="0" y="1" width="20" height="7" rx="2.5" fill="#ff5c9a"/><rect x="20" y="1" width="52" height="7" fill="#2fd0bd"/><rect x="4" y="-1.6" width="15" height="2.6" rx="1" fill="#ffc531"/><rect x="72" y="1.4" width="6" height="6.2" fill="#ffc531"/><path d="M78 1.4 94 3.8v1.4L78 7.6z" fill="#ffe2bf"/><path d="M94 3.8 100 4.5 94 5.2z" fill="#14202b"/></g><path d="M58 1v7M62 1v7M66 1v7" stroke="#14202b" stroke-width=".7" opacity=".35"/><g fill="#fff" opacity=".6"><rect x="22" y="2.4" width="34" height="1.2"/><rect x="2.5" y="2.4" width="15" height="1.2"/></g></svg></div>
+          <div class="prop over pen thumb held" style="left:45.2%;top:44.2%;width:51.5%;--ra:70deg"><svg viewBox="-1 -3 103 13" aria-hidden="true"><g stroke="#14202b" stroke-width="1.4" stroke-linejoin="round"><rect x="0" y="1" width="20" height="7" rx="2.5" fill="#ff5c9a"/><rect x="20" y="1" width="52" height="7" fill="#2fd0bd"/><rect x="4" y="-1.6" width="15" height="2.6" rx="1" fill="#ffc531"/><rect x="72" y="1.4" width="6" height="6.2" fill="#ffc531"/><path d="M78 1.4 94 3.8v1.4L78 7.6z" fill="#ffe2bf"/><path d="M94 3.8 100 4.5 94 5.2z" fill="#14202b"/></g><path d="M58 1v7M62 1v7M66 1v7" stroke="#14202b" stroke-width=".7" opacity=".35"/><g fill="#fff" opacity=".6"><rect x="22" y="2.4" width="34" height="1.2"/><rect x="2.5" y="2.4" width="15" height="1.2"/></g></svg></div>
+        </div>
+        <span class="spark" style="right:-6%;top:-10%">✦</span><span class="spark" style="left:9%;bottom:-12%">✦</span>
+        <p class="sfx">yoink!</p><p class="sfx s2">scritch!</p>
+      </div>
+      <div class="comic top flip" data-at=".65" data-span=".17" data-dir="1" data-crop="-30,-10,300,187.5" data-crop2="95,35,200,125" aria-hidden="true">
+        <div class="cp back p1"><p class="cap">big hair...</p></div>
+        <div class="cp p2"><p class="cap">...bigger ideas.</p></div>
+        <span class="spark" style="left:-5%;top:-9%">✧</span><span class="spark" style="right:6%;top:-12%">✦</span>
+        <p class="sfx">swish!</p><p class="sfx s2">fwoosh!</p>
+      </div>
+
+      <div class="intro-flash"></div>
+      <div class="intro-nudge" aria-hidden="true">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v8M2.5 6.5 6 10l3.5-3.5"/></svg>
+        <span class="start">scroll to start</span>
+        <span class="falling">falling<span class="pct" id="intro-pct">0%</span></span>
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v8M2.5 6.5 6 10l3.5-3.5"/></svg>
+      </div>
+      <button type="button" class="intro-skip" id="intro-skip">skip to work</button>
       <div class="intro-bar"><i id="overlay-bar"></i></div>
     </div>
 
@@ -3755,55 +3906,194 @@ body::after{
       (function () {
         const overlay = document.getElementById('scene-overlay');
         const bar     = document.getElementById('overlay-bar');
-        const fall    = overlay.querySelector('.intro-fall');
-        const frames  = [...fall.querySelectorAll('img')];
+        const pctEl   = document.getElementById('intro-pct');
+        const title   = overlay.querySelector('.intro-title');
+        const comics  = [...overlay.querySelectorAll('.comic')];
+        const shades  = overlay.querySelector('.intro-shades');
         const calm    = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const MIN_MS  = calm ? 0 : 1600;        // always long enough to see her fall
-        let ready = false, minDone = false, open = true;
+        let open = true, parting = false;
 
-        // her kick goes one way, like the north star: pose 1 while she
-        // falls, 1.5 once loading is underway, 2 as she drops into the
-        // clouds. a smear frame flashes between drawn poses. frames are
-        // indexed 0 = 1, 1 = smear, 2 = 1.5, 3 = smear, 4 = 2. nothing swaps
-        // until all five are decoded, so it never flashes an empty frame
-        const show = i => frames.forEach((f, j) => f.classList.toggle('on', j === i));
-        const decoded = Promise.all(frames.map(f => f.decode ? f.decode().catch(() => {}) : null));
-        let pose = 0, smearT = 0, midT = 0;
+        // her kick goes one way, like the north star: pose 1 to start, 1.5
+        // the moment she starts falling (so the shoe panel gets one foot at a
+        // time), 2 on the way through at the end. a
+        // smear frame flashes between drawn poses. frames are 0 = 1,
+        // 1 = smear, 2 = 1.5, 3 = smear, 4 = 2. the module swaps them
+        const show = i => window.__introScene?.frame(i);
+        let pose = 0, smearT = 0;
         function setPose(next) {
           if (calm || next <= pose) return;
-          decoded.then(() => {
-            if (!open || next <= pose) return;
-            show(next - 1); pose = next;
-            clearTimeout(smearT); smearT = setTimeout(() => show(pose), 55);
+          show(next - 1); pose = next;
+          clearTimeout(smearT); smearT = setTimeout(() => show(pose), 55);
+        }
+        function resetPose() { clearTimeout(smearT); pose = 0; show(0); }
+
+        // ── the scroll ──
+        // nothing scrolls under here (the page scrolls inside its own card),
+        // so the intro keeps its own: wheel, swipe and arrow keys add to
+        // `goal`, and `p` chases it so the fall always glides. past AUTO_AT
+        // it finishes by itself
+        const BUDGET = 3400, AUTO_AT = .8, AUTO_MS = 1600;
+        let goal = 0, p = 0, auto = false;
+        function push(px) {
+          if (!open || parting || calm) return;
+          if (px < 0 && auto) auto = false;          // you can still pull back up
+          goal = Math.min(1, Math.max(0, goal + px / BUDGET));
+        }
+        addEventListener('wheel', e => {
+          if (!open || parting) return;
+          push(e.deltaY * (e.deltaMode === 1 ? 16 : 1));
+        }, { passive: true });
+        let touchY = null;
+        overlay.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
+        overlay.addEventListener('touchmove', e => {
+          if (touchY === null) return;
+          push((touchY - e.touches[0].clientY) * 2.4);
+          touchY = e.touches[0].clientY;
+        }, { passive: true });
+        addEventListener('keydown', e => {
+          if (!open || parting) return;
+          if (['ArrowDown', 'PageDown', ' '].includes(e.key)) { push(e.key === 'ArrowDown' ? 200 : 480); e.preventDefault(); }
+          if (['ArrowUp', 'PageUp'].includes(e.key)) { push(e.key === 'ArrowUp' ? -200 : -480); e.preventDefault(); }
+        });
+
+        let mx = 0, my = 0, aimX = 0, aimY = 0;
+        addEventListener('pointermove', e => {
+          aimX = e.clientX / innerWidth * 2 - 1;
+          aimY = e.clientY / innerHeight * 2 - 1;
+        }, { passive: true });
+
+        const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        const lerp = (a, b, t) => a + (b - a) * t;
+
+        // the title, a span per letter. the moment you start falling each
+        // letter scrambles through glyphs and puffs up into the sky, left
+        // to right, like it turned into a lil cloud of ascii
+        const GLYPHS = '.:-=+*#%@';
+        const letters = [];
+        title.querySelectorAll('small, big').forEach(line => {
+          const text = line.textContent; line.textContent = '';
+          [...text].forEach(ch => {
+            const s = document.createElement('span');
+            s.textContent = ch === ' ' ? ' ' : ch;
+            s.dataset.ch = s.textContent;
+            line.appendChild(s); letters.push(s);
+          });
+        });
+        let tick = 0;
+        function puffTitle() {
+          const k = Math.min(1, p / .07), n = letters.length;
+          tick++;
+          letters.forEach((s, i) => {
+            const ki = Math.max(0, Math.min(1, k * 1.7 - i / n * .7));
+            if (ki <= 0) { s.textContent = s.dataset.ch; s.style.cssText = ''; return; }
+            if (s.dataset.ch !== ' ' && tick % 3 === 0) s.textContent = ki >= 1 ? s.dataset.ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+            const drift = Math.sin(i * 1.7) * 26 * ki;
+            s.style.transform = `translate(${drift.toFixed(1)}px, ${(-ki * 90).toFixed(1)}px) scale(${(1 + ki * .7).toFixed(3)})`;
+            s.style.opacity = (1 - ki).toFixed(3);
+            s.style.filter = `blur(${(ki * 9).toFixed(1)}px)`;
           });
         }
-        function resetPose() { clearTimeout(smearT); clearTimeout(midT); pose = 0; show(0); }
-        // 1.5 at 40% loaded, or after a beat if loading is quick
-        function startFall() { resetPose(); midT = setTimeout(() => setPose(2), 900); }
+
+        // a panel's ride across: slides in, hangs about off to one side of
+        // her for the middle of its stretch, then slides out the far side
+        function ride(k, w, dir) {
+          const gap = Math.max(16, innerWidth * .04);
+          const enter = innerWidth + 30, park = innerWidth - w - gap, leave = -w - 30;
+          let x = k < .2 ? lerp(enter, park, ease(k / .2))
+                : k < .82 ? lerp(park, park - innerWidth * .05, (k - .2) / .62)
+                : lerp(park - innerWidth * .05, leave, ease((k - .82) / .18));
+          return dir > 0 ? x : innerWidth - w - x;
+        }
+
+        // her shades in the sky are on for the face panel's stretch
+        const face = comics.find(c => c.hasAttribute('data-face'));
+        const SPLIT = .46;
+        const SHADES_AT = +face.dataset.at + +face.dataset.span * SPLIT, SHADES_TO = +face.dataset.at + +face.dataset.span - .03;
+        let current = null, blinkT = [];
+
+        let raf = 0, last = performance.now();
+        function frame(now) {
+          raf = requestAnimationFrame(frame);
+          const dt = Math.min(.05, (now - last) / 1000); last = now;
+          if (auto) goal = Math.min(1, goal + dt * 1000 / AUTO_MS * (1 - AUTO_AT));
+          else if (goal >= AUTO_AT) auto = true;
+          p += (goal - p) * (auto ? .12 : .08);
+          if (Math.abs(goal - p) < .0004) p = goal;
+          mx += (aimX - mx) * .06; my += (aimY - my) * .06;
+
+          puffTitle();
+          if (p > .02) setPose(2);
+          if (p > .9) setPose(4);
+
+          overlay.classList.toggle('moving', p > .006);
+          pctEl.textContent = Math.round(p * 100) + '%';
+          bar.style.transform = `scaleX(${p.toFixed(4)})`;
+
+          // the comic panels. only one is ever live; the live close up
+          // canvas moves into whichever one that is
+          let live = null;
+          comics.forEach(c => {
+            const k = (p - +c.dataset.at) / +c.dataset.span;
+            const on = k >= 0 && k < 1;
+            c.classList.toggle('on', on);
+            c.classList.toggle('two', on && k >= SPLIT);
+            if (!on) return;
+            live = c;
+            const w = c.offsetWidth, bob = Math.sin(now / 600 + +c.dataset.at * 9) * 6;
+            c.style.transform = `translate(${ride(k, w, +c.dataset.dir).toFixed(1)}px, ${bob.toFixed(1)}px) rotate(${(+c.dataset.dir * -2.5).toFixed(1)}deg)`;
+          });
+          const beat = live && live.querySelector(live.classList.contains('two') ? '.p2' : '.p1');
+          if (beat !== current) {
+            blinkT.forEach(clearTimeout); blinkT = [];
+            // going p1 to p2 in the same comic, p1 keeps its last frame,
+            // like a printed panel. back on p1 it goes live again
+            if (current && beat && current.parentNode === beat.parentNode && beat.classList.contains('p2')) window.__introScene?.freeze();
+            beat?.querySelector('canvas.frozen')?.remove();
+            current = beat;
+            window.__introScene?.panel(beat,
+                                      beat ? live.dataset[beat.classList.contains('p2') ? 'crop2' : 'crop'].split(',').map(Number) : null,
+                                      false);
+            // in the face panel she blinks behind the shades once they land
+            if (live?.hasAttribute('data-face')) blinkT = [900, 1250, 2600, 3900].map(ms => setTimeout(() => window.__introScene?.blinkNow(), ms));
+          }
+
+          const out = window.__introScene?.render(p, mx, my);
+          if (!out) return;
+          const f = out.face;
+          shades.classList.toggle('on', p >= SHADES_AT && p < SHADES_TO);
+          if (f) {
+            shades.style.width = (f.w / .46).toFixed(1) + 'px';
+            shades.style.transform = `translate(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px) translate(-50%, -50%) rotate(${f.a.toFixed(3)}rad)`;
+          }
+
+          if (p > .985 && goal >= 1) part();
+        }
+        function startMotion() {
+          if (raf) return;
+          overlay.classList.add('live');
+          last = performance.now(); frame(last);
+        }
+        function stopMotion() { cancelAnimationFrame(raf); raf = 0; }
 
         function part() {
-          if (!open) return;
-          bar.style.transform = 'scaleX(1)';
+          if (!open || parting) return;
+          parting = true;
+          p = goal = 1;
           overlay.classList.add('parting');
-          setPose(2); setTimeout(() => setPose(4), 160);   // full kick on the way in
+          // the page settles in from a touch too close as you come through
+          setTimeout(() => { if (!calm) document.documentElement.classList.add('intro-landing'); }, 300);
           setTimeout(() => {
+            stopMotion();
             overlay.classList.add('hidden');
             overlay.setAttribute('aria-hidden', 'true');
-            open = false;
+            open = false; parting = false;
+            window.__introScene?.panel(null); current = null;
+            window.__introScene?.sleep();
           }, 850);
+          setTimeout(() => document.documentElement.classList.remove('intro-landing'), 1300);
         }
-        function maybePart() { if (ready && minDone) part(); }
+        document.getElementById('intro-skip').addEventListener('click', part);
 
-        // first load: part once the on screen tiles are ready (the tile
-        // module posts progress and then modelsReady), never before MIN_MS
-        window.addEventListener('message', function (e) {
-          const d = e.data || {};
-          if (d.type === 'tileProgress') {
-            bar.style.transform = 'scaleX(' + Math.max(.08, d.p) + ')';
-            if (d.p >= .4) setPose(2);
-          }
-          if (d.type === 'modelsReady') { ready = true; maybePart(); }
-        });
         // only the homepage gets the intro. a direct link (/trove/ etc)
         // goes straight in
         const home = /^\/(index\.html)?$/.test(location.pathname);
@@ -3814,31 +4104,41 @@ body::after{
           overlay.classList.add('parting', 'hidden');
           overlay.setAttribute('aria-hidden', 'true');
           requestAnimationFrame(() => requestAnimationFrame(() => overlay.style.transition = ''));
+        } else if (calm) {
+          // asked for less motion: no fall, just the page once it's ready
+          window.addEventListener('message', e => { if (e.data?.type === 'modelsReady') part(); });
+          setTimeout(part, 3500);
         } else {
-          setTimeout(() => { minDone = true; maybePart(); }, MIN_MS);
-          // don't hold people in the sky for long. on a phone over 4g the
-          // first tile could take 8s+ and the intro just sat there, so it
-          // waits at most 3.5s, then parts anyway. tiles still loading
-          // fade in by themselves once they're ready
-          setTimeout(() => { ready = true; minDone = true; maybePart(); }, 3500);
-          startFall();
+          (document.fonts?.ready || Promise.resolve()).then(startMotion);
         }
 
-        // scroll up past the top: the clouds close back in, she falls
-        // through again, then they part. rate limited
+        // scroll up past the top: back up into the sky, waiting for you to
+        // fall through it again. rate limited
         let pull = 0, lastPlay = 0;
         function replay() {
           const now = performance.now();
-          if (open || now - lastPlay < 3500 || calm) return;
+          if (open || now - lastPlay < 1500 || calm) return;
           if (document.documentElement.hasAttribute('data-pane-open')) return;   // not over a case study
-          lastPlay = now; open = true; pull = 0;
+          lastPlay = now; open = true; pull = 0; parting = false; auto = false;
+          goal = p = 0;
           overlay.removeAttribute('aria-hidden');
-          overlay.classList.remove('hidden', 'parting');
-          // restart her drop in
-          fall.style.animation = 'none'; void fall.offsetWidth; fall.style.animation = '';
-          startFall();
-          setTimeout(part, 2000);   // drop in, fall for a beat, then part
+          overlay.classList.remove('hidden', 'parting', 'moving', 'live');
+          comics.forEach(c => c.classList.remove('on'));
+          shades.classList.remove('on');
+          document.documentElement.classList.remove('intro-landing');
+          void title.offsetWidth;
+          window.__introScene?.wake();
+          resetPose();
+          startMotion();
         }
+        // the footer's "back up to the sky": top of the page, then the sky
+        window.introReplay = function () {
+          window.muteSnap?.(2000);
+          if (window.lenis) window.lenis.scrollTo(0, { immediate: true });
+          else (window.scroller || window).scrollTo({ top: 0 });
+          lastPlay = 0;
+          replay();
+        };
         function atTop() {
           const sc = window.scroller || document.getElementById('contentCard');
           return !sc || (sc.scrollTop || 0) <= 2;
@@ -3853,6 +4153,394 @@ body::after{
           if (ty !== null && e.touches[0].clientY - ty > 110) { ty = null; replay(); }
         }, { passive: true });
       })();
+    </script>
+
+    <!-- the fall. one three canvas: her and the clouds drawn as they are,
+         the things in the sky and the planet drawn as colour ascii (always
+         underneath her), the way the inspo does its whole scene. plus a
+         second little renderer for the live close up in whichever comic
+         panel is on. driven by the script above via window.__introScene -->
+    <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
+    import { MeshoptDecoder } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/libs/meshopt_decoder.module.js';
+
+    const canvas  = document.getElementById('intro3d');
+    const overlay = document.getElementById('scene-overlay');
+    if (canvas && !overlay.classList.contains('hidden') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const gfx = window.__gfx || { dpr: Math.min(devicePixelRatio, 1.5), aa: true };
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: gfx.aa });
+      renderer.setPixelRatio(Math.min(gfx.dpr, 1.5));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.autoClear = false;
+      renderer.setClearColor(0x000000, 0);
+      const camera = new THREE.PerspectiveCamera(52, 1, .1, 400);
+
+      // ── the fall ── she drops straight down, so the clouds stream up past
+      // her. the camera circles her slowly as she goes, which is what makes
+      // the world move around her instead of just scrolling
+      const DROP = 90;
+      const camAngle = p => -.35 + p * Math.PI * 1.15;
+      const henY = p => -p * DROP;
+
+      // ── her and the clouds, drawn as they are ──
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(dark ? 0x17293b : 0xc6e3f1, 20, 75);
+      const tl = new THREE.TextureLoader();
+      const tex = (url, srgb = true, done) => { const t = tl.load(url, done); if (srgb) t.colorSpace = THREE.SRGBColorSpace; return t; };
+      let seed = 23;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+      const CLOUD = [['/sky/cloud-a.webp', 1259 / 533], ['/sky/cloud-b.webp', 1015 / 314],
+                     ['/sky/cloud-c.webp', 1352 / 533], ['/field/clouds-near.webp', 1100 / 280]]
+        .map(([u, a]) => ({ map: tex(u), a }));
+      const clouds = [];
+      for (let i = 0; i < 100; i++) {
+        const c = CLOUD[Math.floor(rnd() * CLOUD.length)];
+        const ang = rnd() * Math.PI * 2, r = 3 + Math.pow(rnd(), .8) * 26;
+        // the ones in the camera's orbit stay small and thin, so passing
+        // through one is a puff, not a white screen
+        const inOrbit = r > 5.5 && r < 10.5;
+        const w = inOrbit ? 3 + rnd() * 5 : 7 + rnd() * 17;
+        const base = inOrbit ? .45 + rnd() * .25 : .6 + rnd() * .35;
+        const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: c.map, transparent: true, depthWrite: false, opacity: base }));
+        sp.position.set(Math.sin(ang) * r, 14 - rnd() * (DROP + 26), Math.cos(ang) * r);
+        sp.scale.set(w, w / c.a, 1);
+        sp.userData.base = base;
+        scene.add(sp); clouds.push(sp);
+      }
+
+      // her. the cutout on a fine mesh so bits of her can move: the raised
+      // forearm sways from the elbow, her outer curls and the skirt's hem
+      // flutter, and every few seconds she blinks (the lid is the cheek
+      // colour just under each eye pulled up, with a lash line where it
+      // meets). her chest and her feet never move.
+      // all coords are pixels on the 657x560 art
+      const FRAMES = ['1', '1s', '15', '2s', '2'].map((n, i) => tex(`./sky/hen-fall-${n}.webp`, false, i ? undefined : () => canvas.classList.add('ready')));
+      const henMat = new THREE.ShaderMaterial({
+        transparent: true, depthWrite: false,
+        uniforms: { map: { value: FRAMES[0] }, t: { value: 0 }, blink: { value: 0 } },
+        vertexShader: `
+          uniform float t;
+          varying vec2 vUv;
+          vec2 px(vec2 uv) { return vec2(uv.x * 657., (1. - uv.y) * 560.); }
+          vec2 unpx(vec2 q) { return vec2(q.x / 657., 1. - q.y / 560.); }
+          vec2 rot(vec2 q, vec2 c, float a) { q -= c; float s = sin(a), k = cos(a); return c + vec2(k*q.x - s*q.y, s*q.x + k*q.y); }
+          void main() {
+            vUv = uv;
+            vec2 q = px(uv), o = q;
+            vec2 el = vec2(300., 110.), hd = vec2(425., 35.), ab = hd - el;
+            float k = dot(o - el, ab) / dot(ab, ab);
+            float arm = (1. - smoothstep(26., 50., length(o - (el + ab * clamp(k, 0., 1.))))) * smoothstep(.0, .25, k);
+            q = rot(q, el, (sin(t * 1.7) * .08 + sin(t * 3.3) * .02) * arm);
+            float dh = length((o - vec2(140., 135.)) * vec2(1., 1.1));
+            float hair = smoothstep(60., 115., dh) * (1. - smoothstep(130., 170., dh)) * (1. - arm);
+            hair *= 1. - smoothstep(170., 195., o.y) * smoothstep(95., 125., o.x);
+            q += vec2(sin(t * 3.1 + o.y * .07), cos(t * 2.5 + o.x * .06)) * 2.6 * hair;
+            float skirt = smoothstep(240., 270., o.x) * (1. - smoothstep(410., 440., o.x)) * smoothstep(330., 430., o.y);
+            q += vec2(sin(t * 4.2 + o.y * .05), sin(t * 3.4 + o.x * .05) * .6) * 3. * skirt;
+            vec2 u = unpx(q);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(u.x - .5, u.y - .5, 0., 1.);
+          }`,
+        fragmentShader: `
+          uniform sampler2D map; uniform float blink;
+          varying vec2 vUv;
+          vec2 px(vec2 uv) { return vec2(uv.x * 657., (1. - uv.y) * 560.); }
+          vec2 unpx(vec2 q) { return vec2(q.x / 657., 1. - q.y / 560.); }
+          vec4 eye(vec4 col, vec2 q, vec2 c, vec2 h, float ang) {
+            vec2 d = q - c; float s = sin(-ang), k = cos(-ang);
+            vec2 l = vec2(k*d.x - s*d.y, s*d.x + k*d.y) / h;
+            float inside = 1. - smoothstep(.9, 1.15, length(l));
+            if (inside <= 0.) return col;
+            float lid = mix(-1.25, .2, blink) + .28 * (1. - l.x * l.x) * blink;
+            float covered = smoothstep(lid + .06, lid - .06, l.y);
+            vec2 sk = vec2(l.x * h.x * .8, h.y * 2.1);
+            float s2 = sin(ang), k2 = cos(ang);
+            vec4 skin = texture2D(map, unpx(c + vec2(k2*sk.x - s2*sk.y, s2*sk.x + k2*sk.y)));
+            col = mix(col, skin, covered * inside);
+            float line = (1. - smoothstep(.0, .2, abs(l.y - lid))) * smoothstep(.0, .35, blink) * (1. - smoothstep(.85, 1.05, abs(l.x)));
+            return mix(col, vec4(.2, .12, .1, 1.), line * inside);
+          }
+          void main() {
+            vec4 col = texture2D(map, vUv);
+            if (blink > .01) {
+              vec2 q = px(vUv);
+              col = eye(col, q, vec2(117., 159.), vec2(20., 8.), .04);
+              col = eye(col, q, vec2(164., 149.), vec2(13., 9.), -.37);
+            }
+            if (col.a < .03) discard;
+            gl_FragColor = col;
+          }`
+      });
+      const hen = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 48, 48), henMat);
+      scene.add(hen);
+      const HEN_W = 4.6, HEN_H = HEN_W * 560 / 657;
+
+      // ── the ascii world ── the things in the sky and the planet live in
+      // their own scene, get drawn to a texture, then turned into glyphs
+      // cell by cell, each in its own colour. it's all drawn before her,
+      // so she's always on top
+      const ascii = new THREE.Scene();
+      ascii.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.4));
+      const key = new THREE.DirectionalLight(0xffffff, 2.6); key.position.set(-6, 10, 8); ascii.add(key);
+
+      // at: where in the fall it drifts past her, side: her left or right,
+      // far: further back and smaller. each part of a model takes the next
+      // colour in its list, so a laptop reads as a laptop (screen, keys,
+      // body) instead of one grey smudge
+      const DECALS = [
+        { at: .08, url: '/models/cup_tea.glb',   side:  1, size: 2.1, pal: [0xffffff, 0xff6fae, 0xb5643a, 0xffd84d] },
+        { at: .2,  url: '/models/pothos.glb',    side: -1, size: 2.5, pal: [0x2fbf5f, 0x8ee68f, 0xd0703c, 0x1f8f4a] },
+        { at: .3,  url: '/models/laptop.glb',    side:  1, size: 2.7, pal: [0xc9d2e6, 0x5f8dff, 0x2b3045, 0x9b7bff] },
+        { at: .41, url: '/models/allsorts.glb',  side: -1, size: 2.1, pal: [0xff6fae, 0xffd84d, 0x222222, 0x7fd3ff, 0xffffff, 0xff9a3c] },
+        { at: .5,  url: '/models/iphone.glb',    side:  1, size: 2.1, pal: [0x2b3550, 0x7bd8ff, 0xe3e8f2, 0xff6fae] },
+        { at: .6,  url: '/models/steamdeck.glb', side: -1, size: 2.7, pal: [0x2a2f3a, 0x9b7bff, 0xff6fae, 0x7fd3ff] },
+        { at: .7,  url: '/models/zippo.glb',     side:  1, size: 1.9, pal: [0xe3e8f2, 0xffa040, 0xffd84d, 0xff5a3c] },
+        { at: .79, url: '/models/desk_lamp.glb', side: -1, size: 2.4, pal: [0xffd84d, 0x2fd0bd, 0x30364a, 0xfff4c2] },
+        { at: .14, url: '/models/yummymeal.glb', side: -1, size: 2.6, pal: [0xffc531, 0xff6b4a, 0x7fd36b, 0xffffff, 0xb5643a], far: true },
+        { at: .55, url: '/models/pothos.glb',    side:  1, size: 2.8, pal: [0x2fbf5f, 0x8ee68f, 0xd0703c], far: true },
+      ];
+      const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+      const decals = DECALS.map(o => {
+        const g = new THREE.Group(); g.visible = false; g.userData = o;
+        ascii.add(g);
+        loader.load(o.url, gltf => {
+          const m = gltf.scene;
+          const box = new THREE.Box3().setFromObject(m);
+          const size = box.getSize(new THREE.Vector3());
+          m.position.sub(box.getCenter(new THREE.Vector3()));
+          const holder = new THREE.Group(); holder.add(m);
+          holder.scale.setScalar(o.size / Math.max(size.x, size.y, size.z));
+          let i = 0;
+          m.traverse(c => {
+            if (!c.isMesh) return;
+            const col = new THREE.Color(o.pal[i++ % o.pal.length]);
+            c.material = c.material.clone();
+            c.material.color?.copy(col);
+            if (c.material.emissive) c.material.emissive.copy(col).multiplyScalar(.3);
+          });
+          g.add(holder);
+        });
+        return g;
+      });
+      // little colourful ascii sparkles scattered through the sky
+      const sparkles = [];
+      for (let i = 0; i < 26; i++) {
+        const col = [0xff6fae, 0xffc531, 0x2fb8a6, 0x9b7bff, 0x5fb4ff][i % 5];
+        const m = new THREE.Mesh(new THREE.OctahedronGeometry(.25 + rnd() * .4), new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: .3, roughness: .4 }));
+        const a = rnd() * Math.PI * 2, r = 9 + rnd() * 20;
+        m.position.set(Math.sin(a) * r, 10 - rnd() * (DROP + 20), Math.cos(a) * r);
+        m.userData.spin = .5 + rnd();
+        ascii.add(m); sparkles.push(m);
+      }
+      // the planet she lands on, deep violet with a dark teal ring. it's
+      // below the whole fall and comes up to meet her
+      const planet = new THREE.Group();
+      planet.add(new THREE.Mesh(new THREE.SphereGeometry(24, 48, 32), new THREE.MeshStandardMaterial({ color: 0x4a2fa8, roughness: .85 })));
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(38, .9, 8, 96), new THREE.MeshStandardMaterial({ color: 0x0f7d74, roughness: .6 }));
+      ring.rotation.set(1.25, 0, .35); planet.add(ring);
+      planet.position.set(0, -DROP - 34, 0);
+      ascii.add(planet);
+
+      // the glyphs, lightest to densest, chunky and a bit wide like the
+      // inspo's so they read as a shape
+      const GLYPHS = '.:-=+*#%@';
+      const atlasCv = document.createElement('canvas');
+      atlasCv.width = GLYPHS.length * 48; atlasCv.height = 48;
+      const g2 = atlasCv.getContext('2d');
+      g2.fillStyle = '#000'; g2.fillRect(0, 0, atlasCv.width, 48);
+      g2.fillStyle = '#fff'; g2.font = 'bold 42px ui-monospace, SFMono-Regular, Menlo, monospace'; g2.textAlign = 'center'; g2.textBaseline = 'middle';
+      [...GLYPHS].forEach((ch, i) => { g2.save(); g2.translate(i * 48 + 24, 25); g2.scale(1.35, 1); g2.fillText(ch, 0, 0); g2.restore(); });
+      const atlas = new THREE.CanvasTexture(atlasCv);
+
+      // texture in, glyphs out. `outfit` swaps her blues (top and skirt)
+      // for pink, which is the panel where she's in a new outfit
+      const glyphMat = (lift, outfit) => new THREE.ShaderMaterial({
+        transparent: true, depthTest: false, depthWrite: false,
+        uniforms: { tex: { value: null }, atlas: { value: atlas }, res: { value: new THREE.Vector2(1, 1) }, cell: { value: 10 }, lift: { value: lift }, outfit: { value: outfit ? 1 : 0 } },
+        vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }`,
+        fragmentShader: `
+          uniform sampler2D tex, atlas; uniform vec2 res; uniform float cell, lift, outfit;
+          varying vec2 vUv;
+          const float N = ${GLYPHS.length}.;
+          void main() {
+            vec2 px = vUv * res;
+            vec2 c = floor(px / cell);
+            vec4 s = texture2D(tex, (c + .5) * cell / res);
+            if (s.a < .1) discard;
+            vec3 rgb = outfit > .5 ? s.rgb : pow(s.rgb, vec3(1. / 2.2));
+            float lum = dot(rgb, vec3(.299, .587, .114));
+            float g = floor(clamp(.36 + .64 * pow(lum, .8), 0., .999) * N);
+            vec2 l = fract(px / cell);
+            if (texture2D(atlas, vec2((g + l.x) / N, l.y)).r < .35) discard;
+            vec3 col = mix(vec3(lum), rgb, 1.55);
+            if (outfit > .5 && rgb.b > rgb.r + .04 && rgb.b > rgb.g) col = vec3(1., .36, .64) * (.45 + lum * 1.5);
+            gl_FragColor = vec4(clamp(col * lift, 0., 1.), 1.);
+          }`
+      });
+      const rt = new THREE.WebGLRenderTarget(1, 1);
+      const mainGlyph = glyphMat(dark ? 1.15 : .82, false);
+      const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const quad = new THREE.Scene(); quad.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mainGlyph));
+
+      // the close up renderer. same her, same material (so she blinks in
+      // there too), seen flat through a box on the art. for the outfit
+      // panel it draws her to a texture first and turns her into glyphs
+      const pcv = document.createElement('canvas');
+      const pRenderer = new THREE.WebGLRenderer({ canvas: pcv, alpha: true, antialias: true });
+      pRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      pRenderer.setClearColor(0x000000, 0);
+      const pScene = new THREE.Scene(), pCam = new THREE.OrthographicCamera(-.5, .5, .5, -.5, -1, 1);
+      pScene.add(new THREE.Mesh(hen.geometry, henMat));
+      const pRT = new THREE.WebGLRenderTarget(1, 1);
+      const pGlyph = glyphMat(1.4, true);
+      const pQuad = new THREE.Scene(); pQuad.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), pGlyph));
+      let pTarget = null, pAscii = false;
+      function drawPanel() {
+        if (!pTarget) return;
+        const pw = pTarget.clientWidth, ph = pTarget.clientHeight;
+        if (pw && (pw !== pcv._w || ph !== pcv._h)) {
+          pRenderer.setSize(pw, ph, false); pcv._w = pw; pcv._h = ph;
+          const b = pRenderer.getDrawingBufferSize(new THREE.Vector2());
+          pRT.setSize(b.x, b.y); pGlyph.uniforms.res.value.copy(b);
+          pGlyph.uniforms.cell.value = Math.round(5 * pRenderer.getPixelRatio());
+        }
+        if (pAscii) {
+          pRenderer.setRenderTarget(pRT); pRenderer.render(pScene, pCam);
+          pRenderer.setRenderTarget(null);
+          pGlyph.uniforms.tex.value = pRT.texture; pRenderer.render(pQuad, ortho);
+        } else {
+          pRenderer.render(pScene, pCam);
+        }
+      }
+
+      function resize() {
+        const w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
+        renderer.setSize(w, h, false);
+        const b = renderer.getDrawingBufferSize(new THREE.Vector2());
+        rt.setSize(b.x, b.y);
+        mainGlyph.uniforms.res.value.copy(b);
+        mainGlyph.uniforms.cell.value = Math.round((w < 640 ? 7 : 8) * renderer.getPixelRatio());
+        camera.aspect = w / h;
+        camera.fov = w < h ? 64 : 50;
+        camera.updateProjectionMatrix();
+      }
+      addEventListener('resize', resize); resize();
+
+      const H = new THREE.Vector3(), fwd = new THREE.Vector3(), right = new THREE.Vector3(), upv = new THREE.Vector3();
+      const e1 = new THREE.Vector3(), e2 = new THREE.Vector3();
+      let awake = true, nextBlink = 2.2, blinkAt = -1;
+      const t0 = performance.now();
+      // her eyes on the art, as spots on the unit plane, for the shades
+      const EYE_L = new THREE.Vector3(117 / 657 - .5, .5 - 159 / 560, 0), EYE_R = new THREE.Vector3(164 / 657 - .5, .5 - 149 / 560, 0);
+
+      window.__introScene = {
+        sleep() { awake = false; },
+        wake() { awake = true; },
+        frame(i) { henMat.uniforms.map.value = FRAMES[Math.max(0, Math.min(4, i))]; },
+        blinkNow() { blinkAt = (performance.now() - t0) / 1000; },
+        // copy what the live panel shows right now into a plain canvas that
+        // stays behind, so the canvas can move on to the next beat
+        freeze() {
+          if (!pTarget || !pcv._w) return;
+          drawPanel();
+          const c = document.createElement('canvas');
+          c.className = 'frozen'; c.width = pcv.width; c.height = pcv.height;
+          c.getContext('2d').drawImage(pcv, 0, 0);
+          pTarget.prepend(c);
+        },
+        // put the live close up into a panel, framed on a box of the art
+        panel(el, crop, asAscii) {
+          pTarget = el; pAscii = !!asAscii;
+          if (!el) { pcv.remove(); return; }
+          const [x, y, cw, ch] = crop;
+          pCam.left = x / 657 - .5; pCam.right = (x + cw) / 657 - .5;
+          pCam.top = .5 - y / 560; pCam.bottom = .5 - (y + ch) / 560;
+          pCam.updateProjectionMatrix();
+          el.prepend(pcv); pcv._w = 0;
+        },
+        // p is the fall, 0..1, mx/my the mouse. hands back where her face
+        // is on screen (for the shades) and the clock
+        render(p, mx, my) {
+          if (!awake) return null;
+          const t = (performance.now() - t0) / 1000;
+          const w = canvas.clientWidth, h = canvas.clientHeight, narrow = w < h;
+
+          // her, bobbing a little on the way down
+          H.set(0, henY(p) + Math.sin(t * 1.6) * .12, 0);
+          // the camera, circling her, tilting down more as the planet comes
+          const a = camAngle(p) + mx * .25, R = narrow ? 10 : 7.8;
+          camera.position.set(Math.sin(a) * R, H.y + 1.2 + p * 3 - my * .6, Math.cos(a) * R);
+          camera.up.set(0, 1, 0);
+          camera.lookAt(0, H.y - p * 1.5, 0);
+          // the way the camera faces before it rolls, for laying things out
+          // beside her on screen
+          camera.updateMatrixWorld();
+          right.setFromMatrixColumn(camera.matrixWorld, 0);
+          upv.setFromMatrixColumn(camera.matrixWorld, 1);
+          fwd.setFromMatrixColumn(camera.matrixWorld, 2).negate();
+          camera.rotateZ(Math.sin(p * Math.PI * 1.5) * .08 + mx * .03);
+
+          const small = narrow ? .78 : 1;
+          hen.position.copy(H);
+          hen.quaternion.copy(camera.quaternion);
+          hen.rotateZ(Math.sin(t * .8) * .05);
+          hen.scale.set(HEN_W * small, HEN_H * small, 1);
+          henMat.uniforms.t.value = t;
+          if (t > nextBlink) { blinkAt = t; nextBlink = t + 2.4 + Math.random() * 3.2; }
+          const bt = (t - blinkAt) / .16;
+          henMat.uniforms.blink.value = blinkAt < 0 || bt > 2 ? 0 : (bt < 1 ? bt : 2 - bt);
+
+          // clouds thin out as they come right up to the lens
+          const camPos = camera.position;
+          clouds.forEach(c => { c.material.opacity = c.userData.base * Math.min(1, Math.max(0, (c.position.distanceTo(camPos) - 1.5) / 4)); });
+
+          // the decals ride lanes either side of her, rising past as she
+          // falls. on a wide screen they sit level with her, clear of her
+          // edges; on a phone there's no room, so they sit further back,
+          // behind her, peeking out
+          const dist = camPos.distanceTo(H);
+          const halfH = dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), halfW = halfH * camera.aspect;
+          const henHalf = HEN_W * small / 2;
+          decals.forEach(g => {
+            const o = g.userData, k = (p - o.at) / .12;
+            g.visible = Math.abs(k) < 1.4;
+            if (!g.visible) return;
+            const back = o.far ? 14 : narrow ? 7 : 0;
+            const s = (dist + back) / dist;
+            const lat = o.far ? halfW * s * .8
+                      : narrow ? halfW * s * .72
+                      : Math.min(halfW - o.size * .45, henHalf + o.size * .55 + .4);
+            g.position.copy(H)
+              .addScaledVector(right, o.side * lat + Math.sin(t * .6 + o.at * 20) * .2)
+              .addScaledVector(upv, k * halfH * 1.35 * s)
+              .addScaledVector(fwd, back);
+            g.scale.setScalar(narrow && !o.far ? .8 : 1);
+            g.rotation.y = t * .6 + o.at * 10;
+            g.rotation.x = Math.sin(t * .7 + o.at * 9) * .25;
+          });
+          sparkles.forEach(m => { m.rotation.y = t * m.userData.spin; m.rotation.x = t * .3; });
+          planet.rotation.y = t * .05;
+
+          renderer.setRenderTarget(rt); renderer.clear();
+          renderer.render(ascii, camera);
+          renderer.setRenderTarget(null); renderer.clear();
+          mainGlyph.uniforms.tex.value = rt.texture; renderer.render(quad, ortho);
+          renderer.render(scene, camera);
+
+          // the live close up, if a panel's up
+          drawPanel();
+
+          const toScreen = vec => ({ x: (vec.x + 1) / 2 * w, y: (1 - vec.y) / 2 * h });
+          hen.updateMatrixWorld();
+          const l = toScreen(e1.copy(EYE_L).applyMatrix4(hen.matrixWorld).project(camera));
+          const r = toScreen(e2.copy(EYE_R).applyMatrix4(hen.matrixWorld).project(camera));
+          const face = { x: (l.x + r.x) / 2, y: (l.y + r.y) / 2, a: Math.atan2(r.y - l.y, r.x - l.x), w: Math.hypot(r.x - l.x, r.y - l.y) };
+          return { face, t };
+        }
+      };
+    }
     </script>
 
     <!--
