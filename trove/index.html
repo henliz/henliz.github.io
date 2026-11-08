@@ -685,7 +685,7 @@
      sideways. That is the whole idle behaviour there: the dance sprite only
      ever plays while you're dragging a guy around, which you can't do here. */
   .mascot-hop{
-    position:absolute;bottom:3%;
+    position:absolute;bottom:var(--tot-floor, 3%);
     transform:translateX(calc(-50% + var(--wx, 0px)));
     transition:transform .64s cubic-bezier(.34,.08,.3,1);
   }
@@ -2997,9 +2997,9 @@
         background-repeat: no-repeat; background-position: center bottom;
     }
     .tf-hill { background-size: 100% 100%; }
-    .tf-hill--far  { z-index: 4; height: 42%; background-image: url('/field/hill-far.svg');
+    .tf-hill--far  { z-index: 4; height: 64%; background-image: url('/field/hill-far.svg');
                      opacity: .96; filter: saturate(.88) brightness(1.02) hue-rotate(-14deg); }
-    .tf-hill--near { z-index: 6; height: 30%; background-image: url('/field/hill-near.svg');
+    .tf-hill--near { z-index: 6; height: 52%; background-image: url('/field/hill-near.svg');
                      filter: saturate(.96) brightness(.97) hue-rotate(-10deg); }
     .tf-tuft {
         background-repeat: repeat-x; background-size: auto 100%;
@@ -3008,14 +3008,14 @@
         -webkit-mask-repeat: no-repeat; -webkit-mask-position: center bottom; -webkit-mask-size: 100% 100%;
     }
     .tf-tuft--far {
-        z-index: 5; height: 42%;
+        z-index: 5; height: 64%;
         background-image: url('/field/hill-tuft-far.svg');
         mask-image: url('/field/hill-far.svg'); -webkit-mask-image: url('/field/hill-far.svg');
         opacity: .9; filter: saturate(.88) brightness(1.02) hue-rotate(-14deg);
         animation: tfSway 9s ease-in-out infinite;
     }
     .tf-tuft--near {
-        z-index: 7; height: 30%;
+        z-index: 7; height: 52%;
         filter: saturate(.96) brightness(.97) hue-rotate(-10deg);
         background-image: url('/field/hill-tuft-near.svg');
         mask-image: url('/field/hill-near.svg'); -webkit-mask-image: url('/field/hill-near.svg');
@@ -3023,6 +3023,14 @@
     }
     /* two short fringes rendered in FRONT of the tots and the phone, so the
        blades overlap their feet rather than stopping dead at them */
+    /* the caption card sits over the bottom of the tile, so the hills and the
+       tots are lifted clear of it. the dark grass fringe stays on the bottom edge */
+    .tf { --tot-floor: 27%; }
+    /* the phone is a model the tile auto-centres, so lift its canvas instead */
+    .t-trove .tile-gl { transform: translateY(-6%); transition: opacity .2s ease; }
+    /* on hover the two big dom phones take over, but they live in the scene
+       layer under the model's canvas, so the canvas has to step aside */
+    .t-trove.is-video .tile-gl { opacity: 0; }
     .tf-grass {
         position: absolute; left: -6%; right: -6%; bottom: -1px;
         background-repeat: repeat-x; background-position: center bottom;
@@ -3043,7 +3051,7 @@
         position: absolute; inset: 0; z-index: 8;
         opacity: 1; transition: opacity .3s ease;
     }
-    .tile:hover .tf-tots { opacity: 0; }
+    .cell:hover .tf-tots { opacity: 0; }
 
     /* ---- the phones. Plain CSS, no canvas: same build as the case study's ---- */
     .tf-phone {
@@ -3074,7 +3082,7 @@
         background: radial-gradient(closest-side, rgba(38,66,26,.42), transparent 76%);
         transition: opacity .3s ease;
     }
-    .tile:hover .tf-shadow { opacity: 0; }
+    .cell:hover .tf-shadow { opacity: 0; }
 
     /* on hover: creamsicle, and the one phone becomes two */
     .tf-cream {
@@ -3085,7 +3093,7 @@
             radial-gradient(88% 64% at 50% 114%, rgba(255,246,228,.74), transparent 74%),
             linear-gradient(168deg,#ff8a24 0%,#ffa140 24%,#ffb75f 48%,#ffce8b 72%,#ffe9c8 100%);
     }
-    .tile:hover .tf-cream { opacity: 1; }
+    .cell:hover .tf-cream { opacity: 1; }
     /* Deliberately bigger than the tile. Two phones at readable size do not
        both fit inside a 5:3 box, so they don't try: one is cut off at the top
        and the other at the bottom, staggered, and between them you can read
@@ -3095,16 +3103,18 @@
         opacity: 0; transform: scale(.93);
         transition: opacity .32s ease, transform .5s cubic-bezier(.4,0,.2,1);
     }
-    .tf-pair .tf-phone { position: absolute; height: 150cqh; }
-    /* inset from the edge they DON'T run off, so you always see that end of the
-       phone finish — bezel, corner radius and all */
-    .tf-pair .tf-phone:first-child { right: 50%; margin-right: 2.4cqh; top:    4cqh; }
-    .tf-pair .tf-phone:last-child  { left:  50%; margin-left:  2.4cqh; bottom: 4cqh; }
-    .tile:hover .tf-pair { opacity: 1; transform: scale(1); }
+    /* fanned, like two cards in a hand: both phones whole, tilted opposite
+       ways and overlapping a little, sitting above the caption card */
+    .tf-pair .tf-phone { position: absolute; height: 80cqh; }
+    /* a real phone's proportions; the recording itself is a touch skinnier, so it covers */
+    .tf-pair .tf-screen { aspect-ratio: 9 / 18.5; }
+    .tf-pair .tf-phone:first-child { left: 10cqw; top: 2cqh; transform: rotate(-9deg); }
+    .tf-pair .tf-phone:last-child  { right: 10cqw; top: 5cqh; transform: rotate(9deg); z-index: 1; }
+    .cell:hover .tf-pair { opacity: 1; transform: scale(1); }
 
     @media (max-width: 700px) {
         .tf-tots { display: none; }        /* the tile gets small; they read as clutter */
-        .tf-pair .tf-phone { height: 132cqh; }
+        .tf-pair .tf-phone { height: 74cqh; }
     }
     @media (prefers-reduced-motion: reduce) {
         .tf-sun, .tf-clouds, .tf-tuft, .tf-grass { animation: none; }
@@ -3144,6 +3154,7 @@
         background-repeat: no-repeat; background-position: center;
         background-size: cover;
     }
+
 
     .ct-room {
         position: absolute; inset: 0; z-index: 0;
@@ -3354,8 +3365,52 @@
 .tile-cap:visited, .tile:visited{ color:inherit; }
 .tile-cap:hover{ text-decoration:none; }
 
+/* the caption sits inside the tile, bottom left, as a small frosted glass
+   card in the same family as the "let's conspire" button: thin hairline,
+   soft glass, nothing loud. tile and caption share one grid cell so the card
+   is pinned to the art's own corner whatever height the tile is. no hover lift */
+.cell{ display:grid !important; grid-template:auto / 100%; align-content:start; }
+.cell > .tile, .cell > .tile-cap{ grid-area:1 / 1; }
+/* width always comes from the column, even when evenBottoms sets a height */
+.cell > .tile{ width:100%; min-width:0; }
+.tile-cap{
+  --cap-in:clamp(.6rem,1vw,.85rem);
+  position:relative !important; z-index:4;
+  align-self:end; justify-self:start;
+  max-width:min(calc(100% - 2 * var(--cap-in)), 19.5rem);
+  margin:0 0 var(--cap-in) var(--cap-in) !important;
+  padding:.6rem .75rem .65rem !important;
+  border-radius:12px;
+  background:rgba(12,18,28,.5);
+  -webkit-backdrop-filter:blur(14px) saturate(150%); backdrop-filter:blur(14px) saturate(150%);
+  border:1px solid rgba(240,242,240,.16);
+  box-shadow:inset 1px 1.5px 2px rgba(255,255,255,.12), 0 6px 18px rgba(0,0,0,.14);
+  transition:border-color .2s ease, background .2s ease;
+}
+/* a small glass tag in the top right, same family as the caption card */
+.tile-flag{
+  position:absolute; z-index:5; top:clamp(.6rem,1vw,.85rem); right:clamp(.6rem,1vw,.85rem);
+  padding:.38rem .7rem; border-radius:999px; pointer-events:none;
+  font:600 .62rem/1 'Satoshi',sans-serif; letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(238,242,244,.92); background:rgba(12,18,28,.5);
+  -webkit-backdrop-filter:blur(14px) saturate(150%); backdrop-filter:blur(14px) saturate(150%);
+  border:1px solid rgba(240,242,240,.16);
+}
+:root[data-theme="light"] .tile-flag{ color:#14202b; background:rgba(255,255,255,.72); border-color:rgba(18,24,31,.14); }
+.tile-cap .tile-name{ font-size:clamp(.86rem,1.02vw,.98rem) !important; line-height:1.28 !important; }
+.tile-cap .tile-stat{ margin-top:.3rem !important; font-size:.74rem !important; color:rgba(var(--ink-rgb),.74) !important; }
+.tile-cap .tile-tags{ margin-top:.5rem !important; column-gap:.3rem !important; row-gap:.3rem !important; }
+.tile-cap .tile-tags > span{ font-size:.58rem !important; padding:.22rem .45rem !important; letter-spacing:.09em !important; }
+.cell:hover .tile-cap{ border-color:rgba(var(--sa),.5); }
+:root[data-theme="light"] .tile-cap{
+  background:rgba(255,255,255,.72); border-color:rgba(18,24,31,.14);
+  box-shadow:0 8px 24px rgba(20,40,60,.10);
+}
+:root[data-theme="light"] .cell:hover .tile-cap{ border-color:rgba(var(--sa-ink, var(--sa)),.45); }
+@media (prefers-reduced-motion:reduce){ .tile-cap{ transition:none; } }
+
 .bento-grid{
-  column-gap:clamp(30px,3.6vw,60px) !important;
+  column-gap:clamp(18px,2vw,30px) !important;
   padding-top:clamp(28px,4vh,56px) !important;
 }
 
@@ -3411,7 +3466,7 @@
   .bento-grid{
     grid-template-columns: 1fr !important;
     column-gap: 0 !important;
-    row-gap: clamp(44px, 6vh, 72px) !important;
+    row-gap: clamp(22px, 3vh, 36px) !important;
     padding-inline: clamp(14px, 4vw, 26px) !important;
   }
   .t-trove, .t-skrimp, .t-menzo, .t-auntie, .t-equinox, .t-handoff{
@@ -3559,13 +3614,16 @@ body::after{
    column at the original shape */
 @media (min-width: 921px){
   .bento-grid{ grid-auto-rows:8px !important; row-gap:0 !important; }
-  .bento-grid .cell{ align-self:start; padding-bottom:clamp(48px, 7.5vh, 96px); }
+  .bento-grid .cell{ align-self:start; padding-bottom:clamp(20px, 2.6vh, 32px); }
+  /* order is trove, skrimp, handoff, auntie, menzo, equinox and each lands in
+     the shorter column: left is trove 1:1, auntie 5:4, equinox 5:3; right is
+     skrimp 4:3, handoff 4:3, menzo 10:9. both come to 2.4 tile widths tall */
   .t-trove .tile{ aspect-ratio:1 / 1 !important; }
   .t-skrimp .tile{ aspect-ratio:4 / 3 !important; }
+  .t-handoff .tile{ aspect-ratio:4 / 3 !important; }
+  .t-auntie .tile{ aspect-ratio:5 / 4 !important; }
   .t-menzo .tile{ aspect-ratio:10 / 9 !important; }
-  .t-auntie .tile{ aspect-ratio:1 / 1 !important; }
-  .t-equinox .tile{ aspect-ratio:4 / 3 !important; }
-  .t-handoff .tile{ aspect-ratio:889 / 510 !important; }
+  .t-equinox .tile{ aspect-ratio:5 / 3 !important; }
 }
 @media (max-width: 920px){ .local-time span{ display:none; } }
 
@@ -3600,7 +3658,6 @@ body::after{
    headline and the table and falls through that (the js moves the sky down
    to start under the headline) */
 @media (max-width: 920px){
-  .ns-headline-block{ margin-bottom:clamp(230px, 62vw, 340px); }
   .ns-sky{ width:100%; height:300px; }
   .ns-hen{ width:clamp(150px, 42vw, 220px); right:calc(50% - clamp(150px, 42vw, 220px) / 2); }
 }
@@ -4883,22 +4940,6 @@ body::after{
 
         <!-- North star philosophy section -->
         <div class="northstar-section" id="northstar">
-          <!-- hen falls through the north star section as you scroll: she
-               drops in from above, passes behind the headline and drops out
-               before the table. her legs go pose 1, 1.5, 2 as she falls (a
-               smear frame flashes between each), clouds rise past her, and
-               she bobs a little the whole time so she's never frozen -->
-          <div class="ns-sky" aria-hidden="true">
-            <div class="ns-cloud ns-cloud--far" data-depth="-.25"></div>
-            <div class="ns-hen" data-depth=".35">
-              <img class="on" src="/sky/hen-fall-1.webp" alt="" decoding="async">
-              <img src="/sky/hen-fall-1s.webp" alt="" decoding="async">
-              <img src="/sky/hen-fall-15.webp" alt="" decoding="async">
-              <img src="/sky/hen-fall-2s.webp" alt="" decoding="async">
-              <img src="/sky/hen-fall-2.webp" alt="" decoding="async">
-            </div>
-            <div class="ns-cloud ns-cloud--near" data-depth=".8"></div>
-          </div>
           <main class="ns-page">
 
             <div class="ns-headline-block">
@@ -5818,17 +5859,22 @@ const eul = (x,y,z)=>new THREE.Euler(
         ]
       },
       {
-        name:'Path to Menzoberranzan', category:'Technical Direction / Game',
-        tagline:'A 140 person volunteer studio, shipping on an engine with no docs',
-        title:'Path to Menzoberranzan', year:'2025–',
-        video:{ kind:'yt', id:'1oBlmSvi1So' },
-        stat:'140+ contributors, 1,700 Patrons, 0 docs',
-        tags:['CTO','Build tooling','PC'],
-        href:'/menzo/',
-        domScene:'underdark',
-        theme:{ accent:'160, 120, 220', accent2:'192, 132, 252', scene:'menzo' },
-        model:'/models/steamdeck.glb', scale:0.30*1.5, baseEuler:[0,-10,0],
-        screen:{ url:overlayURL, size:[4.52,2.8], pos:[0,0.35,1.06] }
+        // no case study yet, so no href: the tile renders as a plain div that
+        // doesn't open anything. hovering plays a bit of the product film
+        name:'Lost in Handoff', category:'UX Research / Healthcare',
+        tagline:'What responders learn at the scene, actually reaching the hospital',
+        title:'Lost in Handoff', year:'2026',
+        // the v10 nightingale film, just the run where it hears the scene,
+        // fills the dash, takes a photo and files it: 50.5s to 66.7s, looped
+        video:{ kind:'file', src:'/lostinhandoff/nightingale-loop.mp4' },
+        stat:'Built for fire, EMS and hospitals',
+        tags:['B2G','Safety-critical','Healthcare'],
+        flag:'coming soon',
+        href:null,
+        // the slide cover recomposed at 4:3: paper and halftone extended top
+        // and bottom, the two of them fading into it (/lostinhandoff/cover-43.webp)
+        cover:'/lostinhandoff/cover-43.webp', noDrag:true,
+        theme:{ accent:'196, 40, 40', accent2:'240, 140, 60', scene:'handoff' },
       },
       {
         name:'MyAuntie', category:'UX Design / AI',
@@ -5859,6 +5905,19 @@ const eul = (x,y,z)=>new THREE.Euler(
         ]
       },
       {
+        name:'Path to Menzoberranzan', category:'Technical Direction / Game',
+        tagline:'A 140 person volunteer studio, shipping on an engine with no docs',
+        title:'Path to Menzoberranzan', year:'2025–',
+        video:{ kind:'yt', id:'1oBlmSvi1So' },
+        stat:'140+ contributors, 1,700 Patrons, 0 docs',
+        tags:['CTO','Build tooling','PC'],
+        href:'/menzo/',
+        domScene:'underdark',
+        theme:{ accent:'160, 120, 220', accent2:'192, 132, 252', scene:'menzo' },
+        model:'/models/steamdeck.glb', scale:0.30*1.5, baseEuler:[0,-10,0],
+        screen:{ url:overlayURL, size:[4.52,2.8], pos:[0,0.35,1.06] }
+      },
+      {
         name:'Equinox', category:'Game Design / Godot',
         tagline:'\u201cOvercomplicated screen transitions\u201d, played as a design constraint',
         title:'Equinox', year:'2026',
@@ -5872,19 +5931,6 @@ const eul = (x,y,z)=>new THREE.Euler(
         playHref:'https://emstergrace.itch.io/equinox',
         cover:'/equinox/equinox-banner.webp', noDrag:true,
         theme:{ accent:'200, 135, 74', accent2:'232, 192, 96', scene:'equinox' },
-      },
-      {
-        // no case study yet, so no href: the tile renders as a plain div that
-        // doesn't open anything and hovering just says coming soon
-        name:'Lost in Handoff', category:'UX Research / Healthcare',
-        tagline:'What responders learn at the scene, actually reaching the hospital',
-        title:'Lost in Handoff', year:'2026',
-        video:{ kind:'soon', label:'coming soon :)' },
-        stat:'GBDA 402 research proposal, in progress',
-        tags:['Capstone','UX research','Healthcare'],
-        href:null,
-        cover:'/lostinhandoff/cover.webp', noDrag:true,
-        theme:{ accent:'196, 40, 40', accent2:'240, 140, 60', scene:'handoff' },
       },
     ];
 // how far the camera sits back per tile, tuned so each model fills its art box
@@ -6212,6 +6258,7 @@ stations.forEach((cfg,i) => {
        ${mascotHtml}
        ${videoHtml}
        <div class="tile-sheen"></div>
+       ${cfg.flag ? `<span class="tile-flag">${cfg.flag}</span>` : ''}
      </${tag}>
      <${tag} class="tile-cap"${to}>
        <div class="tile-name">${cfg.tagline}</div>
@@ -6286,8 +6333,10 @@ stations.forEach((cfg,i) => {
     const tile = cell.querySelector('.tile');
     const soon = cell.querySelector('.tile-video--soon');
     if (soon && tile) {
-      tile.addEventListener('mouseenter', () => cell.classList.add('is-video'));
-      tile.addEventListener('mouseleave', () => cell.classList.remove('is-video'));
+      // on the cell, not the tile: the caption card sits over the tile, and
+      // moving onto it would otherwise count as leaving
+      cell.addEventListener('mouseenter', () => cell.classList.add('is-video'));
+      cell.addEventListener('mouseleave', () => cell.classList.remove('is-video'));
     }
     const box = cell.querySelector('.tile-video[data-kind]');
     if (!box) return;
@@ -6447,8 +6496,8 @@ stations.forEach((cfg,i) => {
 
     // pointer only — a touch tap should follow the link, not start a video
     if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      tile.addEventListener('mouseenter', mount);
-      tile.addEventListener('mouseleave', unmount);
+      cell.addEventListener('mouseenter', mount);
+      cell.addEventListener('mouseleave', unmount);
     }
   })();
 
@@ -6699,14 +6748,14 @@ stations.forEach((cfg,i) => {
         v.addEventListener('loadedmetadata', () => home(v));
         v.addEventListener('ended', () => { home(v); v.play().catch(() => {}); });
       });
-      el.addEventListener('mouseenter', () => {
+      cell.addEventListener('mouseenter', () => {
         cell.classList.add('is-video');
         pair.forEach(v => {
           if (v.readyState && v.currentTime < at(v)) home(v);
           v.play().catch(() => {});
         });
       });
-      el.addEventListener('mouseleave', () => {
+      cell.addEventListener('mouseleave', () => {
         cell.classList.remove('is-video');
         pair.forEach(v => { v.pause(); home(v); });
       });
@@ -6966,7 +7015,30 @@ if (window.__gfx.still){
 const packMQ = matchMedia('(min-width: 921px)');
 function packGrid(){
   for (const c of grid.children){
+    const t = c.querySelector('.tile');
+    if (t && t.style.height){ t.style.height = ''; t.style.aspectRatio = ''; }
     if (!packMQ.matches){ c.style.gridRowEnd = ''; continue; }
+    c.style.gridRowEnd = 'span ' + Math.ceil(c.getBoundingClientRect().height / 8);
+  }
+  if (packMQ.matches) evenBottoms();
+}
+// the spans round up to 8px each, so the columns land a few px apart. grow
+// the last tile in the shorter column by the difference so both end level
+function evenBottoms(){
+  const last = new Map();
+  for (const c of grid.children){
+    const t = c.querySelector('.tile'); if (!t) continue;
+    const r = t.getBoundingClientRect(); if (!r.width) continue;
+    if (r.width > grid.clientWidth * .7) continue;   // full width, not in a column
+    const k = Math.round(r.left), cur = last.get(k);
+    if (!cur || r.bottom > cur.r.bottom) last.set(k, { c, t, r });
+  }
+  if (last.size < 2) return;
+  const all = [...last.values()], end = Math.max(...all.map(x => x.r.bottom));
+  for (const { c, t, r } of all){
+    const d = end - r.bottom;
+    if (d < .5 || d > 60) continue;   // a big gap means the shapes changed, leave it
+    t.style.aspectRatio = 'auto'; t.style.height = (r.height + d) + 'px';
     c.style.gridRowEnd = 'span ' + Math.ceil(c.getBoundingClientRect().height / 8);
   }
 }
