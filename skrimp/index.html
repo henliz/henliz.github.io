@@ -926,7 +926,6 @@
     #scene-overlay:not(.hidden) { transition: opacity .3s ease, visibility 0s; }
     .intro-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #9fd0ea 0%, #c8e5f3 50%, #eaf6fb 100%); }
     :root[data-theme="dark"] .intro-sky { background: linear-gradient(180deg, #0c1824 0%, #16283a 60%, #1d3349 100%); }
-    #scene-overlay.parting .intro-sky { opacity: 0; transition: opacity .5s ease .3s; }
     /* the fall is a journey now: the sky goes day, sunset, dusk, space as she
        passes a different world at each stop. the script sets the gradient,
        and the stars come out once it's dark */
@@ -943,11 +942,9 @@
         radial-gradient(1px 1px at 46% 8%, #ffd0e6 50%, transparent 51%);
       background-size: 420px 380px;
     }
-    #scene-overlay.parting .intro-stars { opacity: 0 !important; transition: opacity .5s ease .3s; }
 
     .intro-3d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .6s ease; }
     .intro-3d.ready { opacity: 1; }
-    #scene-overlay.parting .intro-3d { opacity: 0; transition: opacity .45s ease .15s; }
 
     /* the title. each letter is its own span so the script can scramble
        it into glyphs and puff it up into the sky as you start falling */
@@ -1098,13 +1095,14 @@
     }
     #scene-overlay.parting .intro-bar { opacity: 0; transition: opacity .3s; }
 
-    /* the white-out as you punch through, then the page settles in */
-    .intro-flash {
+    /* no white-out any more: the whole intro just fades, starting a little
+       before she reaches the planet, while she's still falling */
+    #scene-overlay.parting { opacity: 0; transition: opacity .9s ease; }
+    .intro-flash { display: none;
       position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0;
       background: radial-gradient(60% 50% at 50% 50%, rgba(255,255,255,.98), rgba(234,246,251,.75) 55%, rgba(234,246,251,.2) 85%);
     }
     :root[data-theme="dark"] .intro-flash { background: radial-gradient(60% 50% at 50% 50%, rgba(200,235,245,.6), rgba(30,58,80,.45) 55%, transparent 85%); }
-    #scene-overlay.parting .intro-flash { animation: introFlash .8s ease-out forwards; }
     @keyframes introFlash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
     html.intro-landing #app { animation: introLand .9s cubic-bezier(.22,1,.36,1) both; }
     @keyframes introLand { from { transform: scale(1.06); } to { transform: none; } }
@@ -3789,30 +3787,38 @@ body::after{
    a heart while the chat's open. --shift nudges it back inside the strip
    near either end, the tail slides the other way to keep pointing at her */
 .walker-bubble{ position:absolute; left:50%; bottom:calc(100% + 6px); translate:calc(-50% + var(--shift, 0px)) 0; }
+/* pixel art: no rounded corners, the outline is drawn with stepped box
+   shadows so each corner is a notch, and the tail is a little staircase */
 .wb-in{
   position:relative; display:flex; align-items:center; justify-content:center;
-  min-width:32px; height:32px; padding:0 .6rem; white-space:nowrap;
+  min-width:28px; height:28px; padding:0 .55rem; white-space:nowrap;
   font:1.05rem/1 'DotempDemo', monospace; color:#14202b;
-  background:#fff; border:2px solid #14202b; border-radius:12px;
-  box-shadow:2px 3px 0 #14202b;
+  background:#fff; border:0; border-radius:0;
+  box-shadow:0 -3px 0 0 #fff, 0 3px 0 0 #fff, -3px 0 0 0 #fff, 3px 0 0 0 #fff,
+             0 -6px 0 0 #14202b, 0 6px 0 0 #14202b, -6px 0 0 0 #14202b, 6px 0 0 0 #14202b,
+             -3px -3px 0 0 #14202b, 3px -3px 0 0 #14202b, -3px 3px 0 0 #14202b, 3px 3px 0 0 #14202b,
+             6px 9px 0 0 rgba(20,32,43,.35);
   transform-origin:50% 100%; opacity:0;
   animation:wbIn .45s cubic-bezier(.34, 1.5, .64, 1) 2.5s forwards, wbBob 1.8s ease-in-out 2.95s infinite;
 }
 /* the tail: a rotated square showing two of its borders, so it reads as a
    little V of outline poking out of the bubble */
 .wb-in::before{
-  content:''; position:absolute; left:calc(50% - var(--shift, 0px)); top:100%; width:9px; height:9px; margin:-5px 0 0 -5.5px;
-  background:#fff; border:2px solid #14202b; border-top:0; border-left:0; rotate:45deg;
+  content:''; position:absolute; left:calc(50% - var(--shift, 0px)); top:calc(100% + 6px); width:3px; height:3px; margin-left:-1.5px;
+  background:#14202b; box-shadow:0 3px 0 #14202b, -3px -3px 0 #14202b, 3px -3px 0 #14202b, 0 -3px 0 #fff;
 }
-.walker.asking .wb-in{ font:600 .72rem/1 'Satoshi', sans-serif; padding:0 .65rem; height:28px; }
+.walker.asking .wb-in{ font:.8rem/1 'DotempDemo', monospace; padding:0 .55rem; height:24px; }
 .wb-dots{ display:inline-flex; gap:3px; }
 .wb-dots i{ width:5px; height:5px; border-radius:50%; background:currentColor; animation:hcDot 1s ease-in-out infinite; }
 .wb-dots i:nth-child(2){ animation-delay:.15s; }
 .wb-dots i:nth-child(3){ animation-delay:.3s; }
 @keyframes wbIn{ from{ opacity:0; transform:translateY(8px) scale(.5); } to{ opacity:1; transform:none; } }
 @keyframes wbBob{ 0%, 100%{ translate:0 0; } 50%{ translate:0 -3px; } }
+/* her bob steps instead of gliding, like a sprite */
+.wb-in{ animation-timing-function:cubic-bezier(.34, 1.5, .64, 1), steps(2, jump-none) !important; }
 /* too short to fit her and the bubble at a readable size: she steps out */
 @container (max-height: 62px){ .walker{ display:none; } }
+@media (max-width: 920px){ .rail-walk{ flex-basis:calc(104px + .3rem); max-height:calc(104px + .3rem); } }
 
 /* the chat window. same sticker look as her bubble: ink outline, hard
    shadow, a little sky up top with her in it. sits just right of the rail
@@ -4166,17 +4172,29 @@ body::after{
         // trackpad's long tail of wheel events still only counts once
         const STOPS = [.21, .49, .77, 1];
         const stopDots = [...document.querySelectorAll('#intro-stops i')];
-        let lockUntil = 0;
+        // a stop holds until its second frame has had a moment on screen. only
+        // someone clearly hurrying (three separate flicks in quick succession)
+        // gets to blow straight through it
+        let lockUntil = 0, holdUntil = 0, flicks = [];
+        function hurrying(now) { flicks = flicks.filter(t => now - t < 1400); return flicks.length >= 3; }
         function step(dir) {
           if (!open || parting || calm) return;
           const now = performance.now();
           if (now < lockUntil) return;
-          lockUntil = now + 600;
+          if (dir > 0 && !hurrying(now)) {
+            const atStop = STOPS.includes(goal) && goal < 1;
+            if (atStop && (Math.abs(p - goal) > .015 || now < holdUntil)) return;
+          }
+          lockUntil = now + 500;
           if (dir > 0) goal = STOPS.find(v => v > goal + .001) ?? 1;
           else { auto = false; goal = [...STOPS].reverse().find(v => v < goal - .001) ?? 0; }
         }
+        let lastWheel = 0;
         addEventListener('wheel', e => {
           if (!open || parting || Math.abs(e.deltaY) < 4) return;
+          const now = performance.now();
+          if (now - lastWheel > 180) flicks.push(now);   // a fresh gesture, not a trackpad's tail
+          lastWheel = now;
           step(Math.sign(e.deltaY));
         }, { passive: true });
         let touchY = null;
@@ -4184,7 +4202,7 @@ body::after{
         overlay.addEventListener('touchend', e => {
           if (touchY === null) return;
           const dy = touchY - e.changedTouches[0].clientY; touchY = null;
-          if (Math.abs(dy) > 30) { lockUntil = 0; step(Math.sign(dy)); }
+          if (Math.abs(dy) > 30) { flicks.push(performance.now()); lockUntil = 0; step(Math.sign(dy)); }
         }, { passive: true });
         addEventListener('keydown', e => {
           if (!open || parting) return;
@@ -4274,7 +4292,9 @@ body::after{
             // nearly parked at its stop, the second frame slaps down by itself right after
             const parked = Math.abs(k - .5) < .14;
             if (!on) c._arr = 0; else if (parked && !c._arr) c._arr = now;
-            c.classList.toggle('two', on && c._arr > 0 && now - c._arr > 450);
+            const two = on && c._arr > 0 && now - c._arr > 450;
+            if (two && !c.classList.contains('two')) holdUntil = now + 900;   // let frame two land before moving on
+            c.classList.toggle('two', two);
             if (!on) return;
             live = c;
             const w = c.offsetWidth, bob = Math.sin(now / 600 + +c.dataset.at * 9) * 6;
@@ -4304,7 +4324,7 @@ body::after{
             shades.style.transform = `translate(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px) translate(-50%, -50%) rotate(${f.a.toFixed(3)}rad)`;
           }
 
-          if (p > .985 && goal >= 1) part();
+          if (p > .9 && goal >= 1) part();
         }
         function startMotion() {
           if (raf) return;
@@ -4316,7 +4336,7 @@ body::after{
         function part() {
           if (!open || parting) return;
           parting = true;
-          p = goal = 1;
+          goal = 1;                       // she keeps falling while it fades
           overlay.classList.add('parting');
           // the page settles in from a touch too close as you come through
           setTimeout(() => { if (!calm) document.documentElement.classList.add('intro-landing'); }, 300);
@@ -4327,8 +4347,8 @@ body::after{
             open = false; parting = false;
             window.__introScene?.panel(null); current = null;
             window.__introScene?.sleep();
-          }, 850);
-          setTimeout(() => document.documentElement.classList.remove('intro-landing'), 1300);
+          }, 950);
+          setTimeout(() => document.documentElement.classList.remove('intro-landing'), 1400);
         }
         document.getElementById('intro-skip').addEventListener('click', part);
 
@@ -7818,8 +7838,8 @@ document.addEventListener('click', e => {
     // the three openers
     { id: 'who', q: 'who is henriëtta?', match: ['who is', 'who\'s', 'what does do', 'what do you do', 'design engineer'],
       a: ['she\'s a design engineer, so she designs the thing and then builds it too.',
-          'right now she runs **skrimp** (her startup) and she\'s cto of **path to menzoberranzan**. before that she was hire #1 at **trove**.'],
-      next: ['code', 'skrimp', 'origin'] },
+          'right now she runs **skrimp** (her startup), she\'s cto of **path to menzoberranzan**, and her capstone is **nightingale**, a wearable for firefighters. before that she was hire #1 at **trove**.'],
+      next: ['code', 'skrimp', 'capstone'] },
     { id: 'start', q: 'where should I start?', match: ['start', 'best', 'portfolio', 'project', 'work', 'show me'],
       a: ['depends what you\'re into!', 'big numbers, something with heart, or something fun?'],
       next: ['numbers', 'heart', 'playful'] },
@@ -7840,8 +7860,8 @@ document.addEventListener('click', e => {
           'it\'s built for a 3am brain, not ideal conditions. you just call or text it. made in 36 hours, and it won technova 2025.'],
       next: ['auntieGo', 'awards'] },
     { id: 'playful', q: 'something fun', match: ['fun', 'game jam', 'cozy'],
-      a: ['equinox! a cozy 3d puzzle game made by 14 people in 2 weeks.',
-          'it won comfy winter jam 2025, 1st of 88. she built the player controller and all the interactions in godot.'],
+      a: ['equinox! a cozy first-person puzzle game made by 14 people in 18 days.',
+          'it won comfy jam winter 2026, 1st of 88. she built the floor transitions, the journal, and the bit where each puzzle tells you you did it, in godot.'],
       next: ['equinoxGo', 'games'] },
 
     // the projects
@@ -7873,7 +7893,7 @@ document.addEventListener('click', e => {
           'what used to be a multi-step manual slog for composers is now one click.'],
       next: ['ptmGo', 'games'] },
     { id: 'ptmGo', q: 'open path to menzoberranzan', go: 'menzo', a: 'opening path to menzoberranzan ✨' },
-    { id: 'auntieGo', q: 'open my auntie', go: 'myauntie', match: ['auntie', 'technova'], a: 'opening my auntie ✨' },
+    { id: 'auntieGo', q: 'open my auntie', go: 'myauntie', match: ['auntie', 'myauntie', 'technova', 'postpartum', 'sms', 'twilio'], a: 'opening my auntie ✨' },
     { id: 'equinoxGo', q: 'open equinox', go: 'equinox', match: ['equinox', 'godot'], a: 'opening equinox ✨' },
 
     // hiring
@@ -7888,7 +7908,7 @@ document.addEventListener('click', e => {
       next: ['awards', 'lead', 'reach'] },
     { id: 'awards', q: 'has she won stuff?', match: ['award', 'won', 'win', 'prize', 'hackathon', 'nominee', 'woman of the year', 'women of the year'],
       a: ['a few 🏆',
-          'technova 2025 (my auntie), comfy winter jam 2025 (equinox, 1st of 88), the jain family award for entrepreneurship, and velocity\'s cornerstone award.',
+          'technova 2025 (my auntie), comfy jam winter 2026 (equinox, 1st of 88), the jain family award for entrepreneurship, and velocity\'s cornerstone award.',
           'and a kw oktoberfest women of the year nomination for 2026.'],
       next: ['heart', 'playful', 'reach'] },
     { id: 'lead', q: 'how does she lead teams?', match: ['lead', 'team', 'manage', 'mentor', 'intern', 'collaborat'],
@@ -7900,10 +7920,25 @@ document.addEventListener('click', e => {
           'react, typescript, next.js, python, three.js, convex, firestore, godot, lua.',
           'lately she\'s been learning **rust** and hardware development for her capstone, and having way too much fun with it.'],
       next: ['capstone', 'site', 'troveHow'] },
-    { id: 'capstone', q: 'what\'s her capstone?', match: ['capstone', 'handoff', 'hardware', 'paramedic', 'firefighter', 'hospital'],
-      a: ['lost in handoff: what paramedics and firefighters learn at the scene, and whether it actually reaches the hospital.',
-          'it\'s still cooking, which is why it says "coming soon" on the home page.'],
-      next: ['looking', 'site'] },
+    { id: 'capstone', q: 'what\'s her capstone?', match: ['capstone', 'handoff', 'lost in handoff', 'nightingale', 'wearable', 'hardware', 'paramedic', 'firefighter', 'fire', 'ems', 'hospital', 'healthcare', 'safety', 'raspberry', 'pi'],
+      a: ['**nightingale**: a button you clip to your gear, so what a fire crew learns at the scene actually reaches the hospital.',
+          'she talked to 18 firefighters, paramedics and er staff, built a cost model (about $209m a year lost across canada), and built the wearable herself on a raspberry pi.',
+          'it\'s still being tested with fire crews, but the case study\'s up!'],
+      next: ['nightingaleGo', 'safe', 'looking'] },
+    { id: 'nightingaleGo', q: 'open nightingale', go: 'nightingale', a: 'opening nightingale ✨' },
+    { id: 'safe', q: 'can she do serious, high-stakes stuff?', match: ['serious', 'high stakes', 'high-stakes', 'safety critical', 'safety-critical', 'regulated', 'fintech', 'finance', 'bank', 'compliance', 'privacy', 'security', 'trust', 'b2b', 'b2g', 'enterprise', 'audit'],
+      a: ['yes, and it\'s kind of her thing lately.',
+          'nightingale has two privacy laws in it (phipa and mfippa), review-before-sharing, and hash-chained audit logs. at skrimp every number shows its working, because families on a budget need to trust it.',
+          'she designs for what happens when it goes wrong, not just when it goes right.'],
+      next: ['capstone', 'hire', 'reach'] },
+    { id: 'school', q: 'where did she study?', match: ['school', 'study', 'studied', 'degree', 'university', 'uwaterloo', 'graduate', 'graduat', 'gbda', 'education', 'major'],
+      a: ['the university of waterloo! global business and digital arts, graduating december 2026.',
+          'it\'s half design, half business, and she filled in the engineering herself.'],
+      next: ['code', 'looking'] },
+    { id: 'design', q: 'what\'s her design process like?', match: ['design process', 'process', 'figma', 'research', 'ux', 'ui', 'user research', 'interview', 'prototype', 'how does she design'],
+      a: ['she starts by listening. at skrimp and nightingale she asks people to walk her through the last time something went wrong, not what they want.',
+          'then she prototypes in code early, because the real thing tells you more than a mockup does. figma for flows, code for everything that moves.'],
+      next: ['capstone', 'code', 'start'] },
     { id: 'site', q: 'how did she make this site?', match: ['site', 'website', 'portfolio built', 'three.js', 'threejs', 'made this', 'mini hen', 'who are you'],
       a: ['hand-coded!',
           'a three.js sky, a pixel-meets-serif type system, a girl falling through the north star...',
@@ -7938,7 +7973,7 @@ document.addEventListener('click', e => {
     { id: 'cozy', q: 'cozy games or scary games?', match: ['cozy', 'scary', 'horror game', 'stardew', 'fnaf', 'freddy'],
       a: ['both!!',
           'stardew valley and castle crashers on one side, five nights at freddy\'s, little nightmares and still wakes the deep on the other.',
-          'and she makes the cozy kind: equinox won comfy winter jam.'],
+          'and she makes the cozy kind: equinox won comfy jam.'],
       next: ['equinoxGo', 'books'] },
     { id: 'cowork', q: 'weirdest steam stat?', match: ['weird', 'steam stat', 'co-working', 'coworking', 'on-together'],
       a: ['236 hours in on-together, a virtual co-working game.', 'so yes, she games while she works. by working.'],
@@ -7970,31 +8005,53 @@ document.addEventListener('click', e => {
     .replace(/\[([^\]]+)\]\(((?:https?:|mailto:)[^)\s]+)\)/g, (m, txt, url) =>
       `<a href="${url}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${txt}</a>`);
 
-  // a typed question goes to: an exact chip, a greeting, the best keyword hit, or the fallback
+  // a typed question gets scored against every answer: whole phrases count
+  // most, then words, then near misses (typos, plurals, "designing" for
+  // "design"). the best score wins if it's clearly a hit; otherwise she
+  // says so and offers the two closest things she does know about
+  const STOP = new Set('a an the is are was do does did can could would will to of in on at for and or but with what whats who where when why how which me you your i im it its that this there any some about tell more pls please her she hen henrietta henriëtta hey'.split(' '));
+  const words = t => t.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9%#\s-]/g, ' ').split(/\s+/).filter(w => w && !STOP.has(w));
+  function near(a, b){                      // one typo apart, for words long enough to tell
+    if (Math.abs(a.length - b.length) > 1 || a.length < 5) return false;
+    let i = 0, j = 0, edits = 0;
+    while (i < a.length && j < b.length){
+      if (a[i] === b[j]){ i++; j++; continue; }
+      if (++edits > 1) return false;
+      if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+    }
+    return edits + (a.length - i) + (b.length - j) <= 1;
+  }
+  function score(x, raw, toks){
+    let sc = 0;
+    for (const k of x.keys){
+      if (k.includes(' ')){ if (raw.includes(k)) sc += k.length * 1.5; continue; }
+      for (const w of toks){
+        if (w === k) sc += k.length;
+        else if (k.length > 3 && (w.startsWith(k) || k.startsWith(w) && w.length > 3)) sc += k.length * .75;
+        else if (near(w, k)) sc += k.length * .6;
+      }
+    }
+    for (const w of words(x.q)) if (toks.includes(w)) sc += 1.5;   // the chip's own words count a little
+    return sc;
+  }
   function find(text){
     const raw = text.toLowerCase().trim();
     const exact = S.find(x => x.q.toLowerCase() === raw);
     if (exact) return exact;
-    if (/^(hi+|hey+|hello|yo|sup)\b/.test(raw)) return { a: 'hiii! ask me about her work, what she\'s looking for, or what she does for fun.', next: [] };
-    // strip the filler first, so "tell me about her startup" is just
-    // "startup". if nothing's left, they just want to know about her
-    const t = filler(raw);
-    if (!t.replace(/[^a-z0-9]/g, '')) return byId.who;
-    // then the longest keyword that hits wins, so specific beats generic
-    let best = null, len = 0;
-    for (const x of S){
-      if (NUDGE.includes(x.id)) continue;
-      for (const k of x.keys) if (k.length > len && t.includes(k)){ best = x; len = k.length; }
-    }
-    return best || { a: FALLBACK, next: [] };
+    if (/^(hi+|hey+|hello|yo|sup|hii+)\b/.test(raw) && raw.split(/\s+/).length < 4)
+      return { a: 'hiii! ask me about her work, what she\'s looking for, or what she does for fun.', next: [] };
+    if (/\b(thank|thx|ty|tysm)\b/.test(raw)) return { a: 'anytime!! anything else?', next: [] };
+    const toks = words(raw);
+    if (!toks.length) return byId.who;
+    const ranked = S.filter(x => !NUDGE.includes(x.id) && x.keys.length)
+                    .map(x => ({ x, sc: score(x, raw, toks) })).sort((a, b) => b.sc - a.sc);
+    if (ranked[0] && ranked[0].sc >= 3) return ranked[0].x;
+    const close = ranked.filter(r => r.sc > 0).slice(0, 2).map(r => r.x.id);
+    return { a: ['hmm, I don\'t know that one yet (I\'m like 90 pixels tall).',
+                 close.length ? 'closest I\'ve got ↓ or ask her yourself: ' + MAIL : 'try one of these ↓ or ask her yourself: ' + MAIL],
+             next: close.length ? close : OPENERS, keep: true };
   }
-  function filler(t){
-    return t.replace(/\b(can you |could you )?(tell me( more)?|talk|what about|about)\b/g, ' ')
-            .replace(/\b(her|she|henri[eë]tta)\b/g, ' ').replace(/\s+/g, ' ').trim();
-  }
-  // keywords get the same cleanup so "hire her" still matches "hire".
-  // a one letter leftover would match everything, so those go
-  S.forEach(x => { x.keys = (x.match || []).map(filler).filter(k => k.length > 1); });
+  S.forEach(x => { x.keys = (x.match || []).map(k => k.toLowerCase()).filter(k => k.length > 1); });
 
   const scroll = () => { log.scrollTop = log.scrollHeight; };
   function row(who){
@@ -8090,7 +8147,7 @@ document.addEventListener('click', e => {
       busy = false;
       return offer(NUDGE, true);
     }
-    offer(item.next);
+    offer(item.next, item.keep);
   }
 
   // next to the rail on desktop, lined up with her feet
