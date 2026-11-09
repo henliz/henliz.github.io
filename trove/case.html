@@ -413,6 +413,8 @@
     .showcase-stage.trio{gap:clamp(12px,1.6vw,22px)}
     @media(max-width:720px){ .showcase-stage{gap:1.4rem} .phone,.showcase-stage.solo .phone{width:min(300px,80vw)} }
     @media(prefers-reduced-motion:reduce){ .phone-screen video{display:none} }
+    .diorama{ margin:1.6rem 0 0; border-radius:14px; overflow:hidden; border:1px solid var(--edge, rgba(0,0,0,.12)); box-shadow:0 14px 40px rgba(0,0,0,.18); }
+    .diorama video{ display:block; width:100%; height:auto; }
 
     .lede{
       font-size:clamp(1.02rem,1.65vw,1.2rem); line-height:1.55; font-weight:600;
@@ -1276,16 +1278,10 @@ figure{
           <p class="cap">The read itself. Every sentence in it is derived from something you did, not something you declared.</p>
           </div>
           <div class="highlight-box"><strong>A living system has an honest speed</strong>The profile re-reads you every seventh day you play, with a meter filling toward the next one. Read every session and you are describing a mood. Never re-read and you are a horoscope.</div>
-          <div class="showcase reveal">
-          <div class="showcase-stage solo">
-          <div class="phone pending">
-          <div class="phone-screen">
-          <p class="pending-note"><b>Clip wanted: the profile diorama</b>A slow scroll through the profile so elements fly to centre and park again. This is the thing I spent the most time on and it is the one part of the page that cannot be shown as a still.</p>
-          </div>
-          </div>
-          </div>
-          <p class="cap">Where the reads accumulate, and the one thing on this page that genuinely cannot be shown as a still.</p>
-          </div>
+          <figure class="diorama reveal">
+            <video src="vid/profile-diorama.mp4" poster="vid/profile-diorama-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Scrolling through the Trove profile: the journal, the postcards and the pass each fly to the centre and park again"></video>
+          </figure>
+          <p class="cap">The profile diorama: scroll and each piece flies to the centre, then parks again. The one part of this page that can&rsquo;t be shown as a still.</p>
           <p>Then the move I am proudest of. Having just told you who you are, it asks whether it got you right. You pick a face, you write a sentence, and it holds your note against the choices you actually made.</p>
           <div class="showcase reveal">
           <div class="showcase-stage solo">
