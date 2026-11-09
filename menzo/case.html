@@ -1105,7 +1105,7 @@ figure{
       <section id="city">
         <div class="section-content reveal">
           <h2 class="section-heading">Menzoberranzan has never existed in a Baldur&rsquo;s Gate game. So a hundred and forty people are building it for free.</h2>
-          <p class="lede">An unofficial expansion for Baldur&rsquo;s Gate 3, run at studio scale with none of the studio.</p>
+          <p class="lede">An unofficial expansion for Baldur&rsquo;s Gate 3, run like a game studio, without the money or the staff of one.</p>
 
           <div class="video-embed reveal">
             <iframe src="https://www.youtube.com/embed/1oBlmSvi1So?rel=0&amp;modestbranding=1&amp;playsinline=1"
@@ -1115,7 +1115,7 @@ figure{
           </div>
           <p class="cap">The progress reel. The tutorial level, taking form.</p>
 
-          <p>Path to Menzoberranzan is a full custom campaign set deep in the Underdark, in the city the franchise was always too cautious to fully render. Original narrative, original art, original audio, original cinematics, original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year of work.</p>
+          <p>Path to Menzoberranzan is a full custom campaign set deep in the Underdark, in Menzoberranzan, the underground drow city from the Forgotten Realms books that the games have never actually let you visit. Original narrative, original art, original audio, original cinematics, original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year of work.</p>
 
           <p>Everyone on it is a volunteer who does not have to care and does anyway. That is the strangest and most sustaining thing about it, and it is also the fact that decides every technical call I make. I came in as <b>CTO and Technical Director</b>, which sounds like one job with two names and is not.</p>
 
@@ -1175,14 +1175,14 @@ figure{
       <!-- THE MIGRATION JAM -->
       <section id="jam">
         <div class="section-content reveal">
-          <h2 class="section-heading">The repo was 2.5 GB and heading for 80. We had one weekend and a rewrite that could not be undone.</h2>
+          <h2 class="section-heading">The repo was 2.5 GB and heading for 80 GB. We had one weekend and a rewrite that could not be undone.</h2>
           <p class="lede">People senior to me said you cannot retrofit Git LFS onto a repo that was not built for it. They were wrong, and then they were very nearly right.</p>
 
           <p>Baldur&rsquo;s Gate 3 modding is a binary-heavy discipline, and a repository that clones in three minutes becomes one that clones in three hours and then does not clone at all. That is not a developer experience problem. That is a contributor retention problem, and we were about eighteen months from it.</p>
 
           <p>Git LFS keeps large files outside the repository proper. Contributors get a small pointer file in their clone and the real binary arrives on demand. The repo stays light, the workflow stays sane. The catch is that if you did not start that way, adopting it means rewriting every commit that ever touched a binary, and a history rewrite invalidates every open branch and every existing clone on every machine on the project.</p>
 
-          <p>Which is why it had to be a jam. Freeze the world on a Friday, rewrite, verify, thaw by Sunday. Before anybody touched anything I wrote fourteen steps, a rollback plan, a troubleshooting guide and an FAQ for the rest of the board: audit everything in history over 10 MB, provision on Hetzner, stand up Forgejo, move the objects to Backblaze B2, freeze the open pull requests, rewrite, verify, communicate, and archive the old instance. It was not a quick decision. It was a surgery plan.</p>
+          <p>So it all had to happen in one weekend: freeze all work on Friday, rewrite, check everything, and let people back in by Sunday. Before anybody touched anything I wrote fourteen steps, a rollback plan, a troubleshooting guide and an FAQ for the rest of the board: audit everything in history over 10 MB, provision on Hetzner, stand up Forgejo, move the objects to Backblaze B2, freeze the open pull requests, rewrite, verify, communicate, and archive the old instance.</p>
 
           <div class="highlight-box reveal">
             <strong>The step that saved it was step fourteen</strong>
@@ -1253,7 +1253,7 @@ size 48221184
           </div>
           <p class="cap">Then everyone ran <b>git lfs pull</b>, the working trees hydrated, and the assets came back at full size.</p>
 
-          <p>The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would. Step fourteen cost nothing on the Friday. On the Sunday it was the entire project.</p>
+          <p>The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would. Step fourteen cost nothing on the Friday, and on the Sunday it saved the whole project.</p>
 
 <div class="rp-pair reveal" role="img" aria-label="Two repository screens side by side. Before: no Git LFS, every binary in every clone, heading for 80 gigabytes or more. After: Git LFS on self-hosted Forgejo, binaries shown with an LFS badge and kept in object storage, 2.5 gigabytes.">
             <div class="rp before">
@@ -1418,12 +1418,12 @@ size 48221184
             <div class="card reveal">
               <h4>01</h4>
               <h3>Name the domains or watch them collapse</h3>
-              <p>CTO and Technical Director are not titles. They are categorical separations that stop one person failing at two completely different jobs at once, in two completely different timescales.</p>
+              <p>Splitting CTO and Technical Director into two clearly defined jobs stopped me failing at both at once. One is about the next six months, the other is about this afternoon.</p>
             </div>
             <div class="card reveal">
               <h4>02</h4>
               <h3>Write the undo before the do</h3>
-              <p>Archive, not delete. The step that rescued the migration cost nothing on the Friday and was the whole project by Sunday. Design the recovery while you are calm and assuming you will be wrong about something.</p>
+              <p>Archive, not delete. Keeping the old server instead of deleting it cost nothing on Friday and saved the migration on Sunday. Plan the recovery while you&rsquo;re calm, and assume you&rsquo;ll be wrong about something.</p>
             </div>
             <div class="card reveal">
               <h4>03</h4>

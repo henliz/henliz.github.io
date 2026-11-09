@@ -425,7 +425,8 @@
       box-shadow:0 8px 32px rgba(var(--sh-rgb), calc(.35 * var(--sh-k)));
       background:#0b1416; line-height:0;
     }
-    .vid-crop video{ width:100%; display:block; transform:scale(1.2); transform-origin:center; }
+    /* the loader drops src off screen, so hold the clip's shape or the page jumps */
+    .vid-crop video{ width:100%; display:block; aspect-ratio:1280/694; object-fit:cover; transform:scale(1.2); transform-origin:center; }
 
 
     .lede{ font-size:clamp(1.02rem,1.65vw,1.2rem); line-height:1.55; font-weight:600; color:var(--text-primary); margin-bottom:1.1rem; max-width:62ch; }
@@ -1199,7 +1200,7 @@ figure{
       <!-- OVERVIEW BLOCK -->
       <section id="challenge">
         <div class="section-content reveal">
-          <h2 class="section-heading">Food prices outran wages for four straight years. So the one thing Skrimp was never allowed to cost a family was time.</h2>
+          <h2 class="section-heading">Food prices have grown faster than wages for four years straight, and families are working harder than ever just to keep up.</h2>
           <p class="lede">Groceries are up 26.8% since 2020. Pay is not.</p>
 
           <div class="chart-aside">
@@ -1210,10 +1211,10 @@ figure{
 
             <p>I pulled Statistics Canada's food and wage series for June 2021 to 2024 and plotted them against each other, because I wanted to know whether this was a spending problem or an arithmetic one. Food inflation ran at 6.6%. Wage inflation ran at 3.7%. The lines separate in early 2022 and never come back together.</p>
 
-            <p>That gap is not abstract inflation. It is the item you put back. The recipe you stopped making. The Sunday session that used to feel like cooking and now feels like damage control. Younger households, already carrying 30% less generational wealth than boomers were at the same age, absorb it worst.</p>
+            <p>In real life that gap is the item you put back on the shelf, the recipe you stopped making, and the Sunday meal prep that used to feel like cooking and now feels like damage control. Younger households feel it the most, since they already have 30% less wealth than boomers did at the same age.</p>
           </div>
 
-          <p>Nobody can really control their rent, their utilities or their car insurance. Groceries were the one line families told me felt like something they could actually tackle, which is exactly why they were already working so hard at it. Every household I spoke to was running a manual savings algorithm in their head, every week, unasked. That is not a motivation problem. It is a tooling problem.</p>
+          <p>Nobody can really control their rent, their utilities or their car insurance. Groceries were the one line families told me felt like something they could actually tackle, which is exactly why they were already working so hard at it. Every household I spoke to was already doing the maths in their head every week: checking flyers, comparing stores, planning meals around deals. They had plenty of motivation. What they didn&rsquo;t have was a tool that did it for them.</p>
           <div class="challenge-row">
           <div class="ctv-video-wrap">
             <div id="ctv-yt-player"></div>
@@ -1226,7 +1227,7 @@ figure{
           <p class="body-img-caption">CTV News Kitchener, September 2025. The cost of living story, and Skrimp inside it.</p>
 <div class="challenge-col right">
               <p>Three tools. None of them talking to each other.<br>→ Flyer apps show what's on sale. They have no idea what you're cooking.<br>→ Recipe apps look beautiful. They have no idea what things cost.<br>→ Budget apps tell you what you spent. After you've already spent it.</p>
-              <p>Families don't stop trying because they aren't motivated. They stop because the coordination tax compounds: the deal that expired before you got there. The "budget recipe" that quietly needs three specialty items. The list you built carefully at home and abandoned halfway down the aisle. Not a motivation problem. A tooling problem, invisible, persistent, and costing real money every single week.</p>
+              <p>Families don&rsquo;t give up because they stop caring. They give up because juggling three apps that don&rsquo;t talk to each other wears them down: the deal that expired before they got to the store, the &ldquo;budget recipe&rdquo; that needs three specialty items, the list they made carefully at home and gave up on halfway down the aisle. All of it costs real money, every week.</p>
             </div>
           
           <div class="steps reveal">
@@ -1250,7 +1251,7 @@ figure{
             </div>
           </div>
 
-          <div class="highlight-box"><strong>Any two of these is a solved problem</strong>Every category above already ships one pair well, which is why they all exist. Skrimp only lives in the overlap, and the overlap is the only place a family actually stands. Drop any one of the three and I have built something you can already download.</div>
+          <div class="highlight-box"><strong>Every app out there does one or two of these</strong>That&rsquo;s why there are so many of them. But families need all three at once, and that&rsquo;s the only place Skrimp tries to be. If I dropped any one of the three, I&rsquo;d have built something you can already download.</div>
 </div>
 
 
@@ -1266,7 +1267,7 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">I ran listening sessions instead of surveys, and gave up a clean number to do it.</h2>
           <p class="lede">Ask someone their budget and you get a number. Ask about last Sunday and you get a system.</p>
-          <p>I ran listening sessions, not questionnaires. Not what would you want from a grocery app, but tell me about last Sunday. Ask someone their budget and they give you a number. Ask them to narrate the shop and they describe a system they did not know they had: flyer-first thinking, mental price matching, routes through the store that save six minutes, recipes that live in the body and were never written down.</p><p>The cost of that choice is that I came out with no clean quantitative baseline, only patterns. I took it, because the insight underneath was the whole product. People are already the system. Skrimp was never going to design something new, it was going to automate something ancient.</p>
+          <p>I ran listening sessions, not questionnaires. Not what would you want from a grocery app, but tell me about last Sunday. Ask someone their budget and they give you a number. Ask them to narrate the shop and they describe a system they did not know they had: flyer-first thinking, mental price matching, routes through the store that save six minutes, recipes that live in the body and were never written down.</p><p>The cost of that choice is that I came out with no clean quantitative baseline, only patterns. I took it, because the insight underneath was the whole product. Families had already figured out how to save money on food. Skrimp didn&rsquo;t need to invent a new way of doing it, it needed to do their existing way for them.</p>
 
           <div class="quote-grid reveal">
             <div class="quote-card reveal">
@@ -1280,18 +1281,6 @@ figure{
             <div class="quote-card reveal">
               <div class="quote-text">"Your recipes don't require eleven ingredients I'll never use again, and it's stuff my kids will actually eat."</div>
               <div class="quote-author">Lisa Freeman, CTV News</div>
-            </div>
-            <div class="quote-card reveal">
-              <div class="quote-text">"Families testing the app have reported cutting their grocery bills by as much as $100 a week, close to $5, 000 a year."</div>
-              <div class="quote-author">Waterloo Region Record, 2025</div>
-            </div>
-            <div class="quote-card reveal">
-              <div class="quote-text">"[Henrietta and Skrimp show that] AI does not have to be scary, it can be compassionate, practical, and profoundly human."</div>
-              <div class="quote-author">Mary Wells, Dean of Engineering @ UWaterloo</div>
-            </div>
-            <div class="quote-card reveal">
-              <div class="quote-text">"It's pretty easy to use, user friendly, very straightforward."</div>
-              <div class="quote-author">Lisa Freeman, CTV News, Sept 2025</div>
             </div>
           </div>
 
@@ -1325,7 +1314,7 @@ figure{
 
       <section class="ideation" id="ideation">
         <div class="section-content reveal">
-          <h2 class="section-heading">I inverted the order. What is on sale became the prompt, not the filter.</h2>
+          <h2 class="section-heading">Most food apps start with a recipe. Skrimp starts with what&rsquo;s on sale.</h2>
           <p class="lede">Which means I cannot promise you a specific meal. I decided that trade was worth making.</p>
           <div class="two-col">
             <div>
@@ -1340,7 +1329,7 @@ figure{
             <div class="step-card">
               <span class="n ico">🧭</span>
               <h4>Explainable savings</h4>
-              <p>Every meal shows its working, not just a total, a reason. "Cheap" is a claim. A line item is evidence. Families under financial pressure have been misled enough. Skrimp doesn't ask for trust it hasn't earned.</p>
+              <p>Every meal shows how it got its price, item by item, instead of just a total. Saying a meal is cheap is easy, showing the prices is proof, and families under financial pressure have been misled enough to want proof.</p>
             </div>
             <div class="step-card">
               <span class="n ico">🔁</span>
@@ -1355,7 +1344,7 @@ figure{
             <div class="step-card">
               <span class="n ico">🛡️</span>
               <h4>Minimum viable data</h4>
-              <p>Families under financial pressure have less margin for everything, including data risk. Skrimp collects what's needed for utility, explains why, and makes deletion a single action. This was a constraint before it was a principle.</p>
+              <p>Families under financial pressure have less margin for everything, including data risk. Skrimp collects what's needed for utility, explains why, and makes deletion a single action.</p>
             </div>
           </div>
           <div class="vid-crop"><video data-src="media/skrimp-browse-recipes.mp4" autoplay muted loop playsinline preload="none"></video></div>
@@ -1366,10 +1355,10 @@ figure{
 
       <section class="design-process" id="design-process">
         <div class="section-content reveal">
-          <h2 class="section-heading">Flyers arrive as images that code cannot read, so I built for chaos as the default case.</h2>
-          <p class="lede">Every Monday is a negotiation with data nobody ever intended a machine to read.</p>
+          <h2 class="section-heading">Grocery flyers are just pictures, so getting prices out of them was the hardest technical problem.</h2>
+          <p class="lede">New flyers come out every week, and none of them were made for a computer to read.</p>
 
-          <p>A flyer is a photograph of a page. Nothing in it is text, so nothing in it is readable, and the store that published it is under no obligation to publish it the same way twice. I designed the pipeline to assume that rather than to be surprised by it. Nothing reaches a family's list on the first pass. Products earn their place, and the different names one ingredient goes by get resolved silently across hundreds of recipes, because a user base that cannot afford for the numbers to be wrong is also a user base that will not stop to correct them.</p>
+          <p>Stores don&rsquo;t publish their flyers the same way twice, so I designed the pipeline to expect a mess every time. Nothing goes straight onto a family&rsquo;s list. Every product gets checked first, and the different names one ingredient goes by get matched up across hundreds of recipes behind the scenes. Families who can&rsquo;t afford for the numbers to be wrong also don&rsquo;t have time to fix them, so it has to be right without their help.</p>
 
           <div class="steps reveal">
             <div class="step-card">
@@ -1401,13 +1390,13 @@ figure{
 
           <div class="highlight-box"><strong>Quality is not evenly distributed</strong>The same pipeline is close to twice as accurate on one chain’s flyer as on another’s, and the variable is not my code. It is how good a photograph the store published that week. The discount chains, the ones our families actually shop at, publish the worst ones.</div>
 
-          <p>What a family sees is the opposite of all that. Every plan shows its working: which items are on sale, at which store, for what they cost this week. Not a black box, a receipt they can interrogate. Layout changes, missing products and store quirks get absorbed upstream and never reach them.</p>
+          <p>Families never see any of that mess. They see a plan that shows its working: which items are on sale, at which store, and what they cost this week, like a receipt they can check. Changed layouts, missing products and store quirks all get handled before the plan reaches them.</p>
 
           <div class="vid-crop"><video data-src="media/skrimp-browse-flyers.mp4" autoplay muted loop playsinline preload="none"></video></div>
 
-          <p>The most valuable thing testing surfaced was not a screen. Meal planning is not solo. One person plans, and their partner arrives at the store holding a list and none of the reasoning behind it. Household sharing was never a later sprint, it was the thing the product was missing. Adding it did not upgrade Skrimp, it finished it.</p>
+          <p>The most useful thing testing taught us wasn&rsquo;t about a screen, it was that meal planning isn&rsquo;t a one person job. One person plans, and then their partner shows up at the store with the list and none of the reasoning behind it. Household sharing turned out to be the piece Skrimp was missing, not a nice extra for later.</p>
 
-          <p>So per-meal and per-week totals update on every change, the number is live instead of a surprise at the till, and allergen filters, store preferences and dietary flags are set once and then remembered.</p>
+          <p>Everything else is about keeping the number honest and the setup light. Per meal and per week totals update with every change, so there&rsquo;s no surprise at the till, and allergies, store preferences and dietary needs are set once and remembered.</p>
         </div>
       </section>
 
@@ -1417,7 +1406,7 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">Sixty seconds was the ceiling, so anything that did not fit inside it died.</h2>
           <p class="lede">If a step felt like homework, I cut it. Including several I liked.</p>
-<p>Sixty seconds is not a performance target, it is the whole product. Past a minute a family goes back to doing this in their head for free, and I have built nothing. So every feature had to survive the same question: does a household get a usable week out of this faster than they could assemble one themselves? Most of what I wanted to build did not.</p>
+<p>Sixty seconds wasn&rsquo;t just a speed goal. If it takes longer than a minute, families go back to doing it in their heads for free, and Skrimp is pointless. So every feature had to survive the same question: does a household get a usable week out of this faster than they could assemble one themselves? Most of what I wanted to build did not.</p>
 
           <div class="steps reveal">
             <div class="step-card">
@@ -1442,7 +1431,7 @@ figure{
             </div>
           </div>
 
-          <p>What survived is not a meal kit, a subscription box, or another app that claims to care about your budget. It is connective tissue. Deals inform the plan, the plan generates the list, the list loads the cart, and the whole chain runs inside the minute.</p>
+          <p>What was left isn&rsquo;t a meal kit or a subscription box. It&rsquo;s the part that connects everything: the deals shape the plan, the plan makes the list, the list fills your online cart, and all of it happens in under a minute.</p>
 
           <div class="vid-crop"><video data-src="media/skrimp-smartload-demo.mp4" autoplay muted loop playsinline preload="none"></video></div>
 
@@ -1472,11 +1461,11 @@ figure{
 
       <section id="team">
         <div class="section-content reveal">
-          <h2 class="section-heading">I had to make the system legible enough that a first-year could not quietly break it.</h2>
-          <p class="lede">You cannot design your way out of somebody not knowing why a pipeline works.</p>
+          <h2 class="section-heading">Most of my engineers were first and second years, so the system had to be easy to understand.</h2>
+          <p class="lede">Teaching people why it worked mattered more than teaching them how.</p>
           <p>Six engineers came through Skrimp in rotations, most of them first or second years. The risk was never that they would write bad code. It was that someone who does not know why a pipeline is shaped a certain way will quietly reshape it, and that breaks silently and compounds for weeks before it surfaces as something catastrophic.</p>
 
-          <p>You cannot design your way out of that, so I stopped trying to. The job became making the system legible enough that somebody else could reason about it under pressure, and onboarding people to the why before the how. They already knew how to code. What they had to learn was to ask what does this break before writing the first line, and the intern who understands the constraint makes a better call than the one who only knows the command.</p>
+          <p>No amount of clever design fixes that, so my job became making the system easy enough to understand that someone new could reason about it under pressure, and explaining why things worked before how. They already knew how to code. What they had to learn was to ask what does this break before writing the first line, and the intern who understands the constraint makes a better call than the one who only knows the command.</p>
 
         </div>
       </section>
@@ -1487,7 +1476,7 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">What this taught me that a classroom couldn't.</h2>
           <blockquote class="pull-quote reveal">
-            "Families testing the app have reported cutting their grocery bills by as much as $100/week, close to $5, 000/yr."
+            "Families testing the app have reported cutting their grocery bills by as much as $100/week, close to $5,000/yr."
             <cite>Waterloo Region Record, 2025</cite>
           </blockquote>
           <div class="cards reveal">
@@ -1499,7 +1488,7 @@ figure{
             <div class="card reveal">
               <h4>02</h4>
               <h3>The last mile is the product</h3>
-              <p>A plan that ends at a list is a plan that depends on the user to finish it. The Chrome extension exists because "we got you to the shopping list" was not good enough. The loop had to close.</p>
+              <p>A plan that ends at a list is a plan that depends on the user to finish it. That&rsquo;s why I built the Chrome extension, which puts the list straight into your online grocery cart. Stopping at the shopping list wasn&rsquo;t good enough.</p>
             </div>
             <div class="card reveal">
               <h4>03</h4>
@@ -1509,14 +1498,14 @@ figure{
             <div class="card reveal">
               <h4>04</h4>
               <h3>Trust is the product</h3>
-              <p>Families under financial stress don't want to be impressed. They want to believe the number. Every decision, explainable savings, transparent swaps, no dark patterns, was an argument that the number on screen is one they can trust.</p>
+              <p>Families under financial stress don't want to be impressed. They want to believe the number. Showing the working on savings, being upfront about swaps and never using dark patterns all came from the same goal: making the number on screen one they can trust.</p>
             </div>
           </div>
           <div class="reflection reveal">
             <h3>🛒 What I didn't expect</h3>
             <p>The thing that surprised me most wasn't the savings. It was the tone of voice.</p>
             <p>Users didn't say "I saved $80 this week." They said things like: "I don't have to think about it anymore." "Sunday isn't a thing for us now." "My partner finally knows what we're having." That's not a savings story. That's a stress story. The problem was never purely financial, it was the invisible weight of managing money, alone, every week, in your head. Skrimp didn't solve a grocery problem. It solved a cognitive one. The savings are real, confirmed by families, confirmed by the press. But what people feel is the absence of something. The weekly drain that stopped.</p>
-            <p><span class="di">That is what AI should do. Not impress you. Disappear.</span></p>
+            <p><span class="di">I think that&rsquo;s what AI should do: take a job off your plate so well that you stop noticing it.</span></p>
           </div>
 
         </div>

@@ -4440,8 +4440,7 @@ body::after{
       // her. the cutout on a fine mesh so bits of her can move: the raised
       // forearm sways from the elbow, her outer curls and the skirt's hem
       // flutter, and every few seconds she blinks (the lid is the cheek
-      // colour just under each eye pulled up, with a lash line where it
-      // meets). her chest and her feet never move.
+      // colour just under each eye pulled up). her chest and her feet never move.
       // all coords are pixels on the 657x560 art
       const FRAMES = ['1', '1s', '15', '2s', '2'].map((n, i) => tex(`./sky/hen-fall-${n}.webp`, false, i ? undefined : () => canvas.classList.add('ready')));
       const henMat = new THREE.ShaderMaterial({
@@ -4484,9 +4483,7 @@ body::after{
             vec2 sk = vec2(l.x * h.x * .8, h.y * 2.1);
             float s2 = sin(ang), k2 = cos(ang);
             vec4 skin = texture2D(map, unpx(c + vec2(k2*sk.x - s2*sk.y, s2*sk.x + k2*sk.y)));
-            col = mix(col, skin, covered * inside);
-            float line = (1. - smoothstep(.0, .2, abs(l.y - lid))) * smoothstep(.0, .35, blink) * (1. - smoothstep(.85, 1.05, abs(l.x)));
-            return mix(col, vec4(.2, .12, .1, 1.), line * inside);
+            return mix(col, skin, covered * inside);
           }
           void main() {
             vec4 col = texture2D(map, vUv);
@@ -5061,7 +5058,7 @@ body::after{
       <!-- Real HTML so crawlers, AI fetchers and no-JS readers get the work.
            The tile builder clears this and renders the interactive grid. -->
       <ul class="grid-fallback">
-        <li><a href="/trove/"><strong>Trove</strong> — Turning behavioural data into a personality read people actually recognise. 0 to 10,250 users and 61.9K page views in five months.</a></li>
+        <li><a href="/trove/"><strong>Trove</strong> — A personality app that reads you from the choices you make in short daily stories. 0 to 10,250 users and 61.9K page views in five months.</a></li>
         <li><a href="/skrimp/"><strong>Skrimp</strong> — Planning a week of dinners around live prices and whatever's already in the fridge. $5K/yr potential savings per family, free always.</a></li>
         <li><a href="/menzo/"><strong>Path to Menzoberranzan</strong> — Running a volunteer studio on an undocumented engine. 140+ contributors, 1,700 Patreon members.</a></li>
         <li><a href="/myauntie/"><strong>MyAuntie</strong> — Postpartum support that arrives as a text, not another app to download. TechNova 2025 winner.</a></li>
@@ -5095,14 +5092,14 @@ body::after{
                 <tbody>
                   <tr>
                     <td>Trove</td>
-                    <td>No questions allowed. Eighteen weeks. An idea proven exactly once.</td>
+                    <td>A personality app that&rsquo;s not allowed to ask you anything. Eighteen weeks, and an idea that had only been tested once.</td>
                     <td><span class="ns-chaos-tag ns-tag-const">constraints</span><span class="ns-chaos-tag ns-tag-user">user state</span></td>
-                    <td>A story pipeline that plays itself start to finish before a person reads a word.</td>
+                    <td>A pipeline that writes a new story every day and test-plays it start to finish before a person reviews it.</td>
                     <td><span class="ns-outcome-pill">10k+ users</span></td>
                   </tr>
                   <tr>
                     <td>Path to Menzoberranzan</td>
-                    <td>140 volunteers. Six departments. No salaries, no docs, no end date.</td>
+                    <td>140 volunteers. Seven departments. No salaries, no docs, no end date.</td>
                     <td><span class="ns-chaos-tag ns-tag-coord">coordination</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
                     <td>A contribution pipeline and lore governance that let strangers ship into one build.</td>
                     <td><span class="ns-outcome-pill">shipping</span></td>

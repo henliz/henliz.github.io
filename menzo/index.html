@@ -4003,11 +4003,11 @@ body::after{
 <p>Repository architecture, pipeline engineering, version control on Git LFS, engine implementation in BG3, technical documentation, licensing and governance, and cross-department unblocking.</p>
 <p>Path to Menzoberranzan is an active production. Technical architecture, custom toolchain specifications, in-engine system implementations and unreleased content are not discussed here. They live under NDA for good reason. What follows covers publicly announced project scope, publicly available press and screenshots, and the leadership decisions I can speak to without compromising the work of 140+ contributors who trust this project to stay quiet. There is a great deal more I am proud of and cannot yet say.</p>
 <h2>Menzoberranzan has never existed in a Baldur’s Gate game. So a hundred and forty people are building it for free.</h2>
-<p>An unofficial expansion for Baldur’s Gate 3, run at studio scale with none of the studio.</p>
+<p>An unofficial expansion for Baldur’s Gate 3, run like a game studio, without the money or the staff of one.</p>
 <p>The progress reel. The tutorial level, taking form.</p>
-<p>Path to Menzoberranzan is a full custom campaign set deep in the Underdark, in the city the franchise was always too cautious to fully render. Original narrative, original art, original audio, original cinematics, original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year of work.</p>
+<p>Path to Menzoberranzan is a full custom campaign set deep in the Underdark, in Menzoberranzan, the underground drow city from the Forgotten Realms books that the games have never actually let you visit. Original narrative, original art, original audio, original cinematics, original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year of work.</p>
 <p>Everyone on it is a volunteer who does not have to care and does anyway. That is the strangest and most sustaining thing about it, and it is also the fact that decides every technical call I make. I came in as CTO and Technical Director , which sounds like one job with two names and is not.</p>
-<p>The city, as it currently stands in engine.</p>
+<p>The project’s onboarding site, with my profile open. New contributors open folders instead of reading a wall of docs, and every lead says what to ping them for.</p>
 <h2>140 people. Zero salary. An undocumented engine. A 21 year old holding the infrastructure.</h2>
 <p>In a funded studio, bad infrastructure costs money. In a volunteer studio, it costs people.</p>
 <p>The constraints here do not exist in a paid studio, and they compound. There is no documentation from the engine developer, no on-call support, no ops team, and no way to compel anybody to do anything. The Baldur’s Gate 3 Toolkit exposes a fraction of what the engine actually does. The rest is detective work: pattern recognition, edge cases, anomalies that behave one way on Tuesday and differently on Friday for reasons that take hours to isolate.</p>
@@ -4020,11 +4020,11 @@ body::after{
 <h4>No margin for error</h4>
 <p>A contributor whose work keeps breaking for reasons they do not control does not file a ticket. They quietly stop showing up, and you find out weeks later.</p>
 <p>Athkatla from Baldur’s Gate 2, rebuilt in the BG3 engine. Via TheGamer, January 2025.</p>
-<h2>The repo was 2.5 GB and heading for 80. We had one weekend and a rewrite that could not be undone.</h2>
+<h2>The repo was 2.5 GB and heading for 80 GB. We had one weekend and a rewrite that could not be undone.</h2>
 <p>People senior to me said you cannot retrofit Git LFS onto a repo that was not built for it. They were wrong, and then they were very nearly right.</p>
 <p>Baldur’s Gate 3 modding is a binary-heavy discipline, and a repository that clones in three minutes becomes one that clones in three hours and then does not clone at all. That is not a developer experience problem. That is a contributor retention problem, and we were about eighteen months from it.</p>
 <p>Git LFS keeps large files outside the repository proper. Contributors get a small pointer file in their clone and the real binary arrives on demand. The repo stays light, the workflow stays sane. The catch is that if you did not start that way, adopting it means rewriting every commit that ever touched a binary, and a history rewrite invalidates every open branch and every existing clone on every machine on the project.</p>
-<p>Which is why it had to be a jam. Freeze the world on a Friday, rewrite, verify, thaw by Sunday. Before anybody touched anything I wrote fourteen steps, a rollback plan, a troubleshooting guide and an FAQ for the rest of the board: audit everything in history over 10 MB, provision on Hetzner, stand up Forgejo, move the objects to Backblaze B2, freeze the open pull requests, rewrite, verify, communicate, and archive the old instance. It was not a quick decision. It was a surgery plan.</p>
+<p>So it all had to happen in one weekend: freeze all work on Friday, rewrite, check everything, and let people back in by Sunday. Before anybody touched anything I wrote fourteen steps, a rollback plan, a troubleshooting guide and an FAQ for the rest of the board: audit everything in history over 10 MB, provision on Hetzner, stand up Forgejo, move the objects to Backblaze B2, freeze the open pull requests, rewrite, verify, communicate, and archive the old instance.</p>
 <h4>Git, not GitHub</h4>
 <p>GitHub’s LFS bandwidth pricing does not survive this asset scale. Self-hosting Forgejo on Hetzner is far cheaper for a team mostly in Europe, with fast storage and no per-seat surprises, and it hands us the LFS policy instead of renting it.</p>
 <h4>Objects in B2</h4>
@@ -4039,9 +4039,8 @@ body::after{
 <p>Nothing errored during the migration. Git reported success at every step, because from git’s point of view it had succeeded. A pointer file is legal content. It only surfaced when the Toolkit tried to load a model and got ASCII.</p>
 <p>The read in the room was that the history rewrite had eaten the binaries, and that this was the proof that retroactive LFS does not work on a repo that was not set up for it from the start. It was not. Nothing had been lost. Every object was still sitting in the local LFS cache on the machine that ran the migration, and still on the old instance that step fourteen had told us to archive rather than delete.</p>
 <p>Then everyone ran git lfs pull , the working trees hydrated, and the assets came back at full size.</p>
-<p>The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would. Step fourteen cost nothing on the Friday. On the Sunday it was the entire project.</p>
-<p>Clone time, before and after.</p>
-<p>Where it was going, and where it went instead.</p>
+<p>The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would. Step fourteen cost nothing on the Friday, and on the Sunday it saved the whole project.</p>
+<p>Where it was going, and where it went instead. The files are examples; the sizes are the real ones.</p>
 <h2>CTO and Technical Director. Same person. Completely different jobs.</h2>
 <p>One of them prevents a collapse in six months. The other one prevents a department going idle this afternoon.</p>
 <p>This distinction usually gets collapsed into one vague “technical lead” title until something catastrophic happens. We formalised it early because we hit the scale where leaving it implicit was actively dangerous. At 140 contributors, a single ambiguous decision can propagate silently through the pipeline for weeks before it surfaces as months of wasted work.</p>
@@ -4067,8 +4066,7 @@ body::after{
 <p>So I wrote it down, and that document is the most load-bearing thing I have made here.</p>
 <p>The visible part of technical leadership is debugging. The dramatic moment where the cinematic is broken and you find the one misaligned atmosphere preset that caused it. That part is real and it takes real skill. The invisible part is the architecture: the documents, the conventions, the tracking rules, the licensing decisions, the pipeline constraints that stop one department’s work silently invalidating another’s over a month.</p>
 <p>Hen’s Brain: Technical Leadership Manual exists because institutional knowledge living in one head is not an inconvenience at this scale, it is an existential risk. It defines the two domains, their failure modes, their escalation paths, and which decisions fall unambiguously into each. It is not theory. It is operational infrastructure, and it is written so the project survives illness, burnout, exams and time zones.</p>
-<p>The manual, redacted.</p>
-<p>What 140 volunteers looks like when you draw it.</p>
+<p>What 140 volunteers looks like when you draw it: seven departments, each with a coordinator and its own leads.</p>
 <p>Licensing sits in the same category. The custom toolchains are protected under PolyForm Shield 1.0.0, which prevents commercial appropriation of work built by volunteers, for free, for a community. That is a legal architecture decision rather than a creative one, and it is the sort of thing that is cheap to do early and impossible to do late.</p>
 <h2>There is a whole category of this I am proud of and not allowed to show you.</h2>
 <p>You get the infrastructure decisions. You do not get the blueprints.</p>
@@ -4077,10 +4075,10 @@ body::after{
 <h2>What this project taught me that a classroom couldn’t.</h2>
 <h4>01</h4>
 <h3>Name the domains or watch them collapse</h3>
-<p>CTO and Technical Director are not titles. They are categorical separations that stop one person failing at two completely different jobs at once, in two completely different timescales.</p>
+<p>Splitting CTO and Technical Director into two clearly defined jobs stopped me failing at both at once. One is about the next six months, the other is about this afternoon.</p>
 <h4>02</h4>
 <h3>Write the undo before the do</h3>
-<p>Archive, not delete. The step that rescued the migration cost nothing on the Friday and was the whole project by Sunday. Design the recovery while you are calm and assuming you will be wrong about something.</p>
+<p>Archive, not delete. Keeping the old server instead of deleting it cost nothing on Friday and saved the migration on Sunday. Plan the recovery while you’re calm, and assume you’ll be wrong about something.</p>
 <h4>03</h4>
 <h3>Infrastructure is community</h3>
 <p>In a volunteer studio, bad tooling does not just slow people down. It drives them away. The repository is the environment everybody lives in, so design it like somewhere people have to want to stay.</p>
@@ -4487,8 +4485,7 @@ body::after{
       // her. the cutout on a fine mesh so bits of her can move: the raised
       // forearm sways from the elbow, her outer curls and the skirt's hem
       // flutter, and every few seconds she blinks (the lid is the cheek
-      // colour just under each eye pulled up, with a lash line where it
-      // meets). her chest and her feet never move.
+      // colour just under each eye pulled up). her chest and her feet never move.
       // all coords are pixels on the 657x560 art
       const FRAMES = ['1', '1s', '15', '2s', '2'].map((n, i) => tex(`./sky/hen-fall-${n}.webp`, false, i ? undefined : () => canvas.classList.add('ready')));
       const henMat = new THREE.ShaderMaterial({
@@ -4531,9 +4528,7 @@ body::after{
             vec2 sk = vec2(l.x * h.x * .8, h.y * 2.1);
             float s2 = sin(ang), k2 = cos(ang);
             vec4 skin = texture2D(map, unpx(c + vec2(k2*sk.x - s2*sk.y, s2*sk.x + k2*sk.y)));
-            col = mix(col, skin, covered * inside);
-            float line = (1. - smoothstep(.0, .2, abs(l.y - lid))) * smoothstep(.0, .35, blink) * (1. - smoothstep(.85, 1.05, abs(l.x)));
-            return mix(col, vec4(.2, .12, .1, 1.), line * inside);
+            return mix(col, skin, covered * inside);
           }
           void main() {
             vec4 col = texture2D(map, vUv);
@@ -5108,7 +5103,7 @@ body::after{
       <!-- Real HTML so crawlers, AI fetchers and no-JS readers get the work.
            The tile builder clears this and renders the interactive grid. -->
       <ul class="grid-fallback">
-        <li><a href="/trove/"><strong>Trove</strong> — Turning behavioural data into a personality read people actually recognise. 0 to 10,250 users and 61.9K page views in five months.</a></li>
+        <li><a href="/trove/"><strong>Trove</strong> — A personality app that reads you from the choices you make in short daily stories. 0 to 10,250 users and 61.9K page views in five months.</a></li>
         <li><a href="/skrimp/"><strong>Skrimp</strong> — Planning a week of dinners around live prices and whatever's already in the fridge. $5K/yr potential savings per family, free always.</a></li>
         <li><a href="/menzo/"><strong>Path to Menzoberranzan</strong> — Running a volunteer studio on an undocumented engine. 140+ contributors, 1,700 Patreon members.</a></li>
         <li><a href="/myauntie/"><strong>MyAuntie</strong> — Postpartum support that arrives as a text, not another app to download. TechNova 2025 winner.</a></li>
@@ -5142,14 +5137,14 @@ body::after{
                 <tbody>
                   <tr>
                     <td>Trove</td>
-                    <td>No questions allowed. Eighteen weeks. An idea proven exactly once.</td>
+                    <td>A personality app that&rsquo;s not allowed to ask you anything. Eighteen weeks, and an idea that had only been tested once.</td>
                     <td><span class="ns-chaos-tag ns-tag-const">constraints</span><span class="ns-chaos-tag ns-tag-user">user state</span></td>
-                    <td>A story pipeline that plays itself start to finish before a person reads a word.</td>
+                    <td>A pipeline that writes a new story every day and test-plays it start to finish before a person reviews it.</td>
                     <td><span class="ns-outcome-pill">10k+ users</span></td>
                   </tr>
                   <tr>
                     <td>Path to Menzoberranzan</td>
-                    <td>140 volunteers. Six departments. No salaries, no docs, no end date.</td>
+                    <td>140 volunteers. Seven departments. No salaries, no docs, no end date.</td>
                     <td><span class="ns-chaos-tag ns-tag-coord">coordination</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
                     <td>A contribution pipeline and lore governance that let strangers ship into one build.</td>
                     <td><span class="ns-outcome-pill">shipping</span></td>

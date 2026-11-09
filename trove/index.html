@@ -4003,70 +4003,69 @@ body::after{
 <p>Convex schema, indexes and migrations, React, TanStack, TypeScript, LLM authoring and eval pipelines, illustration, layout and motion.</p>
 <p>Sourced summer 2026 from analytics</p>
 <p>Trove is a live product and I worked on it under contract. Nothing here covers the authoring system’s prompts, the scoring weights, unreleased roadmap, commercial terms or any non-public user data. What follows is the design reasoning, the research, the craft decisions and the outcome numbers achieved while I was there, which is everything I can show without handing somebody a copy of the thing.</p>
-<h2>You are not what you fill out on a questionnaire. So the product is not allowed to ask you anything.</h2>
-<p>Refuse to ask a single question and the only evidence left is what somebody does.</p>
-<p>You are not your LinkedIn bio and you are not your Hinge profile, and nearly every system built to understand you opens by asking you to be one of those things. Trove drops you into a short story with no clean answer and reads what you actually do.</p>
-<p>Lovely on a homepage. Unreasonable in a codebase. I joined as hire number one on this iteration with the idea proven exactly once, as a Valentine’s drop in February, and eighteen weeks to build the machine underneath it. Eight routes. Sixteen components. A profile that existed as a mockup. No writers’ room and no animators.</p>
+<h2>Trove figures out your personality from what you do, so it never asks you a single question.</h2>
+<p>A quiz can only hand back what you already told it about yourself.</p>
+<p>Most apps that try to understand you start by making you describe yourself, like a LinkedIn bio or a Hinge profile. Trove doesn’t. Every day there’s a short interactive story (we call them tangles) where you make choices that don’t have an obvious right answer. Trove looks at what you chose, writes you a short personality read, and builds up a profile of you over time, a bit like how a friend gets to know you.</p>
+<p>That’s easy to describe and hard to build. I joined in April as the first hire on this version of Trove. The idea had been tested once, as a Valentine’s Day release in February, and what existed was small: eight pages, sixteen components, and a profile that was still only a mockup. There were no writers and no animators, so over eighteen weeks I designed and built the systems that do those jobs: the pipeline that writes and checks the stories, the story cards, the mascot and the profile.</p>
 <p>A whole first session: everything before the game, the game itself at four times speed, and the personality read that follows. It opens by telling you it starts with what you do, offers a self-description step where every field has an “I don’t know yet”, and asks you to make an account only after it has already told you something about yourself.</p>
-<p>Which means a real dilemma, every day, forever. Trove writes its stories, which it calls tangles, with language models and has another one judge them. The judge I inherited scored ten qualities, then threw nearly all of that away to answer one question: good enough to publish, yes or no. A story that merely clears not broken contains no dilemma, and a fake dilemma reveals nothing about the person playing it. Nothing could go up , only through, which means the promise quietly stops being true and you are running a quiz with nicer typography.</p>
-<p>So I built a score out of what we were already throwing away, weighted toward a story’s weakest moment and whether two people playing it actually ended up somewhere different.</p>
-<p>The pipeline that produces one is the most complicated thing I worked on. A premise and a category go in. What comes out has already been played start to finish by a cast of invented players inside the real product, every playthrough read back, and fixed automatically a limited number of times before a person sees a word of it. Most come out playable on the first pass.</p>
+<p>A new story every day means a new real dilemma every day. The stories are written by language models, and another model checks them. The checker I inherited scored ten qualities and then threw nearly all of that away to give one answer: publish, yes or no. The problem is that a story can be not broken and still have no real dilemma in it, and if there’s no real choice to make, your choice says nothing about you. With only pass or fail, nothing pushed the stories to get better , and Trove would slowly turn back into a quiz with nicer typography.</p>
+<p>So I built a quality score out of the ten numbers we were already throwing away. It cares most about a story’s weakest moment, and about whether two different people playing it actually end up somewhere different.</p>
+<p>The pipeline that makes a story is the most complicated thing I worked on. Someone gives it a one line idea and a category. Before a person reads a word of the result, it has been played start to finish by a cast of made-up players inside the real app, every playthrough has been reviewed, and it has been fixed automatically a few times if it needed it. Most stories come out playable on the first try.</p>
 <h4>A premise goes in</h4>
 <p>One line of intent and a category. That is the entire human input at this end.</p>
 <h4>It gets played, for real</h4>
 <p>A cast of invented players plays it start to finish inside the real product, not a rehearsal of it.</p>
 <h4>Every playthrough is read back</h4>
-<p>Every playthrough gets read back. The weakest moment decides the story’s fate, because it is the part a writer can actually fix.</p>
+<p>Every playthrough gets reviewed. The weakest moment decides whether the story passes, because that’s the part a writer can actually fix.</p>
 <h4>A person still says yes</h4>
-<p>Passing means it works. It does not mean it is good, so nothing reaches a player unsigned.</p>
-<p>Two and three loop on a cap: a revised draft is played again before it can move forward. Then somebody makes choices nobody asked them to explain, those choices become a read, the read moves their trait scores, and the profile sharpens every seventh day you play.</p>
-<p>The same instinct killed a feature. “Stories that do not repeat themselves” was on the roadmap and all of us believed it, so I measured first: 139 tangles , 950 pairs of real player prose, one genuine duplicate . The best thing I shipped that quarter is a thing I removed.</p>
-<h2>Personality is a living system. An unfolding story, one that shifts depending on who is in the room.</h2>
-<p>One play tells you about a Tuesday. You need somebody who keeps choosing to come back.</p>
-<p>That is the line that turns a quiz into a product, and it cost the most. Seven cards, one a day, sealed in a pack you have to rip. The explore page, where the daily games live, bends toward you as you play: what it puts in front of you is shaped by your patterns, and it holds on to the story you walked away from.</p>
+<p>Passing means it works, not that it’s good, so a person approves every story before players see it.</p>
+<p>Steps two and three repeat a limited number of times: a fixed draft gets played again before it can move on. Once a story is live, a player’s choices become their read, the read nudges their trait scores, and their profile updates every seventh day they play.</p>
+<p>Checking before building also saved us a feature. “Stop the stories repeating themselves” was on the roadmap and we all assumed it was a real problem, so I measured it first: 139 tangles , 950 pairs of text real players had been shown, and one actual duplicate . We didn’t build it.</p>
+<h2>People change over time, so Trove only works if they keep coming back.</h2>
+<p>One story tells you about one day. A profile needs weeks of them.</p>
+<p>Getting people to come back was the hardest part. Each week comes as a pack of seven cards, one story a day, and you rip the pack open to start. The explore page, where the daily stories live, adapts to you as you play: it shows you stories based on your patterns, and it remembers the one you left halfway through.</p>
 <p>The pack rip and the home screen. Both exist so that opening Trove on day nine feels different from opening it on day one.</p>
-<p>Then something to accumulate. Every tangle needs a play card, and in April that meant hand-assembling one per card, which does not survive a daily cadence for a week. So the card builds itself: it reads what the story is about and picks the art, which sky suits a tense late-night scene, which of the mascots fits a story about being the outsider.</p>
-<p>Ask a language model for pixel coordinates and it returns numbers that land on the card’s existing furniture about half the time, confidently, silently. Nobody gets an alert. You just get an ugly card, forever.</p>
+<p>Every story also needs its own card, and in April each one was put together by hand, which doesn’t work when there’s a new story every day. So I made the cards build themselves: the system reads what the story is about and picks the art, like which sky suits a tense late night scene, or which mascot fits a story about being the outsider.</p>
+<p>If you ask a language model where to put things in pixels, about half the time it puts them on top of something already on the card, and nothing warns you. You just get an ugly card.</p>
 <p>An unplayed card shows blurred slots, one sticker for each topic its results will touch on. Play it and they fill in with the ones you earned.</p>
-<p>The same card after a play, stickers filled in and the read sitting underneath it. A collection is only evidence of an unfolding story if the things in it were earned.</p>
-<h2>What you unlock is a record of what you did, worn instead of written.</h2>
-<p>Most companions are built to be pleased to see you. His face reports.</p>
+<p>The same card after you play it, with your stickers filled in and your read underneath.</p>
+<h2>The mascot wears what you unlock, so he’s a record of what you’ve played.</h2>
+<p>He isn’t just happy to see you. His face shows how you’ve been looking after him.</p>
 <p>Trove tot greets you, reacts to a read, sleeps when you have been away and wears what you unlock. Fourteen poses times twenty-eight accessories is 392 drawings nobody was going to make, so he is composited at runtime from one pose sprite with accessory art on top.</p>
-<p>There is exactly one right answer per slot per pose, and I tried to derive it. I measured his yarn ball, which cannot be measured consistently across poses. Two attempts later I had written a foot detector that confidently found his mouth. Every one failed silently, because a hat two percent off a head does not throw. It just looks faintly cursed, on one pose, forever.</p>
+<p>Every accessory has one right spot on every pose, and at first I tried to work those spots out with code. I tried measuring his yarn ball body, but it isn’t the same shape from pose to pose. Two attempts later I had written a foot detector that confidently found his mouth. None of it failed loudly, because a hat that’s 2% off his head doesn’t cause an error. It just looks a bit cursed on that one pose.</p>
 <p>Every cell is composited live by the real placeFit() from the codebase, running on the real anchors over the real art. →  Scroll sideways for the other nine poses.</p>
 <p>Four outfits across all fourteen poses. Fifty six combinations, none of them drawn.</p>
-<p>Every product with a mascot has worked out that a creature who misses you is worth a few points of retention. That is part of it. It is not the end of it. What you unlock, you unlocked by playing something, and what you played is the only thing Trove knows about you, so you can look at him and learn something about your own month without a sentence being asserted at you.</p>
-<p>He runs on one rule. Pose is the clock, face is the care. He changes body through the day so there is a reason to look again, and changes face only when your care changes, so he can never look like he is having a lovely afternoon while he has been ignored for a week.</p>
-<p>Read across, not down. Look after him and he has four different kinds of happy available to him. Ignore him for a fortnight and he has two faces left, both of them bad. The point is not that neglect makes him sad, it is that it takes his range away, and nobody has to be told that for it to land.</p>
+<p>A mascot who misses you is good for retention, and that’s part of why he’s there. But everything he wears, you unlocked by playing a story, and what you play is the only thing Trove knows about you. So looking at him tells you something about your month without the app having to spell it out.</p>
+<p>He runs on one rule. His pose follows the time of day, and his face follows how you’ve been treating him. His pose changes through the day so there’s a reason to check in again, but his face only changes when your care does, so he can never look like he’s having a lovely afternoon when you’ve ignored him for a week.</p>
+<p>Read across, not down. Look after him and he has four different kinds of happy. Ignore him for two weeks and he only has two faces left, both of them bad. Neglect doesn’t just make him sad, it takes away his range, and nobody has to be told that to feel it.</p>
 <h2>The patterns worth knowing about yourself are the ones you cannot see from the inside.</h2>
-<p>Anything specific enough to be revealing is specific enough to be wrong.</p>
-<p>It does not stop at the read. The same evidence moves the traits underneath it, which is how one play becomes a profile instead of a receipt. Which is also why the profile could not be a dashboard. A dashboard says here is your data , and data is only ever what you already put in. This had to say here is you , a much ruder sentence that has to earn itself. So it became a spatial diorama: your player pass, the journal your read lives in, the postcards you have sent and the floor they all sit on, sharing one plane, with exactly one in focus while the rest sit parked around it.</p>
+<p>The catch is that anything specific enough to be interesting is specific enough to be wrong.</p>
+<p>Every story you play also moves your trait scores, and over time those add up to your profile. I didn’t want the profile to look like a dashboard, because a dashboard says here is your data , and your data is only ever what you put in. This needed to say here is you , which is a much bolder thing to say and has to be earned. So I designed it as a 3D diorama: your player pass, the journal your reads live in and the postcards you’ve sent all sit on one floor, with one piece in focus at a time while the rest wait around it.</p>
 <p>The read itself. Every sentence in it is derived from something you did, not something you declared.</p>
-<p>Clip wanted: the profile diorama A slow scroll through the profile so elements fly to centre and park again. This is the thing I spent the most time on and it is the one part of the page that cannot be shown as a still.</p>
-<p>Where the reads accumulate, and the one thing on this page that genuinely cannot be shown as a still.</p>
-<p>Then the move I am proudest of. Having just told you who you are, it asks whether it got you right. You pick a face, you write a sentence, and it holds your note against the choices you actually made.</p>
-<p>Everything before this is a product talking. This is a product listening, and it is the only reason the sentence before it is allowed to be so confident.</p>
-<h2>And then it had to survive contact with people.</h2>
-<p>Nothing crashed. That was the problem.</p>
-<p>Three faults cost us real players that quarter and not one raised an error, because each was a system reporting success while quietly failing.</p>
-<p>A result came back correct in every detail except its shape, which meant the safety net never caught it, and everything after that recorded a success. Three surfaces went dark and it looked exactly like a slow network. The share card got heavier every press, quietly, while working.</p>
+<p>The profile diorama: scroll and each piece flies to the centre, then parks again. The one part of this page that can’t be shown as a still.</p>
+<p>The part I’m proudest of: right after it tells you who you are, it asks whether it got you right. You pick a face, write a sentence, and Trove compares what you said with the choices you actually made.</p>
+<p>Everything before this step is the app talking about you. This is the app listening, and it’s what makes it OK for the read to be so confident.</p>
+<h2>Then real people used it, and things broke quietly.</h2>
+<p>Nothing crashed, which was the problem.</p>
+<p>Three bugs cost us real players that summer and none of them threw an error, because in each one the system reported success while it was failing.</p>
+<p>In the first, a player’s result came back with the right content in the wrong format. The check that was meant to catch bad results didn’t recognise it, so everything after it logged a success while the player got no result card. In the second, one database query without an index took three parts of the app down on 11 June, and to players it just looked like slow wifi. In the third, the image you get when you share your card got bigger every time you pressed share, until it was eight times its original size, while still technically working.</p>
 <h2>Ten thousand people let a piece of software tell them something about themselves.</h2>
-<p>A questionnaire cannot be argued with. It only hands back what you put in.</p>
-<p>Then they sent it to their friends, which is the part I did not see coming and should have. The patterns you cannot see from the inside are exactly the ones everyone around you has always been able to see. Trove makes them sayable, and puts two of you side by side in the same scene.</p>
+<p>And then they showed their friends.</p>
+<p>Sharing is the part I didn’t see coming, and I should have. The things about you that you can’t see yourself are usually obvious to the people around you. Trove gives everyone words for them, and lets two people play the same story and compare what they did.</p>
 <p>A comparison: same tangle, two people, and an argument worth having over dinner.</p>
-<p>Seven surfaces by August. The iOS app is a thin shell around the web app, built by a teammate in a fortnight, which is the compliment: by July the thing underneath was coherent enough that going native was a wrapper instead of a rewrite.</p>
+<p>By August the product had seven main parts. The iOS app wraps the web app, and a teammate built it in two weeks. I take that as a compliment: by July the web app was solid enough that going native meant a wrapper, not a rewrite.</p>
 <p>At an event we hosted, someone recognised themselves in most of their read and argued with the part that did not fit, for about five minutes, to my face.</p>
+<p>A pitch night in Toronto I helped run, filmed by Draft One Collective.</p>
 <h2>Four things I would carry into the next one.</h2>
 <h4>You cannot ask someone who they are</h4>
 <li>The question changes the answer. Every system in Trove exists so that nobody has to answer one.</li>
-<h4>Automate the labour, never the attention</h4>
-<li>The writers’ room and the animator both became systems. Whether a hat sits right, or a story is good rather than merely unbroken, stayed expensive on purpose.</li>
+<h4>Automate the work, not the judgement</h4>
+<li>We had no writers or animators, so I built systems to do that work. The judgement calls, like whether a hat sits right or whether a story is actually good, I kept with people on purpose.</li>
 <h4>A person is not a result</h4>
-<li>A read that never moves is a horoscope and a read that always moves is noise. Seven days of play was the honest speed for a living system.</li>
+<li>A read that never changes is a horoscope, and a read that changes every time is noise. Every seven days of play turned out to be the right pace.</li>
 <h4>It has to be willing to be wrong out loud</h4>
-<li>The disclaimer on the score, the reflection step, the wait before re-reading. Every one of them makes the product claim less, and claiming less is what got it believed.</li>
-<p>I spent eighteen weeks building a machine to find the human edge in other people, and it turns out the way you do that is to make something honest enough to be argued with. Nobody argues with a horoscope. They argued with this.</p>
-<p>→ Play Trove at play.trove.is</p>
+<li>The note on the score, the step that asks if it got you right, the wait before re-reading. Each one makes the product claim less, and claiming less is what made people believe it.</li>
+<p>I spent eighteen weeks building something that tries to understand people, and what I learned is that it has to be honest enough to argue with. Nobody argues with a horoscope. People argued with this.</p>
 </div>
 <script>document.getElementById("http-readable").remove();</script>
 
@@ -4463,8 +4462,7 @@ body::after{
       // her. the cutout on a fine mesh so bits of her can move: the raised
       // forearm sways from the elbow, her outer curls and the skirt's hem
       // flutter, and every few seconds she blinks (the lid is the cheek
-      // colour just under each eye pulled up, with a lash line where it
-      // meets). her chest and her feet never move.
+      // colour just under each eye pulled up). her chest and her feet never move.
       // all coords are pixels on the 657x560 art
       const FRAMES = ['1', '1s', '15', '2s', '2'].map((n, i) => tex(`./sky/hen-fall-${n}.webp`, false, i ? undefined : () => canvas.classList.add('ready')));
       const henMat = new THREE.ShaderMaterial({
@@ -4507,9 +4505,7 @@ body::after{
             vec2 sk = vec2(l.x * h.x * .8, h.y * 2.1);
             float s2 = sin(ang), k2 = cos(ang);
             vec4 skin = texture2D(map, unpx(c + vec2(k2*sk.x - s2*sk.y, s2*sk.x + k2*sk.y)));
-            col = mix(col, skin, covered * inside);
-            float line = (1. - smoothstep(.0, .2, abs(l.y - lid))) * smoothstep(.0, .35, blink) * (1. - smoothstep(.85, 1.05, abs(l.x)));
-            return mix(col, vec4(.2, .12, .1, 1.), line * inside);
+            return mix(col, skin, covered * inside);
           }
           void main() {
             vec4 col = texture2D(map, vUv);
@@ -5084,7 +5080,7 @@ body::after{
       <!-- Real HTML so crawlers, AI fetchers and no-JS readers get the work.
            The tile builder clears this and renders the interactive grid. -->
       <ul class="grid-fallback">
-        <li><a href="/trove/"><strong>Trove</strong> — Turning behavioural data into a personality read people actually recognise. 0 to 10,250 users and 61.9K page views in five months.</a></li>
+        <li><a href="/trove/"><strong>Trove</strong> — A personality app that reads you from the choices you make in short daily stories. 0 to 10,250 users and 61.9K page views in five months.</a></li>
         <li><a href="/skrimp/"><strong>Skrimp</strong> — Planning a week of dinners around live prices and whatever's already in the fridge. $5K/yr potential savings per family, free always.</a></li>
         <li><a href="/menzo/"><strong>Path to Menzoberranzan</strong> — Running a volunteer studio on an undocumented engine. 140+ contributors, 1,700 Patreon members.</a></li>
         <li><a href="/myauntie/"><strong>MyAuntie</strong> — Postpartum support that arrives as a text, not another app to download. TechNova 2025 winner.</a></li>
@@ -5118,14 +5114,14 @@ body::after{
                 <tbody>
                   <tr>
                     <td>Trove</td>
-                    <td>No questions allowed. Eighteen weeks. An idea proven exactly once.</td>
+                    <td>A personality app that&rsquo;s not allowed to ask you anything. Eighteen weeks, and an idea that had only been tested once.</td>
                     <td><span class="ns-chaos-tag ns-tag-const">constraints</span><span class="ns-chaos-tag ns-tag-user">user state</span></td>
-                    <td>A story pipeline that plays itself start to finish before a person reads a word.</td>
+                    <td>A pipeline that writes a new story every day and test-plays it start to finish before a person reviews it.</td>
                     <td><span class="ns-outcome-pill">10k+ users</span></td>
                   </tr>
                   <tr>
                     <td>Path to Menzoberranzan</td>
-                    <td>140 volunteers. Six departments. No salaries, no docs, no end date.</td>
+                    <td>140 volunteers. Seven departments. No salaries, no docs, no end date.</td>
                     <td><span class="ns-chaos-tag ns-tag-coord">coordination</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
                     <td>A contribution pipeline and lore governance that let strangers ship into one build.</td>
                     <td><span class="ns-outcome-pill">shipping</span></td>

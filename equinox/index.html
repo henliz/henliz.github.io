@@ -4002,7 +4002,7 @@ body::after{
 <h4>Skills &amp; Tools</h4>
 <p>Godot 4.5 and GDScript, scene transition systems, signal-based state, implementing UI from high-fidelity art, Git LFS for a binary-heavy repo, and pair programming on a deadline.</p>
 <h2>A wizard’s tower locked in winter, eighteen days to bring spring back, and first place out of eighty eight.</h2>
-<p>Fourteen people, eighteen days, four of us writing code. I owned every moment the game answers the player, which turned out to be one job and not four.</p>
+<p>Fourteen people, eighteen days, four of us writing code. I built the moments where the game responds to you: finishing a floor, cleaning an artefact, closing a minigame and unlocking a journal page.</p>
 <p>Comfy Jam: Winter 2026, hosted by Macrow. 88 entries, 1,350 ratings. Every category, including the one we came fifteenth in.</p>
 <p>We won it on how the game lands rather than on what it asks. First in Visuals. First in Audio. Second in the Limitation, which was the one rule every single entry had to compete on. Third in Gameplay, and fifteenth in Theme. Equinox did not win on its mechanics, and it certainly did not win on being wintry. It won on how it feels to be inside, and on doing the thing the jam actually asked for.</p>
 <p>The full showcase, with sound. Every clip below is cut out of these same three minutes.</p>
@@ -4012,7 +4012,7 @@ body::after{
 <p>Fourteen people built it in eighteen days. Four of us wrote code, and 281 commits later it was on itch.</p>
 <h2>It was my first game jam, and the first time I had used Godot for anything real.</h2>
 <p>First time in Godot, and shipping systems the rest of the team leaned on by day three.</p>
-<p>Another programmer stood the 3D pipeline and player movement up inside the first forty eight hours, which is what let the rest of us move fast. Getting the substrate solid in the first two days is the highest leverage thing anybody can do on a jam team, and I have thought about it a lot since, because I now do a version of that job on a project ten times the size.</p>
+<p>Another programmer set up the 3D pipeline and player movement in the first forty eight hours, which is what let the rest of us move fast. Getting the foundations solid in the first two days is the highest leverage thing anybody can do on a jam team, and I have thought about it a lot since, because I now do a version of that job on a project ten times the size.</p>
 <h2>Winter was the theme. “Overcomplicated Screen Transitions” was the rule.</h2>
 <p>It is the one category every entry had to compete in, and we came second in it on the way to winning the jam outright.</p>
 <p>The jam carried one required limitation: every scene, level or room change had to be an elaborate transition. Most teams read that as a visual dare, so make a nicer wipe. We read it as a brief about pacing. In a game with no fail states and no timer, transitions are the only punctuation you have. They are the difference between four rooms and four chapters.</p>
@@ -4069,7 +4069,7 @@ body::after{
 <h3>The top of the tower</h3>
 <p>Solve the beacon and the tower does the rest. The rings come down, the light catches properly for the first time, and the winter breaks over the valley while the credits roll. Eighteen days, fourteen people, and this is the minute all of it was for.</p>
 <p>Unedited, all the way through: an inscription going home, the flame catching, the rings coming down, and the first sunrise the valley has seen in a very long time.</p>
-<p>Making a game is collaborative in a way making a product is not, quite. Everyone’s contribution is load-bearing in a different direction. The artist builds the world, the composer tells you how to feel about it, the voice actor gives the wizard a voice, and the programmers make it run. I came in knowing almost nothing about any of it and left owning the part where the game says well done.</p>
+<p>Making a game is collaborative in a different way from making a product, because everyone’s part matters for a different reason. The artist builds the world, the composer tells you how to feel about it, the voice actor gives the wizard a voice, and the programmers make it run. I came in knowing almost nothing about any of it and left owning the part where the game says well done.</p>
 <p>→ Play Equinox on itch.io</p>
 </div>
 <script>document.getElementById("http-readable").remove();</script>
@@ -4467,8 +4467,7 @@ body::after{
       // her. the cutout on a fine mesh so bits of her can move: the raised
       // forearm sways from the elbow, her outer curls and the skirt's hem
       // flutter, and every few seconds she blinks (the lid is the cheek
-      // colour just under each eye pulled up, with a lash line where it
-      // meets). her chest and her feet never move.
+      // colour just under each eye pulled up). her chest and her feet never move.
       // all coords are pixels on the 657x560 art
       const FRAMES = ['1', '1s', '15', '2s', '2'].map((n, i) => tex(`./sky/hen-fall-${n}.webp`, false, i ? undefined : () => canvas.classList.add('ready')));
       const henMat = new THREE.ShaderMaterial({
@@ -4511,9 +4510,7 @@ body::after{
             vec2 sk = vec2(l.x * h.x * .8, h.y * 2.1);
             float s2 = sin(ang), k2 = cos(ang);
             vec4 skin = texture2D(map, unpx(c + vec2(k2*sk.x - s2*sk.y, s2*sk.x + k2*sk.y)));
-            col = mix(col, skin, covered * inside);
-            float line = (1. - smoothstep(.0, .2, abs(l.y - lid))) * smoothstep(.0, .35, blink) * (1. - smoothstep(.85, 1.05, abs(l.x)));
-            return mix(col, vec4(.2, .12, .1, 1.), line * inside);
+            return mix(col, skin, covered * inside);
           }
           void main() {
             vec4 col = texture2D(map, vUv);
@@ -5088,7 +5085,7 @@ body::after{
       <!-- Real HTML so crawlers, AI fetchers and no-JS readers get the work.
            The tile builder clears this and renders the interactive grid. -->
       <ul class="grid-fallback">
-        <li><a href="/trove/"><strong>Trove</strong> — Turning behavioural data into a personality read people actually recognise. 0 to 10,250 users and 61.9K page views in five months.</a></li>
+        <li><a href="/trove/"><strong>Trove</strong> — A personality app that reads you from the choices you make in short daily stories. 0 to 10,250 users and 61.9K page views in five months.</a></li>
         <li><a href="/skrimp/"><strong>Skrimp</strong> — Planning a week of dinners around live prices and whatever's already in the fridge. $5K/yr potential savings per family, free always.</a></li>
         <li><a href="/menzo/"><strong>Path to Menzoberranzan</strong> — Running a volunteer studio on an undocumented engine. 140+ contributors, 1,700 Patreon members.</a></li>
         <li><a href="/myauntie/"><strong>MyAuntie</strong> — Postpartum support that arrives as a text, not another app to download. TechNova 2025 winner.</a></li>
@@ -5122,14 +5119,14 @@ body::after{
                 <tbody>
                   <tr>
                     <td>Trove</td>
-                    <td>No questions allowed. Eighteen weeks. An idea proven exactly once.</td>
+                    <td>A personality app that&rsquo;s not allowed to ask you anything. Eighteen weeks, and an idea that had only been tested once.</td>
                     <td><span class="ns-chaos-tag ns-tag-const">constraints</span><span class="ns-chaos-tag ns-tag-user">user state</span></td>
-                    <td>A story pipeline that plays itself start to finish before a person reads a word.</td>
+                    <td>A pipeline that writes a new story every day and test-plays it start to finish before a person reviews it.</td>
                     <td><span class="ns-outcome-pill">10k+ users</span></td>
                   </tr>
                   <tr>
                     <td>Path to Menzoberranzan</td>
-                    <td>140 volunteers. Six departments. No salaries, no docs, no end date.</td>
+                    <td>140 volunteers. Seven departments. No salaries, no docs, no end date.</td>
                     <td><span class="ns-chaos-tag ns-tag-coord">coordination</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
                     <td>A contribution pipeline and lore governance that let strangers ship into one build.</td>
                     <td><span class="ns-outcome-pill">shipping</span></td>
