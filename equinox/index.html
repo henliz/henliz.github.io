@@ -3120,7 +3120,8 @@
     @keyframes tfSway { 0%,100% { transform: skewX(-2.4deg) } 50% { transform: skewX(2.4deg) } }
 
     /* the <video> feeding the phone's screen texture — decoded, never seen */
-    .tf-src { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .tf-src { position: absolute; width: 2px; height: 2px; opacity: .01; pointer-events: none; }
+    /* not 0: phones treat a fully transparent video as hidden and refuse to play it */
 
     /* ---- the tots ---- */
     .tf-tots {
@@ -6228,6 +6229,12 @@ function addScreenVideo(model, src, matName, videoAspect, host, fit, crop, punch
   v.setAttribute('playsinline',''); v.setAttribute('muted','');
   v.preload = 'none'; v.className = 'tf-src';
   if (host) host.appendChild(v);
+  tileClips.warm(() => { if (!v.src) { v.preload = 'auto'; v.src = v.dataset.src; } });
+  tileClips.retry(() => {
+    if (REDUCE_MOTION || !host) return;
+    const r = host.getBoundingClientRect();
+    if (r.bottom > 0 && r.top < innerHeight) v.play().catch(() => {});
+  });
 
   let hit = false;
   model.traverse(o => {
@@ -6254,6 +6261,11 @@ function addScreenVideo(model, src, matName, videoAspect, host, fit, crop, punch
 
     v.screenCanvas = {cv, ctx, tex, CW, CH, fit: fit || 'cover', crop, punch};
     o.material = new THREE.MeshBasicMaterial({map: tex, toneMapped: false});
+    // the clip's first frame, painted now, so the screen is never black while
+    // the video loads or if a phone refuses to play it at all
+    const poster = new Image();
+    poster.onload = () => { if (!v.screenCanvas.live) drawScreen(v.screenCanvas, poster); };
+    poster.src = src.replace(/\.mp4$/, '-poster.jpg');
   });
   if (!hit) console.warn('screen mesh not found:', matName);
   return v;
@@ -6265,15 +6277,24 @@ function addScreenVideo(model, src, matName, videoAspect, host, fit, crop, punch
 function paintScreen(v){
   const s = v && v.screenCanvas;
   if (!s || v.readyState < 2) return;
+  // a loaded but never-played clip can hand back a black frame on iOS, so the
+  // poster stays up until the video is genuinely running
+  if (!s.live && (v.paused || v.currentTime === 0)) return;
   /* These clips run at 30fps and we draw at 60, so half of every upload was
      the same frame again — and each one is a full 1024-wide RGBA texture
      pushed to the GPU, per model, per frame. Paint only when the video has
      actually moved on. */
   if (v.currentTime === s.lastT) return;
   s.lastT = v.currentTime;
+  s.live = true;
+  drawScreen(s, v);
+}
+// one frame of a video, or its poster image, into a screen canvas
+function drawScreen(s, src){
   const {ctx, tex, CW, CH, fit, crop} = s;
+  const sw = src.videoWidth || src.naturalWidth, sh = src.videoHeight || src.naturalHeight;
   // crop is a rect in the source file's own pixels: the part worth showing
-  const c = crop || {x: 0, y: 0, w: v.videoWidth, h: v.videoHeight};
+  const c = crop || {x: 0, y: 0, w: sw, h: sh};
   const va = c.w / c.h, ca = CW / CH;
   let w, h;
   if (fit === 'contain' ? va > ca : va < ca) { w = CW; h = CW / va; }
@@ -6281,10 +6302,32 @@ function paintScreen(v){
   ctx.fillStyle = '#0b1416'; ctx.fillRect(0, 0, CW, CH);
   // a pale UI on a small, foreshortened screen needs help to read at all
   ctx.filter = s.punch || 'none';
-  ctx.drawImage(v, c.x, c.y, c.w, c.h, (CW - w) / 2, (CH - h) / 2, w, h);
+  ctx.drawImage(src, c.x, c.y, c.w, c.h, (CW - w) / 2, (CH - h) / 2, w, h);
   ctx.filter = 'none';
   tex.needsUpdate = true;
 }
+
+/* Tile clips. They used to wait for their tile to scroll into view before
+   downloading, which on a phone meant arriving at a tile and watching a black
+   screen while it buffered. Now every clip starts downloading once the page
+   has loaded (about 7MB in all), so it's there before you are. iOS in low
+   power mode refuses autoplay until the page is touched, so the first tap
+   anywhere asks every visible clip to play again. */
+const REDUCE_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const tileClips = (() => {
+  const warmers = [], retries = [];
+  let warmed = false;
+  const warmAll = () => { warmed = true; warmers.splice(0).forEach(f => f()); };
+  if (document.readyState === 'complete') setTimeout(warmAll, 600);
+  else addEventListener('load', () => setTimeout(warmAll, 600), { once: true });
+  const kick = () => retries.forEach(f => f());
+  ['pointerdown', 'touchstart', 'keydown'].forEach(t =>
+    addEventListener(t, kick, { once: true, passive: true, capture: true }));
+  return {
+    warm: f => warmed ? f() : warmers.push(f),
+    retry: f => retries.push(f),
+  };
+})();
 
 // the YouTube IFrame API, loaded once and shared by every tile that needs it
 let ytApiPromise = null;
@@ -6622,22 +6665,33 @@ stations.forEach((cfg,i) => {
       }, 1000);
     }
 
+    // file clips are built as soon as the page has loaded, so they're
+    // downloaded before anyone hovers or scrolls to them
+    function make() {
+      if (media) return;
+      media = document.createElement('video');
+      media.muted = true; media.loop = true;
+      media.playsInline = true; media.setAttribute('playsinline', '');
+      media.preload = 'auto';
+      media.poster = src.replace(/\.mp4$/, '-poster.jpg');
+      // the scene stays up until there are real moving frames. a clip that
+      // loaded but was refused play() would otherwise sit there black
+      media.addEventListener('playing', reveal);
+      // re-issue play once data lands: the first call can come before any exists
+      media.addEventListener('loadeddata', () => { if (hovering) media.play().catch(() => {}); });
+      media.src = src;
+      box.appendChild(media);
+    }
+    if (kind === 'file') {
+      tileClips.warm(make);
+      tileClips.retry(() => { if (hovering && media) media.play().catch(() => {}); });
+    }
+
     function mount() {
       hovering = true;
       if (kind === 'file') {
-        if (!media) {
-          media = document.createElement('video');
-          media.muted = true; media.loop = true;
-          media.playsInline = true; media.preload = 'auto';
-          // hold the scene until there are real frames, and re-issue play():
-          // the first call lands before any data exists and gets rejected
-          media.addEventListener('loadeddata', () => {
-            reveal();
-            if (hovering) media.play().catch(() => {});
-          }, { once: true });
-          media.src = src;
-          box.appendChild(media);
-        } else { reveal(); }
+        make();
+        if (!media.paused && media.readyState > 2) reveal();
         media.play().catch(() => {});
         return;
       }
@@ -6902,7 +6956,9 @@ stations.forEach((cfg,i) => {
         onScreen = e.isIntersecting; sync();
       }), {threshold: 0.15}).observe(el);
     }
+    if (pair.length) tileClips.warm(() => pair.forEach(v => { v.preload = 'auto'; v.load(); }));
     if (pair.length && !reduce) {
+      tileClips.retry(() => { if (cell.classList.contains('is-video')) pair.forEach(v => v.play().catch(() => {})); });
       const at = v => +v.dataset.start || 0;
       /* preload is none, so currentTime is not settable until metadata
          lands — hence the guard and the loadedmetadata pass */
