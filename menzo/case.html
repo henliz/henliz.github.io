@@ -772,6 +772,35 @@
     .oc-l{ stroke:rgba(var(--accent-soft-rgb),.55); stroke-width:1.5; fill:none; }
     .fig-scroll{ overflow-x:auto; }
     .fig-scroll .org-chart{ min-width:760px; }
+
+    /* the repo, before and after, drawn like a forgejo / github page */
+    .rp-pair{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.4rem 0 .2rem; }
+    @media (max-width:760px){ .rp-pair{ grid-template-columns:1fr; } }
+    .rp{ background:#0d1117; color:#e6edf3; border:1px solid #30363d; border-radius:10px; overflow:hidden; font:13px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; box-shadow:0 12px 34px rgba(0,0,0,.3); }
+    .rp-top{ background:#161b22; border-bottom:1px solid #30363d; padding:6px 12px; }
+    .rp-tag{ font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#8b949e; }
+    .rp.after .rp-tag{ color:#3fb950; }
+    .rp-head{ display:flex; align-items:center; gap:6px; padding:12px 14px 6px; font-size:15px; }
+    .rp-ic{ width:16px; height:16px; flex:none; }
+    .rp-owner, .rp-repo{ color:#4493f8; } .rp-repo{ font-weight:700; } .rp-sep{ color:#8b949e; }
+    .rp-priv{ margin-left:6px; font-size:11px; color:#8b949e; border:1px solid #30363d; border-radius:999px; padding:1px 7px; }
+    .rp-tabs{ display:flex; gap:16px; padding:6px 14px 0; border-bottom:1px solid #30363d; font-size:13px; color:#8b949e; }
+    .rp-tabs span{ padding-bottom:8px; } .rp-tabs .on{ color:#e6edf3; font-weight:600; box-shadow:inset 0 -2px #f78166; }
+    .rp-stats{ display:flex; justify-content:space-between; align-items:center; padding:10px 14px; }
+    .rp-stats > span:first-child{ font-size:12px; background:#21262d; border:1px solid #30363d; border-radius:6px; padding:3px 9px; }
+    .rp-sz{ color:#8b949e; } .rp-sz b{ color:#e6edf3; font-size:16px; }
+    .rp.before .rp-sz b{ color:#f85149; } .rp.after .rp-sz b{ color:#3fb950; }
+    .rp-bar{ margin:0 14px 10px; padding:7px 10px; border-radius:6px; font-size:12px; display:flex; align-items:center; gap:7px; }
+    .rp-bar.warn{ background:rgba(248,81,73,.1); border:1px solid rgba(248,81,73,.4); color:#ffa198; }
+    .rp-bar.ok{ background:rgba(63,185,80,.1); border:1px solid rgba(63,185,80,.4); color:#7ee787; }
+    .rp-dot{ width:7px; height:7px; border-radius:50%; background:currentColor; }
+    .rp-files{ border-top:1px solid #30363d; }
+    .rp-row{ display:grid; grid-template-columns:16px minmax(0,1.35fr) minmax(0,1fr) 88px; gap:8px; align-items:center; padding:7px 14px; border-bottom:1px solid #21262d; }
+    .rp-row:last-child{ border-bottom:0; }
+    .rp-name{ color:#e6edf3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .rp-msg{ color:#8b949e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .rp-size{ color:#8b949e; font-size:12px; white-space:nowrap; display:flex; align-items:center; justify-content:flex-end; gap:5px; }
+    .rp-lfs{ font-size:10px; font-weight:700; color:#3fb950; border:1px solid rgba(63,185,80,.5); border-radius:999px; padding:0 6px; }
 </style>
 
 <style>
@@ -1090,6 +1119,9 @@ figure{
 
           <p>Everyone on it is a volunteer who does not have to care and does anyway. That is the strangest and most sustaining thing about it, and it is also the fact that decides every technical call I make. I came in as <b>CTO and Technical Director</b>, which sounds like one job with two names and is not.</p>
 
+          <figure class="img-wide reveal"><img src="img/onboarding-console.webp" alt="The Path to Menzoberranzan onboarding site: a terminal-style desktop of folders, with my Technical Director profile open over the department hierarchy" loading="lazy"></figure>
+          <p class="cap">The project&rsquo;s onboarding site, with my profile open. New contributors open folders instead of reading a wall of docs, and every lead says what to ping them for.</p>
+
         </div>
       </section>
 
@@ -1223,15 +1255,25 @@ size 48221184
 
           <p>The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would. Step fourteen cost nothing on the Friday. On the Sunday it was the entire project.</p>
 
-          <figure class="reveal"><svg class="repo-chart" viewBox="0 0 720 210" role="img" aria-label="Repository size: about 2.5 gigabytes now, against a projected 80 gigabytes or more without Git LFS">
-<text x="20" y="40" class="oc-t">Projected, without LFS</text>
-<rect x="20" y="52" width="680" height="34" rx="8" fill="rgba(var(--accent-rgb),.25)" stroke="rgb(var(--accent-rgb))" stroke-dasharray="6 5"/>
-<text x="688" y="75" text-anchor="end" class="oc-big">80 GB+</text>
-<text x="20" y="132" class="oc-t">Where it is, with LFS</text>
-<rect x="20" y="144" width="21" height="34" rx="8" fill="rgb(var(--accent-rgb))"/>
-<text x="53" y="167" class="oc-big">2.5 GB</text>
-</svg></figure>
-          <p class="cap">Where it was going, and where it went instead.</p>
+<div class="rp-pair reveal" role="img" aria-label="Two repository screens side by side. Before: no Git LFS, every binary in every clone, heading for 80 gigabytes or more. After: Git LFS on self-hosted Forgejo, binaries shown with an LFS badge and kept in object storage, 2.5 gigabytes.">
+            <div class="rp before">
+              <div class="rp-top"><span class="rp-tag">before: no LFS</span></div>
+              <div class="rp-head"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5v-1.5h1.75v-2h-8a1 1 0 0 0-.71 1.71.75.75 0 0 1-1.06 1.06A2.49 2.49 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.71A2.49 2.49 0 0 1 4.5 9h8Z" fill="#8b949e"/></svg><span class="rp-owner">ptm</span><span class="rp-sep">/</span><span class="rp-repo">path-to-menzoberranzan</span><span class="rp-priv">Private</span></div>
+              <div class="rp-tabs"><span class="on">Code</span><span>Issues</span><span>Pull requests</span><span>Releases</span></div>
+              <div class="rp-stats"><span>main</span><span class="rp-sz"><b>80 GB+</b> projected</span></div>
+              <div class="rp-bar warn"><span class="rp-dot"></span>Every clone pulls every binary in history</div>
+              <div class="rp-files"><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M1.75 2h4.5l1.5 1.5h6.5c.4 0 .75.35.75.75v8.5c0 .4-.35.75-.75.75H1.75A.75.75 0 0 1 1 12.75v-10C1 2.35 1.35 2 1.75 2Z" fill="#54aeff"/></svg><span class="rp-name">Assets/Characters</span><span class="rp-msg">updated character rigs</span><span class="rp-size"></span></div><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M1.75 2h4.5l1.5 1.5h6.5c.4 0 .75.35.75.75v8.5c0 .4-.35.75-.75.75H1.75A.75.75 0 0 1 1 12.75v-10C1 2.35 1.35 2 1.75 2Z" fill="#54aeff"/></svg><span class="rp-name">Assets/Audio</span><span class="rp-msg">new ambience bank</span><span class="rp-size"></span></div><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M1.75 2h4.5l1.5 1.5h6.5c.4 0 .75.35.75.75v8.5c0 .4-.35.75-.75.75H1.75A.75.75 0 0 1 1 12.75v-10C1 2.35 1.35 2 1.75 2Z" fill="#54aeff"/></svg><span class="rp-name">Localization</span><span class="rp-msg">dialogue pass 3</span><span class="rp-size"></span></div><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M3.75 1.5h5.5L13 5.25v9c0 .4-.35.75-.75.75h-8.5A.75.75 0 0 1 3 14.25V2.25c0-.4.35-.75.75-.75Z" fill="none" stroke="#8b949e" stroke-width="1.2"/></svg><span class="rp-name">drow_noble.gr2</span><span class="rp-msg">rig fixes</span><span class="rp-size">48.2 MB</span></div><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M3.75 1.5h5.5L13 5.25v9c0 .4-.35.75-.75.75h-8.5A.75.75 0 0 1 3 14.25V2.25c0-.4.35-.75.75-.75Z" fill="none" stroke="#8b949e" stroke-width="1.2"/></svg><span class="rp-name">underdark_tileset.dds</span><span class="rp-msg">new atlas</span><span class="rp-size">212 MB</span></div><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M3.75 1.5h5.5L13 5.25v9c0 .4-.35.75-.75.75h-8.5A.75.75 0 0 1 3 14.25V2.25c0-.4.35-.75.75-.75Z" fill="none" stroke="#8b949e" stroke-width="1.2"/></svg><span class="rp-name">.gitattributes</span><span class="rp-msg">track binaries with lfs</span><span class="rp-size"></span></div></div>
+            </div>
+            <div class="rp after">
+              <div class="rp-top"><span class="rp-tag">after: LFS on Forgejo</span></div>
+              <div class="rp-head"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5v-1.5h1.75v-2h-8a1 1 0 0 0-.71 1.71.75.75 0 0 1-1.06 1.06A2.49 2.49 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.71A2.49 2.49 0 0 1 4.5 9h8Z" fill="#8b949e"/></svg><span class="rp-owner">ptm</span><span class="rp-sep">/</span><span class="rp-repo">path-to-menzoberranzan</span><span class="rp-priv">Private</span></div>
+              <div class="rp-tabs"><span class="on">Code</span><span>Issues</span><span>Pull requests</span><span>Releases</span></div>
+              <div class="rp-stats"><span>main</span><span class="rp-sz"><b>2.5 GB</b></span></div>
+              <div class="rp-bar ok"><span class="rp-dot"></span>Binaries live in object storage, pulled on demand</div>
+              <div class="rp-files"><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M1.75 2h4.5l1.5 1.5h6.5c.4 0 .75.35.75.75v8.5c0 .4-.35.75-.75.75H1.75A.75.75 0 0 1 1 12.75v-10C1 2.35 1.35 2 1.75 2Z" fill="#54aeff"/></svg><span class="rp-name">Assets/Characters</span><span class="rp-msg">updated character rigs</span><span class="rp-size"></span></div><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M1.75 2h4.5l1.5 1.5h6.5c.4 0 .75.35.75.75v8.5c0 .4-.35.75-.75.75H1.75A.75.75 0 0 1 1 12.75v-10C1 2.35 1.35 2 1.75 2Z" fill="#54aeff"/></svg><span class="rp-name">Assets/Audio</span><span class="rp-msg">new ambience bank</span><span class="rp-size"></span></div><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M1.75 2h4.5l1.5 1.5h6.5c.4 0 .75.35.75.75v8.5c0 .4-.35.75-.75.75H1.75A.75.75 0 0 1 1 12.75v-10C1 2.35 1.35 2 1.75 2Z" fill="#54aeff"/></svg><span class="rp-name">Localization</span><span class="rp-msg">dialogue pass 3</span><span class="rp-size"></span></div><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M3.75 1.5h5.5L13 5.25v9c0 .4-.35.75-.75.75h-8.5A.75.75 0 0 1 3 14.25V2.25c0-.4.35-.75.75-.75Z" fill="none" stroke="#8b949e" stroke-width="1.2"/></svg><span class="rp-name">drow_noble.gr2</span><span class="rp-msg">rig fixes</span><span class="rp-size"><span class="rp-lfs">LFS</span>48.2 MB</span></div><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M3.75 1.5h5.5L13 5.25v9c0 .4-.35.75-.75.75h-8.5A.75.75 0 0 1 3 14.25V2.25c0-.4.35-.75.75-.75Z" fill="none" stroke="#8b949e" stroke-width="1.2"/></svg><span class="rp-name">underdark_tileset.dds</span><span class="rp-msg">new atlas</span><span class="rp-size"><span class="rp-lfs">LFS</span>212 MB</span></div><div class="rp-row"><svg viewBox="0 0 16 16" class="rp-ic"><path d="M3.75 1.5h5.5L13 5.25v9c0 .4-.35.75-.75.75h-8.5A.75.75 0 0 1 3 14.25V2.25c0-.4.35-.75.75-.75Z" fill="none" stroke="#8b949e" stroke-width="1.2"/></svg><span class="rp-name">.gitattributes</span><span class="rp-msg">track binaries with lfs</span><span class="rp-size">6 rules</span></div></div>
+            </div>
+          </div>
+          <p class="cap">Where it was going, and where it went instead. The files are examples; the sizes are the real ones.</p>
         </div>
       </section>
 
@@ -1245,10 +1287,7 @@ size 48221184
 
           <p>This distinction usually gets collapsed into one vague &ldquo;technical lead&rdquo; title until something catastrophic happens. We formalised it early because we hit the scale where leaving it implicit was actively dangerous. At 140 contributors, a single ambiguous decision can propagate silently through the pipeline for weeks before it surfaces as months of wasted work.</p>
 
-          <blockquote class="pull-quote reveal">
-            &ldquo;CTO failures are long-range and invisible. Technical Director failures are immediate and production-killing. They are not the same job wearing different hats. They are categorically different engineering problems.&rdquo;
-            <cite>Hen&rsquo;s Brain: Technical Leadership Manual</cite>
-          </blockquote>
+          <div class="highlight-box reveal">CTO failures are long-range and invisible. Technical Director failures are immediate and production-killing. They are not the same job wearing different hats. They are categorically different engineering problems.</div>
 
           <div class="role-split reveal">
             <div class="role-card cto reveal">
@@ -1298,75 +1337,56 @@ size 48221184
 
           <p><i>Hen&rsquo;s Brain: Technical Leadership Manual</i> exists because institutional knowledge living in one head is not an inconvenience at this scale, it is an existential risk. It defines the two domains, their failure modes, their escalation paths, and which decisions fall unambiguously into each. It is not theory. It is operational infrastructure, and it is written so the project survives illness, burnout, exams and time zones.</p>
 
-          <blockquote class="pull-quote reveal">
-            &ldquo;Technical debt is not a minor inconvenience in a project at this scale. It is fatal. Uncoordinated tooling, incorrect patching, inconsistent LFS tracking or unsound pipeline assumptions can invalidate months of work across entire departments.&rdquo;
-            <cite>Hen&rsquo;s Brain: Technical Leadership Manual</cite>
-          </blockquote>
+          <div class="highlight-box reveal">Technical debt is not a minor inconvenience in a project at this scale. It is fatal. Uncoordinated tooling, incorrect patching, inconsistent LFS tracking or unsound pipeline assumptions can invalidate months of work across entire departments.</div>
 
-          <figure class="img-wide reveal"><img src="img/brain-doc.webp" alt="Two pages of Hen's Brain: Technical Leadership Manual, the introduction and Section 5, on why the CTO and Technical Director roles cannot be merged" loading="lazy"></figure>
-          <p class="cap">Two pages of the manual: why it exists, and why the two roles can&rsquo;t be merged.</p>
-
-          <figure class="img-wide reveal"><img src="img/onboarding-console.webp" alt="The Path to Menzoberranzan onboarding console: a terminal-style desktop of folders, with my Technical Director profile open over the department hierarchy" loading="lazy"></figure>
-          <p class="cap">The onboarding console. New contributors open folders instead of reading a wall of docs, and every lead has a profile that says what to ping them for.</p>
-
-          <figure class="fig-scroll reveal"><svg class="org-chart" viewBox="0 0 1120 396" role="img" aria-label="Path to Menzoberranzan department chart: technical direction over seven departments, writing, visual design, spatial design, programming, audio and music, community and moderation, each with a coordinator, team leads and a team">
-<rect x="390.0" y="10" width="340" height="54" rx="10" fill="rgba(var(--accent-rgb),.22)" stroke="rgb(var(--accent-rgb))" stroke-width="1.5"/>
-<text x="560.0" y="34" text-anchor="middle" class="oc-t">Technical direction</text><text x="560.0" y="53" text-anchor="middle" class="oc-s">CTO + Technical Director (me)</text>
-<path d="M560.0 64V90M95.0 90H1025.0" class="oc-l"/>
-<path d="M95.0 90V108" class="oc-l"/>
-<rect x="20.0" y="108" width="150" height="40" rx="8" fill="#e9973f" fill-opacity=".9"/><text x="95.0" y="133" text-anchor="middle" class="oc-h">Writing</text>
-<path d="M95.0 148V164" class="oc-l"/>
-<rect x="28.0" y="164" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.32" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="185" text-anchor="middle" class="oc-n">Narrative coordinator</text>
-<path d="M95.0 198V214" class="oc-l"/>
-<rect x="28.0" y="214" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.26" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="235" text-anchor="middle" class="oc-n">5 team leads</text>
-<path d="M95.0 248V264" class="oc-l"/>
-<rect x="28.0" y="264" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.20" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="285" text-anchor="middle" class="oc-n">Senior writers</text>
-<path d="M95.0 298V314" class="oc-l"/>
-<rect x="28.0" y="314" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.14" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="335" text-anchor="middle" class="oc-n">Writers</text>
-<path d="M250.0 90V108" class="oc-l"/>
-<rect x="175.0" y="108" width="150" height="40" rx="8" fill="#53dfdd" fill-opacity=".9"/><text x="250.0" y="133" text-anchor="middle" class="oc-h">Visual design</text>
-<path d="M250.0 148V164" class="oc-l"/>
-<rect x="183.0" y="164" width="134" height="34" rx="7" fill="#53dfdd" fill-opacity="0.32" stroke="#53dfdd" stroke-opacity=".7"/><text x="250.0" y="185" text-anchor="middle" class="oc-n">Coordinator</text>
-<path d="M250.0 198V214" class="oc-l"/>
-<rect x="183.0" y="214" width="134" height="34" rx="7" fill="#53dfdd" fill-opacity="0.26" stroke="#53dfdd" stroke-opacity=".7"/><text x="250.0" y="235" text-anchor="middle" class="oc-n">2 team leads</text>
-<path d="M250.0 248V264" class="oc-l"/>
-<rect x="183.0" y="264" width="134" height="34" rx="7" fill="#53dfdd" fill-opacity="0.20" stroke="#53dfdd" stroke-opacity=".7"/><text x="250.0" y="285" text-anchor="middle" class="oc-n">Visual designers</text>
-<path d="M405.0 90V108" class="oc-l"/>
-<rect x="330.0" y="108" width="150" height="40" rx="8" fill="#d0368a" fill-opacity=".9"/><text x="405.0" y="133" text-anchor="middle" class="oc-h">Spatial design</text>
-<path d="M405.0 148V164" class="oc-l"/>
-<rect x="338.0" y="164" width="134" height="34" rx="7" fill="#d0368a" fill-opacity="0.32" stroke="#d0368a" stroke-opacity=".7"/><text x="405.0" y="185" text-anchor="middle" class="oc-n">Coordinator</text>
-<path d="M405.0 198V214" class="oc-l"/>
-<rect x="338.0" y="214" width="134" height="34" rx="7" fill="#d0368a" fill-opacity="0.26" stroke="#d0368a" stroke-opacity=".7"/><text x="405.0" y="235" text-anchor="middle" class="oc-n">3 team leads</text>
-<path d="M405.0 248V264" class="oc-l"/>
-<rect x="338.0" y="264" width="134" height="34" rx="7" fill="#d0368a" fill-opacity="0.20" stroke="#d0368a" stroke-opacity=".7"/><text x="405.0" y="285" text-anchor="middle" class="oc-n">Spatial designers</text>
-<path d="M560.0 90V108" class="oc-l"/>
-<rect x="485.0" y="108" width="150" height="40" rx="8" fill="#4a9be8" fill-opacity=".9"/><text x="560.0" y="133" text-anchor="middle" class="oc-h">Programming</text>
-<path d="M560.0 148V164" class="oc-l"/>
-<rect x="493.0" y="164" width="134" height="34" rx="7" fill="#4a9be8" fill-opacity="0.32" stroke="#4a9be8" stroke-opacity=".7"/><text x="560.0" y="185" text-anchor="middle" class="oc-n">Coordinator</text>
-<path d="M560.0 198V214" class="oc-l"/>
-<rect x="493.0" y="214" width="134" height="34" rx="7" fill="#4a9be8" fill-opacity="0.26" stroke="#4a9be8" stroke-opacity=".7"/><text x="560.0" y="235" text-anchor="middle" class="oc-n">2 team leads</text>
-<path d="M560.0 248V264" class="oc-l"/>
-<rect x="493.0" y="264" width="134" height="34" rx="7" fill="#4a9be8" fill-opacity="0.20" stroke="#4a9be8" stroke-opacity=".7"/><text x="560.0" y="285" text-anchor="middle" class="oc-n">Programmers</text>
-<path d="M715.0 90V108" class="oc-l"/>
-<rect x="640.0" y="108" width="150" height="40" rx="8" fill="#a882ff" fill-opacity=".9"/><text x="715.0" y="133" text-anchor="middle" class="oc-h">Audio & music</text>
-<path d="M715.0 148V164" class="oc-l"/>
-<rect x="648.0" y="164" width="134" height="34" rx="7" fill="#a882ff" fill-opacity="0.32" stroke="#a882ff" stroke-opacity=".7"/><text x="715.0" y="185" text-anchor="middle" class="oc-n">Coordinator</text>
-<path d="M715.0 198V214" class="oc-l"/>
-<rect x="648.0" y="214" width="134" height="34" rx="7" fill="#a882ff" fill-opacity="0.26" stroke="#a882ff" stroke-opacity=".7"/><text x="715.0" y="235" text-anchor="middle" class="oc-n">Audio lead</text>
-<path d="M715.0 248V264" class="oc-l"/>
-<rect x="648.0" y="264" width="134" height="34" rx="7" fill="#a882ff" fill-opacity="0.20" stroke="#a882ff" stroke-opacity=".7"/><text x="715.0" y="285" text-anchor="middle" class="oc-n">Sound engineers</text>
-<path d="M870.0 90V108" class="oc-l"/>
-<rect x="795.0" y="108" width="150" height="40" rx="8" fill="#fb464c" fill-opacity=".9"/><text x="870.0" y="133" text-anchor="middle" class="oc-h">Community</text>
-<path d="M870.0 148V164" class="oc-l"/>
-<rect x="803.0" y="164" width="134" height="34" rx="7" fill="#fb464c" fill-opacity="0.32" stroke="#fb464c" stroke-opacity=".7"/><text x="870.0" y="185" text-anchor="middle" class="oc-n">Community manager</text>
-<path d="M870.0 198V214" class="oc-l"/>
-<rect x="803.0" y="214" width="134" height="34" rx="7" fill="#fb464c" fill-opacity="0.26" stroke="#fb464c" stroke-opacity=".7"/><text x="870.0" y="235" text-anchor="middle" class="oc-n">Helpers</text>
-<path d="M1025.0 90V108" class="oc-l"/>
-<rect x="950.0" y="108" width="150" height="40" rx="8" fill="#c2414b" fill-opacity=".9"/><text x="1025.0" y="133" text-anchor="middle" class="oc-h">Moderation</text>
-<path d="M1025.0 148V164" class="oc-l"/>
-<rect x="958.0" y="164" width="134" height="34" rx="7" fill="#c2414b" fill-opacity="0.32" stroke="#c2414b" stroke-opacity=".7"/><text x="1025.0" y="185" text-anchor="middle" class="oc-n">Administrator</text>
-<path d="M1025.0 198V214" class="oc-l"/>
-<rect x="958.0" y="214" width="134" height="34" rx="7" fill="#c2414b" fill-opacity="0.26" stroke="#c2414b" stroke-opacity=".7"/><text x="1025.0" y="235" text-anchor="middle" class="oc-n">Moderators</text>
+          <figure class="fig-scroll reveal"><svg class="org-chart" viewBox="0 0 1120 300" role="img" aria-label="Path to Menzoberranzan departments: writing, visual design, spatial design, programming, audio and music, community and moderation, each with a coordinator, team leads and a team">
+<rect x="20.0" y="10" width="150" height="40" rx="8" fill="#e9973f" fill-opacity=".9"/><text x="95.0" y="35" text-anchor="middle" class="oc-h">Writing</text>
+<path d="M95.0 50V66" class="oc-l"/>
+<rect x="28.0" y="66" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.32" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="87" text-anchor="middle" class="oc-n">Narrative coordinator</text>
+<path d="M95.0 100V116" class="oc-l"/>
+<rect x="28.0" y="116" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.26" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="137" text-anchor="middle" class="oc-n">5 team leads</text>
+<path d="M95.0 150V166" class="oc-l"/>
+<rect x="28.0" y="166" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.20" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="187" text-anchor="middle" class="oc-n">Senior writers</text>
+<path d="M95.0 200V216" class="oc-l"/>
+<rect x="28.0" y="216" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.14" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="237" text-anchor="middle" class="oc-n">Writers</text>
+<rect x="175.0" y="10" width="150" height="40" rx="8" fill="#53dfdd" fill-opacity=".9"/><text x="250.0" y="35" text-anchor="middle" class="oc-h">Visual design</text>
+<path d="M250.0 50V66" class="oc-l"/>
+<rect x="183.0" y="66" width="134" height="34" rx="7" fill="#53dfdd" fill-opacity="0.32" stroke="#53dfdd" stroke-opacity=".7"/><text x="250.0" y="87" text-anchor="middle" class="oc-n">Coordinator</text>
+<path d="M250.0 100V116" class="oc-l"/>
+<rect x="183.0" y="116" width="134" height="34" rx="7" fill="#53dfdd" fill-opacity="0.26" stroke="#53dfdd" stroke-opacity=".7"/><text x="250.0" y="137" text-anchor="middle" class="oc-n">2 team leads</text>
+<path d="M250.0 150V166" class="oc-l"/>
+<rect x="183.0" y="166" width="134" height="34" rx="7" fill="#53dfdd" fill-opacity="0.20" stroke="#53dfdd" stroke-opacity=".7"/><text x="250.0" y="187" text-anchor="middle" class="oc-n">Visual designers</text>
+<rect x="330.0" y="10" width="150" height="40" rx="8" fill="#d0368a" fill-opacity=".9"/><text x="405.0" y="35" text-anchor="middle" class="oc-h">Spatial design</text>
+<path d="M405.0 50V66" class="oc-l"/>
+<rect x="338.0" y="66" width="134" height="34" rx="7" fill="#d0368a" fill-opacity="0.32" stroke="#d0368a" stroke-opacity=".7"/><text x="405.0" y="87" text-anchor="middle" class="oc-n">Coordinator</text>
+<path d="M405.0 100V116" class="oc-l"/>
+<rect x="338.0" y="116" width="134" height="34" rx="7" fill="#d0368a" fill-opacity="0.26" stroke="#d0368a" stroke-opacity=".7"/><text x="405.0" y="137" text-anchor="middle" class="oc-n">3 team leads</text>
+<path d="M405.0 150V166" class="oc-l"/>
+<rect x="338.0" y="166" width="134" height="34" rx="7" fill="#d0368a" fill-opacity="0.20" stroke="#d0368a" stroke-opacity=".7"/><text x="405.0" y="187" text-anchor="middle" class="oc-n">Spatial designers</text>
+<rect x="485.0" y="10" width="150" height="40" rx="8" fill="#4a9be8" fill-opacity=".9"/><text x="560.0" y="35" text-anchor="middle" class="oc-h">Programming</text>
+<path d="M560.0 50V66" class="oc-l"/>
+<rect x="493.0" y="66" width="134" height="34" rx="7" fill="#4a9be8" fill-opacity="0.32" stroke="#4a9be8" stroke-opacity=".7"/><text x="560.0" y="87" text-anchor="middle" class="oc-n">Coordinator</text>
+<path d="M560.0 100V116" class="oc-l"/>
+<rect x="493.0" y="116" width="134" height="34" rx="7" fill="#4a9be8" fill-opacity="0.26" stroke="#4a9be8" stroke-opacity=".7"/><text x="560.0" y="137" text-anchor="middle" class="oc-n">2 team leads</text>
+<path d="M560.0 150V166" class="oc-l"/>
+<rect x="493.0" y="166" width="134" height="34" rx="7" fill="#4a9be8" fill-opacity="0.20" stroke="#4a9be8" stroke-opacity=".7"/><text x="560.0" y="187" text-anchor="middle" class="oc-n">Programmers</text>
+<rect x="640.0" y="10" width="150" height="40" rx="8" fill="#a882ff" fill-opacity=".9"/><text x="715.0" y="35" text-anchor="middle" class="oc-h">Audio & music</text>
+<path d="M715.0 50V66" class="oc-l"/>
+<rect x="648.0" y="66" width="134" height="34" rx="7" fill="#a882ff" fill-opacity="0.32" stroke="#a882ff" stroke-opacity=".7"/><text x="715.0" y="87" text-anchor="middle" class="oc-n">Coordinator</text>
+<path d="M715.0 100V116" class="oc-l"/>
+<rect x="648.0" y="116" width="134" height="34" rx="7" fill="#a882ff" fill-opacity="0.26" stroke="#a882ff" stroke-opacity=".7"/><text x="715.0" y="137" text-anchor="middle" class="oc-n">Audio lead</text>
+<path d="M715.0 150V166" class="oc-l"/>
+<rect x="648.0" y="166" width="134" height="34" rx="7" fill="#a882ff" fill-opacity="0.20" stroke="#a882ff" stroke-opacity=".7"/><text x="715.0" y="187" text-anchor="middle" class="oc-n">Sound engineers</text>
+<rect x="795.0" y="10" width="150" height="40" rx="8" fill="#fb464c" fill-opacity=".9"/><text x="870.0" y="35" text-anchor="middle" class="oc-h">Community</text>
+<path d="M870.0 50V66" class="oc-l"/>
+<rect x="803.0" y="66" width="134" height="34" rx="7" fill="#fb464c" fill-opacity="0.32" stroke="#fb464c" stroke-opacity=".7"/><text x="870.0" y="87" text-anchor="middle" class="oc-n">Community manager</text>
+<path d="M870.0 100V116" class="oc-l"/>
+<rect x="803.0" y="116" width="134" height="34" rx="7" fill="#fb464c" fill-opacity="0.26" stroke="#fb464c" stroke-opacity=".7"/><text x="870.0" y="137" text-anchor="middle" class="oc-n">Helpers</text>
+<rect x="950.0" y="10" width="150" height="40" rx="8" fill="#c2414b" fill-opacity=".9"/><text x="1025.0" y="35" text-anchor="middle" class="oc-h">Moderation</text>
+<path d="M1025.0 50V66" class="oc-l"/>
+<rect x="958.0" y="66" width="134" height="34" rx="7" fill="#c2414b" fill-opacity="0.32" stroke="#c2414b" stroke-opacity=".7"/><text x="1025.0" y="87" text-anchor="middle" class="oc-n">Administrator</text>
+<path d="M1025.0 100V116" class="oc-l"/>
+<rect x="958.0" y="116" width="134" height="34" rx="7" fill="#c2414b" fill-opacity="0.26" stroke="#c2414b" stroke-opacity=".7"/><text x="1025.0" y="137" text-anchor="middle" class="oc-n">Moderators</text>
 </svg></figure>
           <p class="cap">What 140 volunteers looks like when you draw it: seven departments, each with a coordinator and its own leads.</p>
 
