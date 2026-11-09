@@ -602,7 +602,7 @@
     .lede{ margin:0 0 1.25rem }
 
     .steps, .quote-grid, .stats-grid, .img-grid, .img-wide, .mini-images,
-    .video-embed, .showcase, .mood-ladder, .tot-matrix-wrap, .big-image,
+    .video-embed, .showcase, .tot-park, .tot-matrix-wrap, .big-image,
     .vid-crop, .ideation-images, .process-dense-row, .role-cols, .cards,
     .must-haves-grid, .outcome-strip, .quote-grid{
       margin:2rem 0 1.7rem;
@@ -710,46 +710,30 @@
     .tot-acc{ position:absolute; user-select:none; }
     .tot-hint{ font-size:0.84rem; color:var(--ink-faint); padding:.55rem .9rem; border-top:1px solid rgba(var(--ink-rgb),.07); background:var(--card-warm); }
 
-    /* ---- THE EXPRESSION LADDER ----
-       One body per row, every face that body is allowed to wear beside it. The
-       faces are composited live by the real placeFace() over the real art, the
-       same way the accessory matrix above is: no screenshot, no mockup. What
-       the rows are actually for is the RAGGED RIGHT EDGE — four faces at the
-       top, two at the bottom. */
-    .mood-ladder{
-      border:1px solid var(--edge); border-radius:18px; overflow:hidden;
-      background:var(--card); margin:clamp(18px,2.6vh,26px) 0 .9rem;
+    /* ---- THE PARK ---- four of him wandering, faces composited live by the
+       real placeFace(), outfits by the real placeFit(). no screenshot */
+    .tot-park{
+      position:relative; overflow:hidden; border:1px solid var(--edge); border-radius:18px;
+      margin:clamp(18px,2.6vh,26px) 0 .9rem; height:clamp(300px,36vw,440px);
+      background:#8fc0ec url(img/bg-park.webp) 30% 100%/max(150%, 780px) auto no-repeat;
+      --unit:clamp(64px,10vw,120px);
     }
-    .ml-row{
-      display:grid; grid-template-columns:minmax(150px,182px) 1fr;
-      align-items:center; gap:clamp(10px,1.6vw,22px);
-      padding:clamp(12px,1.6vh,18px) clamp(12px,1.8vw,20px);
-      border-bottom:1px solid rgba(var(--ink-rgb),.07);
+    .pk-guy{ position:absolute; left:0; bottom:var(--b); will-change:transform }
+    .pk-art{ position:relative; height:calc(var(--unit) * var(--s)); aspect-ratio:var(--ar); transform-origin:50% 100% }
+    /* two classes on purpose, PANE MODE's .hero-container img{height:auto} outranks one */
+    .pk-art img.pk-body{ display:block; width:100%; height:100%; filter:drop-shadow(0 3px 2px rgba(30,60,20,.25)) }
+    .pk-art img.pk-face, .pk-art img.pk-acc{ position:absolute; height:auto; max-width:none }
+    .pk-art img.pk-face{ opacity:0; transition:opacity .18s }
+    .pk-art img.pk-face.on{ opacity:1 }
+    .pk-pop{ animation:pkPop .32s cubic-bezier(.3,1.6,.5,1) }
+    @keyframes pkPop{ 40%{ scale:1.06 } }
+    .pk-tag{
+      position:absolute; left:50%; top:100%; transform:translateX(-50%); margin-top:3px;
+      white-space:nowrap; font-size:.7rem; line-height:1; padding:.28rem .55rem; border-radius:99px;
+      background:rgba(255,255,255,.85); color:var(--ink); box-shadow:0 2px 8px rgba(20,40,20,.15);
     }
-    .ml-row:last-child{ border-bottom:none }
-    .ml-row:nth-child(odd){ background:var(--card-warm) }
-    .ml-mood{ font-size:0.84rem; line-height:1.5; color:var(--ink-faint) }
-    .ml-mood b{ display:block; color:var(--ink); font-weight:600; font-size:.88rem; margin-bottom:.12rem }
-    /* the body sits in a fixed-height slot; taller framings grow upward so HE
-       stays one size down the whole column, which is what `scale` is for */
-    .ml-set{ display:flex; flex-wrap:wrap; align-items:flex-end; gap:clamp(8px,1.4vw,20px) }
-    .ml-tot{ margin:0; text-align:center; flex:0 0 auto }
-    /* the body is in flow and IS the sprite box; the face is placed against it
-       in px derived from placeFace's percentages */
-    .ml-art{ position:relative; display:block }
-    /* two classes on purpose: PANE MODE's `.hero-container img{height:auto}`
-       outranks a single class, and an auto-height image that hasn't decoded
-       yet measures zero, which collapses the whole row */
-    .ml-art .ml-body{ display:block; height:var(--ml-h); width:auto }
-    .ml-art .ml-face{ position:absolute; left:0; top:0; height:auto }
-    .ml-name{
-      margin-top:.4rem; font-size:0.78rem; letter-spacing:.05em;
-      color:var(--ink-faint); text-transform:lowercase;
-    }
-    @media(max-width:620px){
-      .ml-row{ grid-template-columns:1fr; gap:.5rem }
-      .ml-set{ gap:10px }
-    }
+    .pk-tag b{ font-weight:600 }
+    .pk-tag i{ font-style:normal; color:var(--ink-faint) }
 
     /* metrics */
     .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:.9rem; margin:1.3rem 0; }
@@ -1264,8 +1248,8 @@ figure{
           <p class="cap">Four outfits across all fourteen poses. Fifty six combinations, none of them drawn.</p>
           <p>A mascot who misses you is good for retention, and that&rsquo;s part of why he&rsquo;s there. But everything he wears, you unlocked by playing a story, and what you play is the only thing Trove knows about you. So looking at him tells you something about your month without the app having to spell it out.</p>
           <p>He runs on one rule. <b>His pose follows the time of day, and his face follows how you&rsquo;ve been treating him.</b> His pose changes through the day so there&rsquo;s a reason to check in again, but his face only changes when your care does, so he can never look like he&rsquo;s having a lovely afternoon when you&rsquo;ve ignored him for a week.</p>
-          <div class="mood-ladder reveal" id="moodLadder"></div>
-          <p class="cap">Read across, not down. Look after him and he has four different kinds of happy. Ignore him for two weeks and he only has two faces left, both of them bad. Neglect doesn&rsquo;t just make him sad, it takes away his range, and nobody has to be told that to feel it.</p>
+          <div class="tot-park reveal" id="totPark" aria-label="Four Trove tots wandering a park, each at a different level of care"></div>
+          <p class="cap">Four of him out in the park, one for each level of care, in the outfits from the table above. Watch their faces. The one who&rsquo;s been looked after cycles through four kinds of happy. The one who&rsquo;s been ignored for two weeks only has two faces left, both of them bad. Neglect doesn&rsquo;t just make him sad, it takes away his range, and nobody has to be told that to feel it.</p>
         </div>
       </section>
       <section id="patterns">
@@ -1450,40 +1434,43 @@ figure{
       }
     })();
 
+    // ---- TOT KIT ----
+    // shared by the matrix and the park below. placeFit() ported verbatim
+    // from apps/trove/src/lib/tot-fit.ts
+    const totData=fetch('tot-data.json').then(r=>r.json()).catch(()=>null);
+    const TOT_SLOTS=['head','face','worn','held','footL','footR'];
+    // four outfits, worn slot is the scarf throughout
+    const TOT_OUTFITS=[
+      {name:'The five references', sub:'crown · round glasses · scarf · camera · rain boots',
+       fit:{head:'crown',face:'round-eye-glasses',worn:'scarf',held:'camera',footL:'rain-boots',footR:'rain-boots'}},
+      {name:'Off to get coffee', sub:'bucket hat · heart shades · scarf · coffee · sneakers',
+       fit:{head:'bucket-hat',face:'sunglasses-heart',worn:'scarf',held:'coffee',footL:'sneakers',footR:'sneakers'}},
+      {name:'Library day', sub:'beanie · mustache · scarf · book · roller skates',
+       fit:{head:'beanie',face:'mustache',worn:'scarf',held:'book',footL:'roller-skates',footR:'roller-skates'}},
+      {name:'Running errands', sub:'flower crown · round glasses · scarf · tote bag · rain boots',
+       fit:{head:'flower-crown',face:'round-eye-glasses',worn:'scarf',held:'tote-bag',footL:'rain-boots',footR:'rain-boots'}},
+    ];
+    function placeFit(D,pose,slot,itemId){
+      const a=(D.anchors[pose]||{})[slot], it=D.items[itemId], box=D.boxes[pose];
+      if(!a||!it||!box) return null;
+      const width=a.w*it.rw;
+      const height=width*(box.w/box.h)*it.aspect;
+      // dy is in reference WIDTHS while y is a percentage of HEIGHT, so it
+      // converts through the sprite's own aspect.
+      return {left:a.x+it.dx*a.w-width/2,
+              top:a.y+it.dy*a.w*(box.w/box.h)-height/2,
+              width, rotate:a.rot||0, flip:!!a.flip};
+    }
+    const accSrc=(slot,id)=> slot==='footL' ? 'img/acc/'+id+'-l.webp'
+                          : slot==='footR' ? 'img/acc/'+id+'-r.webp'
+                          : 'img/acc/'+id+'.webp';
+
     // ---- TOT PERMUTATION MATRIX ----
-    // placeFit() ported verbatim from apps/trove/src/lib/tot-fit.ts
     (async function(){
       const host=document.getElementById('totMatrix'); if(!host) return;
-      let D; try{ D=await fetch('tot-data.json').then(r=>r.json()); }catch(e){ return; }
-      const SLOTS=['head','face','worn','held','footL','footR'];
+      const D=await totData; if(!D) return;
+      const SLOTS=TOT_SLOTS, OUTFITS=TOT_OUTFITS;
       const POSES=Object.keys(D.anchors);
-
-      // four outfits, worn slot is the scarf throughout
-      const OUTFITS=[
-        {name:'The five references', sub:'crown · round glasses · scarf · camera · rain boots',
-         fit:{head:'crown',face:'round-eye-glasses',worn:'scarf',held:'camera',footL:'rain-boots',footR:'rain-boots'}},
-        {name:'Off to get coffee', sub:'bucket hat · heart shades · scarf · coffee · sneakers',
-         fit:{head:'bucket-hat',face:'sunglasses-heart',worn:'scarf',held:'coffee',footL:'sneakers',footR:'sneakers'}},
-        {name:'Library day', sub:'beanie · mustache · scarf · book · roller skates',
-         fit:{head:'beanie',face:'mustache',worn:'scarf',held:'book',footL:'roller-skates',footR:'roller-skates'}},
-        {name:'Running errands', sub:'flower crown · round glasses · scarf · tote bag · rain boots',
-         fit:{head:'flower-crown',face:'round-eye-glasses',worn:'scarf',held:'tote-bag',footL:'rain-boots',footR:'rain-boots'}},
-      ];
-
-      function placeFit(pose,slot,itemId){
-        const a=(D.anchors[pose]||{})[slot], it=D.items[itemId], box=D.boxes[pose];
-        if(!a||!it||!box) return null;
-        const width=a.w*it.rw;
-        const height=width*(box.w/box.h)*it.aspect;
-        // dy is in reference WIDTHS while y is a percentage of HEIGHT, so it
-        // converts through the sprite's own aspect.
-        return {left:a.x+it.dx*a.w-width/2,
-                top:a.y+it.dy*a.w*(box.w/box.h)-height/2,
-                width, rotate:a.rot||0, flip:!!a.flip};
-      }
-      const accSrc=(slot,id)=> slot==='footL' ? 'img/acc/'+id+'-l.webp'
-                            : slot==='footR' ? 'img/acc/'+id+'-r.webp'
-                            : 'img/acc/'+id+'.webp';
 
       // build the grid
       const hrow=document.createElement('div'); hrow.className='tot-hrow';
@@ -1519,7 +1506,7 @@ figure{
           const bl=(cb.width-bw)/2, bt=(cb.height-bh)/2;
           for(const slot of SLOTS){
             const id=c.fit[slot]; if(!id) continue;
-            const pl=placeFit(c.pose,slot,id); if(!pl) continue;   // no anchor = pose does not wear it
+            const pl=placeFit(D,c.pose,slot,id); if(!pl) continue;   // no anchor = pose does not wear it
             const img=document.createElement('img');
             img.className='tot-acc'; img.src=accSrc(slot,id); img.alt=''; img.loading='lazy';
             img.style.left=(bl+pl.left/100*bw)+'px';
@@ -1543,14 +1530,15 @@ figure{
       new IntersectionObserver((es,o)=>{es.forEach(e=>{if(e.isIntersecting){setTimeout(paint,700);o.disconnect();}})},{threshold:.05}).observe(host);
     })();
 
-    /* ── the expression ladder ──────────────────────────────────────────
-       POSES, FACES, PLATE_OVERSCAN and placeFace() are lifted verbatim from
-       apps/trove/src/lib/tot-poses.ts, so what you see below is the product's
-       own compositor running on the product's own measurements. Bodies and
-       faces are separate files: five bodies and twelve faces is sixty moments
-       out of seventeen drawings, and a new feeling costs one row of numbers. */
-    (function(){
-      const host=document.getElementById('moodLadder'); if(!host) return;
+    /* ── the park ──────────────────────────────────────────────────────
+       four of him out on the grass, one per level of care, each in an outfit
+       from the matrix above and only ever wearing the faces his level can
+       reach. POSES, FACES, PLATE_OVERSCAN and placeFace() are lifted verbatim
+       from apps/trove/src/lib/tot-poses.ts, and the outfits go through the
+       same placeFit() as the matrix, so it's the product's own compositor. */
+    (async function(){
+      const host=document.getElementById('totPark'); if(!host) return;
+      const D=await totData; if(!D) return;
 
       const PLATE_OVERSCAN=1.05;
       const POSES={
@@ -1583,64 +1571,94 @@ figure{
                  squash:p.plateAspect/f.plateAspect };
       }
 
-      // one body per level of care, and every face that level can reach
-      const ROWS=[
-        {mood:'Thriving',  sub:'four kinds of happy',    pose:'kite',
+      // one guy per level of care. speed is % of the park per second
+      const GUYS=[
+        {mood:'thriving',  pose:'kite',     outfit:0, speed:6.5, x:14, b:15,
          faces:['delighted','starstruck','silly','adoring']},
-        {mood:'Content',   sub:'settled, a bit cheeky',  pose:'hill',
+        {mood:'content',   pose:'standing', outfit:3, speed:4,   x:40, b:11,
          faces:['content','sly','sideeye','mischief']},
-        {mood:'Sleepy',    sub:'starting to narrow',     pose:'coffee',
+        {mood:'sleepy',    pose:'coffee',   outfit:1, speed:1.8, x:63, b:17,
          faces:['yawning','content','sideeye']},
-        {mood:'Sad',       sub:'quiet, and not hiding it', pose:'standing',
-         faces:['worried','sideeye','yawning']},
-        {mood:'Withdrawn', sub:'two faces left',         pose:'tangled',
+        {mood:'withdrawn', pose:'tangled',  outfit:2, speed:.7,  x:85, b:12,
          faces:['sobbing','worried']}
       ];
-      const BASE=118;   // px of HIM; each pose's own framing scales off this
+      const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const pct=v=>v+'%';
 
-      const cells=[];
-      for(const r of ROWS){
-        const row=document.createElement('div'); row.className='ml-row';
-        const lab=document.createElement('div'); lab.className='ml-mood';
-        lab.innerHTML='<b>'+r.mood+'</b>'+r.sub;
-        const set=document.createElement('div'); set.className='ml-set';
-        for(const face of r.faces){
-          const fig=document.createElement('figure'); fig.className='ml-tot';
-          const art=document.createElement('div'); art.className='ml-art';
-          art.style.setProperty('--ml-h', Math.round(BASE*POSES[r.pose].scale)+'px');
-          const b=document.createElement('img'); b.className='ml-body';
-          b.src='img/tot/'+r.pose+'.webp'; b.loading='lazy';
-          b.alt='Trove tot, '+r.pose.replace('-',' ')+', looking '+face;
-          const fc=document.createElement('img'); fc.className='ml-face';
-          fc.src='img/face/'+face+'.webp'; fc.alt=''; fc.loading='lazy';
-          art.append(b,fc);
-          const cap=document.createElement('figcaption'); cap.className='ml-name'; cap.textContent=face;
-          fig.append(art,cap); set.appendChild(fig);
-          cells.push({art,body:b,face:fc,pose:r.pose,name:face});
+      const guys=GUYS.map(g=>{
+        const box=D.boxes[g.pose], fit=TOT_OUTFITS[g.outfit].fit;
+        const el=document.createElement('div'); el.className='pk-guy';
+        el.style.setProperty('--b', g.b+'%');
+        el.style.zIndex=100-g.b;
+        const art=document.createElement('div'); art.className='pk-art';
+        art.style.setProperty('--ar', box.w+'/'+box.h);
+        art.style.setProperty('--s', POSES[g.pose].scale);
+        const body=document.createElement('img'); body.className='pk-body';
+        body.src='img/tot/'+g.pose+'.webp'; body.alt='Trove tot, '+g.mood+', in '+TOT_OUTFITS[g.outfit].name.toLowerCase();
+        art.appendChild(body);
+        const faces={};
+        for(const f of g.faces){
+          const pl=placeFace(g.pose,f); if(!pl) continue;
+          const im=document.createElement('img'); im.className='pk-face'; im.src='img/face/'+f+'.webp'; im.alt='';
+          Object.assign(im.style,{left:pct(pl.left),top:pct(pl.top),width:pct(pl.width),
+            transformOrigin:pl.originX+'% '+pl.originY+'%',
+            transform:'rotate('+pl.rotate+'deg) scaleY('+pl.squash+')'});
+          art.appendChild(im); faces[f]=im;
         }
-        row.append(lab,set); host.appendChild(row);
-      }
+        for(const slot of TOT_SLOTS){
+          const id=fit[slot]; if(!id) continue;
+          const pl=placeFit(D,g.pose,slot,id); if(!pl) continue;   // no anchor = pose does not wear it
+          const im=document.createElement('img'); im.className='pk-acc'; im.src=accSrc(slot,id); im.alt='';
+          Object.assign(im.style,{left:pct(pl.left),top:pct(pl.top),width:pct(pl.width),
+            transform:'rotate('+pl.rotate+'deg)'+(pl.flip?' scaleX(-1)':'')});
+          art.appendChild(im);
+        }
+        const tag=document.createElement('span'); tag.className='pk-tag';
+        tag.innerHTML='<b>'+g.mood+'</b> <i></i>';
+        el.append(art,tag); host.appendChild(el);
+        return {...g, el, art, faceEl:faces, name:tag.querySelector('i'), face:null,
+                dir:Math.random()<.5?-1:1, walk:true, until:0, nextFace:0};
+      });
 
-      /* The placement is in percent of the SPRITE BOX, so it needs the body's
-         rendered width — which is only known once the webp has decoded. */
-      function paint(){
-        for(const c of cells){
-          const bw=c.body.offsetWidth, bh=c.body.offsetHeight;
-          if(!bw||!bh) continue;
-          const pl=placeFace(c.pose,c.name); if(!pl) continue;
-          const w=pl.width/100*bw;
-          c.face.style.width=w+'px';
-          c.face.style.left=(pl.left/100*bw)+'px';
-          c.face.style.top=(pl.top/100*bh)+'px';
-          c.face.style.transformOrigin=pl.originX+'% '+pl.originY+'%';
-          c.face.style.transform='rotate('+pl.rotate+'deg) scaleY('+pl.squash+')';
-        }
+      function setFace(g,f){
+        if(g.face) g.faceEl[g.face].classList.remove('on');
+        g.faceEl[f].classList.add('on'); g.face=f; g.name.textContent=f;
+        if(!still){ g.art.classList.remove('pk-pop'); void g.art.offsetWidth; g.art.classList.add('pk-pop'); }
       }
-      paint();
-      cells.forEach(c=>{ if(!c.body.complete) c.body.addEventListener('load',paint,{once:true}); });
-      window.addEventListener('load',paint);
-      addEventListener('resize',paint);
-      new IntersectionObserver((es,o)=>{es.forEach(e=>{if(e.isIntersecting){setTimeout(paint,700);o.disconnect();}})},{threshold:.05}).observe(host);
+      guys.forEach(g=>setFace(g,g.faces[0]));
+
+      let last=0, on=false, raf=0;
+      function frame(now){
+        const t=now/1000, dt=Math.min(.05,last?t-last:0); last=t;
+        const W=host.clientWidth;
+        for(const g of guys){
+          // faces: a new one every few seconds, never the same twice running
+          if(t>g.nextFace){
+            if(g.nextFace){ const pool=g.faces.filter(f=>f!==g.face); setFace(g,pool[Math.floor(Math.random()*pool.length)]); }
+            g.nextFace=t+2.2+Math.random()*2.6;
+          }
+          if(still){ g.el.style.transform='translateX('+(g.x/100*W)+'px) translateX(-50%)'; continue; }
+          // wander: walk a while, stop a while, sometimes turn round
+          if(t>g.until){
+            g.walk = g.walk ? Math.random()<.35 : true;
+            if(Math.random()<.4) g.dir*=-1;
+            g.until=t+(g.walk?2+Math.random()*4:1+Math.random()*2.5)*(g.speed<1?1.6:1);
+          }
+          if(g.walk){
+            g.x+=g.dir*g.speed*dt;
+            if(g.x<7){ g.x=7; g.dir=1; } if(g.x>93){ g.x=93; g.dir=-1; }
+          }
+          const hop=g.walk?Math.abs(Math.sin(t*(4+g.speed)))*Math.min(6,2+g.speed):0;
+          const tilt=g.walk?Math.sin(t*(4+g.speed))*Math.min(4,1+g.speed*.5):0;
+          g.el.style.transform='translateX('+(g.x/100*W)+'px) translateX(-50%) translateY('+(-hop)+'px)';
+          g.art.style.transform='scaleX('+g.dir+') rotate('+tilt+'deg)';
+        }
+        if(on) raf=requestAnimationFrame(frame);
+      }
+      const go=v=>{ if(v===on) return; on=v; last=0; if(on) raf=requestAnimationFrame(frame); else cancelAnimationFrame(raf); };
+      new IntersectionObserver(es=>es.forEach(e=>go(e.isIntersecting&&!document.hidden)),{threshold:0}).observe(host);
+      document.addEventListener('visibilitychange',()=>{ if(document.hidden) go(false); else { const r=host.getBoundingClientRect(); go(r.bottom>0&&r.top<innerHeight); } });
+      frame(performance.now());
     })();
 
     // reveals
