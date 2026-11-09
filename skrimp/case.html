@@ -611,13 +611,7 @@
        its own sound button */
     .reel{ margin:0; display:flex; flex-direction:column; align-items:center; gap:.55rem; }
     .reel figcaption{ font-size:.8rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-secondary); }
-    .reel-sound{
-      position:absolute; right:10px; bottom:10px; z-index:2; cursor:pointer;
-      font:700 .68rem/1 'Satoshi',sans-serif; color:#fff; letter-spacing:.04em;
-      padding:.4rem .6rem; border-radius:999px; border:1px solid rgba(255,255,255,.35);
-      background:rgba(0,0,0,.45); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-    }
-    .reel-sound.on{ background:rgba(42,200,192,.75); }
+    /* the sound button is the same one the ctv clip uses */
 
     .phone.pending .phone-screen,
     .news-pending{
@@ -1456,15 +1450,15 @@ figure{
             <div class="showcase-stage trio">
               <figure class="reel"><div class="phone"><div class="phone-screen">
                 <video src="vid/reel-plan.mp4" poster="vid/reel-plan.jpg" muted loop playsinline preload="none" aria-label="The plan"></video>
-                <button class="reel-sound" type="button" aria-label="Turn the sound on">sound on</button>
+                <button class="ctv-mute-btn reel-sound" type="button" aria-label="Unmute">&#128263;</button>
               </div></div><figcaption>The plan</figcaption></figure>
               <figure class="reel"><div class="phone"><div class="phone-screen">
                 <video src="vid/reel-shop.mp4" poster="vid/reel-shop.jpg" muted loop playsinline preload="none" aria-label="The shop"></video>
-                <button class="reel-sound" type="button" aria-label="Turn the sound on">sound on</button>
+                <button class="ctv-mute-btn reel-sound" type="button" aria-label="Unmute">&#128263;</button>
               </div></div><figcaption>The shop</figcaption></figure>
               <figure class="reel"><div class="phone"><div class="phone-screen">
                 <video src="vid/reel-cook.mp4" poster="vid/reel-cook.jpg" muted loop playsinline preload="none" aria-label="The cook"></video>
-                <button class="reel-sound" type="button" aria-label="Turn the sound on">sound on</button>
+                <button class="ctv-mute-btn reel-sound" type="button" aria-label="Unmute">&#128263;</button>
               </div></div><figcaption>The cook</figcaption></figure>
             </div>
             <p class="cap">Three of our reels: the week planned from the flyers, a real Zehrs run with the receipt at the end, and dinner.</p>
@@ -1656,7 +1650,7 @@ figure{
 
   <script>
     /* reels play muted while they're on screen and pause off it. tapping
-       "sound on" unmutes that one and mutes the others */
+       the speaker unmutes that one and mutes the others */
     (function () {
       const vids = [...document.querySelectorAll('.reel video')];
       if (!vids.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -1667,8 +1661,9 @@ figure{
       vids.forEach(v => io.observe(v));
       document.querySelectorAll('.reel-sound').forEach(b => b.addEventListener('click', () => {
         const v = b.parentElement.querySelector('video'), on = v.muted;
-        vids.forEach(x => { x.muted = true; }); document.querySelectorAll('.reel-sound').forEach(x => { x.classList.remove('on'); x.textContent = 'sound on'; });
-        if (on) { v.muted = false; v.play().catch(() => {}); b.classList.add('on'); b.textContent = 'sound off'; }
+        vids.forEach(x => { x.muted = true; });
+        document.querySelectorAll('.reel-sound').forEach(x => { x.textContent = '\u{1F507}'; x.setAttribute('aria-label', 'Unmute'); });
+        if (on) { v.muted = false; v.play().catch(() => {}); b.textContent = '\u{1F50A}'; b.setAttribute('aria-label', 'Mute'); }
       }));
     })();
   </script>
