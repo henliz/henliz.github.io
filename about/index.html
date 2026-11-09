@@ -1104,8 +1104,18 @@
     }
     :root[data-theme="dark"] .intro-flash { background: radial-gradient(60% 50% at 50% 50%, rgba(200,235,245,.6), rgba(30,58,80,.45) 55%, transparent 85%); }
     @keyframes introFlash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
-    html.intro-landing #app { animation: introLand .9s cubic-bezier(.22,1,.36,1) both; }
-    @keyframes introLand { from { transform: scale(1.06); } to { transform: none; } }
+    /* coming out of the intro: no zoom pop. the page fades up softly and the
+       case studies rise in after it, one at a time */
+    html.intro-landing #app { animation: introLand .7s ease both; }
+    @keyframes introLand { from { opacity: 0; } to { opacity: 1; } }
+    html.intro-landing .bento-grid > .cell { animation: introCell .8s cubic-bezier(.22,1,.36,1) both; }
+    html.intro-landing .bento-grid > .cell:nth-child(1) { animation-delay: .2s; }
+    html.intro-landing .bento-grid > .cell:nth-child(2) { animation-delay: .3s; }
+    html.intro-landing .bento-grid > .cell:nth-child(3) { animation-delay: .4s; }
+    html.intro-landing .bento-grid > .cell:nth-child(4) { animation-delay: .5s; }
+    html.intro-landing .bento-grid > .cell:nth-child(5) { animation-delay: .6s; }
+    html.intro-landing .bento-grid > .cell:nth-child(6) { animation-delay: .7s; }
+    @keyframes introCell { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 
     #scene-overlay.hidden * { animation-play-state: paused !important; }
 
@@ -1119,7 +1129,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       #scene-overlay *, #scene-overlay { animation: none !important; transition: opacity .3s ease !important; }
-      html.intro-landing #app { animation: none; }
+      html.intro-landing #app, html.intro-landing .bento-grid > .cell { animation: none; }
     }
 
     .testimonials-section { display: none; }
@@ -3791,23 +3801,24 @@ body::after{
    shadows so each corner is a notch, and the tail is a little staircase */
 .wb-in{
   position:relative; display:flex; align-items:center; justify-content:center;
-  min-width:28px; height:28px; padding:0 .55rem; white-space:nowrap;
-  font:1.05rem/1 'DotempDemo', monospace; color:#14202b;
+  min-width:16px; height:20px; padding:0 .2rem; white-space:nowrap;
+  font:1.45rem/1 'DotempDemo', monospace; color:#ff3d8b;
+  text-shadow:2px 2px 0 #14202b;
   background:#fff; border:0; border-radius:0;
-  box-shadow:0 -3px 0 0 #fff, 0 3px 0 0 #fff, -3px 0 0 0 #fff, 3px 0 0 0 #fff,
-             0 -6px 0 0 #14202b, 0 6px 0 0 #14202b, -6px 0 0 0 #14202b, 6px 0 0 0 #14202b,
-             -3px -3px 0 0 #14202b, 3px -3px 0 0 #14202b, -3px 3px 0 0 #14202b, 3px 3px 0 0 #14202b,
-             6px 9px 0 0 rgba(20,32,43,.35);
+  box-shadow:0 -2px 0 0 #fff, 0 2px 0 0 #fff, -2px 0 0 0 #fff, 2px 0 0 0 #fff,
+             0 -4px 0 0 #14202b, 0 4px 0 0 #14202b, -4px 0 0 0 #14202b, 4px 0 0 0 #14202b,
+             -2px -2px 0 0 #14202b, 2px -2px 0 0 #14202b, -2px 2px 0 0 #14202b, 2px 2px 0 0 #14202b,
+             4px 6px 0 0 rgba(20,32,43,.3);
   transform-origin:50% 100%; opacity:0;
   animation:wbIn .45s cubic-bezier(.34, 1.5, .64, 1) 2.5s forwards, wbBob 1.8s ease-in-out 2.95s infinite;
 }
 /* the tail: a rotated square showing two of its borders, so it reads as a
    little V of outline poking out of the bubble */
 .wb-in::before{
-  content:''; position:absolute; left:calc(50% - var(--shift, 0px)); top:calc(100% + 6px); width:3px; height:3px; margin-left:-1.5px;
-  background:#14202b; box-shadow:0 3px 0 #14202b, -3px -3px 0 #14202b, 3px -3px 0 #14202b, 0 -3px 0 #fff;
+  content:''; position:absolute; left:calc(50% - var(--shift, 0px)); top:calc(100% + 4px); width:2px; height:2px; margin-left:-1px;
+  background:#14202b; box-shadow:0 2px 0 #14202b, -2px -2px 0 #14202b, 2px -2px 0 #14202b, 0 -2px 0 #fff;
 }
-.walker.asking .wb-in{ font:.8rem/1 'DotempDemo', monospace; padding:0 .55rem; height:24px; }
+.walker.asking .wb-in{ font:.78rem/1 'DotempDemo', monospace; color:#14202b; text-shadow:none; padding:0 .45rem; height:20px; }
 .wb-dots{ display:inline-flex; gap:3px; }
 .wb-dots i{ width:5px; height:5px; border-radius:50%; background:currentColor; animation:hcDot 1s ease-in-out infinite; }
 .wb-dots i:nth-child(2){ animation-delay:.15s; }
@@ -4118,10 +4129,13 @@ body::after{
           if (now < lockUntil) return;
           if (dir > 0 && !hurrying(now)) {
             const atStop = STOPS.includes(goal) && goal < 1;
-            if (atStop && (Math.abs(p - goal) > .015 || now < holdUntil)) return;
+            if (atStop && now < holdUntil) return;
           }
           lockUntil = now + 500;
-          if (dir > 0) goal = STOPS.find(v => v > goal + .001) ?? 1;
+          if (dir > 0){
+            goal = STOPS.find(v => v > goal + .001) ?? 1;
+            if (goal < 1) holdUntil = now + 4000;    // released early once frame two lands (safety net if it never does)
+          }
           else { auto = false; goal = [...STOPS].reverse().find(v => v < goal - .001) ?? 0; }
         }
         let lastWheel = 0;
@@ -4274,7 +4288,7 @@ body::after{
           goal = 1;                       // she keeps falling while it fades
           overlay.classList.add('parting');
           // the page settles in from a touch too close as you come through
-          setTimeout(() => { if (!calm) document.documentElement.classList.add('intro-landing'); }, 300);
+          setTimeout(() => { if (!calm) document.documentElement.classList.add('intro-landing'); }, 250);
           setTimeout(() => {
             stopMotion();
             overlay.classList.add('hidden');
@@ -4283,7 +4297,7 @@ body::after{
             window.__introScene?.panel(null); current = null;
             window.__introScene?.sleep();
           }, 950);
-          setTimeout(() => document.documentElement.classList.remove('intro-landing'), 1400);
+          setTimeout(() => document.documentElement.classList.remove('intro-landing'), 1900);
         }
         document.getElementById('intro-skip').addEventListener('click', part);
 
