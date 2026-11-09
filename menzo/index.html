@@ -3449,7 +3449,7 @@
   max-width:min(calc(100% - 2 * var(--cap-in)), 19.5rem);
   margin:0 0 var(--cap-in) var(--cap-in) !important;
   padding:.6rem .75rem .65rem !important;
-  border-radius:12px;
+  border-radius:var(--r-md);   /* the same corner as the tile it sits in */
   background:rgba(12,18,28,.5);
   -webkit-backdrop-filter:blur(14px) saturate(150%); backdrop-filter:blur(14px) saturate(150%);
   border:1px solid rgba(240,242,240,.16);
@@ -5067,9 +5067,9 @@ body::after{
                         </svg>
                         <span class="social-tooltip">x.com/nothenliz</span>
                     </div>
-                    <div class="social-btn" onclick="window.open('mailto:henrietta@skrimp.ai', '_blank')">
+                    <div class="social-btn" onclick="window.open('mailto:hennielizzie@gmail.com', '_blank')">
                         <i data-lucide="mail"></i>
-                        <span class="social-tooltip">henrietta@skrimp.ai</span>
+                        <span class="social-tooltip">hennielizzie@gmail.com</span>
                     </div>
                         </div>
                     </div>
@@ -5162,9 +5162,9 @@ body::after{
                   </tr>
                   <tr>
                     <td>Equinox</td>
-                    <td>14 strangers. Two weeks. Every system touched by everyone.</td>
+                    <td>14 strangers. 18 days. Every system touched by everyone.</td>
                     <td><span class="ns-chaos-tag ns-tag-coord">coordination</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
-                    <td>A player controller clean enough that 14 people built on it without breaking each other.</td>
+                    <td>Every moment the game answers the player: the floor transitions, the journal, and the payoff when a puzzle's done.</td>
                     <td><span class="ns-outcome-pill">winner ✦</span></td>
                   </tr>
                 </tbody>
@@ -6001,7 +6001,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         tagline:'A week of dinners planned around live prices and what\u2019s already in the fridge',
         title:'Skrimp', year:'2025–',
         video:{ kind:'file', src:'/skrimp/media/skrimp-smartload-demo.mp4' },
-        stat:'$5K/yr saved per family, free always',
+        stat:'2K+ users, $5K/yr saved per family, always free',
         tags:['Solo founder','Live flyer data','Mobile + web'],
         href:'/skrimp/',
         // the aisle is the place; the laptop running the plan is the subject.
@@ -7835,7 +7835,7 @@ document.addEventListener('click', e => {
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wait = ms => new Promise(r => setTimeout(r, still ? 0 : ms));
 
-  const MAIL = '[henrietta@skrimp.ai](mailto:henrietta@skrimp.ai)';
+  const MAIL = '[hennielizzie@gmail.com](mailto:hennielizzie@gmail.com)';
 
   // the script. id is how answers point at each other, q is the chip label,
   // match is what routes a typed question here, a is her answer (a list is
@@ -7939,7 +7939,7 @@ document.addEventListener('click', e => {
           'she designs for what happens when it goes wrong, not just when it goes right.'],
       next: ['capstone', 'hire', 'reach'] },
     { id: 'school', q: 'where did she study?', match: ['school', 'study', 'studied', 'degree', 'university', 'uwaterloo', 'graduate', 'graduat', 'gbda', 'education', 'major'],
-      a: ['the university of waterloo! global business and digital arts, graduating december 2026.',
+      a: ['the university of waterloo! an honours bachelor of interaction design and business (gbda), graduating december 2026.',
           'it\'s half design, half business, and she filled in the engineering herself.'],
       next: ['code', 'looking'] },
     { id: 'design', q: 'what\'s her design process like?', match: ['design process', 'process', 'figma', 'research', 'ux', 'ui', 'user research', 'interview', 'prototype', 'how does she design'],

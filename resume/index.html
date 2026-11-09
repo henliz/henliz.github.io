@@ -3449,7 +3449,7 @@
   max-width:min(calc(100% - 2 * var(--cap-in)), 19.5rem);
   margin:0 0 var(--cap-in) var(--cap-in) !important;
   padding:.6rem .75rem .65rem !important;
-  border-radius:12px;
+  border-radius:var(--r-md);   /* the same corner as the tile it sits in */
   background:rgba(12,18,28,.5);
   -webkit-backdrop-filter:blur(14px) saturate(150%); backdrop-filter:blur(14px) saturate(150%);
   border:1px solid rgba(240,242,240,.16);
@@ -4018,7 +4018,7 @@ body::after{
 <h2>Projects</h2>
 <p>Pidge&#x27;s Post (Comfy Jam: Summer 2026). Cozy mail-delivery game built in Unreal Engine with an 11-person team. Gameplay programmer and UX designer: built the mail-sorting minigame logic, BBQ minigame, in-game store, some dialogue system integration, and UI polish (stamp sets, overlays, main menu) in UMG.</p>
 <p>Aporia (FigBuild 2026). AR wellness tool for cognitive incompletion — Zeigarnik effect, tip-of-tongue phenomenon, the things you know about yourself that won&#x27;t surface through direct questioning. Gaze-driven gravity-well mindmap with eye-tracking, three resolution pathways (Clarify / Process / Settle), and ambient AR overlay. React, TypeScript, Framer Motion, Tailwind.</p>
-<p>Equinox (Winner — Comfy Winter Jam 2025). Cozy 3D puzzle game shipped in 2 weeks with 14 contributors across time zones. Owned player controller + interaction architecture in Godot; built floor transitions, cleaning minigames, pause systems, and custom UI clean enough that 14 people built on top without breaking each other.</p>
+<p>Equinox (Winner, Comfy Jam: Winter 2026, 1st of 88). Cozy first-person puzzle game shipped in 18 days with a 14-person team. Gameplay and UI programmer in Godot: built the floor transitions (2nd of 88 in the jam&#x27;s required category), the journal and its unlock chain, minigame completion, pause and menus, and set up Git LFS on day one.</p>
 <p>My Auntie (Winner — TechNova 2025). First AI postpartum companion; designed for degraded cognition at 3am, not ideal conditions. Shipped in 36h: Twilio real-time calling, sub-5s SMS, OpenAI Realtime voice, Gemini intent triage (Comfort/Resource/Escalate), Snowflake-backed deterministic resource retrieval, privacy-first short-lived context.</p>
 <p>Magic Mirror (Hack the North 2024). Virtual try-on + AI product insights: segmentation/inpainting renders outfits on user photos; Cohere NLP distills reviews into pros/cons. Optimized inference from hours to minutes. Stack: React, FastAPI, Stable Diffusion, Cohere, Shopify API.</p>
 <h2>Education</h2>
@@ -5020,9 +5020,9 @@ body::after{
                         </svg>
                         <span class="social-tooltip">x.com/nothenliz</span>
                     </div>
-                    <div class="social-btn" onclick="window.open('mailto:henrietta@skrimp.ai', '_blank')">
+                    <div class="social-btn" onclick="window.open('mailto:hennielizzie@gmail.com', '_blank')">
                         <i data-lucide="mail"></i>
-                        <span class="social-tooltip">henrietta@skrimp.ai</span>
+                        <span class="social-tooltip">hennielizzie@gmail.com</span>
                     </div>
                         </div>
                     </div>
@@ -5115,9 +5115,9 @@ body::after{
                   </tr>
                   <tr>
                     <td>Equinox</td>
-                    <td>14 strangers. Two weeks. Every system touched by everyone.</td>
+                    <td>14 strangers. 18 days. Every system touched by everyone.</td>
                     <td><span class="ns-chaos-tag ns-tag-coord">coordination</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
-                    <td>A player controller clean enough that 14 people built on it without breaking each other.</td>
+                    <td>Every moment the game answers the player: the floor transitions, the journal, and the payoff when a puzzle's done.</td>
                     <td><span class="ns-outcome-pill">winner ✦</span></td>
                   </tr>
                 </tbody>
@@ -5954,7 +5954,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         tagline:'A week of dinners planned around live prices and what\u2019s already in the fridge',
         title:'Skrimp', year:'2025–',
         video:{ kind:'file', src:'/skrimp/media/skrimp-smartload-demo.mp4' },
-        stat:'$5K/yr saved per family, free always',
+        stat:'2K+ users, $5K/yr saved per family, always free',
         tags:['Solo founder','Live flyer data','Mobile + web'],
         href:'/skrimp/',
         // the aisle is the place; the laptop running the plan is the subject.
@@ -7788,7 +7788,7 @@ document.addEventListener('click', e => {
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wait = ms => new Promise(r => setTimeout(r, still ? 0 : ms));
 
-  const MAIL = '[henrietta@skrimp.ai](mailto:henrietta@skrimp.ai)';
+  const MAIL = '[hennielizzie@gmail.com](mailto:hennielizzie@gmail.com)';
 
   // the script. id is how answers point at each other, q is the chip label,
   // match is what routes a typed question here, a is her answer (a list is
@@ -7892,7 +7892,7 @@ document.addEventListener('click', e => {
           'she designs for what happens when it goes wrong, not just when it goes right.'],
       next: ['capstone', 'hire', 'reach'] },
     { id: 'school', q: 'where did she study?', match: ['school', 'study', 'studied', 'degree', 'university', 'uwaterloo', 'graduate', 'graduat', 'gbda', 'education', 'major'],
-      a: ['the university of waterloo! global business and digital arts, graduating december 2026.',
+      a: ['the university of waterloo! an honours bachelor of interaction design and business (gbda), graduating december 2026.',
           'it\'s half design, half business, and she filled in the engineering herself.'],
       next: ['code', 'looking'] },
     { id: 'design', q: 'what\'s her design process like?', match: ['design process', 'process', 'figma', 'research', 'ux', 'ui', 'user research', 'interview', 'prototype', 'how does she design'],
