@@ -416,6 +416,9 @@
     .diorama{ margin:1.6rem 0 0; border-radius:14px; overflow:hidden; border:1px solid var(--edge, rgba(0,0,0,.12)); box-shadow:0 14px 40px rgba(0,0,0,.18); }
     .diorama video{ display:block; width:100%; height:auto; }
     .reel{ margin:0; }
+    /* a clip at its own shape, no phone around it, same corner and shadow as the diorama */
+    .clip-card{ position:relative; width:min(440px,100%); margin:1.6rem auto 0; border-radius:14px; overflow:hidden; box-shadow:0 14px 40px rgba(0,0,0,.18); }
+    .clip-card video{ display:block; width:100%; height:auto; background:#000; }
     .reel-sound{
       position:absolute; bottom:12px; right:12px; z-index:10; cursor:pointer;
       background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.35); border-radius:8px;
@@ -1339,13 +1342,10 @@ figure{
           </div>
           <p>Seven surfaces by August. The iOS app is a thin shell around the web app, built by a teammate in a fortnight, which is the compliment: by July the thing underneath was coherent enough that going native was a wrapper instead of a rewrite.</p>
           <p>At an event we hosted, someone recognised themselves in most of their read and argued with the part that did not fit, for about five minutes, to my face.</p>
-          <div class="showcase reveal">
-            <div class="showcase-stage solo">
-              <figure class="reel"><div class="phone"><div class="phone-screen">
-                <video src="vid/pitch-night.mp4" poster="vid/pitch-night.jpg" muted loop playsinline preload="none" aria-label="Clips from a pitch night in Toronto that I helped run"></video>
-                <button class="reel-sound" type="button" aria-label="Unmute">&#128263;</button>
-              </div></div></figure>
-            </div>
+          <div class="clip-card reveal">
+            <video src="vid/pitch-night.mp4" poster="vid/pitch-night.jpg" muted loop playsinline preload="none" aria-label="Clips from a pitch night in Toronto that I helped run"></video>
+            <button class="reel-sound" type="button" aria-label="Unmute">&#128263;</button>
+          </div>
             <p class="cap">A pitch night in Toronto I helped run, filmed by Draft One Collective.</p>
           </div>
         </div>
@@ -1933,7 +1933,7 @@ figure{
   <script>
     /* the reel plays muted while it's on screen, the speaker turns the sound on */
     (function () {
-      const vids = [...document.querySelectorAll('.reel video')];
+      const vids = [...document.querySelectorAll('.reel video, .clip-card video')];
       if (!vids.length) return;
       const io = new IntersectionObserver(es => es.forEach(e => {
         const v = e.target;
