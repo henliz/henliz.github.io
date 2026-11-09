@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- the first screen, fetched first: the title font, her, and three.js -->
+    <link rel="preload" href="/fonts/DotempDemo.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/sky/hen-fall-1.webp" as="image" fetchpriority="high">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap" media="print" onload="this.media='all'">
     <script>
       // runs before paint so a light-mode reload never flashes dark
       (function () {
@@ -47,13 +55,13 @@
            (name, nav, labels), bodoni moda for the big serif moments,
            satoshi for reading + ui. didot used to sit under the pixel blend
            but windows doesn't ship it so pc people got times new roman */
-        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap');
 
         @font-face {
             font-family: 'DotempDemo';
-            src: url('/fonts/DotempDemo.ttf') format('truetype');
+            src: url('/fonts/DotempDemo.woff2') format('woff2'), url('/fonts/DotempDemo.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
+            font-display: block;   /* preloaded above, so the wait is tiny */
         }
 
         .px {
@@ -945,6 +953,15 @@
 
     .intro-3d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .6s ease; }
     .intro-3d.ready { opacity: 1; }
+    /* her as a plain image, there from the very first paint, so the intro
+       never opens on an empty sky while three.js downloads. the live canvas
+       fades in over her and this steps aside */
+    .intro-hen-still {
+      position: absolute; left: 50%; top: 54%; width: min(42vw, 520px); translate: -50% -50%;
+      pointer-events: none; transition: opacity .4s ease;
+    }
+    .intro-3d.ready ~ .intro-hen-still, #scene-overlay:has(.intro-3d.ready) .intro-hen-still { opacity: 0; }
+    @media (max-width: 760px) { .intro-hen-still { width: 78vw; } }
 
     /* the title. each letter is its own span so the script can scramble
        it into glyphs and puff it up into the sky as you start falling */
@@ -1104,18 +1121,8 @@
     }
     :root[data-theme="dark"] .intro-flash { background: radial-gradient(60% 50% at 50% 50%, rgba(200,235,245,.6), rgba(30,58,80,.45) 55%, transparent 85%); }
     @keyframes introFlash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
-    /* coming out of the intro: no zoom pop. the page fades up softly and the
-       case studies rise in after it, one at a time */
-    html.intro-landing #app { animation: introLand .7s ease both; }
-    @keyframes introLand { from { opacity: 0; } to { opacity: 1; } }
-    html.intro-landing .bento-grid > .cell { animation: introCell .8s cubic-bezier(.22,1,.36,1) both; }
-    html.intro-landing .bento-grid > .cell:nth-child(1) { animation-delay: .2s; }
-    html.intro-landing .bento-grid > .cell:nth-child(2) { animation-delay: .3s; }
-    html.intro-landing .bento-grid > .cell:nth-child(3) { animation-delay: .4s; }
-    html.intro-landing .bento-grid > .cell:nth-child(4) { animation-delay: .5s; }
-    html.intro-landing .bento-grid > .cell:nth-child(5) { animation-delay: .6s; }
-    html.intro-landing .bento-grid > .cell:nth-child(6) { animation-delay: .7s; }
-    @keyframes introCell { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+    /* coming out of the intro: the intro fades away and the page is simply
+       there underneath, nothing else moves */
 
     #scene-overlay.hidden * { animation-play-state: paused !important; }
 
@@ -1129,7 +1136,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       #scene-overlay *, #scene-overlay { animation: none !important; transition: opacity .3s ease !important; }
-      html.intro-landing #app, html.intro-landing .bento-grid > .cell { animation: none; }
+
     }
 
     .testimonials-section { display: none; }
@@ -4075,6 +4082,7 @@ body::after{
     <div id="scene-overlay" role="region" aria-label="Intro, scroll to start">
       <div class="intro-sky"></div>
       <div class="intro-stars"></div>
+      <img class="intro-hen-still" src="/sky/hen-fall-1.webp" alt="" aria-hidden="true" fetchpriority="high">
       <canvas class="intro-3d" id="intro3d"></canvas>
       <h2 class="intro-title" aria-label="come fall into hen's orbit"><small>come fall into</small><big>hen's orbit</big></h2>
 
@@ -7267,7 +7275,14 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
 
 // first screen loads now, the rest when they're within about a screen of
 // being scrolled into view
-firstScreen?.forEach(v => v.load());
+// the intro owns the first second of network: tile models start once her
+// canvas is up (or after 2.5s at the outside), not in a race with her
+{
+  const go = () => { if (go.done) return; go.done = true; firstScreen?.forEach(v => v.load()); };
+  const c = document.getElementById('intro3d');
+  if (!c || c.classList.contains('ready') || !/^\/(index\.html)?$/.test(location.pathname)) go();
+  else { new MutationObserver(() => c.classList.contains('ready') && setTimeout(go, 300)).observe(c, { attributes: true }); setTimeout(go, 2500); }
+}
 {
   const lazyObs = new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting) return;

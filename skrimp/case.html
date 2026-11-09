@@ -35,7 +35,7 @@
 
     @font-face {
       font-family: 'DotempDemo';
-      src: url('../fonts/DotempDemo.ttf') format('truetype');
+      src: url('../fonts/DotempDemo.woff2') format('woff2'), url('../fonts/DotempDemo.ttf') format('truetype');
       font-weight: normal; font-style: normal;
     }
     .px { font-family: 'DotempDemo', monospace !important; font-style: normal !important; font-weight: 400; font-size: 0.9em; }
@@ -607,6 +607,17 @@
       .phone,.showcase-stage.solo .phone{ width:min(300px,80vw); }
     }
     @media(prefers-reduced-motion:reduce){ .phone-screen video{ display:none; } }
+    /* the reels: three phones, each plays muted while it's on screen and has
+       its own sound button */
+    .reel{ margin:0; display:flex; flex-direction:column; align-items:center; gap:.55rem; }
+    .reel figcaption{ font-size:.8rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-secondary); }
+    .reel-sound{
+      position:absolute; right:10px; bottom:10px; z-index:2; cursor:pointer;
+      font:700 .68rem/1 'Satoshi',sans-serif; color:#fff; letter-spacing:.04em;
+      padding:.4rem .6rem; border-radius:999px; border:1px solid rgba(255,255,255,.35);
+      background:rgba(0,0,0,.45); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    }
+    .reel-sound.on{ background:rgba(42,200,192,.75); }
 
     .phone.pending .phone-screen,
     .news-pending{
@@ -1163,8 +1174,8 @@ figure{
       <!-- OUTCOME STRIP -->
       <div class="outcome-strip reveal">
         <div class="outcome-item">
-          <span class="outcome-num">Funded</span>
-          <span class="outcome-label">non-dilutive, Conrad School, Velocity &amp; KWC municipal governments</span>
+          <span class="outcome-num">2K+</span>
+          <span class="outcome-label">users, funded by the Conrad School, Velocity &amp; KWC municipal governments</span>
         </div>
         <div class="outcome-item">
           <span class="outcome-num">$5K/yr</span>
@@ -1442,12 +1453,21 @@ figure{
           <div class="vid-crop"><video data-src="media/skrimp-smartload-demo.mp4" autoplay muted loop playsinline preload="none"></video></div>
 
           <div class="showcase reveal">
-            <div class="showcase-stage solo">
-              <div class="phone pending"><div class="phone-screen">
-                <p class="pending-note"><b>DROP IN &rarr; skrimp/vid/reel-product.mp4</b>Portrait social reel of the product doing the thing.</p>
-              </div></div>
+            <div class="showcase-stage trio">
+              <figure class="reel"><div class="phone"><div class="phone-screen">
+                <video src="vid/reel-plan.mp4" poster="vid/reel-plan.jpg" muted loop playsinline preload="none" aria-label="The plan"></video>
+                <button class="reel-sound" type="button" aria-label="Turn the sound on">sound on</button>
+              </div></div><figcaption>The plan</figcaption></figure>
+              <figure class="reel"><div class="phone"><div class="phone-screen">
+                <video src="vid/reel-shop.mp4" poster="vid/reel-shop.jpg" muted loop playsinline preload="none" aria-label="The shop"></video>
+                <button class="reel-sound" type="button" aria-label="Turn the sound on">sound on</button>
+              </div></div><figcaption>The shop</figcaption></figure>
+              <figure class="reel"><div class="phone"><div class="phone-screen">
+                <video src="vid/reel-cook.mp4" poster="vid/reel-cook.jpg" muted loop playsinline preload="none" aria-label="The cook"></video>
+                <button class="reel-sound" type="button" aria-label="Turn the sound on">sound on</button>
+              </div></div><figcaption>The cook</figcaption></figure>
             </div>
-            <p class="cap">A reel: the plan, start to finish.</p>
+            <p class="cap">Three of our reels: the week planned from the flyers, a real Zehrs run with the receipt at the end, and dinner.</p>
           </div>
         
             <div class="vid-crop"><video data-src="media/grocery-list-skrimp.mp4" autoplay muted loop playsinline preload="none"></video></div>
@@ -1464,14 +1484,6 @@ figure{
 
           <p>You cannot design your way out of that, so I stopped trying to. The job became making the system legible enough that somebody else could reason about it under pressure, and onboarding people to the why before the how. They already knew how to code. What they had to learn was to ask what does this break before writing the first line, and the intern who understands the constraint makes a better call than the one who only knows the command.</p>
 
-          <div class="showcase reveal">
-            <div class="showcase-stage solo">
-              <div class="phone pending"><div class="phone-screen">
-                <p class="pending-note"><b>DROP IN &rarr; skrimp/vid/reel-behind.mp4</b>Portrait social reel. Team, process, whatever you have.</p>
-              </div></div>
-            </div>
-            <p class="cap">A reel from behind the build.</p>
-          </div>
         </div>
       </section>
 
@@ -1639,6 +1651,25 @@ figure{
       const cardW = () => track.querySelector('.press-card')?.offsetWidth + 18 || 300;
       document.getElementById('press-next').onclick = () => track.scrollBy({ left: cardW()*2, behavior:'smooth' });
       document.getElementById('press-prev').onclick = () => track.scrollBy({ left: -cardW()*2, behavior:'smooth' });
+    })();
+  </script>
+
+  <script>
+    /* reels play muted while they're on screen and pause off it. tapping
+       "sound on" unmutes that one and mutes the others */
+    (function () {
+      const vids = [...document.querySelectorAll('.reel video')];
+      if (!vids.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const io = new IntersectionObserver(es => es.forEach(e => {
+        const v = e.target;
+        if (e.isIntersecting) { v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
+      }), { threshold: .35 });
+      vids.forEach(v => io.observe(v));
+      document.querySelectorAll('.reel-sound').forEach(b => b.addEventListener('click', () => {
+        const v = b.parentElement.querySelector('video'), on = v.muted;
+        vids.forEach(x => { x.muted = true; }); document.querySelectorAll('.reel-sound').forEach(x => { x.classList.remove('on'); x.textContent = 'sound on'; });
+        if (on) { v.muted = false; v.play().catch(() => {}); b.classList.add('on'); b.textContent = 'sound off'; }
+      }));
     })();
   </script>
 
