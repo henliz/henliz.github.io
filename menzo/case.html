@@ -761,7 +761,18 @@
       backdrop-filter:none; -webkit-backdrop-filter:none;
     }
     .press-wrapper::before,.press-wrapper::after{display:none}
-  </style>
+  
+    /* the drawn figures: the department chart and the repo-size bars */
+    .org-chart, .repo-chart{ display:block; width:100%; height:auto; margin:1.4rem 0 .2rem; }
+    .org-chart text, .repo-chart text{ font-family:'Satoshi',sans-serif; fill:var(--text-primary); }
+    .oc-t{ font-size:16px; font-weight:700; } .oc-s{ font-size:12px; opacity:.75; }
+    .oc-h{ font-size:13px; font-weight:800; fill:#160f22 !important; }
+    .oc-n{ font-size:11.5px; font-weight:600; }
+    .oc-big{ font-size:18px; font-weight:800; }
+    .oc-l{ stroke:rgba(var(--accent-soft-rgb),.55); stroke-width:1.5; fill:none; }
+    .fig-scroll{ overflow-x:auto; }
+    .fig-scroll .org-chart{ min-width:760px; }
+</style>
 
 <style>
 :root{
@@ -1079,11 +1090,6 @@ figure{
 
           <p>Everyone on it is a volunteer who does not have to care and does anyway. That is the strangest and most sustaining thing about it, and it is also the fact that decides every technical call I make. I came in as <b>CTO and Technical Director</b>, which sounds like one job with two names and is not.</p>
 
-          <div class="slot reveal tall">
-            <b>DROP IN &rarr; menzo/img/underdark-wide.webp</b>
-            <span>A wide environment shot from the press kit. The Underdark or Menzoberranzan proper, whichever reads best large.</span>
-          </div>
-          <p class="cap">The city, as it currently stands in engine.</p>
         </div>
       </section>
 
@@ -1217,16 +1223,14 @@ size 48221184
 
           <p>The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would. Step fourteen cost nothing on the Friday. On the Sunday it was the entire project.</p>
 
-          <div class="slot reveal">
-            <b>DROP IN &rarr; menzo/vid/clone-before-after.mp4</b>
-            <span>Screen recording, roughly fifteen seconds. The old repo cloning against the LFS repo cloning. The whole infrastructure argument, without a word of it.</span>
-          </div>
-          <p class="cap">Clone time, before and after.</p>
-
-          <div class="slot reveal">
-            <b>DROP IN &rarr; menzo/img/repo-size.webp</b>
-            <span>Repo size over time: 2.5 GB actual against the 80 GB projection. A chart or a redacted screenshot of the storage dashboard, either works.</span>
-          </div>
+          <figure class="reveal"><svg class="repo-chart" viewBox="0 0 720 210" role="img" aria-label="Repository size: about 2.5 gigabytes now, against a projected 80 gigabytes or more without Git LFS">
+<text x="20" y="40" class="oc-t">Projected, without LFS</text>
+<rect x="20" y="52" width="680" height="34" rx="8" fill="rgba(var(--accent-rgb),.25)" stroke="rgb(var(--accent-rgb))" stroke-dasharray="6 5"/>
+<text x="688" y="75" text-anchor="end" class="oc-big">80 GB+</text>
+<text x="20" y="132" class="oc-t">Where it is, with LFS</text>
+<rect x="20" y="144" width="21" height="34" rx="8" fill="rgb(var(--accent-rgb))"/>
+<text x="53" y="167" class="oc-big">2.5 GB</text>
+</svg></figure>
           <p class="cap">Where it was going, and where it went instead.</p>
         </div>
       </section>
@@ -1299,17 +1303,72 @@ size 48221184
             <cite>Hen&rsquo;s Brain: Technical Leadership Manual</cite>
           </blockquote>
 
-          <div class="slot reveal tall">
-            <b>DROP IN &rarr; menzo/img/brain-doc.webp</b>
-            <span>A page or two of the manual with the NDA parts blurred. Quoted twice on this page and never once seen, which is the biggest hole in the study.</span>
-          </div>
-          <p class="cap">The manual, redacted.</p>
+          <figure class="img-wide reveal"><img src="img/brain-doc.webp" alt="Two pages of Hen's Brain: Technical Leadership Manual, the introduction and Section 5, on why the CTO and Technical Director roles cannot be merged" loading="lazy"></figure>
+          <p class="cap">Two pages of the manual: why it exists, and why the two roles can&rsquo;t be merged.</p>
 
-          <div class="slot reveal">
-            <b>DROP IN &rarr; menzo/img/departments.webp</b>
-            <span>The department chart. 140 people across writing, art, engineering, audio and QA. Names off, shape on.</span>
-          </div>
-          <p class="cap">What 140 volunteers looks like when you draw it.</p>
+          <figure class="img-wide reveal"><img src="img/onboarding-console.webp" alt="The Path to Menzoberranzan onboarding console: a terminal-style desktop of folders, with my Technical Director profile open over the department hierarchy" loading="lazy"></figure>
+          <p class="cap">The onboarding console. New contributors open folders instead of reading a wall of docs, and every lead has a profile that says what to ping them for.</p>
+
+          <figure class="fig-scroll reveal"><svg class="org-chart" viewBox="0 0 1120 396" role="img" aria-label="Path to Menzoberranzan department chart: technical direction over seven departments, writing, visual design, spatial design, programming, audio and music, community and moderation, each with a coordinator, team leads and a team">
+<rect x="390.0" y="10" width="340" height="54" rx="10" fill="rgba(var(--accent-rgb),.22)" stroke="rgb(var(--accent-rgb))" stroke-width="1.5"/>
+<text x="560.0" y="34" text-anchor="middle" class="oc-t">Technical direction</text><text x="560.0" y="53" text-anchor="middle" class="oc-s">CTO + Technical Director (me)</text>
+<path d="M560.0 64V90M95.0 90H1025.0" class="oc-l"/>
+<path d="M95.0 90V108" class="oc-l"/>
+<rect x="20.0" y="108" width="150" height="40" rx="8" fill="#e9973f" fill-opacity=".9"/><text x="95.0" y="133" text-anchor="middle" class="oc-h">Writing</text>
+<path d="M95.0 148V164" class="oc-l"/>
+<rect x="28.0" y="164" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.32" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="185" text-anchor="middle" class="oc-n">Narrative coordinator</text>
+<path d="M95.0 198V214" class="oc-l"/>
+<rect x="28.0" y="214" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.26" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="235" text-anchor="middle" class="oc-n">5 team leads</text>
+<path d="M95.0 248V264" class="oc-l"/>
+<rect x="28.0" y="264" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.20" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="285" text-anchor="middle" class="oc-n">Senior writers</text>
+<path d="M95.0 298V314" class="oc-l"/>
+<rect x="28.0" y="314" width="134" height="34" rx="7" fill="#e9973f" fill-opacity="0.14" stroke="#e9973f" stroke-opacity=".7"/><text x="95.0" y="335" text-anchor="middle" class="oc-n">Writers</text>
+<path d="M250.0 90V108" class="oc-l"/>
+<rect x="175.0" y="108" width="150" height="40" rx="8" fill="#53dfdd" fill-opacity=".9"/><text x="250.0" y="133" text-anchor="middle" class="oc-h">Visual design</text>
+<path d="M250.0 148V164" class="oc-l"/>
+<rect x="183.0" y="164" width="134" height="34" rx="7" fill="#53dfdd" fill-opacity="0.32" stroke="#53dfdd" stroke-opacity=".7"/><text x="250.0" y="185" text-anchor="middle" class="oc-n">Coordinator</text>
+<path d="M250.0 198V214" class="oc-l"/>
+<rect x="183.0" y="214" width="134" height="34" rx="7" fill="#53dfdd" fill-opacity="0.26" stroke="#53dfdd" stroke-opacity=".7"/><text x="250.0" y="235" text-anchor="middle" class="oc-n">2 team leads</text>
+<path d="M250.0 248V264" class="oc-l"/>
+<rect x="183.0" y="264" width="134" height="34" rx="7" fill="#53dfdd" fill-opacity="0.20" stroke="#53dfdd" stroke-opacity=".7"/><text x="250.0" y="285" text-anchor="middle" class="oc-n">Visual designers</text>
+<path d="M405.0 90V108" class="oc-l"/>
+<rect x="330.0" y="108" width="150" height="40" rx="8" fill="#d0368a" fill-opacity=".9"/><text x="405.0" y="133" text-anchor="middle" class="oc-h">Spatial design</text>
+<path d="M405.0 148V164" class="oc-l"/>
+<rect x="338.0" y="164" width="134" height="34" rx="7" fill="#d0368a" fill-opacity="0.32" stroke="#d0368a" stroke-opacity=".7"/><text x="405.0" y="185" text-anchor="middle" class="oc-n">Coordinator</text>
+<path d="M405.0 198V214" class="oc-l"/>
+<rect x="338.0" y="214" width="134" height="34" rx="7" fill="#d0368a" fill-opacity="0.26" stroke="#d0368a" stroke-opacity=".7"/><text x="405.0" y="235" text-anchor="middle" class="oc-n">3 team leads</text>
+<path d="M405.0 248V264" class="oc-l"/>
+<rect x="338.0" y="264" width="134" height="34" rx="7" fill="#d0368a" fill-opacity="0.20" stroke="#d0368a" stroke-opacity=".7"/><text x="405.0" y="285" text-anchor="middle" class="oc-n">Spatial designers</text>
+<path d="M560.0 90V108" class="oc-l"/>
+<rect x="485.0" y="108" width="150" height="40" rx="8" fill="#4a9be8" fill-opacity=".9"/><text x="560.0" y="133" text-anchor="middle" class="oc-h">Programming</text>
+<path d="M560.0 148V164" class="oc-l"/>
+<rect x="493.0" y="164" width="134" height="34" rx="7" fill="#4a9be8" fill-opacity="0.32" stroke="#4a9be8" stroke-opacity=".7"/><text x="560.0" y="185" text-anchor="middle" class="oc-n">Coordinator</text>
+<path d="M560.0 198V214" class="oc-l"/>
+<rect x="493.0" y="214" width="134" height="34" rx="7" fill="#4a9be8" fill-opacity="0.26" stroke="#4a9be8" stroke-opacity=".7"/><text x="560.0" y="235" text-anchor="middle" class="oc-n">2 team leads</text>
+<path d="M560.0 248V264" class="oc-l"/>
+<rect x="493.0" y="264" width="134" height="34" rx="7" fill="#4a9be8" fill-opacity="0.20" stroke="#4a9be8" stroke-opacity=".7"/><text x="560.0" y="285" text-anchor="middle" class="oc-n">Programmers</text>
+<path d="M715.0 90V108" class="oc-l"/>
+<rect x="640.0" y="108" width="150" height="40" rx="8" fill="#a882ff" fill-opacity=".9"/><text x="715.0" y="133" text-anchor="middle" class="oc-h">Audio & music</text>
+<path d="M715.0 148V164" class="oc-l"/>
+<rect x="648.0" y="164" width="134" height="34" rx="7" fill="#a882ff" fill-opacity="0.32" stroke="#a882ff" stroke-opacity=".7"/><text x="715.0" y="185" text-anchor="middle" class="oc-n">Coordinator</text>
+<path d="M715.0 198V214" class="oc-l"/>
+<rect x="648.0" y="214" width="134" height="34" rx="7" fill="#a882ff" fill-opacity="0.26" stroke="#a882ff" stroke-opacity=".7"/><text x="715.0" y="235" text-anchor="middle" class="oc-n">Audio lead</text>
+<path d="M715.0 248V264" class="oc-l"/>
+<rect x="648.0" y="264" width="134" height="34" rx="7" fill="#a882ff" fill-opacity="0.20" stroke="#a882ff" stroke-opacity=".7"/><text x="715.0" y="285" text-anchor="middle" class="oc-n">Sound engineers</text>
+<path d="M870.0 90V108" class="oc-l"/>
+<rect x="795.0" y="108" width="150" height="40" rx="8" fill="#fb464c" fill-opacity=".9"/><text x="870.0" y="133" text-anchor="middle" class="oc-h">Community</text>
+<path d="M870.0 148V164" class="oc-l"/>
+<rect x="803.0" y="164" width="134" height="34" rx="7" fill="#fb464c" fill-opacity="0.32" stroke="#fb464c" stroke-opacity=".7"/><text x="870.0" y="185" text-anchor="middle" class="oc-n">Community manager</text>
+<path d="M870.0 198V214" class="oc-l"/>
+<rect x="803.0" y="214" width="134" height="34" rx="7" fill="#fb464c" fill-opacity="0.26" stroke="#fb464c" stroke-opacity=".7"/><text x="870.0" y="235" text-anchor="middle" class="oc-n">Helpers</text>
+<path d="M1025.0 90V108" class="oc-l"/>
+<rect x="950.0" y="108" width="150" height="40" rx="8" fill="#c2414b" fill-opacity=".9"/><text x="1025.0" y="133" text-anchor="middle" class="oc-h">Moderation</text>
+<path d="M1025.0 148V164" class="oc-l"/>
+<rect x="958.0" y="164" width="134" height="34" rx="7" fill="#c2414b" fill-opacity="0.32" stroke="#c2414b" stroke-opacity=".7"/><text x="1025.0" y="185" text-anchor="middle" class="oc-n">Administrator</text>
+<path d="M1025.0 198V214" class="oc-l"/>
+<rect x="958.0" y="214" width="134" height="34" rx="7" fill="#c2414b" fill-opacity="0.26" stroke="#c2414b" stroke-opacity=".7"/><text x="1025.0" y="235" text-anchor="middle" class="oc-n">Moderators</text>
+</svg></figure>
+          <p class="cap">What 140 volunteers looks like when you draw it: seven departments, each with a coordinator and its own leads.</p>
 
           <p>Licensing sits in the same category. The custom toolchains are protected under PolyForm Shield 1.0.0, which prevents commercial appropriation of work built by volunteers, for free, for a community. That is a legal architecture decision rather than a creative one, and it is the sort of thing that is cheap to do early and impossible to do late.</p>
         </div>
