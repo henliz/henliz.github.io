@@ -927,6 +927,23 @@
     .intro-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #9fd0ea 0%, #c8e5f3 50%, #eaf6fb 100%); }
     :root[data-theme="dark"] .intro-sky { background: linear-gradient(180deg, #0c1824 0%, #16283a 60%, #1d3349 100%); }
     #scene-overlay.parting .intro-sky { opacity: 0; transition: opacity .5s ease .3s; }
+    /* the fall is a journey now: the sky goes day, sunset, dusk, space as she
+       passes a different world at each stop. the script sets the gradient,
+       and the stars come out once it's dark */
+    .intro-stars {
+      position: absolute; inset: 0; opacity: 0; pointer-events: none;
+      background:
+        radial-gradient(1.4px 1.4px at 12% 18%, #fff 50%, transparent 51%),
+        radial-gradient(1px 1px at 33% 72%, #fff 50%, transparent 51%),
+        radial-gradient(1.6px 1.6px at 58% 30%, #ffe8b0 50%, transparent 51%),
+        radial-gradient(1px 1px at 81% 12%, #fff 50%, transparent 51%),
+        radial-gradient(1.2px 1.2px at 90% 64%, #cfe0ff 50%, transparent 51%),
+        radial-gradient(1px 1px at 22% 48%, #fff 50%, transparent 51%),
+        radial-gradient(1.4px 1.4px at 70% 86%, #fff 50%, transparent 51%),
+        radial-gradient(1px 1px at 46% 8%, #ffd0e6 50%, transparent 51%);
+      background-size: 420px 380px;
+    }
+    #scene-overlay.parting .intro-stars { opacity: 0 !important; transition: opacity .5s ease .3s; }
 
     .intro-3d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .6s ease; }
     .intro-3d.ready { opacity: 1; }
@@ -957,7 +974,7 @@
       opacity: 0; will-change: transform;
     }
     .comic.top { top: 7vh; }
-    .comic.low { bottom: 15vh; }
+    .comic.low { bottom: 21vh; }   /* clear of the progress pill, sfx included */
     .comic.on { opacity: 1; }
     .cp {
       position: relative; aspect-ratio: 16 / 10; overflow: hidden;
@@ -969,7 +986,8 @@
     }
     .cp.navy { background-color: #13204a; --dot: #2a3f86; }
     .cp.orange { background-color: #f0552c; background-image: none; }
-    .cp.back { position: absolute; inset: 0; transform: translate(-7%, -11%) rotate(-2.5deg); z-index: -1; }
+    /* the first frame peeks out far enough above the second that its caption stays readable */
+    .cp.back { position: absolute; inset: 0; transform: translate(-6%, -22%) rotate(-2.5deg); z-index: -1; }
     .cp.back.lines { background-image: repeating-linear-gradient(0deg, rgba(20,30,60,.85) 0 2px, transparent 2px 5px), radial-gradient(var(--dot) 30%, transparent 33%); background-size: auto, 14px 14px; }
     .cp canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 1; }
     .comic .sfx {
@@ -1058,6 +1076,9 @@
     @keyframes introNudge { 0%, 100% { opacity: .55; transform: translateY(-1px); } 50% { opacity: 1; transform: translateY(2px); } }
     .intro-nudge .pct { font-family: 'DotempDemo', monospace; letter-spacing: .06em; font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: right; }
     .intro-nudge .falling { display: none; }
+    .intro-nudge .stops { display: inline-flex; gap: 5px; align-items: center; }
+    .intro-nudge .stops i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid currentColor; opacity: .5; transition: background .3s ease, opacity .3s ease; }
+    .intro-nudge .stops i.on { background: currentColor; opacity: 1; }
     #scene-overlay.moving .intro-nudge .start { display: none; }
     #scene-overlay.moving .intro-nudge .falling { display: inline-flex; gap: .5em; }
     .intro-skip {
@@ -1094,7 +1115,7 @@
       .intro-title { top: 9vh; }
       .comic { width: 78vw; }
       .comic.top { top: 8vh; }
-      .comic.low { bottom: 16vh; }
+      .comic.low { bottom: 23vh; }
       .comic .sfx { font-size: 1.7rem; }
       .intro-nudge { bottom: 56px; }
     }
@@ -4032,6 +4053,7 @@ body::after{
          land on the page. scroll up past the top to go back up -->
     <div id="scene-overlay" role="region" aria-label="Intro, scroll to start">
       <div class="intro-sky"></div>
+      <div class="intro-stars"></div>
       <canvas class="intro-3d" id="intro3d"></canvas>
       <h2 class="intro-title" aria-label="come fall into hen's orbit"><small>come fall into</small><big>hen's orbit</big></h2>
 
@@ -4041,33 +4063,24 @@ body::after{
       <!-- comic panels. data-crop is the box on the 657x560 cutout the panel
            shows (live, so she blinks in it), data-at/data-span the stretch
            of the fall it slides through, data-dir 1 = in from the right. -->
-      <div class="comic top flip" data-at=".03" data-span=".19" data-dir="1" data-crop="425,200,200,125" data-crop2="460,402,200,125" aria-hidden="true">
+      <div class="comic top flip" data-at=".08" data-span=".26" data-dir="1" data-crop="425,200,200,125" data-crop2="460,402,200,125" aria-hidden="true">
         <div class="cp back p1"><p class="cap">talks the talk...</p></div>
         <div class="cp p2"><p class="cap">...walks the walk.</p></div>
         <span class="spark" style="left:-5%;top:-9%">✦</span><span class="spark" style="right:5%;top:-13%">✧</span>
         <p class="sfx">click!</p><p class="sfx s2">clack!</p>
       </div>
-      <div class="comic low" data-at=".24" data-span=".19" data-dir="-1" data-crop="0,30,290,181.25" data-crop2="35,85,210,131.25" data-face aria-hidden="true">
-        <div class="cp back p1"><p class="cap">takes the work seriously...</p></div>
-        <div class="cp p2"><p class="cap">...never herself.</p>
-          <div class="shades-in" style="left:50.3%;top:53%;width:58.7%;--ra:-11deg"><svg class="hearts" viewBox="0 0 100 44" aria-hidden="true"><g fill="url(#lensTint)"><path class="l" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path class="l" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/></g><g class="ink" fill="none" stroke="#14202b" stroke-linejoin="miter" vector-effect="non-scaling-stroke"><path vector-effect="non-scaling-stroke" class="o" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" class="o" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" d="M9.5 13 1 10.5M44.5 13Q51.5 9.5 59 13"/></g><g class="pink" fill="none" stroke="#ff3d8b" stroke-linejoin="miter"><path vector-effect="non-scaling-stroke" class="o" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" class="o" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" d="M9.5 13 1 10.5M44.5 13Q51.5 9.5 59 13"/></g><g fill="#fff"><rect x="15" y="12" width="4" height="4"/><rect x="20" y="17" width="2.5" height="2.5"/><rect x="64" y="12" width="3.2" height="3.6"/></g></svg></div>
-        </div>
-        <span class="spark" style="right:-5%;top:-8%">✦</span><span class="spark" style="left:12%;bottom:-11%">♡</span>
-        <p class="sfx">hi ♡</p><p class="sfx s2">boop!</p>
-      </div>
-      <div class="comic low" data-at=".45" data-span=".18" data-dir="-1" data-crop="250,-25,290,181.25" data-crop2="300,-10,200,125" aria-hidden="true">
-        <div class="cp back p1"><p class="cap">words first...</p>
+      <div class="comic low" data-at=".36" data-span=".26" data-dir="-1" data-crop="250,-25,290,181.25" data-crop2="35,85,210,131.25" data-face aria-hidden="true">
+        <div class="cp back p1"><p class="cap">writes the plan first...</p>
           <div class="prop under pen" style="left:48.4%;top:38.7%;width:35.5%;--ra:70deg"><svg viewBox="-1 -3 103 13" aria-hidden="true"><g stroke="#14202b" stroke-width="1.4" stroke-linejoin="round"><rect x="0" y="1" width="20" height="7" rx="2.5" fill="#ff5c9a"/><rect x="20" y="1" width="52" height="7" fill="#2fd0bd"/><rect x="4" y="-1.6" width="15" height="2.6" rx="1" fill="#ffc531"/><rect x="72" y="1.4" width="6" height="6.2" fill="#ffc531"/><path d="M78 1.4 94 3.8v1.4L78 7.6z" fill="#ffe2bf"/><path d="M94 3.8 100 4.5 94 5.2z" fill="#14202b"/></g><path d="M58 1v7M62 1v7M66 1v7" stroke="#14202b" stroke-width=".7" opacity=".35"/><g fill="#fff" opacity=".6"><rect x="22" y="2.4" width="34" height="1.2"/><rect x="2.5" y="2.4" width="15" height="1.2"/></g></svg></div>
           <div class="prop over pen thumb" style="left:48.4%;top:38.7%;width:35.5%;--ra:70deg"><svg viewBox="-1 -3 103 13" aria-hidden="true"><g stroke="#14202b" stroke-width="1.4" stroke-linejoin="round"><rect x="0" y="1" width="20" height="7" rx="2.5" fill="#ff5c9a"/><rect x="20" y="1" width="52" height="7" fill="#2fd0bd"/><rect x="4" y="-1.6" width="15" height="2.6" rx="1" fill="#ffc531"/><rect x="72" y="1.4" width="6" height="6.2" fill="#ffc531"/><path d="M78 1.4 94 3.8v1.4L78 7.6z" fill="#ffe2bf"/><path d="M94 3.8 100 4.5 94 5.2z" fill="#14202b"/></g><path d="M58 1v7M62 1v7M66 1v7" stroke="#14202b" stroke-width=".7" opacity=".35"/><g fill="#fff" opacity=".6"><rect x="22" y="2.4" width="34" height="1.2"/><rect x="2.5" y="2.4" width="15" height="1.2"/></g></svg></div>
         </div>
-        <div class="cp p2"><p class="cap">...then the build.</p>
-          <div class="prop under pen held" style="left:45.2%;top:44.2%;width:51.5%;--ra:70deg"><svg viewBox="-1 -3 103 13" aria-hidden="true"><g stroke="#14202b" stroke-width="1.4" stroke-linejoin="round"><rect x="0" y="1" width="20" height="7" rx="2.5" fill="#ff5c9a"/><rect x="20" y="1" width="52" height="7" fill="#2fd0bd"/><rect x="4" y="-1.6" width="15" height="2.6" rx="1" fill="#ffc531"/><rect x="72" y="1.4" width="6" height="6.2" fill="#ffc531"/><path d="M78 1.4 94 3.8v1.4L78 7.6z" fill="#ffe2bf"/><path d="M94 3.8 100 4.5 94 5.2z" fill="#14202b"/></g><path d="M58 1v7M62 1v7M66 1v7" stroke="#14202b" stroke-width=".7" opacity=".35"/><g fill="#fff" opacity=".6"><rect x="22" y="2.4" width="34" height="1.2"/><rect x="2.5" y="2.4" width="15" height="1.2"/></g></svg></div>
-          <div class="prop over pen thumb held" style="left:45.2%;top:44.2%;width:51.5%;--ra:70deg"><svg viewBox="-1 -3 103 13" aria-hidden="true"><g stroke="#14202b" stroke-width="1.4" stroke-linejoin="round"><rect x="0" y="1" width="20" height="7" rx="2.5" fill="#ff5c9a"/><rect x="20" y="1" width="52" height="7" fill="#2fd0bd"/><rect x="4" y="-1.6" width="15" height="2.6" rx="1" fill="#ffc531"/><rect x="72" y="1.4" width="6" height="6.2" fill="#ffc531"/><path d="M78 1.4 94 3.8v1.4L78 7.6z" fill="#ffe2bf"/><path d="M94 3.8 100 4.5 94 5.2z" fill="#14202b"/></g><path d="M58 1v7M62 1v7M66 1v7" stroke="#14202b" stroke-width=".7" opacity=".35"/><g fill="#fff" opacity=".6"><rect x="22" y="2.4" width="34" height="1.2"/><rect x="2.5" y="2.4" width="15" height="1.2"/></g></svg></div>
+        <div class="cp p2"><p class="cap">...then ships it in style.</p>
+          <div class="shades-in" style="left:50.3%;top:53%;width:58.7%;--ra:-11deg"><svg class="hearts" viewBox="0 0 100 44" aria-hidden="true"><g fill="url(#lensTint)"><path class="l" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path class="l" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/></g><g class="ink" fill="none" stroke="#14202b" stroke-linejoin="miter" vector-effect="non-scaling-stroke"><path vector-effect="non-scaling-stroke" class="o" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" class="o" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" d="M9.5 13 1 10.5M44.5 13Q51.5 9.5 59 13"/></g><g class="pink" fill="none" stroke="#ff3d8b" stroke-linejoin="miter"><path vector-effect="non-scaling-stroke" class="o" transform="translate(9.5 7) scale(5)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" class="o" transform="translate(59 7.2) scale(4 4.6)" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/><path vector-effect="non-scaling-stroke" d="M9.5 13 1 10.5M44.5 13Q51.5 9.5 59 13"/></g><g fill="#fff"><rect x="15" y="12" width="4" height="4"/><rect x="20" y="17" width="2.5" height="2.5"/><rect x="64" y="12" width="3.2" height="3.6"/></g></svg></div>
         </div>
-        <span class="spark" style="right:-6%;top:-10%">✦</span><span class="spark" style="left:9%;bottom:-12%">✦</span>
-        <p class="sfx">yoink!</p><p class="sfx s2">scritch!</p>
+        <span class="spark" style="right:-6%;top:-10%">✦</span><span class="spark" style="left:12%;bottom:-11%">♡</span>
+        <p class="sfx">scritch!</p><p class="sfx s2">boop!</p>
       </div>
-      <div class="comic top flip" data-at=".65" data-span=".17" data-dir="1" data-crop="-30,-10,300,187.5" data-crop2="95,35,200,125" aria-hidden="true">
+      <div class="comic top flip" data-at=".64" data-span=".26" data-dir="1" data-crop="-30,-10,300,187.5" data-crop2="95,35,200,125" aria-hidden="true">
         <div class="cp back p1"><p class="cap">big hair...</p></div>
         <div class="cp p2"><p class="cap">...bigger ideas.</p></div>
         <span class="spark" style="left:-5%;top:-9%">✧</span><span class="spark" style="right:6%;top:-12%">✦</span>
@@ -4078,7 +4091,7 @@ body::after{
       <div class="intro-nudge" aria-hidden="true">
         <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v8M2.5 6.5 6 10l3.5-3.5"/></svg>
         <span class="start">scroll to start</span>
-        <span class="falling">falling<span class="pct" id="intro-pct">0%</span></span>
+        <span class="falling">falling<span class="stops" id="intro-stops"><i></i><i></i><i></i></span><span class="pct" id="intro-pct">0%</span></span>
         <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v8M2.5 6.5 6 10l3.5-3.5"/></svg>
       </div>
       <button type="button" class="intro-skip" id="intro-skip">skip to work</button>
@@ -4117,26 +4130,35 @@ body::after{
         // it finishes by itself
         const BUDGET = 3400, AUTO_AT = .8, AUTO_MS = 1600;
         let goal = 0, p = 0, auto = false;
-        function push(px) {
+        // one scroll, one stop: each comic parks at its stop, then the last
+        // one carries on down to the planet. a gesture locks for a moment so a
+        // trackpad's long tail of wheel events still only counts once
+        const STOPS = [.21, .49, .77, 1];
+        const stopDots = [...document.querySelectorAll('#intro-stops i')];
+        let lockUntil = 0;
+        function step(dir) {
           if (!open || parting || calm) return;
-          if (px < 0 && auto) auto = false;          // you can still pull back up
-          goal = Math.min(1, Math.max(0, goal + px / BUDGET));
+          const now = performance.now();
+          if (now < lockUntil) return;
+          lockUntil = now + 600;
+          if (dir > 0) goal = STOPS.find(v => v > goal + .001) ?? 1;
+          else { auto = false; goal = [...STOPS].reverse().find(v => v < goal - .001) ?? 0; }
         }
         addEventListener('wheel', e => {
-          if (!open || parting) return;
-          push(e.deltaY * (e.deltaMode === 1 ? 16 : 1));
+          if (!open || parting || Math.abs(e.deltaY) < 4) return;
+          step(Math.sign(e.deltaY));
         }, { passive: true });
         let touchY = null;
         overlay.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
-        overlay.addEventListener('touchmove', e => {
+        overlay.addEventListener('touchend', e => {
           if (touchY === null) return;
-          push((touchY - e.touches[0].clientY) * 2.4);
-          touchY = e.touches[0].clientY;
+          const dy = touchY - e.changedTouches[0].clientY; touchY = null;
+          if (Math.abs(dy) > 30) { lockUntil = 0; step(Math.sign(dy)); }
         }, { passive: true });
         addEventListener('keydown', e => {
           if (!open || parting) return;
-          if (['ArrowDown', 'PageDown', ' '].includes(e.key)) { push(e.key === 'ArrowDown' ? 200 : 480); e.preventDefault(); }
-          if (['ArrowUp', 'PageUp'].includes(e.key)) { push(e.key === 'ArrowUp' ? -200 : -480); e.preventDefault(); }
+          if (['ArrowDown', 'PageDown', ' '].includes(e.key)) { lockUntil = 0; step(1); e.preventDefault(); }
+          if (['ArrowUp', 'PageUp'].includes(e.key)) { lockUntil = 0; step(-1); e.preventDefault(); }
         });
 
         let mx = 0, my = 0, aimX = 0, aimY = 0;
@@ -4190,8 +4212,6 @@ body::after{
 
         // her shades in the sky are on for the face panel's stretch
         const face = comics.find(c => c.hasAttribute('data-face'));
-        const SPLIT = .46;
-        const SHADES_AT = +face.dataset.at + +face.dataset.span * SPLIT, SHADES_TO = +face.dataset.at + +face.dataset.span - .03;
         let current = null, blinkT = [];
 
         let raf = 0, last = performance.now();
@@ -4200,7 +4220,7 @@ body::after{
           const dt = Math.min(.05, (now - last) / 1000); last = now;
           if (auto) goal = Math.min(1, goal + dt * 1000 / AUTO_MS * (1 - AUTO_AT));
           else if (goal >= AUTO_AT) auto = true;
-          p += (goal - p) * (auto ? .12 : .08);
+          p += (goal - p) * (auto ? .12 : .09);
           if (Math.abs(goal - p) < .0004) p = goal;
           mx += (aimX - mx) * .06; my += (aimY - my) * .06;
 
@@ -4210,6 +4230,7 @@ body::after{
 
           overlay.classList.toggle('moving', p > .006);
           pctEl.textContent = Math.round(p * 100) + '%';
+          stopDots.forEach((d, i) => d.classList.toggle('on', p >= STOPS[i] - .02));
           bar.style.transform = `scaleX(${p.toFixed(4)})`;
 
           // the comic panels. only one is ever live; the live close up
@@ -4219,7 +4240,10 @@ body::after{
             const k = (p - +c.dataset.at) / +c.dataset.span;
             const on = k >= 0 && k < 1;
             c.classList.toggle('on', on);
-            c.classList.toggle('two', on && k >= SPLIT);
+            // nearly parked at its stop, the second frame slaps down by itself right after
+            const parked = Math.abs(k - .5) < .14;
+            if (!on) c._arr = 0; else if (parked && !c._arr) c._arr = now;
+            c.classList.toggle('two', on && c._arr > 0 && now - c._arr > 450);
             if (!on) return;
             live = c;
             const w = c.offsetWidth, bob = Math.sin(now / 600 + +c.dataset.at * 9) * 6;
@@ -4243,7 +4267,7 @@ body::after{
           const out = window.__introScene?.render(p, mx, my);
           if (!out) return;
           const f = out.face;
-          shades.classList.toggle('on', p >= SHADES_AT && p < SHADES_TO);
+          shades.classList.toggle('on', face.classList.contains('two'));
           if (f) {
             shades.style.width = (f.w / .46).toFixed(1) + 'px';
             shades.style.transform = `translate(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px) translate(-50%, -50%) rotate(${f.a.toFixed(3)}rad)`;
@@ -4526,6 +4550,47 @@ body::after{
       planet.position.set(0, -DROP - 34, 0);
       ascii.add(planet);
 
+      // a different world beside her at each stop, so the fall goes somewhere:
+      // a little cratered moon, a ringed orange giant, then a teal planet with
+      // its own moon. they ride the far lane, opposite each comic
+      const solid = (geo, color) => new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, roughness: .8 }));
+      const landmark = (at, side, build) => {
+        const g = new THREE.Group(); g.visible = false;
+        g.userData = { at, side, size: 9, far: true, world: true };
+        build(g); ascii.add(g); decals.push(g);
+      };
+      landmark(.21, -1, g => {
+        g.add(solid(new THREE.SphereGeometry(4.4, 40, 28), 0xe9e4ff));
+        [[1.6, 1.4, 3.9, 1], [-1.8, -1, 3.8, .8], [.4, -2.4, 3.6, .6], [-2.6, 1.8, 3.1, .7]].forEach(([x, y, z, r]) => {
+          const c = solid(new THREE.SphereGeometry(r, 16, 12), 0x8f86c2); c.position.set(x, y, z); g.add(c);
+        });
+      });
+      landmark(.49, 1, g => {
+        g.add(solid(new THREE.SphereGeometry(4.8, 40, 28), 0xff9a5c));
+        const r = solid(new THREE.TorusGeometry(8, .55, 8, 80), 0xffd27a); r.rotation.set(1.3, 0, .25); g.add(r);
+      });
+      landmark(.77, -1, g => {
+        g.add(solid(new THREE.SphereGeometry(4.2, 40, 28), 0x2fd0bd));
+        const m = solid(new THREE.SphereGeometry(1.1, 20, 14), 0xffffff); m.position.set(7, 2.4, 0); g.add(m);
+      });
+
+      // the sky's colour through the fall, keyed to the stops
+      const skyEl = document.querySelector('.intro-sky'), starsEl = document.querySelector('.intro-stars');
+      const SKY = dark
+        ? [[0, ['#0c1824', '#16283a', '#1d3349']], [.35, ['#2b1f45', '#4a2f5e', '#7a3f62']], [.6, ['#1a1640', '#2e2460', '#4a3070']], [.85, ['#070b22', '#0e1640', '#1d2a6b']]]
+        : [[0, ['#9fd0ea', '#c8e5f3', '#eaf6fb']], [.35, ['#f2a7b8', '#f8c9a8', '#fde3c8']], [.6, ['#5a4b9a', '#a06aa8', '#f09aa0']], [.85, ['#0c1238', '#1a1f55', '#2c2a6e']]];
+      const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+      let lastSky = -1;
+      function paintSky(p) {
+        if (Math.abs(p - lastSky) < .002) return; lastSky = p;
+        let i = 0; while (i < SKY.length - 2 && p > SKY[i + 1][0]) i++;
+        const [a, ca] = SKY[i], [b, cb] = SKY[i + 1];
+        const k = Math.max(0, Math.min(1, (p - a) / (b - a)));
+        const col = ca.map((h, j) => { const x = hexRgb(h), y = hexRgb(cb[j]); return `rgb(${x.map((v, n) => Math.round(v + (y[n] - v) * k)).join(',')})`; });
+        skyEl.style.background = `linear-gradient(180deg, ${col[0]} 0%, ${col[1]} 55%, ${col[2]} 100%)`;
+        starsEl.style.opacity = Math.max(0, Math.min(1, (p - .45) / .3)).toFixed(3);
+      }
+
       // the glyphs, lightest to densest, chunky and a bit wide like the
       // inspo's so they read as a shape
       const GLYPHS = '.:-=+*#%@';
@@ -4653,7 +4718,7 @@ body::after{
           // her, bobbing a little on the way down
           H.set(0, henY(p) + Math.sin(t * 1.6) * .12, 0);
           // the camera, circling her, tilting down more as the planet comes
-          const a = camAngle(p) + mx * .25, R = narrow ? 10 : 7.8;
+          const a = camAngle(p) + mx * .25, R = narrow ? 8.4 : 7.8;
           camera.position.set(Math.sin(a) * R, H.y + 1.2 + p * 3 - my * .6, Math.cos(a) * R);
           camera.up.set(0, 1, 0);
           camera.lookAt(0, H.y - p * 1.5, 0);
@@ -4665,7 +4730,7 @@ body::after{
           fwd.setFromMatrixColumn(camera.matrixWorld, 2).negate();
           camera.rotateZ(Math.sin(p * Math.PI * 1.5) * .08 + mx * .03);
 
-          const small = narrow ? .78 : 1;
+          const small = narrow ? 1.12 : 1;
           hen.position.copy(H);
           hen.quaternion.copy(camera.quaternion);
           hen.rotateZ(Math.sin(t * .8) * .05);
@@ -4677,7 +4742,9 @@ body::after{
 
           // clouds thin out as they come right up to the lens
           const camPos = camera.position;
-          clouds.forEach(c => { c.material.opacity = c.userData.base * Math.min(1, Math.max(0, (c.position.distanceTo(camPos) - 1.5) / 4)); });
+          const cloudFade = 1 - Math.max(0, Math.min(1, (p - .4) / .22));
+          clouds.forEach(c => { c.material.opacity = c.userData.base * cloudFade * Math.min(1, Math.max(0, (c.position.distanceTo(camPos) - 1.5) / 4)); });
+          paintSky(p);
 
           // the decals ride lanes either side of her, rising past as she
           // falls. on a wide screen they sit level with her, clear of her
