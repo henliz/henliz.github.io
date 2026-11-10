@@ -1091,6 +1091,7 @@ figure{
   }
   .plain-list li{ border-left:0 !important; padding:.9rem 1.1rem !important; border-radius:14px; background:rgba(var(--accent-rgb),.07); border:1px solid rgba(var(--accent-rgb),.16); }
   </style>
+  <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
 <body>
 
@@ -1111,7 +1112,10 @@ figure{
       <div class="meta-grid reveal">
         <div class="meta-col">
           <h4>Project Type</h4>
-          <p>Capstone, GBDA 402.</p>
+          <ul class="meta-list">
+            <li>Capstone, GBDA 402</li>
+            <li>Team of five, with Zubi, Alita, Cindy and Chrisandra</li>
+          </ul>
         </div>
         <div class="meta-col">
           <h4>Role</h4>
@@ -1119,7 +1123,7 @@ figure{
             <li>Product director</li>
             <li>Fire lead</li>
             <li>Hardware lead</li>
-            <li>Team of five, with Zubi, Alita, Cindy and Chrisandra</li>
+            <li>Branding</li>
           </ul>
         </div>
         <div class="meta-col">
@@ -1189,13 +1193,18 @@ figure{
           <h2 class="section-heading">So we built Nightingale.</h2>
           <p class="lede">A button-operated wearable, and a dashboard that carries the reviewed note from fire to paramedics to the ER.</p>
           <p>At first contact the firefighter presses record, says aloud that they&rsquo;re recording for the medical record, and presses a second button to photograph a pill bottle or the scene. It stores everything on the device and syncs when it finds a network it knows. Speech becomes a draft ePCR, unsure fields get flagged instead of guessed, and the firefighter approves it before anyone else sees it. Paramedics have it before they arrive. The ER gets it by QR code and a PDF, with no new login.</p>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/render-flatlay.webp" alt="The Nightingale device front and back on an orange pixel pattern: a dark grey case with the wordmark, a camera and a red pressure plate" loading="lazy"><figcaption>Front and back. The branding is mine: the wordmark and the colourway.</figcaption></figure>
+            <figure class="img-tile"><img src="img/render-button.webp" alt="Close-up of the device's red pressure plate and the nightingale wordmark along its edge" loading="lazy"><figcaption>The pressure plate, big enough to find with a glove on.</figcaption></figure>
+          </div>
           <div class="video-file reveal">
             <video controls playsinline preload="metadata" poster="img/render-hero.webp">
-              <source src="nightingale-pitch.mp4" type="video/mp4">
+              <source src="nightingale-pitch.mp4?v=2" type="video/mp4">
             </video>
           </div>
           <p class="cap">My product pitch from our MVP video, with the Nightingale film. Sound on.</p>
-          <p>Here&rsquo;s how we got there.</p>
+          <p>The film walks through one call. It starts at the station, goes through my sketches and what&rsquo;s inside the case, shows where it clips onto a turnout coat, and ends on the Maryhill cardiac arrest drill turning into a draft ePCR. Watch for the moment it catches the cousin and the responder giving two different ages and flags it, instead of picking one. That&rsquo;s the whole idea in one field.</p>
+          <p>None of it started with the device, though. It started with the people whose job this is.</p>
         </div>
       </section>
 
@@ -1307,16 +1316,64 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">A record only helps if the next person trusts it.</h2>
           <p class="lede">I coded dashboard V1, Alita and Chrisandra designed V2&rsquo;s flows in Figma, and I wired V3 up to the real device data.</p>
+          <p><strong>V1 tested the technology.</strong> Before anything was designed, I needed to know whether the device&rsquo;s recordings could become a usable draft report while a call was still happening. So I coded a dashboard with three panels: the draft ePCR filling itself in, with fields lighting up as they change; the transcript, showing who said what and when; and the Pi&rsquo;s own diary, live. It updates the moment new data lands, with no refresh, and every session is saved so it survives a server restart.</p>
+          <figure class="img-wide reveal">
+            <img src="img/dash-v1.webp" alt="The V1 dashboard, titled nightingale, live feed: a draft ePCR marked pending review with timed interventions, the call transcript labelled by speaker, and a console of the device's uploads and heartbeats" loading="lazy">
+            <figcaption>V1 on the night of the Maryhill drill. &ldquo;Everything below is a draft, nobody&rsquo;s approved it yet, that&rsquo;s the whole point.&rdquo;</figcaption>
+          </figure>
+          <p><strong>V1 was built for our team, not for responders.</strong> The interviews, the survey, our user segments and stories, and the flows we mapped from the 911 call all the way to the hospital chart turned it into two connected flows: one for the fire captain, who reviews and shares the crew&rsquo;s account, and one for the paramedic, who needs to see where each value came from and confirm or correct it. V2 designed that whole handoff in Figma.</p>
           <div class="img-grid reveal">
-            <figure class="img-tile"><img src="img/render-transcript.webp" alt="The capture view: a live transcript from the device beside the draft ePCR" loading="lazy"><figcaption>Speech in, a draft ePCR out.</figcaption></figure>
-            <figure class="img-tile"><img src="img/render-epcr.webp" alt="The ePCR view with fields filled from the transcript and unsure fields flagged" loading="lazy"><figcaption>Unsure fields get flagged, never guessed.</figcaption></figure>
+            <figure class="img-tile"><img src="img/dash-ff-home.webp" alt="The fire captain's home screen: the current call, an elderly patient who fell down stairs, with a progress track and a dispatch note waiting for review" loading="lazy"><figcaption>The fire captain&rsquo;s view: the current call, and what needs their review.</figcaption></figure>
+            <figure class="img-tile"><img src="img/dash-ff-patient.webp" alt="The draft ePCR for Patient 007 beside the call transcript, with one field marked not captured" loading="lazy"><figcaption>The draft beside the call it came from.</figcaption></figure>
+          </div>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/dash-review-field.webp" alt="The review field dialog: the supporting speech from the transcript above the suggested value, with Clear value, Restore suggestion and Confirm value" loading="lazy"><figcaption>Every value shows the speech it came from. Confirming it doesn&rsquo;t share anything.</figcaption></figure>
+            <figure class="img-tile"><img src="img/dash-share.webp" alt="The share record dialog for Eleanor Walsh, with a record link, explaining the paramedic crew must accept before identity unlocks" loading="lazy"><figcaption>Sharing to the paramedic crew. Who the patient is only unlocks once they accept.</figcaption></figure>
           </div>
           <ul class="plain-list">
             <li><strong>Review before sharing.</strong> A physician told me his colleagues accepted their AI scribe once the reviewed note, not the recording, became the record. Nightingale works the same way.</li>
+            <li><strong>Flagged, never guessed.</strong> If something wasn&rsquo;t said, the field stays visibly empty instead of being filled with a likely answer.</li>
             <li><strong>A closed loop.</strong> The paramedic accepts the record, the ER scans a QR code, and both sides see &ldquo;Received by triage.&rdquo; Nobody in this chain could ever confirm what was received.</li>
             <li><strong>No hospital integration.</strong> Hospital systems can&rsquo;t take a feed, so the ER gets a read-only link and a printed page that rides its existing scan path.</li>
-            <li><strong>Privacy first.</strong> I owned the device&rsquo;s safety and privacy design, and Cindy and I worked through the threat model together: permission checks, encryption at rest, and append-only, hash-chained audit logs.</li>
           </ul>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/dash-pm-accept.webp" alt="The paramedic's home screen with a record waiting: Accept record to view" loading="lazy"><figcaption>The paramedic&rsquo;s side: accept the record before you see who it is.</figcaption></figure>
+            <figure class="img-tile"><img src="img/dash-pm-flags.webp" alt="The paramedic's view of the ePCR with the date of birth and mailing address highlighted in red as not captured" loading="lazy"><figcaption>What nobody said stays empty, in red.</figcaption></figure>
+          </div>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/dash-handoff.webp" alt="The hospital handoff summary page: identification, mechanism, injuries, signs, treatment, allergies, medications and background, marked received by triage" loading="lazy"><figcaption>What the ER nurse opens. Read-only, no login, nothing to install.</figcaption></figure>
+            <figure class="img-tile img-tile--tall"><img src="img/dash-qr.webp" alt="The hospital handoff dialog with a QR code: scan to open a secure, read-only handoff page, one-time link that expires in four hours" loading="lazy"><figcaption>One-time link, expires in four hours, every open logged.</figcaption></figure>
+          </div>
+          <p><strong>V3 made it work.</strong> We rebuilt the Figma flows as working code, so responders can click through them, and I wired it to the real drill data coming off the device so we could see how actual scene data fits the design. Here&rsquo;s Maryhill case 1, the backyard barbecue cardiac arrest, as the dashboard holds it now. Every value below came from the recording.</p>
+          <figure class="img-wide reveal">
+            <img src="img/v3-epcr-patient.webp" alt="The full ePCR for Case 1, cardiac arrest at a barbecue: the call transcript on the left, and on the patient tab the age field is flagged red with a conflict between 32 by the cousin, 19 or 50-something by dispatch and 57 by the responder at handoff" loading="lazy">
+            <figcaption>The full ePCR. Three different ages were said on scene, so it keeps all three and flags it for the captain, instead of picking one.</figcaption>
+          </figure>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/v3-epcr-handoff.webp" alt="The handoff tab: a timeline of the call from the 911 call to transfer of care, and a narrative of what was said and done" loading="lazy"><figcaption>The handoff tab: the whole call as a timeline, to the second, and a narrative of what was done.</figcaption></figure>
+            <figure class="img-tile"><img src="img/v3-epcr-care.webp" alt="The care tab: chief complaint cardiac arrest, mechanism sudden collapse after chest tightness, and the condition observed on arrival" loading="lazy"><figcaption>What was wrong and what the crew saw, in the crew&rsquo;s words.</figcaption></figure>
+          </div>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/v3-fire-overview.webp" alt="The record overview for Luke with a warning that seven fields need a look before sharing, starting with the age conflict" loading="lazy"><figcaption>Before it can be shared: seven fields that need a person&rsquo;s eyes.</figcaption></figure>
+            <figure class="img-tile"><img src="img/v3-pm-overview.webp" alt="The paramedic's view of the same call: identity locked until the record is accepted, with scene safety shown straight away" loading="lazy"><figcaption>The paramedic&rsquo;s side. Identity stays locked until they accept it, but scene hazards show straight away.</figcaption></figure>
+          </div>
+          <p><a href="https://www.figma.com/proto/kQJktwieVLpu765suyBqTn/SEC04-GROUP05-CAPSTONE?node-id=564-2776&amp;viewport=-3290%2C5828%2C0.24&amp;t=Ickq6PZSQblYnxwe-1&amp;scaling=min-zoom&amp;content-scaling=fixed&amp;starting-point-node-id=564%3A2776&amp;show-proto-sidebar=1&amp;page-id=307%3A2" target="_blank" rel="noopener">Click through the Figma prototype &rarr;</a></p>
+        </div>
+      </section>
+
+      <section id="privacy">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Privacy was the reason anyone would use it.</h2>
+          <p class="lede">Responders and physicians raised privacy and control more than anything else, so Cindy and I made them the first thing the backend got right.</p>
+          <p>Cindy and I worked out the security and privacy approach together, and she shipped the hardening pass. Here&rsquo;s what it does now:</p>
+          <ul class="plain-list">
+            <li><strong>Nothing opens without a key, and a key only opens what it&rsquo;s allowed to.</strong> The production server won&rsquo;t even start without them.</li>
+            <li><strong>A record and its photos belong to whoever made them.</strong> Reading someone else&rsquo;s takes an explicit admin override, and that gets logged too.</li>
+            <li><strong>Every read and write leaves a trail that can&rsquo;t be quietly edited.</strong> Each audit entry is chained to the one before it, so changing an old entry breaks the chain.</li>
+            <li><strong>The device only talks over HTTPS, with its own token.</strong> Uploads are encrypted at rest, and files on the Pi and the server are locked down.</li>
+            <li><strong>The Pi&rsquo;s diary records what happened, never what was said.</strong> &ldquo;Photo saved&rdquo; and &ldquo;Wi-Fi lost,&rdquo; but no audio, transcript or images.</li>
+          </ul>
+          <div class="highlight-box"><strong>It isn&rsquo;t PHIPA-ready, and we wrote that down</strong>Our threat model puts every remaining gap next to the control we have: no real identity provider or MFA yet, no case-based sharing policy, token rotation unfinished. We only use fictional drill data, and our readiness checklist says plainly that it&rsquo;s not a certification or approval to use real patient information.</div>
         </div>
       </section>
 
@@ -1359,6 +1416,10 @@ figure{
             <div class="step-card"><span class="n">04</span><h4>Test the failure before you need it</h4><p>The offline-first path was a hypothetical until the Wi-Fi died. It held because I&rsquo;d built for the network failing, not for it working.</p></div>
           </div>
           <p>The story is never lost at the scene. It&rsquo;s lost on the way out, and everyone downstream pays for it.</p>
+          <div class="img-grid reveal">
+            <figure class="img-tile"><img src="img/render-transcript.webp" alt="The Nightingale device on a desk in warm light" loading="lazy"><figcaption>Nightingale.</figcaption></figure>
+            <figure class="img-tile"><img src="img/render-epcr.webp" alt="The Nightingale device beside a laptop showing its dashboard" loading="lazy"><figcaption>And the dashboard it feeds.</figcaption></figure>
+          </div>
           <div class="works-cited reveal">
             <h3>Works Cited</h3>
             <p>Carter, A. J. E., Davis, K. A., Evans, L. V., &amp; Cone, D. C. (2009). Information loss in emergency medical services handover of trauma patients. <em>Prehospital Emergency Care, 13</em>(3).</p>
