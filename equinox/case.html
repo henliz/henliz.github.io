@@ -918,7 +918,14 @@ figure{
     color:rgba(var(--accent-rgb),.55); pointer-events:none;
   }
   .plain-list li{ border-left:0 !important; padding:.9rem 1.1rem !important; border-radius:14px; background:rgba(var(--accent-rgb),.07); border:1px solid rgba(var(--accent-rgb),.16); }
-  </style>
+  
+    /* captions read as captions: italic, and a phone mockup's caption sits
+       inside its box, on its own row under the phones, so it can't be read
+       as the next paragraph */
+    .cap, figcaption, .tot-hint{ font-style:italic; }
+    .showcase-stage:has(> .cap){ flex-wrap:wrap !important; row-gap:clamp(14px,2vh,22px); }
+    .showcase-stage > .cap{ flex:0 0 100%; margin:0 !important; text-align:center; max-width:60ch; margin-inline:auto !important; }
+</style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
 <body>
@@ -1474,6 +1481,7 @@ figure{
     </div>
     <div id="sc-frame-wrap">
       <iframe
+        title="Equinox soundtrack on SoundCloud"
         allow="autoplay"
         src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/hellio-399157292/sets/equinox-the-wizards-lighthouse&color=%23c8874a&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"
         scrolling="no">

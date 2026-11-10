@@ -1064,7 +1064,20 @@ figure{
     color:rgba(var(--accent-rgb),.55); pointer-events:none;
   }
   .plain-list li{ border-left:0 !important; padding:.9rem 1.1rem !important; border-radius:14px; background:rgba(var(--accent-rgb),.07); border:1px solid rgba(var(--accent-rgb),.16); }
-  </style>
+  
+    /* captions read as captions: italic, and a phone mockup's caption sits
+       inside its box, on its own row under the phones, so it can't be read
+       as the next paragraph */
+    .cap, figcaption, .tot-hint{ font-style:italic; }
+    .showcase-stage:has(> .cap){ flex-wrap:wrap !important; row-gap:clamp(14px,2vh,22px); }
+    .showcase-stage > .cap{ flex:0 0 100%; margin:0 !important; text-align:center; max-width:60ch; margin-inline:auto !important; }
+
+    /* wcag 1.4.3: callout titles were 2.4:1 on the peach boxes */
+    :root:not([data-theme="dark"]) .highlight-box > strong:first-child{ color:#a4580a !important; }
+
+    /* in-box captions sit on the box tint, so a touch darker to keep 4.5:1 */
+    :root:not([data-theme="dark"]) .showcase-stage > .cap{ color:#735f49; }
+</style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
 <body>
@@ -1157,8 +1170,8 @@ figure{
                   <video data-src="vid/ob-read.mp4" poster="vid/ob-read-poster.jpg" muted loop playsinline preload="none" aria-label="The story ending, then the first read written from those choices, then the sign-in prompt"></video>
                 </div>
               </div>
-            </div>
-            <p class="cap">A whole first session: everything before the game, the game itself at four times speed, and the personality read that follows. It opens by telling you it starts with what you do, offers a self-description step where every field has an &ldquo;I don&rsquo;t know yet&rdquo;, and asks you to make an account only after it has already told you something about yourself.</p>
+              <p class="cap">A whole first session: everything before the game, the game itself at four times speed, and the personality read that follows. It opens by telling you it starts with what you do, offers a self-description step where every field has an &ldquo;I don&rsquo;t know yet&rdquo;, and asks you to make an account only after it has already told you something about yourself.</p>
+          </div>
           </div>
           <p>A new story every day means a new real dilemma every day. The stories are written by language models, and another model checks them. The checker I inherited scored ten qualities and then threw nearly all of that away to give one answer: publish, yes or no. The problem is that a story can be <em>not broken</em> and still have no real dilemma in it, and if there&rsquo;s no real choice to make, your choice says nothing about you. With only pass or fail, nothing pushed the stories to get <b>better</b>, and Trove would slowly turn back into a quiz with nicer typography.</p>
           <p>So I built a quality score out of the ten numbers we were already throwing away. It cares most about a story&rsquo;s weakest moment, and about whether two different people playing it actually end up somewhere different.</p>
@@ -1212,8 +1225,8 @@ figure{
           <video data-src="vid/explore.mp4" poster="vid/explore-poster.jpg" muted loop playsinline preload="none" aria-label="Explore: search, filter chips, today&rsquo;s pick, Trove Mysteries, and the continue rail"></video>
           </div>
           </div>
+            <p class="cap">The pack rip and the home screen. Both exist so that opening Trove on day nine feels different from opening it on day one.</p>
           </div>
-          <p class="cap">The pack rip and the home screen. Both exist so that opening Trove on day nine feels different from opening it on day one.</p>
           </div>
           <p>Every story also needs its own card, and in April each one was put together by hand, which doesn&rsquo;t work when there&rsquo;s a new story every day. So I made the cards build themselves: the system reads what the story is about and picks the art, like which sky suits a tense late night scene, or which mascot fits a story about being the outsider.</p>
           <p>If you ask a language model where to put things in pixels, about half the time it puts them on top of something already on the card, and nothing warns you. You just get an ugly card.</p>
@@ -1226,8 +1239,8 @@ figure{
           <video data-src="vid/history.mp4" poster="vid/history-poster.jpg" muted loop playsinline preload="none" aria-label="A played tangle in history: the card, the stickers earned, the read, and the share row"></video>
           </div>
           </div>
+            <p class="cap">The same card after you play it, with your stickers filled in and your read underneath.</p>
           </div>
-          <p class="cap">The same card after you play it, with your stickers filled in and your read underneath.</p>
           </div>
         </div>
       </section>
@@ -1240,7 +1253,7 @@ figure{
           <div class="highlight-box warm"><strong>So I stopped calculating and built a placement tool</strong>One page with the real sprite underneath and the real accessory on top. You drag, scroll and nudge it in tenths of a percent. I placed every spot by hand in an afternoon and deleted the three automatic systems it replaced.</div>
           <div class="tot-matrix-wrap reveal">
           <div class="tot-viewport">
-          <div class="tot-scroll">
+          <div class="tot-scroll" tabindex="0" role="region" aria-label="Accessory matrix, scrolls sideways">
           <div class="tot-matrix" id="totMatrix"></div>
           </div>
           </div>
@@ -1265,8 +1278,8 @@ figure{
           <video data-src="vid/results-read.mp4" poster="vid/results-read-poster.jpg" muted loop playsinline preload="none" aria-label="The results flow handing back the read"></video>
           </div>
           </div>
+            <p class="cap">The read itself. Every sentence in it is derived from something you did, not something you declared.</p>
           </div>
-          <p class="cap">The read itself. Every sentence in it is derived from something you did, not something you declared.</p>
           </div>
           <div class="highlight-box"><strong>How often it re-reads you</strong>The profile re-reads you every seventh day you play, with a meter filling up toward the next one. Re-read every session and it&rsquo;s describing your mood. Never re-read and it&rsquo;s a horoscope.</div>
           <figure class="diorama reveal">
@@ -1281,8 +1294,8 @@ figure{
           <video data-src="vid/results-reflect.mp4" poster="vid/results-reflect-poster.jpg" muted loop playsinline preload="none" aria-label="The reflection step: picking a face, writing a note, and the closing thought"></video>
           </div>
           </div>
+            <p class="cap">Everything before this step is the app talking about you. This is the app listening, and it&rsquo;s what makes it OK for the read to be so confident.</p>
           </div>
-          <p class="cap">Everything before this step is the app talking about you. This is the app listening, and it&rsquo;s what makes it OK for the read to be so confident.</p>
           </div>
         </div>
       </section>
@@ -1312,8 +1325,8 @@ figure{
           <video data-src="vid/compare.mp4" poster="vid/compare-poster.jpg" muted loop playsinline preload="none" aria-label="A comparison generating: four people who played the same tangle, read side by side, with what each of them did differently"></video>
           </div>
           </div>
+            <p class="cap">A comparison: same tangle, two people, and an argument worth having over dinner.</p>
           </div>
-          <p class="cap">A comparison: same tangle, two people, and an argument worth having over dinner.</p>
           </div>
           <div class="outcome-strip reveal" style="margin:1.4rem 0">
           <div class="outcome-item"><span class="outcome-num">0 &rarr; 10,250</span><span class="outcome-label">new players from a standing start, March to August</span></div>
@@ -1331,8 +1344,8 @@ figure{
           <button class="reel-sound" type="button" aria-label="Unmute">&#128263;</button>
           </div>
           </div>
+            <p class="cap">A pitch night in Toronto I helped run, filmed by Draft One Collective.</p>
           </div>
-          <p class="cap">A pitch night in Toronto I helped run, filmed by Draft One Collective.</p>
           </div>
         </div>
       </section>

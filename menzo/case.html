@@ -1036,7 +1036,18 @@ figure{
     color:rgba(var(--accent-rgb),.55); pointer-events:none;
   }
   .plain-list li{ border-left:0 !important; padding:.9rem 1.1rem !important; border-radius:14px; background:rgba(var(--accent-rgb),.07); border:1px solid rgba(var(--accent-rgb),.16); }
-  </style>
+  
+    /* captions read as captions: italic, and a phone mockup's caption sits
+       inside its box, on its own row under the phones, so it can't be read
+       as the next paragraph */
+    .cap, figcaption, .tot-hint{ font-style:italic; }
+    .showcase-stage:has(> .cap){ flex-wrap:wrap !important; row-gap:clamp(14px,2vh,22px); }
+    .showcase-stage > .cap{ flex:0 0 100%; margin:0 !important; text-align:center; max-width:60ch; margin-inline:auto !important; }
+
+    /* wcag 1.4.3: step numbers were 3.2:1, terminal comments 3.8:1 (only because of the fade) */
+    :root:not([data-theme="dark"]) .card h4{ color:#7a5cb1; opacity:1; }
+    .termcard pre .c{ opacity:1; }
+</style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
 <body>

@@ -1130,7 +1130,20 @@ figure{
     color:rgba(var(--accent-rgb),.55); pointer-events:none;
   }
   .plain-list li{ border-left:0 !important; padding:.9rem 1.1rem !important; border-radius:14px; background:rgba(var(--accent-rgb),.07); border:1px solid rgba(var(--accent-rgb),.16); }
-  </style>
+  
+    /* captions read as captions: italic, and a phone mockup's caption sits
+       inside its box, on its own row under the phones, so it can't be read
+       as the next paragraph */
+    .cap, figcaption, .tot-hint{ font-style:italic; }
+    .showcase-stage:has(> .cap){ flex-wrap:wrap !important; row-gap:clamp(14px,2vh,22px); }
+    .showcase-stage > .cap{ flex:0 0 100%; margin:0 !important; text-align:center; max-width:60ch; margin-inline:auto !important; }
+
+    /* wcag 1.4.3: these were 2.1 to 4.4:1 */
+    :root:not([data-theme="dark"]) .confidentiality-notice .notice-label{ color:#a85708; }
+    :root:not([data-theme="dark"]) .body-img-caption{ color:#4d7977; opacity:1; }
+    :root:not([data-theme="dark"]) .highlight-box > strong:first-child{ color:#0d7772 !important; }
+    :root:not([data-theme="dark"]) .card h4{ color:#417976; opacity:1; }
+</style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
 <body>
@@ -1450,8 +1463,8 @@ figure{
                 <video src="vid/reel-cook.mp4" poster="vid/reel-cook.jpg" muted loop playsinline preload="none" aria-label="The cook"></video>
                 <button class="ctv-mute-btn reel-sound" type="button" aria-label="Unmute">&#128263;</button>
               </div></div><figcaption>The cook</figcaption></figure>
-            </div>
-            <p class="cap">Three of our reels: the week planned from the flyers, a real Zehrs run with the receipt at the end, and dinner.</p>
+              <p class="cap">Three of our reels: the week planned from the flyers, a real Zehrs run with the receipt at the end, and dinner.</p>
+          </div>
           </div>
         
             <div class="vid-crop"><video data-src="media/grocery-list-skrimp.mp4" autoplay muted loop playsinline preload="none"></video></div>
@@ -1526,8 +1539,8 @@ figure{
                   <video src="vid/uw-news.mp4" poster="vid/uw-news.jpg" muted loop playsinline preload="none" aria-label="Waterloo News interview with Henriëtta about Skrimp"></video>
                   <button class="ctv-mute-btn reel-sound" type="button" aria-label="Unmute">&#128263;</button>
                 </div></div></div>
-              </div>
-              <p class="cap">Waterloo News sat down with me about why I built it: growing up thrifty, learning to cook, and the Conrad School&rsquo;s E Co-op.</p>
+                <p class="cap">Waterloo News sat down with me about why I built it: growing up thrifty, learning to cook, and the Conrad School&rsquo;s E Co-op.</p>
+          </div>
             </div>
       <div class="press-track-outer">
         <div class="press-track" id="press-track"></div>
