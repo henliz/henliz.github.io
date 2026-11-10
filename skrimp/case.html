@@ -1147,7 +1147,7 @@ figure{
     /* how it got here: one slide at a time, snapping, the press carousel's buttons */
     .evo{ margin:2rem 0 1rem; background:rgba(var(--ink-rgb),.045); border:1px solid var(--glass-border); border-radius:18px;
           padding:clamp(16px,2.4vw,28px); }
-    .evo-bar{ display:flex; align-items:center; gap:.6rem; margin-bottom:1rem; }
+    .evo-bar{ display:flex; align-items:center; justify-content:flex-end; gap:.6rem; margin-bottom:1rem; }
     .evo-hint{ font:400 .9rem/1 'DotempDemo', monospace; letter-spacing:.06em; color:var(--text-primary); margin-right:auto; }
     .evo-count{ font-size:.85rem; color:var(--text-secondary); font-variant-numeric:tabular-nums; margin-right:.3rem; }
     .evo-thumbs{ display:flex; justify-content:center; gap:clamp(6px,1vw,12px); margin-top:1.1rem; flex-wrap:wrap; }
@@ -1160,8 +1160,11 @@ figure{
     .evo-track{ display:flex; gap:clamp(14px,2vw,24px); overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; padding-bottom:.25rem; }
     .evo-track::-webkit-scrollbar{ display:none; }
     .evo-slide{ flex:0 0 100%; margin:0; scroll-snap-align:center; display:flex; flex-direction:column; align-items:center; gap:.7rem; }
-    .evo-slide img{ width:100%; max-height:min(470px,62vh); object-fit:contain; border-radius:14px; display:block; }
-    .evo-slide .phone{ width:min(270px,70vw); }
+    .evo-track{ align-items:flex-start; }
+    .evo-media{ height:clamp(260px,40vw,500px); width:100%; display:flex; align-items:center; justify-content:center; }
+    .evo-media img{ max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; border-radius:14px; display:block; }
+    .evo-media .phone{ height:100%; width:auto !important; aspect-ratio:auto; box-sizing:border-box; }
+    .evo-media .phone-screen{ height:100%; width:auto; aspect-ratio:9 / 19.5; }
     .evo-step{ align-self:flex-start; font:400 .82rem/1 'DotempDemo', monospace; letter-spacing:.08em; text-transform:uppercase; color:var(--text-secondary); }
     .evo-slide figcaption{ font-style:italic; text-align:center; max-width:56ch; font-size:.88rem; line-height:1.55; color:var(--text-secondary); }
 
@@ -1362,48 +1365,42 @@ figure{
           <h2 class="section-heading">It didn&rsquo;t start as an app.</h2>
           <p class="lede">It started as a piece of paper, and I&rsquo;m glad we never handed it out.</p>
           <p>The very first idea was a printed flyer: hand one out every week with the meal plan and the grocery list on it, and the website would just hold the recipes. We dropped it, partly because we didn&rsquo;t want to get in trouble handing things out, and partly because talking to people made me ask myself whether I&rsquo;d ever actually kept a flyer someone handed me. I hadn&rsquo;t. Do you?</p>
+          <p>Every version after that came out of working semi-closely with about 15 people, how closely varying a bit from person to person, and each one was a reaction to what they told me. The early app was very mathy: cost per serving, fractions of a package, deal percentages on everything. It was accurate, and nobody wanted to look at it. Saving money already feels like a chore, so the plan had to look like food you&rsquo;d actually want to eat. The math didn&rsquo;t go anywhere. It moved behind the scenes, and the food moved to the front.</p>
           <div class="evo reveal">
             <div class="evo-bar">
-              <span class="evo-hint">Flip through it &rarr;</span>
-              <span class="evo-count" id="evo-count" aria-live="polite">1 / 5</span>
+              <span class="evo-count" id="evo-count" aria-live="polite">1 / 4</span>
               <button class="press-nav-btn" id="evo-prev" type="button" aria-label="Previous">&larr;</button>
               <button class="press-nav-btn" id="evo-next" type="button" aria-label="Next">&rarr;</button>
             </div>
             <div class="evo-track" id="evo-track" tabindex="0" role="region" aria-label="How Skrimp changed, from the first idea to now. Scrolls sideways.">
               <figure class="evo-slide">
                 <span class="evo-step">01 &middot; the flyer</span>
-                <img src="img/early-flyer.webp" alt="Two drafts of a printed Skrimp flyer: a week of meals in a grid, a featured taco recipe, a grocery list with prices, and 21 meals planned for $110.29" loading="lazy">
+                <div class="evo-media"><img src="img/early-flyer.webp" alt="Two drafts of a printed Skrimp flyer: a week of meals in a grid, a featured taco recipe, a grocery list with prices, and 21 meals planned for $110.29" loading="lazy"></div>
                 <figcaption>Two drafts of the flyer that never got handed out. 21 meals for $110.29, planned around one store&rsquo;s deals.</figcaption>
               </figure>
               <figure class="evo-slide">
                 <span class="evo-step">02 &middot; the first app</span>
-                <img src="img/early-flow-v1.webp" alt="Three phones showing the first Skrimp app: choosing a store, planning breakfasts with costs and deals, and a shopping list with totals" loading="lazy">
+                <div class="evo-media"><img src="img/early-flow-v1.webp" alt="Three phones showing the first Skrimp app: choosing a store, planning breakfasts with costs and deals, and a shopping list with totals" loading="lazy"></div>
                 <figcaption>The first app followed a week of cooking: pick a store, plan, shop, cook.</figcaption>
               </figure>
               <figure class="evo-slide">
-                <span class="evo-step">03 &middot; the reality check</span>
-                <img src="img/early-receipt.webp" alt="A grocery receipt totalling $212.00 next to the Skrimp shopping list showing a grocery bill of $198.13 before tax" loading="lazy">
-                <figcaption>Checked against a real shop: Skrimp said $198.13 before tax, and the receipt came to $212.00 after.</figcaption>
-              </figure>
-              <figure class="evo-slide">
-                <span class="evo-step">04 &middot; it starts planning</span>
-                <img src="img/early-flow-v2.webp" alt="Three phones: Skrimp optimizing combinations, empty breakfast, lunch and dinner slots offering ten recommendations, then a filled breakfast with prices" loading="lazy">
+                <span class="evo-step">03 &middot; it starts planning</span>
+                <div class="evo-media"><img src="img/early-flow-v2.webp" alt="Three phones: Skrimp optimizing combinations, empty breakfast, lunch and dinner slots offering ten recommendations, then a filled breakfast with prices" loading="lazy"></div>
                 <figcaption>Then Skrimp started doing the planning: it builds the week from the deals, and you fill in the gaps.</figcaption>
               </figure>
               <figure class="evo-slide evo-slide--phone">
-                <span class="evo-step">05 &middot; now</span>
-                <div class="phone"><div class="phone-screen" style="background:#f4f6f5 url(vid/skrimp-now.jpg) center/cover">
+                <span class="evo-step">04 &middot; now</span>
+                <div class="evo-media"><div class="phone"><div class="phone-screen" style="background:#f4f6f5 url(vid/skrimp-now.jpg) center/cover">
                   <video src="vid/skrimp-now.mp4" poster="vid/skrimp-now.jpg" muted loop playsinline preload="metadata" aria-label="Skrimp on a phone: Smart Load fills breakfast, lunch and dinner, and each row of meals scrolls past with its price and deals"></video>
-                </div></div>
+                </div></div></div>
                 <figcaption>And now: Smart Load fills breakfast, lunch and dinner from this week&rsquo;s deals. Recorded on a local build with sample recipes.</figcaption>
               </figure>
             </div>
             <div class="evo-thumbs" role="group" aria-label="Jump to a step">
               <button type="button" class="evo-thumb on" aria-label="01, the flyer"><img src="img/early-flyer.webp" alt=""></button>
               <button type="button" class="evo-thumb" aria-label="02, the first app"><img src="img/early-flow-v1.webp" alt=""></button>
-              <button type="button" class="evo-thumb" aria-label="03, the reality check"><img src="img/early-receipt.webp" alt=""></button>
-              <button type="button" class="evo-thumb" aria-label="04, it starts planning"><img src="img/early-flow-v2.webp" alt=""></button>
-              <button type="button" class="evo-thumb" aria-label="05, now"><img src="vid/skrimp-now.jpg" alt=""></button>
+              <button type="button" class="evo-thumb" aria-label="03, it starts planning"><img src="img/early-flow-v2.webp" alt=""></button>
+              <button type="button" class="evo-thumb" aria-label="04, now"><img src="vid/skrimp-now.jpg" alt=""></button>
             </div>
           </div>
         </div>
@@ -1490,6 +1487,8 @@ figure{
           <div class="highlight-box"><strong>Quality is not evenly distributed</strong>The same pipeline is close to twice as accurate on one chain’s flyer as on another’s, and the variable is not my code. It is how good a photograph the store published that week. The discount chains, the ones our families actually shop at, publish the worst ones.</div>
 
           <p>Families never see any of that mess. They see a plan that shows its working: which items are on sale, at which store, and what they cost this week, like a receipt they can check. Changed layouts, missing products and store quirks all get handled before the plan reaches them.</p>
+          <img class="body-img" src="img/early-receipt.webp" alt="A real grocery receipt totalling $212.00 next to an early Skrimp shopping list showing a grocery bill of $198.13 before tax" loading="lazy">
+          <p class="body-img-caption">Early testing against a real shop: the first app said $198.13 before tax, and the receipt came to $212.00 after.</p>
 
           <div class="vid-crop"><video data-src="media/skrimp-browse-flyers.mp4" autoplay muted loop playsinline preload="none"></video></div>
 
