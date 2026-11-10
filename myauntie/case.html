@@ -1083,7 +1083,9 @@ figure{
 /* an old rule gives every figure a big top and bottom margin. that's only
    right for a figure standing on its own in the column; one inside a row,
    a pair or a wrap was getting 56px of air above it */
-.section-content > * :is(figure, .highlight-box, .steps, .pull-quote, .body-img, .vid-crop, .showcase, .stats-grid, .quote-grid){ margin-top:0 !important; margin-bottom:0 !important; }
+.section-content > * figure{ margin-top:0 !important; margin-bottom:0 !important; }
+/* a float wrapper is prose with a picture tucked in, so it spaces like prose */
+.section-content > * + .chart-aside, .section-content > .chart-aside + :is(p, ul, ol){ margin-top:var(--g-text) !important; }
 .section-content .chart-aside .chart-figure{ margin:.4rem 0 1rem 1.75rem !important; }
 @media(max-width:768px){ .section-content .chart-aside .chart-figure{ margin:0 0 1.25rem !important; } }
 .section-content > :is(h3, h4):not(.section-heading) + *{ margin-top:1rem !important; }
