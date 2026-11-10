@@ -1049,7 +1049,7 @@ figure{
        as the next paragraph */
     .cap, figcaption, .tot-hint{ font-style:italic; }
     .showcase-stage:has(> .cap){ flex-wrap:wrap !important; row-gap:clamp(14px,2vh,22px); }
-    .showcase-stage > .cap{ flex:0 0 100%; margin:0 !important; text-align:center; max-width:60ch; margin-inline:auto !important; }
+    .showcase-stage > .cap{ flex:0 0 100%; max-width:none !important; margin:0 !important; text-align:center; padding-inline:max(0px, calc((100% - 60ch) / 2)); }
 </style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
