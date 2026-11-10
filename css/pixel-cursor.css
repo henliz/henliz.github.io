@@ -1,0 +1,31 @@
+/* pixel cursors, everywhere: an arrow, and a pointing hand over anything you
+   can click. they're real browser cursors (svg in /cursors), so they never lag
+   behind the mouse and they work inside the case study frames too.
+
+   every page used to hide the cursor and draw a ring that followed the mouse.
+   these selectors are deliberately one step more specific than those
+   pages' `*{cursor:none !important}` so this file wins wherever it's linked.
+   the only drawn cursor left is the homepage's "open me!" over a case study. */
+
+html, html * {
+  cursor: url('/cursors/arrow.svg') 1 1, auto !important;
+}
+
+html a, html a *,
+html button, html button *,
+html [role="button"], html [role="button"] *,
+html [onclick], html [onclick] *,
+html label, html summary, html select,
+html .lb-hint, html .lb-stage img {
+  cursor: url('/cursors/hand.svg') 10 1, pointer !important;
+}
+
+html input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+html textarea, html [contenteditable="true"] {
+  cursor: text !important;
+}
+
+/* the old following ring stays hidden. the homepage still uses the element
+   for "open me!", and hides the real cursor while that's showing */
+html .custom-cursor:not(.opening) { opacity: 0 !important; }
+html.cur-open, html.cur-open * { cursor: none !important; }
