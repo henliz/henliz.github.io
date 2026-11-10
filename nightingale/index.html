@@ -162,14 +162,20 @@
         :root[data-theme="light"] { --cur-ink: #ffffff; }
         :root[data-theme="dark"]  { --cur-ink: #08201e; }
 
+        /* the same white pixel sticker as mini hen's speech bubble: ink
+           outline drawn with stepped box shadows so every corner is a notch,
+           a hard offset shadow, dark pixel text on one line */
         .custom-cursor.opening {
-            width: 72px; height: 72px;
-            border-radius: 50%;
-            background: rgba(var(--rail-accent-rgb), 0.93);
-            border-color: rgba(var(--rail-accent-rgb), 1);
-            color: var(--cur-ink);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32),
-                        0 0 0 1.5px rgba(255, 255, 255, 0.3);
+            width: 96px; height: 24px;
+            border-radius: 0;
+            backdrop-filter: none;
+            background: #fff;
+            border-color: transparent;
+            color: #14202b;
+            box-shadow: 0 -2px 0 0 #fff, 0 2px 0 0 #fff, -2px 0 0 0 #fff, 2px 0 0 0 #fff,
+                        0 -4px 0 0 #14202b, 0 4px 0 0 #14202b, -4px 0 0 0 #14202b, 4px 0 0 0 #14202b,
+                        -2px -2px 0 0 #14202b, 2px -2px 0 0 #14202b, -2px 2px 0 0 #14202b, 2px 2px 0 0 #14202b,
+                        4px 6px 0 0 rgba(20,32,43,.3);
         }
         .custom-cursor.opening.clicking {
             transform: translate(-50%, -50%) scale(0.95);
@@ -177,13 +183,13 @@
 
         .cur-inner {
             position: absolute; inset: 0;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: 1px;
+            display: flex; flex-direction: row;
+            align-items: center; justify-content: center; gap: 5px;
             pointer-events: none;
             opacity: 0; transform: scale(0.6);
-            font-family: 'Satoshi', sans-serif;
-            font-size: 13px; font-weight: 700; line-height: 1.22;
-            letter-spacing: 0.02em; text-transform: lowercase;
+            font-family: 'DotempDemo', 'Satoshi', sans-serif;
+            font-size: 13px; font-weight: 400; line-height: 1;
+            letter-spacing: 0.04em; text-transform: lowercase;
             /* no delay on the way out, so the text clears before the circle
                shrinks instead of trailing behind it */
             transition: opacity 0.12s ease, transform 0.18s ease;
@@ -194,7 +200,7 @@
                         transform 0.4s cubic-bezier(.2, 1.25, .4, 1) 0.1s;
         }
         .cur-line { display: flex; align-items: center; gap: 5px; }
-        .cur-ico { width: 14px; height: 14px; flex: none; margin-bottom: 1px; }
+        .cur-ico { width: 10px; height: 10px; flex: none; margin-bottom: 1px; shape-rendering: crispEdges; }
 
         /* Each LINE takes its turn, not each letter. Per-letter animation
            needs display:inline-block on every character, which gives each one
@@ -3235,7 +3241,10 @@
 
     .ct-room {
         position: absolute; inset: 0; z-index: 0;
-        background: url('/scenes/ct-room.svg') no-repeat center/cover;
+        /* one front-on family kitchen: fridge covered in the kids' stuff,
+           sage cupboards, a cafe curtain, a pot on the stove, and a straight
+           butcher-block worktop so the laptop reads as sitting on it */
+        background: url('/scenes/ct-kitchen.svg') no-repeat center/cover;
     }
     /* the lighting event: daylight off the window at the far end of the run */
     .ct-sun {
@@ -3252,30 +3261,15 @@
         position: absolute; inset: 0; z-index: 3;
         background: url('/scenes/ct-props.svg') no-repeat center/cover;
     }
-    .ct-steam {                       /* off the kettle, near end */
-        position: absolute; z-index: 5; left: 1%; bottom: 40%;
-        width: 13%; height: 22%;
+    .ct-steam {                       /* off the pot on the stove */
+        position: absolute; z-index: 5; left: 80%; bottom: 65.5%;
+        width: 12%; height: 20%;
         background:
             radial-gradient(closest-side, rgba(255,255,255,.5), transparent 70%) 10% 62%/52% 46% no-repeat,
             radial-gradient(closest-side, rgba(255,255,255,.4), transparent 70%) 66% 24%/44% 42% no-repeat,
             radial-gradient(closest-side, rgba(255,255,255,.3), transparent 70%) 28% 0%/38% 36% no-repeat;
         filter: blur(6px);
         animation: ctSteam 9s ease-in-out infinite;
-    }
-    .ct-pool {                        /* contact shadow under the laptop */
-        position: absolute; z-index: 5; left: 52%; bottom: 28%;
-        width: 32%; height: 6%; transform: translateX(-50%) rotate(5deg);
-        background: radial-gradient(closest-side, rgba(86,56,22,.5), transparent 74%);
-        filter: blur(5px);
-    }
-    .ct-bag {
-        /* the run sits higher now that the cabinets are back in frame: at the
-           bag's x the worktop spans y 42.3%..57.7% of the tile, so the board
-           lands at 55%, on the surface rather than over the lip. */
-        position: absolute; z-index: 6; left: 1%; bottom: 45%; height: 34%;
-        aspect-ratio: 900 / 873;
-        background: url('/scenes/ct-bag.webp') no-repeat center bottom/contain;
-        filter: drop-shadow(6px 12px 16px rgba(110,76,34,.30));
     }
     /* sun rays off the window, and the clip as its own card in the corner */
     .ct-rays {
@@ -3978,6 +3972,46 @@ body::after{
   .hen-chat.talking .hc-wink, .hen-chat.talking .hc-face{ animation:none; }
 }
 
+/* pixel window. same sticker language as her speech bubble and the pixel
+   cursors: square corners, the outline drawn with stepped box shadows so
+   each corner is a notch, hard offset shadows, pixel font for anything
+   that's a label. message text stays in satoshi so it's easy to read */
+.hen-chat{
+  --px:3px;
+  border:0; border-radius:0;
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--hc-bg), 0 var(--px) 0 0 var(--hc-bg),
+    calc(var(--px) * -1) 0 0 0 var(--hc-bg), var(--px) 0 0 0 var(--hc-bg),
+    0 calc(var(--px) * -2) 0 0 var(--hc-line), 0 calc(var(--px) * 2) 0 0 var(--hc-line),
+    calc(var(--px) * -2) 0 0 0 var(--hc-line), calc(var(--px) * 2) 0 0 0 var(--hc-line),
+    calc(var(--px) * -1) calc(var(--px) * -1) 0 0 var(--hc-line), var(--px) calc(var(--px) * -1) 0 0 var(--hc-line),
+    calc(var(--px) * -1) var(--px) 0 0 var(--hc-line), var(--px) var(--px) 0 0 var(--hc-line),
+    calc(var(--px) * 3) calc(var(--px) * 3) 0 0 rgba(20, 32, 43, .3);
+  overflow:visible;
+}
+.hen-chat > *{ overflow:hidden; }
+.hc-bar{ border-bottom-width:3px; padding:.75rem .8rem .7rem .85rem; }
+.hc-bar::before, .hc-bar::after{ border-radius:0; }   /* pixel clouds */
+.hc-av{ border-radius:0; box-shadow:2px 2px 0 var(--hc-line); image-rendering:auto; }
+.hc-online{ border-radius:0; width:10px; height:10px; }
+.hc-name{ font-size:1.25rem; letter-spacing:.02em; }
+.hc-sub{ font-family:'DotempDemo', monospace; font-weight:400; font-size:.68rem; letter-spacing:.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hc-x{ border-radius:0; width:28px; height:28px; font:1.1rem/1 'DotempDemo', monospace; }
+.hc-msg{ border-width:2px; border-radius:0 !important; box-shadow:3px 3px 0 rgba(20, 32, 43, .18); }
+.hc-row.you .hc-msg{ box-shadow:3px 3px 0 rgba(20, 32, 43, .3); }
+.hc-mini{ image-rendering:auto; }
+.hc-chip{
+  border-width:2px; border-radius:0;
+  font:400 .8rem/1.15 'DotempDemo', monospace; letter-spacing:.03em; padding:.42rem .6rem .36rem;
+}
+.hc-chip::before{ font-family:'DotempDemo', monospace; }
+.hc-compose{ border-top-width:3px; }
+.hc-compose input{ border-width:2px; border-radius:0; }
+.hc-compose input::placeholder{ font-family:'DotempDemo', monospace; letter-spacing:.03em; }
+.hc-compose button{ border-radius:0; width:38px; height:38px; }
+.hc-compose svg{ shape-rendering:crispEdges; }
+@media (max-width: 920px){ .hen-chat{ --px:2px; } }
+
 /* short laptop screens (1366x768 and friends): the rail was only ever a
    few px too tall, so tighten the spacing that has slack instead of
    letting it scroll. text sizes don't change, just the air around them */
@@ -3990,17 +4024,19 @@ body::after{
 }
 @media (prefers-reduced-motion: reduce){ .walker, .walker-sprite{ animation:none; } .walker{ translate:.25rem 0; } }
 </style>
+    <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
 <body>
 <div id="http-readable" style="display:none">
 <h1>What a fire crew learns at the scene, and whether any of it reaches the hospital.</h1>
 <h4>Project Type</h4>
-<p>Capstone, GBDA 402.</p>
+<li>Capstone, GBDA 402</li>
+<li>Team of five, with Zubi, Alita, Cindy and Chrisandra</li>
 <h4>Role</h4>
 <li>Product director</li>
 <li>Fire lead</li>
 <li>Hardware lead</li>
-<li>Team of five, with Zubi, Alita, Cindy and Chrisandra</li>
+<li>Branding</li>
 <h4>Timeline</h4>
 <p>September 30 to November 2026, and still going.</p>
 <h4>Skills &amp; Tools</h4>
@@ -4021,7 +4057,8 @@ body::after{
 <p>A button-operated wearable, and a dashboard that carries the reviewed note from fire to paramedics to the ER.</p>
 <p>At first contact the firefighter presses record, says aloud that they’re recording for the medical record, and presses a second button to photograph a pill bottle or the scene. It stores everything on the device and syncs when it finds a network it knows. Speech becomes a draft ePCR, unsure fields get flagged instead of guessed, and the firefighter approves it before anyone else sees it. Paramedics have it before they arrive. The ER gets it by QR code and a PDF, with no new login.</p>
 <p>My product pitch from our MVP video, with the Nightingale film. Sound on.</p>
-<p>Here’s how we got there.</p>
+<p>The film walks through one call. It starts at the station, goes through my sketches and what’s inside the case, shows where it clips onto a turnout coat, and ends on the Maryhill cardiac arrest drill turning into a draft ePCR. Watch for the moment it catches the cousin and the responder giving two different ages and flags it, instead of picking one. That’s the whole idea in one field.</p>
+<p>None of it started with the device, though. It started with the people whose job this is.</p>
 <h2>I went where the story starts.</h2>
 <p>16 sessions with 18 people in Woolwich, Cambridge and Guelph, and a survey of 29 paramedics and ER nurses.</p>
 <p>Firefighters and officers from two volunteer halls and two career stations, a paramedic, two emergency physicians and three ER nurses. I ran most of it as listening sessions: instead of asking people to describe the process, I asked them to tell me about a call they remembered. A story puts someone back in the moment, and it surfaces the workarounds a procedure question never would.</p>
@@ -4068,10 +4105,22 @@ body::after{
 <p>Nothing is deleted until the server confirms a perfect copy. Scenes happen on highways and farms, where nobody hands over a Wi-Fi password.</p>
 <h2>A record only helps if the next person trusts it.</h2>
 <p>I coded dashboard V1, Alita and Chrisandra designed V2’s flows in Figma, and I wired V3 up to the real device data.</p>
+<p>V1 tested the technology. Before anything was designed, I needed to know whether the device’s recordings could become a usable draft report while a call was still happening. So I coded a dashboard with three panels: the draft ePCR filling itself in, with fields lighting up as they change; the transcript, showing who said what and when; and the Pi’s own diary, live. It updates the moment new data lands, with no refresh, and every session is saved so it survives a server restart.</p>
+<p>V1 was built for our team, not for responders. The interviews, the survey, our user segments and stories, and the flows we mapped from the 911 call all the way to the hospital chart turned it into two connected flows: one for the fire captain, who reviews and shares the crew’s account, and one for the paramedic, who needs to see where each value came from and confirm or correct it. V2 designed that whole handoff in Figma.</p>
 <li>Review before sharing. A physician told me his colleagues accepted their AI scribe once the reviewed note, not the recording, became the record. Nightingale works the same way.</li>
+<li>Flagged, never guessed. If something wasn’t said, the field stays visibly empty instead of being filled with a likely answer.</li>
 <li>A closed loop. The paramedic accepts the record, the ER scans a QR code, and both sides see “Received by triage.” Nobody in this chain could ever confirm what was received.</li>
 <li>No hospital integration. Hospital systems can’t take a feed, so the ER gets a read-only link and a printed page that rides its existing scan path.</li>
-<li>Privacy first. I owned the device’s safety and privacy design, and Cindy and I worked through the threat model together: permission checks, encryption at rest, and append-only, hash-chained audit logs.</li>
+<p>V3 made it work. We rebuilt the Figma flows as working code, so responders can click through them, and I wired it to the real drill data coming off the device so we could see how actual scene data fits the design. Here’s Maryhill case 1, the backyard barbecue cardiac arrest, as the dashboard holds it now. Every value below came from the recording.</p>
+<p>Click through the Figma prototype →</p>
+<h2>Privacy was the reason anyone would use it.</h2>
+<p>Responders and physicians raised privacy and control more than anything else, so Cindy and I made them the first thing the backend got right.</p>
+<p>Cindy and I worked out the security and privacy approach together, and she shipped the hardening pass. Here’s what it does now:</p>
+<li>Nothing opens without a key, and a key only opens what it’s allowed to. The production server won’t even start without them.</li>
+<li>A record and its photos belong to whoever made them. Reading someone else’s takes an explicit admin override, and that gets logged too.</li>
+<li>Every read and write leaves a trail that can’t be quietly edited. Each audit entry is chained to the one before it, so changing an old entry breaks the chain.</li>
+<li>The device only talks over HTTPS, with its own token. Uploads are encrypted at rest, and files on the Pi and the server are locked down.</li>
+<li>The Pi’s diary records what happened, never what was said. “Photo saved” and “Wi-Fi lost,” but no audio, transcript or images.</li>
 <h2>The night the Wi-Fi died.</h2>
 <p>I can’t record real patients, so I tested on staged calls with the people who’d really use it.</p>
 <p>Three calls on Maryhill’s training nights, under a floodlight on foam mats: a cardiac arrest at a backyard barbecue, a shellfish allergy, and a dirt bike crash. During the first one, the station Wi-Fi died. Offline-first had only ever been a hypothetical, and I’ll admit I dreaded opening the results that night. All three calls had arrived, every file stored, checked and in order.</p>
@@ -5057,7 +5106,7 @@ body::after{
                 <div class="hc-log" aria-live="polite"></div>
                 <form class="hc-compose" autocomplete="off">
                     <input type="text" maxlength="140" placeholder="ask me anything&hellip;" aria-label="ask mini hen a question">
-                    <button type="submit" aria-label="send"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg></button>
+                    <button type="submit" aria-label="send"><svg viewBox="0 0 8 8" fill="currentColor" aria-hidden="true"><path d="M3 0h2v1h1v1h1v1h1v1H5v4H3V4H0V3h1V2h1V1h1z"/></svg></button>
                 </form>
             </div>
             <div class="sb-foot">
@@ -5171,6 +5220,13 @@ body::after{
                     <td><span class="ns-chaos-tag ns-tag-const">constraints</span><span class="ns-chaos-tag ns-tag-user">user state</span></td>
                     <td>A planner that starts from what&rsquo;s on sale and what&rsquo;s already in the fridge.</td>
                     <td><span class="ns-outcome-pill">live</span></td>
+                  </tr>
+                  <tr>
+                    <td>Nightingale</td>
+                    <td>A patient&rsquo;s story heard at the scene, then lost somewhere between the fire truck, the ambulance and the ER.</td>
+                    <td><span class="ns-chaos-tag ns-tag-coord">coordination</span><span class="ns-chaos-tag ns-tag-user">user state</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
+                    <td>A button-operated wearable that turns what the crew says into a reviewed draft record, and a dashboard that carries it to the paramedics and the ER.</td>
+                    <td><span class="ns-outcome-pill">field testing</span></td>
                   </tr>
                   <tr>
                     <td>My Auntie</td>
@@ -5621,10 +5677,10 @@ body::after{
             (function openMe(){
               const label = document.getElementById('curTxt');
               if (label){
-                const ICO = '<svg class="cur-ico" viewBox="0 0 24 24" fill="none"'
-                  + ' stroke="currentColor" stroke-width="2.3" stroke-linecap="round"'
-                  + ' stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 11 13"/>'
-                  + '<path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>';
+                // the open-in-a-window glyph, drawn on a 12px pixel grid
+                const ICO = '<svg class="cur-ico" viewBox="0 0 12 12" fill="currentColor">'
+                  + '<path d="M7 0h5v5h-2V3.4L6.4 7 5 5.6 8.6 2H7z"/>'
+                  + '<path d="M0 2h5v2H2v6h6V7h2v5H0z"/></svg>';
                 /* two lines so the circle can stay small, each one a plain text
                    node so the font keeps its kerning */
                 [['open', false], ['me!', true]].forEach(([word, tail]) => {
@@ -5644,6 +5700,9 @@ body::after{
               };
 
               let cell = null, watch = null;
+              // the real (pixel) cursor hides while the label is up
+              new MutationObserver(() => document.documentElement.classList.toggle(
+                'cur-open', cursor.classList.contains('opening'))).observe(cursor, { attributes: true, attributeFilter: ['class'] });
               const sync = () => cursor.classList.toggle(
                 'opening', !!cell && cell.classList.contains('is-video'));
 
@@ -6019,7 +6078,10 @@ const eul = (x,y,z)=>new THREE.Euler(
         name:'Skrimp AI', category:'Product Design / AI',
         tagline:'A week of dinners planned around live prices and what\u2019s already in the fridge',
         title:'Skrimp', year:'2025–',
-        video:{ kind:'file', src:'/skrimp/media/skrimp-smartload-demo.mp4' },
+        // sped up so people get to the meals sooner: 2x into the servings modal,
+        // 3x picking the household size, 2x again until the cursor reaches
+        // Smart Load at 11.6s, then normal speed
+        video:{ kind:'file', src:'/skrimp/media/skrimp-smartload-demo.mp4', pace:'0:2,2:3,8.5:2,11.6:1' },
         stat:'2K+ users, $5K/yr saved per family, always free',
         tags:['Solo founder','Live flyer data','Mobile + web'],
         href:'/skrimp/',
@@ -6039,25 +6101,32 @@ const eul = (x,y,z)=>new THREE.Euler(
         // each side of the card — and it fills the screen with nothing stretched.
         // The UI is near-white on a light lid at ~90px wide, so paintScreen also
         // lifts contrast and saturation or it reads as a blank screen.
+        // a real 3d island (built in buildIsland), turned with the laptop and
+        // seen from a little above, so it's a drawing of a 3d space and not a
+        // slanted shape. everything else stands on it. on: positions are in
+        // laptop widths (x) and island depths (z, 0 = middle, + = front)
+        island:{ yaw:-20, tilt:11, w:3.6, d:2.2, dx:0.1 },
         models:[
-          {url:'/models/laptop.glb', scale:0.150, baseEuler:[4,-20,0], pos:[0,0,0],
-           screen:{ video:'/skrimp/media/grocery-list-skrimp.mp4', mesh:'ComputerScreen',
-                    fit:'cover', crop:{x:132, y:0, w:1016, h:672},
+          {url:'/models/laptop.glb', scale:0.150, baseEuler:[0,0,0], pos:[0,0,0], on:true,
+           screen:{ video:'/skrimp/media/menu-scroll.mp4', mesh:'ComputerScreen',
+                    fit:'cover', planar:true, bezel:[0.035, 0.05, 0.035],
                     punch:'contrast(1.22) saturate(1.35) brightness(0.97)' }},
-          {url:'/models/yummymeal.glb', scale:0.445, baseEuler:[24,152,0], pos:[2.80,-1.00,2.1]}
+          {url:'/models/yummymeal.glb', scale:0.30, baseEuler:[8,152,0], on:{x:0.98, z:0.1}}
         ],
-        driftAmp:0.10, fitScale:1.06,
-        // swapped: the thinker stands with the groceries, the celebrant with the food
+        // grounded: it rests on something, so no bob, tilt or turn
+        grounded:true, driftAmp:0, fitScale:0.8, frameY:0.9,
+        // the thinker with the groceries, the celebrant by the meal. size is in laptop widths
         decals:[
-          {url:'/SkrimpThinking.webp',  size:[2.80,3.36], pos:[-2.70,1.08,2.6], rotY:0.30},
-          {url:'/SkrimpCelebrate.webp', size:[3.25,3.90], pos:[ 4.35,0.32,4.6], rotY:-0.26}
+          {url:'/scenes/ct-bag.webp',    size:[0.62,0.60], on:{x:-0.9, z:-0.3}},
+          {url:'/SkrimpThinking.webp',   size:[0.80,0.96], on:{x:-1.2, z:0.15}},
+          {url:'/SkrimpCelebrate.webp',  size:[0.84,1.01], on:{x:1.2,  z:-0.35}}
         ]
       },
       {
         // hovering plays a bit of the product film
         name:'Lost in Handoff', category:'UX Research / Healthcare',
         tagline:'What responders learn at the scene, actually reaching the hospital',
-        title:'Lost in Handoff', year:'2026',
+        title:'Nightingale', year:'2026',
         // the v10 nightingale film, just the run where it hears the scene,
         // fills the dash, takes a photo and files it: 50.5s to 66.7s, looped
         video:{ kind:'file', src:'/lostinhandoff/nightingale-loop.mp4' },
@@ -6065,8 +6134,9 @@ const eul = (x,y,z)=>new THREE.Euler(
         tags:['Capstone','B2G','Safety-critical'],
         href:'/nightingale/',
         // the slide cover recomposed at 4:3: paper and halftone extended top
-        // and bottom, the two of them fading into it (/lostinhandoff/cover-43.webp)
-        cover:'/lostinhandoff/cover-43.webp', noDrag:true,
+        // and bottom, the two of them fading into it (/lostinhandoff/cover-43.webp).
+        // the title on it now says NIGHTINGALE, with lost in handoff under it
+        cover:'/lostinhandoff/cover-43.webp?v=nightingale',
         theme:{ accent:'196, 40, 40', accent2:'240, 140, 60', scene:'handoff' },
       },
       {
@@ -6122,7 +6192,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         tags:['Godot','Mac + Windows'],
         href:'/equinox/', award:'Winner',
         playHref:'https://emstergrace.itch.io/equinox',
-        cover:'/equinox/equinox-banner.webp', noDrag:true,
+        cover:'/equinox/equinox-banner.webp',
         theme:{ accent:'200, 135, 74', accent2:'232, 192, 96', scene:'equinox' },
       },
     ];
@@ -6251,7 +6321,7 @@ function addOverlay(model, url, sizeXY, posXYZ, onDone){
 
    The <video> is parked in the DOM (1px, invisible): Chrome will happily
    decode a detached element for a while and then quietly stop. */
-function addScreenVideo(model, src, matName, videoAspect, host, fit, crop, punch){
+function addScreenVideo(model, src, matName, videoAspect, host, fit, crop, punch, planar, bezel){
   const v = document.createElement('video');
   /* The clip that plays on a model's screen used to take its src here, with
      preload auto, so both of them downloaded and opened a decoder the moment
@@ -6276,6 +6346,20 @@ function addScreenVideo(model, src, matName, videoAspect, host, fit, crop, punch
     o.geometry.computeBoundingBox();
     const b = o.geometry.boundingBox;
     const planeAspect = (b.max.x - b.min.x) / (b.max.y - b.min.y);
+    /* some screens come with UVs laid out for a different texture. the
+       laptop's bottom right corner points at the MIDDLE of its texture, which
+       is what warped the skrimp clip. planar rebuilds them as a flat
+       projection of the screen's own shape, so the canvas lands on it 1:1 */
+    if (planar) {
+      const pos = o.geometry.attributes.position, uv = new Float32Array(pos.count * 2);
+      const w = b.max.x - b.min.x, h = b.max.y - b.min.y;
+      for (let i = 0; i < pos.count; i++) {
+        // the lid's x runs right to left as you look at it, so u is flipped or the clip comes out mirrored
+        uv[i * 2]     = 1 - (pos.getX(i) - b.min.x) / w;
+        uv[i * 2 + 1] = (pos.getY(i) - b.min.y) / h;
+      }
+      o.geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    }
 
     // The clip and the screen are different shapes, and cropping to cover loses
     // the edges of the UI — which is the thing worth seeing. So letterbox into a
@@ -6292,7 +6376,7 @@ function addScreenVideo(model, src, matName, videoAspect, host, fit, crop, punch
     tex.minFilter = THREE.LinearFilter;
     tex.magFilter = THREE.LinearFilter;
 
-    v.screenCanvas = {cv, ctx, tex, CW, CH, fit: fit || 'cover', crop, punch};
+    v.screenCanvas = {cv, ctx, tex, CW, CH, fit: fit || 'cover', crop, punch, bezel};
     o.material = new THREE.MeshBasicMaterial({map: tex, toneMapped: false});
     // the clip's first frame, painted now, so the screen is never black while
     // the video loads or if a phone refuses to play it at all
@@ -6322,21 +6406,75 @@ function paintScreen(v){
   s.live = true;
   drawScreen(s, v);
 }
+/* the skrimp island: a real box in the same 3d space as the laptop, drawn in
+   flat illustration colours so it still looks painted. top, front and side
+   each get their own tone, which is what makes it read as a solid object.
+   sized off the laptop (L = its width), and the laptop is put near the front.
+   returns where things can stand. */
+function buildIsland(group, laptop, o){
+  laptop.updateMatrixWorld(true);
+  const b = new THREE.Box3().setFromObject(laptop);   // laptop on its own, so this is group space
+  const L = b.max.x - b.min.x, Dp = b.max.z - b.min.z;
+  const cx = (b.min.x + b.max.x) / 2 + L * (o.dx || 0);
+  const top = b.min.y, W = L * o.w, D = Dp * o.d, T = L * .07, H = L * 1.6;
+  const front = b.max.z + Dp * .45, cz = front - D / 2;
+  const isl = new THREE.Group(); isl.userData.noFrame = true; group.add(isl);
+  const mat = c => new THREE.MeshBasicMaterial({ color: c, toneMapped: false });
+  // box faces: +x, -x, +y, -y, +z, -z
+  const box = (w, h, d, x, y, z, cols) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), cols.map(mat));
+    m.position.set(x, y, z); isl.add(m); return m;
+  };
+  const BLOCK = ['#c08a52', '#c08a52', '#e4b985', '#9c6c3a', '#b9874f', '#b9874f'];
+  const BODY  = ['#7f9e88', '#7f9e88', '#8fae98', '#6f8c77', '#97b89f', '#97b89f'];
+  box(W, T, D, cx, top - T / 2, cz, BLOCK);                                    // butcher block
+  box(W * .97, H, D * .92, cx, top - T - H / 2, cz - D * .02, BODY);           // cupboards
+  const fz = cz - D * .02 + D * .46 + .002;                                    // the cupboard front
+  const PANEL = ['#a9c6b0', '#a9c6b0', '#b6d0bc', '#8fae98', '#a9c6b0', '#a9c6b0'];
+  const n = 3, gap = L * .04, pw = (W * .97 - gap * (n + 1)) / n;
+  for (let i = 0; i < n; i++) {
+    const x = cx - W * .485 + gap + pw / 2 + i * (pw + gap);
+    box(pw, L * .17, L * .012, x, top - T - L * .04 - L * .085, fz, PANEL);    // drawer
+    box(L * .16, L * .025, L * .02, x, top - T - L * .125, fz + L * .012,
+        ['#b8902f', '#b8902f', '#e8c46a', '#a07a22', '#d8b25a', '#d8b25a']);   // brass pull
+    box(pw, H * .62, L * .012, x, top - T - L * .26 - H * .31, fz, PANEL);    // door
+  }
+  // a soft shadow under the laptop, on the worktop
+  const cv = document.createElement('canvas'); cv.width = cv.height = 128;
+  const g = cv.getContext('2d'), rg = g.createRadialGradient(64, 64, 4, 64, 64, 64);
+  rg.addColorStop(0, 'rgba(86,56,22,.55)'); rg.addColorStop(1, 'rgba(86,56,22,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, 128, 128);
+  const sh = new THREE.Mesh(new THREE.PlaneGeometry(L * 1.3, Dp * 1.5),
+    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false, toneMapped: false }));
+  sh.rotation.x = -Math.PI / 2;
+  sh.position.set((b.min.x + b.max.x) / 2, top + .002, (b.min.z + b.max.z) / 2 + Dp * .08);
+  isl.add(sh);
+  // where things stand: x in laptop widths from the laptop, z from -1 (back) to 1 (front)
+  return { L, top, cx: (b.min.x + b.max.x) / 2, z: f => cz + f * D * .42 };
+}
+
 // one frame of a video, or its poster image, into a screen canvas
 function drawScreen(s, src){
   const {ctx, tex, CW, CH, fit, crop} = s;
   const sw = src.videoWidth || src.naturalWidth, sh = src.videoHeight || src.naturalHeight;
   // crop is a rect in the source file's own pixels: the part worth showing
   const c = crop || {x: 0, y: 0, w: sw, h: sh};
-  const va = c.w / c.h, ca = CW / CH;
+  // bezel: [sides, top, bottom] as fractions of the screen. a screen whose
+  // UVs got rebuilt (planar) lost the black border its old texture drew, so
+  // it's painted back here and the picture sits inside it
+  const [bs, bt, bb] = s.bezel || [0, 0, 0];
+  const AX = CW * bs, AY = CH * bt, AW = CW * (1 - 2 * bs), AH = CH * (1 - bt - bb);
+  const va = c.w / c.h, ca = AW / AH;
   let w, h;
-  if (fit === 'contain' ? va > ca : va < ca) { w = CW; h = CW / va; }
-  else                                       { h = CH; w = CH * va; }
-  ctx.fillStyle = '#0b1416'; ctx.fillRect(0, 0, CW, CH);
+  if (fit === 'contain' ? va > ca : va < ca) { w = AW; h = AW / va; }
+  else                                       { h = AH; w = AH * va; }
+  ctx.fillStyle = s.bezel ? '#0a0a0c' : '#0b1416'; ctx.fillRect(0, 0, CW, CH);
+  ctx.save(); ctx.beginPath(); ctx.rect(AX, AY, AW, AH); ctx.clip();
   // a pale UI on a small, foreshortened screen needs help to read at all
   ctx.filter = s.punch || 'none';
-  ctx.drawImage(src, c.x, c.y, c.w, c.h, (CW - w) / 2, (CH - h) / 2, w, h);
+  ctx.drawImage(src, c.x, c.y, c.w, c.h, AX + (AW - w) / 2, AY + (AH - h) / 2, w, h);
   ctx.filter = 'none';
+  ctx.restore();
   tex.needsUpdate = true;
 }
 
@@ -6453,13 +6591,8 @@ stations.forEach((cfg,i) => {
     counter: () => `
       <div class="ct-room"></div>
       <div class="ct-sun"></div>
-      <div class="ct-counter"></div>
-      <div class="ct-props"></div>
-      <div class="ct-rays"></div>
       <div class="ct-steam"></div>
-      <div class="ct-light"></div>
-      <div class="ct-pool"></div>
-      <div class="ct-bag"></div>
+
       <div class="ct-motes"></div>`,
     nursery: () => `
       <div class="ns-layer ns-back"></div>
@@ -6482,7 +6615,7 @@ stations.forEach((cfg,i) => {
   const videoHtml = !v.kind ? '' :
     v.kind === 'soon'
       ? `<div class="tile-video tile-video--soon"><span>${v.label || 'demo video coming soon'}</span></div>`
-      : `<div class="tile-video" data-kind="${v.kind}" data-src="${v.src || v.id}" data-start="${v.start || 0}"></div>`;
+      : `<div class="tile-video" data-kind="${v.kind}" data-src="${v.src || v.id}" data-start="${v.start || 0}" data-pace="${v.pace || ''}"></div>`;
 
   // no href (a coming soon tile) = plain divs, nothing to click through to
   const tag = cfg.href ? 'a' : 'div';
@@ -6712,6 +6845,23 @@ stations.forEach((cfg,i) => {
       media.addEventListener('playing', reveal);
       // re-issue play once data lands: the first call can come before any exists
       media.addEventListener('loadeddata', () => { if (hovering) media.play().catch(() => {}); });
+      // data-pace="from:rate,from:rate,...": the playback speed from each second on
+      const steps = (box.dataset.pace || '').split(',').filter(Boolean).map(x => x.split(':').map(Number));
+      if (steps.length) {
+        const pace = () => {
+          let r = 1;
+          for (const [from, rate] of steps) if (media.currentTime >= from) r = rate;
+          if (media.playbackRate !== r) media.playbackRate = r;
+        };
+        media.addEventListener('timeupdate', pace);
+        // timeupdate is only ~4 a second, too coarse at 3x, so check every frame where we can
+        if (media.requestVideoFrameCallback) {
+          const tick = () => { pace(); media.requestVideoFrameCallback(tick); };
+          media.requestVideoFrameCallback(tick);
+        }
+        media.addEventListener('play', pace);
+        media.addEventListener('seeked', pace);
+      }
       media.src = src;
       box.appendChild(media);
     }
@@ -6790,6 +6940,21 @@ stations.forEach((cfg,i) => {
   // models hang off `content` so it can be shifted to centre their real bounds
   // without disturbing the pivot's drift rotation
   const content = new THREE.Group(); pivot.add(content);
+  /* an island tile: a stage tilted toward the camera so its top shows, and
+     inside it a group turned to the island's angle. the island is built once
+     the laptop has loaded (its size sets everything), then whatever else
+     stands on it gets placed */
+  let islandGroup = null;
+  if (cfg.island) {
+    const stage = new THREE.Group();
+    stage.rotation.x = THREE.MathUtils.degToRad(cfg.island.tilt);
+    islandGroup = new THREE.Group();
+    islandGroup.rotation.y = THREE.MathUtils.degToRad(cfg.island.yaw);
+    stage.add(islandGroup); content.add(stage);
+  }
+  let islandInfo = null;
+  const islandWaiting = [];
+  const onIsland = f => islandInfo ? f(islandInfo) : islandWaiting.push(f);
   const view = {el, cell, scene, camera, pivot, content, cfg, dust,
                 // drift, not spin: a slow sway around front-on, never a full turn
                 phase: i * 1.7, driftAmp: cfg.driftAmp ?? 0.30, driftRate: 0.36,
@@ -6851,9 +7016,21 @@ stations.forEach((cfg,i) => {
           new THREE.PlaneGeometry(dc.size[0], dc.size[1]),
           new THREE.MeshBasicMaterial({map:tex, transparent:true, depthWrite:false})
         );
+        sprite.renderOrder = 12;
+        if (dc.on && islandGroup) {
+          // stood on the island, turned back to face the camera
+          onIsland(I => {
+            sprite.scale.setScalar(I.L);
+            sprite.position.set(I.cx + dc.on.x * I.L, I.top + dc.size[1] * I.L / 2 - I.L * .02, I.z(dc.on.z));
+            sprite.rotation.y = -islandGroup.rotation.y;
+            islandGroup.add(sprite);
+            rel();
+          });
+          return;
+        }
         sprite.position.set(dc.pos[0], dc.pos[1], dc.pos[2]);
         if (dc.rotY) sprite.rotation.y = dc.rotY;
-        sprite.renderOrder = 12; content.add(sprite);
+        content.add(sprite);
         rel();
       }, undefined, rel);
     });
@@ -6893,7 +7070,20 @@ stations.forEach((cfg,i) => {
         mdl.rotation.copy(eul(...(m.baseEuler ?? [0,0,0])));
         const p = m.pos ?? [(j===0?-1.4:1.4),0,0];
         mdl.position.set(p[0],p[1],p[2]);
-        content.add(mdl);
+        if (m.on && islandGroup) {
+          if (j === 0) {
+            // the laptop sets the island's size and height
+            islandInfo = buildIsland(islandGroup, mdl, cfg.island);
+            islandWaiting.splice(0).forEach(f => f(islandInfo));
+          } else {
+            // measured now, on its own, before it joins the turned group
+            mdl.updateMatrixWorld(true);
+            const bb = new THREE.Box3().setFromObject(mdl);
+            onIsland(I => mdl.position.set(I.cx + m.on.x * I.L, I.top - bb.min.y, I.z(m.on.z)));
+          }
+          islandGroup.add(mdl);
+        } else content.add(mdl);
+        if (j === 0) view.mainModel = mdl;
         if (m.screenColor) {
           mdl.traverse(o => {
             if (o.isMesh && o.material?.name === m.screenColor.mesh) {
@@ -6904,7 +7094,7 @@ stations.forEach((cfg,i) => {
         if (m.screen && m.screen.video) {
           view.screenVideo = addScreenVideo(mdl, m.screen.video, m.screen.mesh,
                                             m.screen.aspect, cell.querySelector('.tf'),
-                                            m.screen.fit, m.screen.crop, m.screen.punch);
+                                            m.screen.fit, m.screen.crop, m.screen.punch, m.screen.planar, m.screen.bezel);
           view.onScreenVideo?.();
           // wait for the clip's first frame too, or the phone shows a blank
           // screen that then pops. 4s cap since an off screen tile's clip
@@ -6933,32 +7123,11 @@ stations.forEach((cfg,i) => {
   }
   };
 
-  // ---- hover + drag-to-orbit, per tile ----
+  // ---- hover, per tile ----
+  // there used to be drag-to-orbit here too. it left models turned to odd
+  // angles that were hard to read, so they stay put now; dragQuat stays identity
   cell.addEventListener('pointerenter', () => view.hover = 1);
   cell.addEventListener('pointerleave', () => view.hover = 0);
-  el.addEventListener('pointerdown', e => {
-    if (cfg.noDrag) return;
-    view.drag = {x:e.clientX, y:e.clientY, moved:0};
-    el.setPointerCapture(e.pointerId);
-  });
-  el.addEventListener('pointermove', e => {
-    if (!view.drag) return;
-    const dx = e.clientX - view.drag.x, dy = e.clientY - view.drag.y;
-    view.drag.x = e.clientX; view.drag.y = e.clientY;
-    view.drag.moved += Math.abs(dx) + Math.abs(dy);
-    const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(dy*0.006, dx*0.006, 0, 'XYZ'));
-    view.dragQuat.premultiply(q);
-  });
-  const endDrag = e => {
-    if (!view.drag) return;
-    // a drag is not a click: swallow the navigation if they actually orbited
-    if (view.drag.moved > 6) { const kill = ev => {ev.preventDefault();ev.stopPropagation();};
-      el.addEventListener('click', kill, {capture:true, once:true});
-      setTimeout(()=>el.removeEventListener('click',kill,{capture:true}),0); }
-    view.drag = null;
-  };
-  el.addEventListener('pointerup', endDrag);
-  el.addEventListener('pointercancel', endDrag);
 
   // ---- the field tile's clips ----
   // The phone in the meadow is the GLB, so its clip is a texture on the model
@@ -7029,18 +7198,31 @@ stations.forEach((cfg,i) => {
    the bounds get measured and the content shifted onto the middle of the tile.
    The same measurement gives the camera distance, so nothing crops either. */
 const _box = new THREE.Box3(), _sph = new THREE.Sphere();
+// bounds of everything except furniture (userData.noFrame), which is allowed
+// to run off the edges of the tile
+function framedBox(root){
+  root.updateMatrixWorld(true);
+  _box.makeEmpty();
+  (function walk(o){
+    if (o.userData.noFrame) return;
+    if (o.isMesh) _box.expandByObject(o);
+    else o.children.forEach(walk);
+  })(root);
+}
 function frameContent(v){
   if (v.cfg.parallax) return;                 // Equinox is framed by hand
   if (!v.content.children.length) return;
-  _box.setFromObject(v.content);
+  framedBox(v.content);
   if (_box.isEmpty()) return;
   const c = _box.getCenter(new THREE.Vector3());
   v.content.position.sub(c);                  // origin now sits at the true middle
-  _box.setFromObject(v.content);
+  framedBox(v.content);
   const size = _box.getSize(new THREE.Vector3());
   v.halfW = size.x / 2;
   v.halfH = size.y / 2;
   v.halfD = size.z / 2;
+  // a tile with a caption card over its lower third can lift its scene above it
+  if (v.cfg.frameY) v.content.position.y += v.cfg.frameY;
   v.framed = true;
 }
 
@@ -7192,12 +7374,15 @@ function renderFrame(){
     v.driftEase += (v.hover - v.driftEase) * dt * 4;
     const amp  = v.driftAmp * (1 + v.driftEase * 0.5);
     const yaw  = Math.sin(t * v.driftRate + v.phase) * amp;
-    const tilt = Math.sin(t * v.driftRate * 0.7 + v.phase * 1.3) * amp * 0.28;
+    // a grounded tile is something resting on a surface: it can turn a touch,
+    // but it never tips or bobs, or it reads as floating
+    const grounded = v.cfg.grounded;
+    const tilt = grounded ? 0 : Math.sin(t * v.driftRate * 0.7 + v.phase * 1.3) * amp * 0.28;
     _e.set(tilt, yaw, 0);
     v.pivot.quaternion.setFromEuler(_e).premultiply(v.dragQuat);
     // a slow bob so nothing is ever perfectly still
     v.pivot.position.y = (v.framed ? 0 : (LIFT[v.cfg.name] || 0)) - (v.artAnchorY || 0)
-                       + Math.sin(t * .6 + v.cfg.name.length) * (v.artAnchorY ? .02 : .08);
+                       + (grounded ? 0 : Math.sin(t * .6 + v.cfg.name.length) * (v.artAnchorY ? .02 : .08));
     if (v.dust) v.dust.rotation.y += dt * 0.02;
     if (v.screenVideo) paintScreen(v.screenVideo);
 
@@ -7744,7 +7929,10 @@ document.addEventListener('click', e => {
                9am quote (4 lines in the rail) so the whole nav kept nudging.
                measured in one go so the test text never actually paints */
             function reserve() {
-                if (!tagline) return;
+                // hidden (a case study is open, or the intro hasn't shown yet)
+                // measures 0, and reserving 0 is what let the nav jump again
+                // after closing a case study. keep the last good value instead
+                if (!tagline || !tagline.offsetWidth) return;
                 const keep = el.textContent, keepGG = tagline.classList.contains('gg-active');
                 tagline.style.minHeight = '0px';
                 let max = 0;
@@ -7761,6 +7949,12 @@ document.addEventListener('click', e => {
             const queue = () => { cancelAnimationFrame(rq); rq = requestAnimationFrame(reserve); };
             addEventListener('resize', queue);
             addEventListener('railintromove', queue);
+            // the tagline's own width is what decides the wrap, and this also
+            // fires when it comes back from being hidden
+            let lastW = 0;
+            if (window.ResizeObserver && tagline) new ResizeObserver(() => {
+                if (tagline.offsetWidth && tagline.offsetWidth !== lastW) { lastW = tagline.offsetWidth; queue(); }
+            }).observe(tagline);
 
             function type(phrase, cb) {
                 let i = 0; el.textContent = '';
