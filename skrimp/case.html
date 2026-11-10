@@ -1147,10 +1147,13 @@ figure{
     /* how it got here: one slide at a time, snapping, the press carousel's buttons */
     .evo{ margin:2rem 0 1rem; background:rgba(var(--ink-rgb),.045); border:1px solid var(--glass-border); border-radius:18px;
           padding:clamp(16px,2.4vw,28px); }
-    .evo-bar{ display:flex; align-items:center; justify-content:flex-end; gap:.6rem; margin-bottom:1rem; }
+    .evo-bar{ display:flex; align-items:center; gap:.6rem; margin-bottom:.8rem; }
+    .evo-step--bar{ margin-right:auto; align-self:center; }
+    /* the step label lives in the bar now, in line with the arrows */
+    .evo-slide > .evo-step{ display:none; }
     .evo-hint{ font:400 .9rem/1 'DotempDemo', monospace; letter-spacing:.06em; color:var(--text-primary); margin-right:auto; }
     .evo-count{ font-size:.85rem; color:var(--text-secondary); font-variant-numeric:tabular-nums; margin-right:.3rem; }
-    .evo-thumbs{ display:flex; justify-content:center; gap:clamp(6px,1vw,12px); margin-top:1.1rem; flex-wrap:wrap; }
+    .evo-thumbs{ display:flex; justify-content:center; gap:clamp(6px,1vw,12px); margin-top:.35rem; flex-wrap:wrap; }
     .evo-thumb{ width:clamp(54px,9vw,92px); aspect-ratio:4/3; padding:0; border-radius:10px; overflow:hidden; cursor:pointer;
                 border:2px solid transparent; background:var(--inner-card, #fff); opacity:.55; transition:opacity .2s, border-color .2s, transform .2s; }
     .evo-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
@@ -1161,7 +1164,9 @@ figure{
     .evo-track::-webkit-scrollbar{ display:none; }
     .evo-slide{ flex:0 0 100%; margin:0; scroll-snap-align:center; display:flex; flex-direction:column; align-items:center; gap:.7rem; }
     .evo-track{ align-items:flex-start; }
-    .evo-media{ height:clamp(260px,40vw,500px); width:100%; display:flex; align-items:center; justify-content:center; }
+    .evo-media{ height:clamp(300px,46vw,590px); width:100%; display:flex; align-items:center; justify-content:center; }
+    /* no dynamic island on the demo phone, it sits right on top of the app's header */
+    .evo-media .phone-screen::after{ display:none; }
     .evo-media img{ max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; border-radius:14px; display:block; }
     .evo-media .phone{ height:100%; width:auto !important; aspect-ratio:auto; box-sizing:border-box; }
     .evo-media .phone-screen{ height:100%; width:auto; aspect-ratio:9 / 19.5; }
@@ -1365,9 +1370,10 @@ figure{
           <h2 class="section-heading">It didn&rsquo;t start as an app.</h2>
           <p class="lede">It started as a piece of paper, and I&rsquo;m glad we never handed it out.</p>
           <p>The very first idea was a printed flyer: hand one out every week with the meal plan and the grocery list on it, and the website would just hold the recipes. We dropped it, partly because we didn&rsquo;t want to get in trouble handing things out, and partly because talking to people made me ask myself whether I&rsquo;d ever actually kept a flyer someone handed me. I hadn&rsquo;t. Do you?</p>
-          <p>Every version after that came out of working semi-closely with about 15 people, how closely varying a bit from person to person, and each one was a reaction to what they told me. The early app was very mathy: cost per serving, fractions of a package, deal percentages on everything. It was accurate, and nobody wanted to look at it. Saving money already feels like a chore, so the plan had to look like food you&rsquo;d actually want to eat. The math didn&rsquo;t go anywhere. It moved behind the scenes, and the food moved to the front.</p>
+          <p>Every version after that came from working with about 15 people, some more closely than others. We started out very mathy: cost per serving, how much of each package you&rsquo;d use, the deal on every single item. It was all correct, but it felt like doing homework. Saving money already feels like a chore, and I wanted planning your week to feel nice, more like picking out food you actually want to eat. So the math moved behind the scenes. It still does all the work, but the food is what you see first.</p>
           <div class="evo reveal">
             <div class="evo-bar">
+              <span class="evo-step evo-step--bar" id="evo-step" aria-live="polite">01 &middot; the flyer</span>
               <span class="evo-count" id="evo-count" aria-live="polite">1 / 4</span>
               <button class="press-nav-btn" id="evo-prev" type="button" aria-label="Previous">&larr;</button>
               <button class="press-nav-btn" id="evo-next" type="button" aria-label="Next">&rarr;</button>
@@ -1391,7 +1397,7 @@ figure{
               <figure class="evo-slide evo-slide--phone">
                 <span class="evo-step">04 &middot; now</span>
                 <div class="evo-media"><div class="phone"><div class="phone-screen" style="background:#f4f6f5 url(vid/skrimp-now.jpg) center/cover">
-                  <video src="vid/skrimp-now.mp4" poster="vid/skrimp-now.jpg" muted loop playsinline preload="metadata" aria-label="Skrimp on a phone: Smart Load fills breakfast, lunch and dinner, and each row of meals scrolls past with its price and deals"></video>
+                  <video src="vid/skrimp-now.mp4?v=4" poster="vid/skrimp-now.jpg?v=4" muted loop playsinline preload="metadata" aria-label="Skrimp on a phone: Smart Load fills breakfast, lunch and dinner, and each row of meals scrolls past with its price and deals"></video>
                 </div></div></div>
                 <figcaption>And now: Smart Load fills breakfast, lunch and dinner from this week&rsquo;s deals. Recorded on a local build with sample recipes.</figcaption>
               </figure>
@@ -1400,9 +1406,12 @@ figure{
               <button type="button" class="evo-thumb on" aria-label="01, the flyer"><img src="img/early-flyer.webp" alt=""></button>
               <button type="button" class="evo-thumb" aria-label="02, the first app"><img src="img/early-flow-v1.webp" alt=""></button>
               <button type="button" class="evo-thumb" aria-label="03, it starts planning"><img src="img/early-flow-v2.webp" alt=""></button>
-              <button type="button" class="evo-thumb" aria-label="04, now"><img src="vid/skrimp-now.jpg" alt=""></button>
+              <button type="button" class="evo-thumb" aria-label="04, now"><img src="vid/skrimp-now.jpg?v=4" alt=""></button>
             </div>
           </div>
+          <p><strong>Rows you swipe, not a two-column grid.</strong> The early app laid every meal out as two columns of cards, which on a phone meant tiny cards and a lot of scrolling. Now each meal is one row you swipe through with your thumb, so breakfast, lunch and dinner each take up a single line of the screen.</p>
+          <p><strong>From switching recipes on and off, to Smart Load or the whole catalogue.</strong> The first app handed you a preset week, and you clicked recipes on or off to keep them, which is why some of them are greyed out in those early screens. Now you can let Smart Load fill a meal with the best deals in one tap, or browse the full catalogue and pick whatever you like. Browsing gives you more freedom and usually a bit less saving, since sales change every week, but plenty of the catalogue is still a really good deal.</p>
+          <p><strong>A chef, not a robot.</strong> The mascot used to be a faceless robot. Between having no face and the idea of a robot in your home, it made some people uneasy, especially parents, who were the most careful about their family&rsquo;s privacy. Now it&rsquo;s a little chef with a face, which is a much easier thing to invite into your kitchen.</p>
         </div>
       </section>
 
@@ -2197,7 +2206,7 @@ figure{
     (function () {
       const t = document.getElementById('evo-track'); if (!t) return;
       const slides = [...t.querySelectorAll('.evo-slide')], thumbs = [...document.querySelectorAll('.evo-thumb')];
-      const count = document.getElementById('evo-count');
+      const count = document.getElementById('evo-count'), stepEl = document.getElementById('evo-step');
       const go = i => t.scrollTo({ left: slides[Math.max(0, Math.min(slides.length - 1, i))].offsetLeft - t.offsetLeft, behavior: 'smooth' });
       const now = () => Math.round(t.scrollLeft / t.clientWidth);
       document.getElementById('evo-next').onclick = () => go(now() + 1);
@@ -2206,6 +2215,7 @@ figure{
       let raf = 0;
       t.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => {
         const i = now(); count.textContent = (i + 1) + ' / ' + slides.length;
+        stepEl.textContent = slides[i].querySelector('.evo-step').textContent;
         thumbs.forEach((b, k) => { b.classList.toggle('on', k === i); b.setAttribute('aria-current', k === i ? 'true' : 'false'); });
       }); });
       const v = t.querySelector('video');
