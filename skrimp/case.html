@@ -1143,6 +1143,16 @@ figure{
     :root:not([data-theme="dark"]) .body-img-caption{ color:#4d7977; opacity:1; }
     :root:not([data-theme="dark"]) .highlight-box > strong:first-child{ color:#0d7772 !important; }
     :root:not([data-theme="dark"]) .card h4{ color:#417976; opacity:1; }
+
+    /* how it got here: one slide at a time, snapping, the press carousel's buttons */
+    .evo{ margin:2rem 0 1rem; }
+    .evo-track{ display:flex; gap:clamp(14px,2vw,24px); overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; padding-bottom:.25rem; }
+    .evo-track::-webkit-scrollbar{ display:none; }
+    .evo-slide{ flex:0 0 100%; margin:0; scroll-snap-align:center; display:flex; flex-direction:column; align-items:center; gap:.7rem; }
+    .evo-slide img{ width:100%; max-height:min(470px,62vh); object-fit:contain; border-radius:14px; display:block; }
+    .evo-slide .phone{ width:min(270px,70vw); }
+    .evo-step{ align-self:flex-start; font:400 .82rem/1 'DotempDemo', monospace; letter-spacing:.08em; text-transform:uppercase; color:var(--text-secondary); }
+    .evo-slide figcaption{ font-style:italic; text-align:center; max-width:56ch; font-size:.88rem; line-height:1.55; color:var(--text-secondary); }
 </style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
@@ -1319,6 +1329,51 @@ figure{
               <div class="stats-number">20%</div>
               <div class="stats-title">have started skipping meals</div>
               <p class="stats-desc">Cost pressure is no longer theoretical, it is directly affecting nutrition.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-rule">
+
+      <section id="evolution">
+        <div class="section-content reveal">
+          <h2 class="section-heading">It didn&rsquo;t start as an app.</h2>
+          <p class="lede">It started as a piece of paper, and I&rsquo;m glad we never handed it out.</p>
+          <p>The very first idea was a printed flyer: hand one out every week with the meal plan and the grocery list on it, and the website would just hold the recipes. We dropped it, partly because we didn&rsquo;t want to get in trouble handing things out, and partly because talking to people made me ask myself whether I&rsquo;d ever actually kept a flyer someone handed me. I hadn&rsquo;t. Do you?</p>
+          <div class="evo reveal">
+            <div class="evo-track" id="evo-track" tabindex="0" role="region" aria-label="How Skrimp changed, from the first idea to now. Scrolls sideways.">
+              <figure class="evo-slide">
+                <span class="evo-step">01 &middot; the flyer</span>
+                <img src="img/early-flyer.webp" alt="Two drafts of a printed Skrimp flyer: a week of meals in a grid, a featured taco recipe, a grocery list with prices, and 21 meals planned for $110.29" loading="lazy">
+                <figcaption>Two drafts of the flyer that never got handed out. 21 meals for $110.29, planned around one store&rsquo;s deals.</figcaption>
+              </figure>
+              <figure class="evo-slide">
+                <span class="evo-step">02 &middot; the first app</span>
+                <img src="img/early-flow-v1.webp" alt="Three phones showing the first Skrimp app: choosing a store, planning breakfasts with costs and deals, and a shopping list with totals" loading="lazy">
+                <figcaption>The first app followed a week of cooking: pick a store, plan, shop, cook.</figcaption>
+              </figure>
+              <figure class="evo-slide">
+                <span class="evo-step">03 &middot; the reality check</span>
+                <img src="img/early-receipt.webp" alt="A grocery receipt totalling $212.00 next to the Skrimp shopping list showing a grocery bill of $198.13 before tax" loading="lazy">
+                <figcaption>Checked against a real shop: Skrimp said $198.13 before tax, and the receipt came to $212.00 after.</figcaption>
+              </figure>
+              <figure class="evo-slide">
+                <span class="evo-step">04 &middot; it starts planning</span>
+                <img src="img/early-flow-v2.webp" alt="Three phones: Skrimp optimizing combinations, empty breakfast, lunch and dinner slots offering ten recommendations, then a filled breakfast with prices" loading="lazy">
+                <figcaption>Then Skrimp started doing the planning: it builds the week from the deals, and you fill in the gaps.</figcaption>
+              </figure>
+              <figure class="evo-slide evo-slide--phone">
+                <span class="evo-step">05 &middot; now</span>
+                <div class="phone"><div class="phone-screen" style="background:#f4f6f5 url(vid/skrimp-now.jpg) center/cover">
+                  <video src="vid/skrimp-now.mp4" poster="vid/skrimp-now.jpg" muted loop playsinline preload="metadata" aria-label="Skrimp on a phone: Smart Load fills breakfast, lunch and dinner, and each row of meals scrolls past with its price and deals"></video>
+                </div></div>
+                <figcaption>And now: Smart Load fills breakfast, lunch and dinner from this week&rsquo;s deals. Recorded on a local build with sample recipes.</figcaption>
+              </figure>
+            </div>
+            <div class="press-nav-row">
+              <button class="press-nav-btn" id="evo-prev" type="button" aria-label="Previous">&larr;</button>
+              <button class="press-nav-btn" id="evo-next" type="button" aria-label="Next">&rarr;</button>
             </div>
           </div>
         </div>
@@ -2106,5 +2161,19 @@ figure{
   })();
   </script>
   <script src="/js/lightbox.js" defer></script>
+
+  <script>
+    /* the progression carousel: arrows move a slide, the phone clip only plays while it's the one showing */
+    (function () {
+      const t = document.getElementById('evo-track'); if (!t) return;
+      const step = () => t.clientWidth;
+      document.getElementById('evo-next').onclick = () => t.scrollBy({ left: step(), behavior: 'smooth' });
+      document.getElementById('evo-prev').onclick = () => t.scrollBy({ left: -step(), behavior: 'smooth' });
+      const v = t.querySelector('video');
+      if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.intersectionRatio > .6 ? v.play().catch(() => {}) : v.pause()),
+        { root: t, threshold: [0, .6, 1] }).observe(v.closest('.evo-slide'));
+    })();
+  </script>
 </body>
 </html>
