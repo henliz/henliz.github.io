@@ -5092,6 +5092,13 @@ body::after{
                     <td><span class="ns-outcome-pill">live</span></td>
                   </tr>
                   <tr>
+                    <td>Nightingale</td>
+                    <td>A patient&rsquo;s story heard at the scene, then lost somewhere between the fire truck, the ambulance and the ER.</td>
+                    <td><span class="ns-chaos-tag ns-tag-coord">coordination</span><span class="ns-chaos-tag ns-tag-user">user state</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
+                    <td>A button-operated wearable that turns what the crew says into a reviewed draft record, and a dashboard that carries it to the paramedics and the ER.</td>
+                    <td><span class="ns-outcome-pill">field testing</span></td>
+                  </tr>
+                  <tr>
                     <td>My Auntie</td>
                     <td>Postpartum fog. Weeks without sleep. Questions too big to google at 3am.</td>
                     <td><span class="ns-chaos-tag ns-tag-user">user state</span><span class="ns-chaos-tag ns-tag-const">constraints</span></td>
@@ -5989,7 +5996,7 @@ const eul = (x,y,z)=>new THREE.Euler(
         // hovering plays a bit of the product film
         name:'Lost in Handoff', category:'UX Research / Healthcare',
         tagline:'What responders learn at the scene, actually reaching the hospital',
-        title:'Lost in Handoff', year:'2026',
+        title:'Nightingale', year:'2026',
         // the v10 nightingale film, just the run where it hears the scene,
         // fills the dash, takes a photo and files it: 50.5s to 66.7s, looped
         video:{ kind:'file', src:'lostinhandoff/nightingale-loop.mp4' },
@@ -5997,8 +6004,9 @@ const eul = (x,y,z)=>new THREE.Euler(
         tags:['Capstone','B2G','Safety-critical'],
         href:'/nightingale/',
         // the slide cover recomposed at 4:3: paper and halftone extended top
-        // and bottom, the two of them fading into it (lostinhandoff/cover-43.webp)
-        cover:'lostinhandoff/cover-43.webp', noDrag:true,
+        // and bottom, the two of them fading into it (lostinhandoff/cover-43.webp).
+        // the title on it now says NIGHTINGALE, with lost in handoff under it
+        cover:'lostinhandoff/cover-43.webp?v=nightingale',
         theme:{ accent:'196, 40, 40', accent2:'240, 140, 60', scene:'handoff' },
       },
       {
