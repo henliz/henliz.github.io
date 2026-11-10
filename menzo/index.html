@@ -6592,7 +6592,7 @@ stations.forEach((cfg,i) => {
   const tag = cfg.href ? 'a' : 'div';
   const to  = cfg.href ? ` href="${cfg.href}"` : '';
   cell.innerHTML =
-    `<${tag} class="tile${cfg.href ? '' : ' is-soon'}"${to}>
+    `<${tag} class="tile${cfg.href ? '' : ' is-soon'}"${to}${cfg.href ? ` aria-label="${cfg.title} case study: ${cfg.tagline.replace(/"/g, '&quot;')}"` : ''}>
        <div class="tile-scrim"></div>
        ${mascotHtml}
        ${videoHtml}

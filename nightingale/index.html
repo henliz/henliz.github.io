@@ -4112,10 +4112,9 @@ body::after{
 <li>A closed loop. The paramedic accepts the record, the ER scans a QR code, and both sides see “Received by triage.” Nobody in this chain could ever confirm what was received.</li>
 <li>No hospital integration. Hospital systems can’t take a feed, so the ER gets a read-only link and a printed page that rides its existing scan path.</li>
 <p>V3 made it work. We rebuilt the Figma flows as working code, so responders can click through them, and I wired it to the real drill data coming off the device so we could see how actual scene data fits the design. Here’s Maryhill case 1, the backyard barbecue cardiac arrest, as the dashboard holds it now. Every value below came from the recording.</p>
-<p>Click through the Figma prototype →</p>
 <h2>Privacy was the reason anyone would use it.</h2>
 <p>Responders and physicians raised privacy and control more than anything else, so Cindy and I made them the first thing the backend got right.</p>
-<p>Cindy and I worked out the security and privacy approach together, and she shipped the hardening pass. Here’s what it does now:</p>
+<p>Cindy and I worked out the security and privacy approach and built it together, with Cindy taking the lead on more of the implementation. Here’s what it does now:</p>
 <li>Nothing opens without a key, and a key only opens what it’s allowed to. The production server won’t even start without them.</li>
 <li>A record and its photos belong to whoever made them. Reading someone else’s takes an explicit admin override, and that gets logged too.</li>
 <li>Every read and write leaves a trail that can’t be quietly edited. Each audit entry is chained to the one before it, so changing an old entry breaks the chain.</li>
@@ -6621,7 +6620,7 @@ stations.forEach((cfg,i) => {
   const tag = cfg.href ? 'a' : 'div';
   const to  = cfg.href ? ` href="${cfg.href}"` : '';
   cell.innerHTML =
-    `<${tag} class="tile${cfg.href ? '' : ' is-soon'}"${to}>
+    `<${tag} class="tile${cfg.href ? '' : ' is-soon'}"${to}${cfg.href ? ` aria-label="${cfg.title} case study: ${cfg.tagline.replace(/"/g, '&quot;')}"` : ''}>
        <div class="tile-scrim"></div>
        ${mascotHtml}
        ${videoHtml}
