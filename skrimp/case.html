@@ -1085,7 +1085,7 @@ figure{
   margin:clamp(6px,1.4vh,18px) auto clamp(40px,5.6vh,72px) !important;
   max-width:min(940px,100%);
   text-align:center;
-  font-size:clamp(1.85rem,4.3vw,3.2rem);
+  font-size:clamp(2.2rem,5.2vw,3.9rem);
   line-height:1.16;
   letter-spacing:-.02em;
   font-weight:400;
@@ -1098,7 +1098,7 @@ figure{
   white-space:normal;
 }
 @media (max-width:760px){
-  .case-title{ font-size:clamp(1.75rem,7.4vw,2.4rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
+  .case-title{ font-size:clamp(2rem,8.6vw,2.8rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
 }
 </style>
 
@@ -1182,6 +1182,44 @@ figure{
             width:31%; height:22px; border-radius:99px; background:#0b0b0d; z-index:2; pointer-events:none; }
     .showcase-stage{ background:rgba(var(--ink-rgb),.045); border:1px solid var(--glass-border); border-radius:18px;
             padding:clamp(22px,3.4vw,46px) clamp(16px,2.4vw,32px) !important; }
+
+/* captions: one style on every case study. italic, centred, under the
+   picture or video, in this case's own colour */
+.cap, figcaption, .body-img-caption{
+  font-family:'Satoshi',sans-serif !important; font-style:italic !important; font-weight:400 !important;
+  font-size:.84rem !important; line-height:1.5 !important; letter-spacing:normal !important; text-transform:none !important;
+  color:var(--text-secondary) !important; opacity:.88 !important; text-align:center !important;
+}
+.cap strong, figcaption strong{ font-weight:600; }
+
+/* skip to the takeaways: a flat pill tinted in this case's own colour.
+   no gradient, glow or sheen. it fills solid when you point at it */
+.skip-button{display:inline-flex !important;align-items:center;gap:.5rem;padding:.62rem 1.3rem !important;
+  background:rgba(var(--accent-rgb),.13) !important;border:1px solid rgba(var(--accent-rgb),.42) !important;border-radius:999px !important;
+  color:var(--text-secondary) !important;font-family:'Satoshi',sans-serif !important;font-size:.78rem !important;font-weight:700 !important;letter-spacing:.1em !important;
+  text-transform:uppercase !important;text-decoration:none !important;box-shadow:none !important;transform:none !important;overflow:visible !important;
+  transition:background .18s ease,color .18s ease,border-color .18s ease !important}
+.skip-button::before{display:none !important}
+.skip-button:hover,.skip-button:focus-visible{background:var(--text-secondary) !important;border-color:var(--text-secondary) !important;color:var(--paper) !important;transform:none !important;box-shadow:none !important}
+
+/* one rhythm for every case study. a small step between paragraphs, a
+   bigger one around anything that isn't a paragraph (pictures, videos,
+   boxes, rows), a caption tight under what it describes, and a caption
+   closes its picture's group the same way the picture would */
+.section-content{ --g-text:2.15rem; --g-block:3.1rem; }
+.section-content > *{ margin-top:0 !important; margin-bottom:0 !important; }
+.section-content > * + *{ margin-top:var(--g-block) !important; }
+.section-content > :is(p:not(.cap), ul, ol) + :is(p:not(.cap), ul, ol){ margin-top:var(--g-text) !important; }
+.section-content > * + :is(p.cap, figcaption){ margin-top:.75rem !important; }
+.section-content > .section-heading + *{ margin-top:1.9rem !important; }
+/* an old rule gives every figure a big top and bottom margin. that's only
+   right for a figure standing on its own in the column; one inside a row,
+   a pair or a wrap was getting 56px of air above it */
+.section-content > * :is(figure, .highlight-box, .steps, .pull-quote, .body-img, .vid-crop, .showcase, .stats-grid, .quote-grid){ margin-top:0 !important; margin-bottom:0 !important; }
+.section-content .chart-aside .chart-figure{ margin:.4rem 0 1rem 1.75rem !important; }
+@media(max-width:768px){ .section-content .chart-aside .chart-figure{ margin:0 0 1.25rem !important; } }
+.section-content > :is(h3, h4):not(.section-heading) + *{ margin-top:1rem !important; }
+@media (max-width:720px){ .section-content{ --g-text:1.6rem; --g-block:3rem; } }
 </style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
@@ -2008,19 +2046,24 @@ figure{
           cancelAnimationFrame(anim);
           scroller().style.scrollBehavior='';
         };
-        const glide=to=>{
+        /* the target is measured every frame, not once. lazy images and the
+           systems map load in while we glide and push sections down, so a
+           fixed number lands short. after arriving it keeps hold for a beat
+           while things settle, unless the reader scrolls */
+        const glide=target=>{
           const se=scroller();
+          const goal=()=>Math.max(0,Math.min(target(),se.scrollHeight-innerHeight));
           const from=se.scrollTop;
-          const dist=Math.max(0,Math.min(to,se.scrollHeight-innerHeight))-from;
-          if(!dist)return;
+          const dist0=goal()-from;
+          if(!dist0)return;
           stopGlide();
           se.style.scrollBehavior='auto';
           const t0=performance.now();
-          const dur=Math.min(900,Math.max(320,Math.abs(dist)*0.45));
+          const dur=Math.min(900,Math.max(320,Math.abs(dist0)*0.45));
           const step=now=>{
             const t=Math.min(1,(now-t0)/dur);
-            se.scrollTop=from+dist*ease(t);
-            if(t<1)anim=requestAnimationFrame(step);
+            se.scrollTop=from+(goal()-from)*ease(t);
+            if(now-t0<dur+1200)anim=requestAnimationFrame(step);
             else se.style.scrollBehavior='';
           };
           anim=requestAnimationFrame(step);
@@ -2034,7 +2077,7 @@ figure{
           if(d.type==='caseTocRequest')sendToc();
           else if(d.type==='caseScrollTo'){
             const el=d.id?document.getElementById(d.id):null;
-            glide(el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
+            glide(()=>el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
           }
         });
         /* tell the rail which section the reader is in */
