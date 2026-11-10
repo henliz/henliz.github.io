@@ -23,10 +23,26 @@ design, no second page.
 
 Re-run after any change to index.html or a case file:  python3 build-routes.py
 """
-import pathlib, re, html as _html
+import pathlib, re, hashlib, html as _html
 
 ROOT = pathlib.Path(__file__).parent
-SHELL = (ROOT / 'index.html').read_text(encoding='utf-8')
+# every case link carries a fingerprint of its case.html, so a push is never
+# hidden behind the browser's ten-minute cache of the page inside the pane.
+# written back into index.html too, since that's the shell everything copies
+def _stamp(html):
+    def one(m):
+        f = ROOT / m.group(1) / 'case.html'
+        if not f.exists():
+            return m.group(0)
+        v = hashlib.sha1(f.read_bytes()).hexdigest()[:8]
+        return f"'/{m.group(1)}/case.html?v={v}'"
+    return re.sub(r"'/([a-z0-9-]+)/case\.html(?:\?v=[0-9a-f]+)?'", one, html)
+_index = ROOT / 'index.html'
+_src = _index.read_text(encoding='utf-8')
+_stamped = _stamp(_src)
+if _stamped != _src:
+    _index.write_text(_stamped, encoding='utf-8', newline='\n')
+SHELL = _stamped
 
 ROUTES = {
  'trove':   ("Trove — Henriëtta van Niekerk",
