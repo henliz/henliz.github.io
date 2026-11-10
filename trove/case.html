@@ -1019,7 +1019,7 @@ figure{
   margin:clamp(6px,1.4vh,18px) auto clamp(40px,5.6vh,72px) !important;
   max-width:min(940px,100%);
   text-align:center;
-  font-size:clamp(1.85rem,4.3vw,3.2rem);
+  font-size:clamp(2.2rem,5.2vw,3.9rem);
   line-height:1.16;
   letter-spacing:-.02em;
   font-weight:400;
@@ -1032,7 +1032,7 @@ figure{
   white-space:normal;
 }
 @media (max-width:760px){
-  .case-title{ font-size:clamp(1.75rem,7.4vw,2.4rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
+  .case-title{ font-size:clamp(2rem,8.6vw,2.8rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
 }
 </style>
 
@@ -1077,6 +1077,57 @@ figure{
 
     /* in-box captions sit on the box tint, so a touch darker to keep 4.5:1 */
     :root:not([data-theme="dark"]) .showcase-stage > .cap{ color:#735f49; }
+
+/* the inherited version: a desktop screen in the same dark bezel as the phones */
+.before-stage{ align-items:center !important; }
+.before-stage .desk-screen{
+  flex:1 1 auto; max-width:620px; min-width:0;
+  background:linear-gradient(155deg,#3c3c41,#17171a 42%,#2e2e33);
+  border-radius:16px; padding:9px;
+  box-shadow:0 18px 46px rgba(var(--sh-rgb),calc(.30 * var(--sh-k))), inset 0 0 0 1px rgba(255,255,255,.10);
+}
+.before-stage .desk-screen img{ display:block; width:100%; height:auto; border-radius:9px !important; }
+.before-stage .phone{ width:min(230px,60vw) !important; }
+.before-stage .phone-screen img{ height:100% !important; object-fit:cover; object-position:top; }
+@media (max-width:820px){ .before-stage .desk-screen{ flex:1 1 100%; } }
+
+/* captions: one style on every case study. italic, centred, under the
+   picture or video, in this case's own colour */
+.cap, figcaption, .body-img-caption{
+  font-family:'Satoshi',sans-serif !important; font-style:italic !important; font-weight:400 !important;
+  font-size:.84rem !important; line-height:1.5 !important; letter-spacing:normal !important; text-transform:none !important;
+  color:var(--accent-ink) !important; opacity:1 !important; text-align:center !important;
+}
+.cap strong, figcaption strong{ font-weight:600; }
+
+/* skip to the takeaways: a flat pill tinted in this case's own colour.
+   no gradient, glow or sheen. it fills solid when you point at it */
+.skip-button{display:inline-flex !important;align-items:center;gap:.5rem;padding:.62rem 1.3rem !important;
+  background:rgba(var(--accent-rgb),.07) !important;border:1px solid rgba(var(--accent-rgb),.42) !important;border-radius:999px !important;
+  color:var(--accent-ink) !important;font-family:'Satoshi',sans-serif !important;font-size:.78rem !important;font-weight:700 !important;letter-spacing:.1em !important;
+  text-transform:uppercase !important;text-decoration:none !important;box-shadow:none !important;transform:none !important;overflow:visible !important;
+  transition:background .18s ease,color .18s ease,border-color .18s ease !important}
+.skip-button::before{display:none !important}
+.skip-button:hover,.skip-button:focus-visible{background:var(--accent-ink) !important;border-color:var(--accent-ink) !important;color:var(--paper) !important;transform:none !important;box-shadow:none !important}
+
+/* one rhythm for every case study. a small step between paragraphs, a
+   bigger one around anything that isn't a paragraph (pictures, videos,
+   boxes, rows), a caption tight under what it describes, and a caption
+   closes its picture's group the same way the picture would */
+.section-content{ --g-text:2.15rem; --g-block:3.1rem; }
+.section-content > *{ margin-top:0 !important; margin-bottom:0 !important; }
+.section-content > * + *{ margin-top:var(--g-block) !important; }
+.section-content > :is(p:not(.cap), ul, ol) + :is(p:not(.cap), ul, ol){ margin-top:var(--g-text) !important; }
+.section-content > * + :is(p.cap, figcaption){ margin-top:.75rem !important; }
+.section-content > .section-heading + *{ margin-top:1.9rem !important; }
+/* an old rule gives every figure a big top and bottom margin. that's only
+   right for a figure standing on its own in the column; one inside a row,
+   a pair or a wrap was getting 56px of air above it */
+.section-content > * :is(figure, .highlight-box, .steps, .pull-quote, .body-img, .vid-crop, .showcase, .stats-grid, .quote-grid){ margin-top:0 !important; margin-bottom:0 !important; }
+.section-content .chart-aside .chart-figure{ margin:.4rem 0 1rem 1.75rem !important; }
+@media(max-width:768px){ .section-content .chart-aside .chart-figure{ margin:0 0 1.25rem !important; } }
+.section-content > :is(h3, h4):not(.section-heading) + *{ margin-top:1rem !important; }
+@media (max-width:720px){ .section-content{ --g-text:1.6rem; --g-block:3rem; } }
 </style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
@@ -1153,6 +1204,15 @@ figure{
           <p class="lede">A quiz can only hand back what you already told it about yourself.</p>
           <p>Most apps that try to understand you start by making you describe yourself, like a LinkedIn bio or a Hinge profile. Trove doesn&rsquo;t. Every day there&rsquo;s a short interactive story (we call them tangles) where you make choices that don&rsquo;t have an obvious right answer. Trove looks at what you chose, writes you a short personality read, and builds up a profile of you over time, a bit like how a friend gets to know you.</p>
           <p>That&rsquo;s easy to describe and hard to build. I joined in April as the first hire on this version of Trove. The idea had been tested once, as a Valentine&rsquo;s Day release in February, and what existed was small: eight pages, sixteen components, and a profile that was still only a mockup. There were no writers and no animators, so over eighteen weeks I designed and built the systems that do those jobs: the pipeline that writes and checks the stories, the story cards, the mascot and the profile.</p>
+          <p>This is what I inherited. One tangle, a start button, and an invite once you finished. The profile wasn&rsquo;t something you could click into, and there was no way to tell if you&rsquo;d already played something.</p>
+          <div class="showcase reveal">
+            <div class="showcase-stage before-stage">
+              <div class="desk-screen"><img src="img/before-desktop.webp" alt="Trove in April on desktop: a single tangle card called Which Button on a pastel gradient, with a start button and a sign in button, and nothing else" loading="lazy"></div>
+              <div class="phone"><div class="phone-screen"><img src="img/before-mobile.webp" alt="Trove in April on a phone, after finishing the day's tangle: the same Which Button card marked done, a line saying now drag a friend in, an invite button and a countdown to tomorrow" loading="lazy"></div></div>
+              <p class="cap">Where Trove was when I started, on desktop and on a phone after finishing the day&rsquo;s tangle. That was the whole app.</p>
+            </div>
+          </div>
+          <p>Here&rsquo;s the first few minutes now.</p>
           <div class="showcase reveal">
             <div class="showcase-stage trio">
               <div class="phone">
@@ -1801,19 +1861,24 @@ figure{
           cancelAnimationFrame(anim);
           scroller().style.scrollBehavior='';
         };
-        const glide=to=>{
+        /* the target is measured every frame, not once. lazy images and the
+           systems map load in while we glide and push sections down, so a
+           fixed number lands short. after arriving it keeps hold for a beat
+           while things settle, unless the reader scrolls */
+        const glide=target=>{
           const se=scroller();
+          const goal=()=>Math.max(0,Math.min(target(),se.scrollHeight-innerHeight));
           const from=se.scrollTop;
-          const dist=Math.max(0,Math.min(to,se.scrollHeight-innerHeight))-from;
-          if(!dist)return;
+          const dist0=goal()-from;
+          if(!dist0)return;
           stopGlide();
           se.style.scrollBehavior='auto';
           const t0=performance.now();
-          const dur=Math.min(900,Math.max(320,Math.abs(dist)*0.45));
+          const dur=Math.min(900,Math.max(320,Math.abs(dist0)*0.45));
           const step=now=>{
             const t=Math.min(1,(now-t0)/dur);
-            se.scrollTop=from+dist*ease(t);
-            if(t<1)anim=requestAnimationFrame(step);
+            se.scrollTop=from+(goal()-from)*ease(t);
+            if(now-t0<dur+1200)anim=requestAnimationFrame(step);
             else se.style.scrollBehavior='';
           };
           anim=requestAnimationFrame(step);
@@ -1827,7 +1892,7 @@ figure{
           if(d.type==='caseTocRequest')sendToc();
           else if(d.type==='caseScrollTo'){
             const el=d.id?document.getElementById(d.id):null;
-            glide(el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
+            glide(()=>el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
           }
         });
         /* tell the rail which section the reader is in */
