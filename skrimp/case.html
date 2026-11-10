@@ -1222,6 +1222,16 @@ figure{
 @media(max-width:768px){ .section-content .chart-aside .chart-figure{ margin:0 0 1.25rem !important; } }
 .section-content > :is(h3, h4):not(.section-heading) + *{ margin-top:1rem !important; }
 @media (max-width:720px){ .section-content{ --g-text:1.6rem; --g-block:3rem; } }
+
+/* the internet noticed: same column and margins as everything else. only the
+   row of news tiles is allowed to run out to the frame edge */
+.press-section{ --pad:clamp(38px,5.4vw,96px); }
+.press-wrapper{ width:min(1160px,94vw) !important; max-width:none !important; margin-inline:auto !important;
+  padding-left:var(--pad) !important; padding-right:var(--pad) !important; }
+.press-section .showcase{ margin-left:0 !important; margin-right:0 !important; }
+.press-track-outer{ margin-left:calc(-1 * var(--pad)) !important; margin-right:calc(-1 * var(--pad)) !important; }
+.press-nav-row{ padding-left:var(--pad) !important; padding-right:var(--pad) !important; }
+@media (max-width:760px){ .press-section{ --pad:clamp(20px,5vw,34px); } }
 </style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
