@@ -5,13 +5,13 @@
   <meta name="description" content="What a fire crew learns at the scene, and whether any of it reaches the hospital. Field research across Ontario fire, paramedic and ER teams, a cost model, and Nightingale, a wearable prototype. Case study by Henriëtta van Niekerk.">
   <link rel="canonical" href="https://henliz.github.io/nightingale/">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Lost in Handoff — Henriëtta van Niekerk">
+  <meta property="og:title" content="Nightingale — Henriëtta van Niekerk">
   <meta property="og:description" content="What a fire crew learns at the scene, and whether any of it reaches the hospital. Field research across Ontario fire, paramedic and ER teams, a cost model, and Nightingale, a wearable prototype. Case study by Henriëtta van Niekerk.">
   <meta property="og:url" content="https://henliz.github.io/nightingale/">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/png" href="/favicon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lost in Handoff &ndash; Case Study</title>
+  <title>Nightingale &ndash; Case Study</title>
   <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
 
   <!-- Fonts -->
@@ -849,6 +849,7 @@
     .wip-note .wip-head{ font-weight:700; font-size:1.5rem; margin-bottom:.35rem; color:#2c2408; }
     .wip-note .wip-sign{ text-align:right; margin-top:.4rem; }
     @media (prefers-reduced-motion:no-preference){ .wip-note{ transition:transform .3s ease; } .wip-note:hover{ transform:rotate(-1deg) translateY(-2px); } }
+    .wip-note .wip-status{ margin-top:.55rem; font-weight:700; color:#2c2408; }
     /* the two photos of me: full colour, bigger, centred */
     .photo-pair{justify-content:center}
     .photo-pair .img-tile{flex:0 1 420px;max-width:46%}
@@ -1048,7 +1049,7 @@ figure{
   margin:clamp(6px,1.4vh,18px) auto clamp(40px,5.6vh,72px) !important;
   max-width:min(940px,100%);
   text-align:center;
-  font-size:clamp(1.85rem,4.3vw,3.2rem);
+  font-size:clamp(2.2rem,5.2vw,3.9rem);
   line-height:1.16;
   letter-spacing:-.02em;
   font-weight:400;
@@ -1061,7 +1062,7 @@ figure{
   white-space:normal;
 }
 @media (max-width:760px){
-  .case-title{ font-size:clamp(1.75rem,7.4vw,2.4rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
+  .case-title{ font-size:clamp(2rem,8.6vw,2.8rem); margin-bottom:clamp(28px,4.4vh,44px) !important; }
 }
 </style>
 
@@ -1108,6 +1109,94 @@ figure{
       border:1px solid var(--glass-border); background:#f4f5f8;
       box-shadow:0 14px 40px rgba(var(--sh-rgb), calc(.28 * var(--sh-k)));
     }
+
+/* captions: one style on every case study. italic, centred, under the
+   picture or video, in this case's own colour */
+.cap, figcaption, .body-img-caption{
+  font-family:'Satoshi',sans-serif !important; font-style:italic !important; font-weight:400 !important;
+  font-size:.84rem !important; line-height:1.5 !important; letter-spacing:normal !important; text-transform:none !important;
+  color:var(--text-secondary) !important; opacity:.88 !important; text-align:center !important;
+}
+.cap strong, figcaption strong{ font-weight:600; }
+
+/* skip to the takeaways: a flat pill tinted in this case's own colour.
+   no gradient, glow or sheen. it fills solid when you point at it */
+.skip-button{display:inline-flex !important;align-items:center;gap:.5rem;padding:.62rem 1.3rem !important;
+  background:rgba(var(--accent-rgb),.13) !important;border:1px solid rgba(var(--accent-rgb),.42) !important;border-radius:999px !important;
+  color:var(--text-secondary) !important;font-family:'Satoshi',sans-serif !important;font-size:.78rem !important;font-weight:700 !important;letter-spacing:.1em !important;
+  text-transform:uppercase !important;text-decoration:none !important;box-shadow:none !important;transform:none !important;overflow:visible !important;
+  transition:background .18s ease,color .18s ease,border-color .18s ease !important}
+.skip-button::before{display:none !important}
+.skip-button:hover,.skip-button:focus-visible{background:var(--text-secondary) !important;border-color:var(--text-secondary) !important;color:var(--paper) !important;transform:none !important;box-shadow:none !important}
+
+/* layout variety: a figure beside its text and rows of three */
+.img-wide.img-sketch img{ background:#fff; max-width:min(860px,100%); margin-inline:auto; }
+.img-wide.img-sketch--sm img{ max-width:min(600px,100%); }
+.wrap{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.82fr); column-gap:clamp(22px,3vw,44px);
+  align-items:center; margin:clamp(26px,3.6vh,42px) 0; }
+.wrap--l{ grid-template-columns:minmax(0,.82fr) minmax(0,1fr); }
+.wrap--r > .wrap-fig{ grid-column:2; grid-row:1; }
+.wrap--r > .wrap-text{ grid-column:1; grid-row:1; }
+.wrap--l > .wrap-fig{ grid-column:1; grid-row:1; }
+.wrap--l > .wrap-text{ grid-column:2; grid-row:1; }
+.wrap-text > p{ margin:0 0 1rem; }
+.wrap-text > p:last-child{ margin-bottom:0; }
+.wrap-fig{ margin:0; min-width:0; }
+.wrap-fig img{ width:100%; height:auto; display:block; border-radius:14px; border:1px solid var(--glass-border);
+  box-shadow:0 12px 34px rgba(var(--sh-rgb), calc(.26 * var(--sh-k))); }
+.wrap-fig:not(.sketch) img{ aspect-ratio:4/3; object-fit:cover; }
+.wrap-fig.sketch img{ background:#fff; }
+.wrap-fig figcaption{ margin-top:.55rem; }
+.img-grid.trio{ flex-wrap:nowrap; }
+.img-grid.trio .img-tile{ flex:1 1 0; min-width:0; }
+@media (max-width:720px){
+  .wrap, .wrap--l{ grid-template-columns:1fr; row-gap:1rem; }
+  .wrap > .wrap-fig, .wrap > .wrap-text{ grid-column:1; grid-row:auto; }
+  .img-grid.trio{ flex-wrap:wrap; }
+  .img-grid.trio .img-tile{ flex:1 1 100%; }
+}
+/* information settles in softly: one fade with a long gentle ease, and a
+   block inside a block that's already arriving just comes with it */
+.reveal{ opacity:0; transform:translateY(12px);
+  transition:opacity .9s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1) !important; }
+.reveal .reveal{ opacity:1 !important; transform:none !important; transition:none !important; }
+@media (prefers-reduced-motion:reduce){ .reveal{ transform:none; transition:opacity .4s linear !important; } }
+
+/* one rhythm for every case study. a small step between paragraphs, a
+   bigger one around anything that isn't a paragraph (pictures, videos,
+   boxes, rows), a caption tight under what it describes, and a caption
+   closes its picture's group the same way the picture would */
+.section-content{ --g-text:2.15rem; --g-block:3.1rem; }
+.section-content > *{ margin-top:0 !important; margin-bottom:0 !important; }
+.section-content > * + *{ margin-top:var(--g-block) !important; }
+.section-content > :is(p:not(.cap), ul, ol) + :is(p:not(.cap), ul, ol){ margin-top:var(--g-text) !important; }
+.section-content > * + :is(p.cap, figcaption){ margin-top:.75rem !important; }
+.section-content > .section-heading + *{ margin-top:1.9rem !important; }
+/* an old rule gives every figure a big top and bottom margin. that's only
+   right for a figure standing on its own in the column; one inside a row,
+   a pair or a wrap was getting 56px of air above it */
+.section-content > * :is(figure, .highlight-box, .steps, .pull-quote, .body-img, .vid-crop, .showcase, .stats-grid, .quote-grid){ margin-top:0 !important; margin-bottom:0 !important; }
+.section-content .chart-aside .chart-figure{ margin:.4rem 0 1rem 1.75rem !important; }
+@media(max-width:768px){ .section-content .chart-aside .chart-figure{ margin:0 0 1.25rem !important; } }
+.section-content > :is(h3, h4):not(.section-heading) + *{ margin-top:1rem !important; }
+@media (max-width:720px){ .section-content{ --g-text:1.6rem; --g-block:3rem; } }
+
+/* a label on the pitch video's cover, so it reads as something to play */
+.video-file.has-cue{ position:relative; }
+.play-cue{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:2;
+  display:flex; align-items:center; gap:.85rem; padding:.85rem 1.4rem .85rem .95rem; border-radius:999px;
+  background:rgba(26,20,16,.72); color:#fff8ee; border:1px solid rgba(255,248,238,.28);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); cursor:pointer;
+  font-family:'Satoshi',sans-serif; text-align:left; transition:background .2s ease, transform .2s ease; }
+.play-cue:hover, .play-cue:focus-visible{ background:rgba(142,27,27,.88); }
+.play-cue:focus-visible{ outline:2px solid #fff8ee; outline-offset:3px; }
+.play-cue__icon{ width:2.6rem; height:2.6rem; border-radius:50%; background:#fff8ee; position:relative; flex:none; }
+.play-cue__icon::after{ content:''; position:absolute; left:54%; top:50%; transform:translate(-50%,-50%);
+  border-left:.8rem solid #8E1B1B; border-top:.5rem solid transparent; border-bottom:.5rem solid transparent; }
+.play-cue__text{ display:flex; flex-direction:column; line-height:1.15; }
+.play-cue__text strong{ font-size:1.15rem; font-weight:700; }
+.play-cue__text span{ font-size:.85rem; opacity:.85; }
+.video-file.is-playing .play-cue{ display:none; }
 </style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
@@ -1123,7 +1212,7 @@ figure{
       <!-- BANNER -->
       <h1 class="case-title reveal">What a fire crew learns at the scene, and whether any of it reaches the hospital.</h1>
       <figure class="case-banner reveal">
-        <img src="img/banner.webp" alt="Lost in Handoff cover: a research proposal title card beside a paramedic and a firefighter reading a clipboard, printed as a halftone collage" width="2400" height="737" fetchpriority="high">
+        <img src="img/banner.webp?v=nightingale4" alt="Nightingale cover: a research proposal title card reading Nightingale, what gets lost in handoff, beside a paramedic and a firefighter reading a clipboard, printed as a halftone collage" width="2400" height="737" fetchpriority="high">
       </figure>
 
       <!-- META -->
@@ -1185,10 +1274,11 @@ figure{
         <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
       </div>
 
-      <aside class="wip-note" aria-label="Work in progress">
+      <aside class="wip-note" aria-label="Project status">
         <span class="wip-tape" aria-hidden="true"></span>
-        <p class="wip-head">heads up, this one&rsquo;s a work in progress!</p>
-        <p>We&rsquo;re still testing Nightingale with fire crews and paramedics, so I&rsquo;m still writing this up as it happens. Check back soon :)</p>
+        <p class="wip-head">heads up, we&rsquo;re still out there testing!</p>
+        <p>Nightingale is in drills with fire crews and paramedics right now, so this page grows as we learn.</p>
+        <p class="wip-status">Status: field testing, updated <time datetime="2026-11-10">Nov 10</time>.</p>
         <p class="wip-sign">&ndash; Hen</p>
       </aside>
 
@@ -1210,19 +1300,26 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">So we built Nightingale.</h2>
           <p class="lede">A button-operated wearable, and a dashboard that carries the reviewed note from fire to paramedics to the ER.</p>
-          <p>At first contact the firefighter presses record, says aloud that they&rsquo;re recording for the medical record, and presses a second button to photograph a pill bottle or the scene. It stores everything on the device and syncs when it finds a network it knows. Speech becomes a draft ePCR, unsure fields get flagged instead of guessed, and the firefighter approves it before anyone else sees it. Paramedics have it before they arrive. The ER gets it by QR code and a PDF, with no new login.</p>
-          <div class="img-grid reveal">
-            <figure class="img-tile"><img src="img/render-flatlay.webp" alt="The Nightingale device front and back on an orange pixel pattern: a dark grey case with the wordmark, a camera and a red pressure plate" loading="lazy"><figcaption>Front and back. The branding is mine: the wordmark and the colourway.</figcaption></figure>
-            <figure class="img-tile"><img src="img/render-button.webp" alt="Close-up of the device's red pressure plate and the nightingale wordmark along its edge" loading="lazy"><figcaption>The pressure plate, big enough to find with a glove on.</figcaption></figure>
+                    <div class="wrap wrap--r reveal">
+            <figure class="wrap-fig wrap-r"><img src="img/render-flatlay.webp" alt="The Nightingale device front and back on an orange pixel pattern: a dark grey case with the wordmark, a camera and a red pressure plate" loading="lazy"><figcaption>Front and back. The branding is mine: the wordmark and the colourway.</figcaption></figure>
+            <div class="wrap-text">
+              <p>At first contact the firefighter presses record, says aloud that they&rsquo;re recording for the medical record, and presses a second button to photograph a pill bottle or the scene. It stores everything on the device and syncs when it finds a network it knows. Speech becomes a draft ePCR, unsure fields get flagged instead of guessed, and the officer leading the call approves it before anyone else sees it. Paramedics have it before they arrive. The ER gets it through a path it already uses, with no new login or system.</p>
+            </div>
           </div>
-          <div class="video-file reveal">
+<div class="video-file has-cue reveal">
+            <button type="button" class="play-cue" aria-label="Play the mini demo"><span class="play-cue__icon" aria-hidden="true"></span><span class="play-cue__text"><strong>Mini demo</strong><span>press to play</span></span></button>
             <video controls playsinline preload="metadata" poster="img/render-hero.webp">
               <source src="nightingale-pitch.mp4?v=3" type="video/mp4">
             </video>
           </div>
           <p class="cap">My product pitch from our MVP video, with the Nightingale film. Sound on.</p>
-          <p>The film walks through one call. It starts at the station, goes through my sketches and what&rsquo;s inside the case, shows where it clips onto a turnout coat, and ends on the Maryhill cardiac arrest drill turning into a draft ePCR. Watch for the moment it catches the cousin and the responder giving two different ages and flags it, instead of picking one. That&rsquo;s the whole idea in one field.</p>
-          <p>None of it started with the device, though. It started with the people whose job this is.</p>
+          <div class="wrap wrap--l reveal">
+            <figure class="wrap-fig wrap-l"><img src="img/render-button.webp" alt="Close-up of the device's red pressure plate and the nightingale wordmark along its edge" loading="lazy"><figcaption>The pressure plate, big enough to find with a glove on.</figcaption></figure>
+            <div class="wrap-text">
+              <p>The film walks through one call. It starts at the station, goes through my sketches and what&rsquo;s inside the case, shows where it clips onto a turnout coat, and ends on the Maryhill cardiac arrest drill turning into a draft ePCR. Watch for the moment it catches the cousin and the responder giving two different ages and flags it, instead of picking one. That&rsquo;s the whole idea in one field.</p>
+            <p>None of it started with the device, though. It started with the people whose job this is.</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1230,7 +1327,7 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">I went where the story starts.</h2>
           <p class="lede">16 sessions with 18 people in Woolwich, Cambridge and Guelph, and a survey of 29 paramedics and ER nurses.</p>
-          <p>Firefighters and officers from two volunteer halls and two career stations, a paramedic, two emergency physicians and three ER nurses. I ran most of it as listening sessions: instead of asking people to describe the process, I asked them to tell me about a call they remembered. A story puts someone back in the moment, and it surfaces the workarounds a procedure question never would.</p>
+                    <p>Firefighters and officers from two volunteer halls and two career stations, a paramedic, two emergency physicians and three ER nurses. I ran most of it as listening sessions: instead of asking people to describe the process, I asked them to tell me about a call they remembered. A story puts someone back in the moment, and it surfaces the workarounds a procedure question never would.</p>
           <div class="img-grid photo-pair reveal">
             <figure class="img-tile img-tile--tall"><img src="img/hen-gear.webp" alt="Henri&euml;tta in borrowed bunker gear and a Maryhill helmet at the fire station" loading="lazy"><figcaption>Borrowed gear at Maryhill.</figcaption></figure>
             <figure class="img-tile img-tile--tall"><img src="img/hen-ambulance.webp" alt="Henri&euml;tta sitting in the back of an ambulance beside the stretcher and monitor" loading="lazy"><figcaption>In the back of an ambulance on a station visit.</figcaption></figure>
@@ -1252,16 +1349,26 @@ figure{
           <figure class="img-wide reveal">
             <img src="slides/storage.webp" alt="Slide: the story lives on gloves and paper. A paper scene sheet, a second form for the same call, a phone report typed after the call, and a glove with a drug count written on it" loading="lazy">
           </figure>
-          <div class="img-grid reveal">
-            <figure class="img-tile"><img src="img/form-scene.webp" alt="Woolwich Fire Department paper On Scene Information Sheet, blank" loading="lazy"><figcaption>Woolwich&rsquo;s On Scene sheet.</figcaption></figure>
-            <figure class="img-tile"><img src="img/form-mvc.webp" alt="Woolwich Township MVC Mandatory Information form, blank" loading="lazy"><figcaption>And a second form for the same call.</figcaption></figure>
+                    <div class="wrap wrap--r reveal">
+            <figure class="wrap-fig wrap-r"><img src="img/form-scene.webp" alt="Woolwich Fire Department paper On Scene Information Sheet, blank" loading="lazy"><figcaption>Woolwich&rsquo;s On Scene sheet.</figcaption></figure>
+            <div class="wrap-text">
+              <p>Because the system is broken, every hall has built its own way around it, and I started treating each workaround as a requirement somebody had already prototyped for us. Maryhill&rsquo;s deputy chief photographs plates and licences into his own Google Photos because handwriting fails him (&ldquo;Is that an 86 or a B6?&rdquo;). Crews bag pill bottles for the ambulance, and Maryhill sends the helmet. A firefighter-EMT up north texted a med list to the incoming paramedics from her own phone, and was told she wasn&rsquo;t allowed to.</p>
+            </div>
           </div>
-          <p>Because the system is broken, every hall has built its own way around it, and I started treating each workaround as a requirement somebody had already prototyped for us. Maryhill&rsquo;s deputy chief photographs plates and licences into his own Google Photos because handwriting fails him (&ldquo;Is that an 86 or a B6?&rdquo;). Crews bag pill bottles for the ambulance, and Maryhill sends the helmet. A firefighter-EMT up north texted a med list to the incoming paramedics from her own phone, and was told she wasn&rsquo;t allowed to.</p>
-          <p>Read together, they told us what has to travel: photos, medications, the scene itself, and the one fact that can&rsquo;t be missed. They also told us where the line is. Nobody will use a personal phone on a call (&ldquo;they could subpoena my phone&rdquo;), and nobody photographs a patient. So anything we built had to belong to the department, capture only what care needs, and stay under the responder&rsquo;s control.</p>
+          <div class="wrap wrap--l reveal">
+            <figure class="wrap-fig wrap-l"><img src="img/form-mvc.webp" alt="Woolwich Township MVC Mandatory Information form, blank" loading="lazy"><figcaption>And a second form for the same call.</figcaption></figure>
+            <div class="wrap-text">
+              <p>Read together, they told us what has to travel: photos, medications, the scene itself, and the one fact that can&rsquo;t be missed. They also told us where the line is. Nobody will use a personal phone on a call (&ldquo;they could subpoena my phone&rdquo;), and nobody photographs a patient. So anything we built had to belong to the department, capture only what care needs, and stay under the responder&rsquo;s control.</p>
+            </div>
+          </div>
           <figure class="img-wide reveal">
             <img src="slides/helmet.webp" alt="Slide: &ldquo;The helmet tells the story.&rdquo; After a motorcycle crash, Maryhill crews send the rider&rsquo;s helmet to the hospital with the patient" loading="lazy">
           </figure>
           <p>The ER side is the same story in different words. The report happens at least twice at the door, the written record arrives by fax hours or days later, and the things physicians said they need most, like scene photos and the pill bottles on the counter, are the things that never travel. An ER nurse and a fire captain both called it a broken telephone, separately.</p>
+                  <figure class="img-wide reveal">
+            <img src="img/journey-map.webp" alt="Journey map following Alvin, a firefighter, and Rick, a paramedic, through a high risk call in seven phases from the 911 call to the ER handoff, with their actions, thoughts and emotions at each step, then opportunities, ownership and metrics" loading="lazy">
+            <figcaption>Alvin and Rick through one call, from the 911 call to the ER. The dashboard&rsquo;s demo accounts are named after them.</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -1273,10 +1380,15 @@ figure{
           <p>That isn&rsquo;t the system working. That&rsquo;s one captain deciding, every call, that the system won&rsquo;t be the reason someone gets the wrong drug. Every time someone like him catches it, the failure stays invisible, and an invisible failure never builds enough pressure to get fixed. Honestly, it&rsquo;s a bit of a miracle it doesn&rsquo;t go wrong more often.</p>
           <p>Underneath that, the system is split. Fire is municipal and sits under MFIPPA. Paramedics and hospitals sit under PHIPA. No record moves between them, and every agency protects its own liability first. We mapped every cause, loop and source into one systems map.</p>
           <div class="map-embed reveal">
-            <iframe src="/lost-in-handoff/?embed" title="Lost in Handoff systems map, animated" loading="lazy"></iframe>
+            <iframe data-src="/lost-in-handoff/?embed" title="Lost in Handoff systems map, animated"></iframe>
           </div>
           <p class="cap">The systems map, rippling out from the core loss. <a href="/lost-in-handoff/" target="_blank" rel="noopener">Open the full interactive map</a>, where every node has its sources.</p>
-          <p>Fire&rsquo;s own history has a rule in it, too. A medication list kept in the fridge died because nobody updated it, and a dispatch app got embraced overnight. &ldquo;If it makes your job easier, it will be embraced.&rdquo; Tools that add a step get dropped. Tools that remove one stay.</p>
+          
+          <p>Fire has tried to fix this before, and its own history says what survives. A community program once had patients keep their medication list in an orange canister in the fridge, and crews were trained to look there first. It died because nobody kept the lists up to date, and a firefighter put the problem plainly: &ldquo;You could get false information.&rdquo; Meanwhile Who&rsquo;s Responding, an app where members just tap to say they&rsquo;re available for a call, was embraced. A Maryhill firefighter summed it up: &ldquo;If it makes your job easier, it will be embraced.&rdquo; Tools that add a step get dropped. Tools that remove one stay, so Nightingale couldn&rsquo;t ask anyone to do one more thing.</p>
+          <figure class="img-wide reveal">
+            <img src="img/stakeholder-map.webp" alt="Stakeholder map: firefighters, paramedics, the scene, the hospital, triage nurses, ER nurses and physicians as primary stakeholders, with decision makers like the fire department, EMS management and hospital administrators, and secondary ones like device makers, IT and software developers" loading="lazy">
+            <figcaption>Everyone a record passes through, and everyone who gets a say in whether a device is allowed on a call.</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -1311,21 +1423,58 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">From cardboard to V3.</h2>
           <p class="lede">I had never built hardware before this. Everything in the build log is something I learned by getting it wrong first.</p>
-          <div class="img-grid reveal">
+          <p><strong>A Pi Zero 2 W, because it&rsquo;s a real computer small enough to clip on.</strong> It records audio in 15-second pieces, keeps the sharpest frame from a photo burst, fingerprints every file and retries uploads, all at once. Pieces, not one long stream, because it has to keep recording while it uploads and transcribes in real time. If the signal drops mid-call, we know exactly which pieces made it and which didn&rsquo;t, and one cut-out can never corrupt the whole recording. It runs no AI, so it can stay small, and the transcription happens on the server.</p>
+          <div class="img-grid trio reveal">
             <figure class="img-tile"><img src="img/pi.webp" alt="A Raspberry Pi Zero 2 W with a heat sink, powered on" loading="lazy"><figcaption>The Pi Zero 2 W. My mom found it, after Marketplace and Amazon didn&rsquo;t.</figcaption></figure>
+            <figure class="img-tile"><img src="img/pi-camera.webp" alt="The Pi in its starter case with the camera module attached by a ribbon cable" loading="lazy"><figcaption>Step one: does it take a picture at all. The ribbon went in upside down the first time.</figcaption></figure>
+            <figure class="img-tile"><img src="img/build-breadboard.webp" alt="The Pi wired to a breadboard with a single push button" loading="lazy"><figcaption>One button on a breadboard, so a press could start a capture with gloves on.</figcaption></figure>
+          </div>
+          <p><strong>The first microphone failed in my bedroom.</strong> A lavalier through a sound card came back garbled at 30 cm in the quietest room I had. If it couldn&rsquo;t work there it couldn&rsquo;t work on a scene, so I swapped it for an INMP441, a digital mic that skips the sound card entirely. It hears in every direction, which suits a captain collecting the story from family across a room. The trade-off is that it hears everything, noise included.</p>
+          <p><strong>Photos, never video.</strong> A Cambridge crew strongly preferred photos on a button press over anything recording continuously, because of privacy, storage and the legal side, and an ER nurse told us paramedics never pass photos on at all, it&rsquo;s all verbal. A photo gives the next person what they actually need: the pill bottle, the vehicle damage, how the scene looked before it changed. Video would capture far more of strangers and their homes than care needs, and Ontario&rsquo;s health privacy law says to collect only what&rsquo;s reasonably necessary. The camera has autofocus because the person wearing it is moving, and every press takes a quick burst and keeps only the sharpest frame.</p>
+          <p><strong>Two physical buttons, one job each.</strong> Gloves can&rsquo;t work a touchscreen, so there isn&rsquo;t one. &ldquo;If it&rsquo;s not easy to turn on, it&rsquo;s not going to get used,&rdquo; a volunteer firefighter told us, so one press always means one thing, with no holding for three seconds. And it never records or takes a photo on its own, because, as an emergency physician put it, &ldquo;you need to make sure that the people using it feel safe.&rdquo;</p>
+          <div class="img-grid trio reveal">
             <figure class="img-tile"><img src="img/cardboard.webp" alt="The cardboard prototype: Pi, camera, breadboard and wired buttons taped into a cardboard box" loading="lazy"><figcaption>V1, cardboard and tape.</figcaption></figure>
             <figure class="img-tile"><img src="img/solder-bench.webp" alt="A soldering bench with an iron, wire strippers, tiny buttons and the cardboard prototype" loading="lazy"><figcaption>Off the breadboard. Four wires took forever.</figcaption></figure>
+            <figure class="img-tile"><img src="img/case-lofi.webp" alt="A hand holding the cardboard prototype, with the camera, a button and the battery pack taped to it" loading="lazy"><figcaption>The first one you could hold. Cardboard, tape, a barcode sticker.</figcaption></figure>
           </div>
-          <p><strong>A Pi Zero 2 W, because it&rsquo;s a real computer small enough to clip on.</strong> It records audio in 15-second pieces, keeps the sharpest frame from a photo burst, fingerprints every file and retries uploads, all at once. It runs no AI, so it can stay small, and the transcription happens on the server.</p>
-          <p><strong>The first microphone failed in my bedroom.</strong> A lavalier through a sound card came back garbled at 30 cm in the quietest room I had. If it couldn&rsquo;t work there it couldn&rsquo;t work on a scene, so I swapped it for an INMP441, a digital mic that skips the sound card entirely.</p>
           <p><strong>Nothing is deleted until the server confirms a perfect copy.</strong> Scenes happen on highways and farms, where nobody hands over a Wi-Fi password.</p>
-          <div class="img-grid reveal">
-            <figure class="img-tile sketch"><img src="img/gear-sketch.webp" alt="Sketches of where the device attaches on a turnout coat, bunker pants and a station uniform" loading="lazy"><figcaption>Where it lives: the radio loop, the suspender strap, the belt.</figcaption></figure>
-            <figure class="img-tile sketch"><img src="img/case-sketch.webp" alt="Sketches of the case tray, lid and pressure plate, with notes on fitting the camera and mic" loading="lazy"><figcaption>My V3 case sketches.</figcaption></figure>
+          <p>Breadboard jumper wires work loose, and a gear pocket isn&rsquo;t a desk, so everything got soldered. The buttons are tiny and there were no helping hands, so pliers held it all still.</p>
+          <p><strong>The case took three versions before anything clipped on.</strong> We started with cardboard and tape so responders had something to hold in drills straight away, and so we could see where their hands went.</p>
+          <figure class="img-wide img-sketch img-sketch--sm reveal">
+            <img src="img/case-layout.webp" alt="A flat layout drawing of every part side by side, with measurements, before modelling the first case" loading="lazy">
+            <figcaption>Everything laid out flat and measured before anyone opened a 3D tool.</figcaption>
+          </figure>
+          <p><strong>Zubi modelled and printed V2.</strong> Every part got laid out flat and measured first, then modelled as a tray and a lid. It came out a lot smaller than the cardboard. Then the camera ribbon fought it. Those ribbons are fickle: a harsh bend or a kink and the camera just stops working, and the print didn&rsquo;t leave it room to curve. So I sliced the print up, gave the ribbon a path, and put it back together.</p>
+          <div class="img-grid trio reveal">
+            <figure class="img-tile"><img src="img/case-v2-model.webp" alt="The first 3D model of the case, a flat tray and lid, in Blender" loading="lazy"><figcaption>Zubi&rsquo;s first model, a tray and a lid.</figcaption></figure>
+            <figure class="img-tile"><img src="img/case-v2-cut.webp" alt="The printed lid with pieces cut out with a box cutter" loading="lazy"><figcaption>Slicing it open so the camera ribbon could curve instead of kink.</figcaption></figure>
+            <figure class="img-tile"><img src="img/case-v2-built.webp" alt="The first printed case, taped shut and labelled Nightingale v2, with its cable" loading="lazy"><figcaption>V2, put back together around the ribbon.</figcaption></figure>
           </div>
-          <div class="img-grid reveal">
-            <figure class="img-tile"><img src="img/case-v3-model.webp" alt="3D model of the V3 case, opened to show the Pi, battery and pressure plate inside" loading="lazy"><figcaption>V3, modelled around the parts.</figcaption></figure>
-            <figure class="img-tile"><img src="img/case-v3-print.webp" alt="The printed white V3 case with its cable" loading="lazy"><figcaption>And printed. Zubi did V2 and the backing for V3.</figcaption></figure>
+          <p><strong>V3 had to be half the width and actually fit.</strong> We modelled every part one to one, added grooves so each piece has a place, and rounded the edges so it wouldn&rsquo;t catch on gear. The controls changed too. Capture moved to one big pressure plate in the lid, something you can find and press with a glove on without looking, and power became a small recessed button in the bottom wall, so a bump against a door frame can&rsquo;t switch it off mid-call.</p>
+          <figure class="img-wide img-sketch reveal">
+            <img src="img/case-sketch.webp" alt="Sketches of the case tray, lid and pressure plate, with notes on fitting the camera and mic" loading="lazy">
+            <figcaption>V3 case sketches: the tray, the lid, and the pressure plate.</figcaption>
+          </figure>
+          <p><strong>Where it lives depends on the call.</strong> Calls vary so much that there&rsquo;s no single outfit to design for. Some medical calls are station wear and gloves. If there are hazards, or a lot of blood, it&rsquo;s bunker pants so they can kneel. If the scene is unsafe, or there&rsquo;s a fire, it&rsquo;s full turnout gear. The device has to sit on all three without getting in anyone&rsquo;s way, and work with both kinds of breathing apparatus pack crews wear. So we sketched where it could go on each one.</p>
+          <figure class="img-wide img-sketch reveal">
+            <img src="img/gear-sketch.webp" alt="Sketches of where the device attaches on a turnout coat, bunker pants and a station uniform" loading="lazy">
+            <figcaption>Turnout gear, bunker pants and station wear, and where it could sit on each: the radio loop, the suspender strap, the belt.</figcaption>
+          </figure>
+          <p><strong>A belt clip works on all three. The real decision was how to attach it.</strong> One option was a holder on the back of the case that the clip slides into. We ruled it out: anything that slides in can slide out, and a device that drops off mid-call is worse than no device at all. The other was fixing the clip on, with screws or pegs, so it can&rsquo;t come loose. That&rsquo;s the one we chose.</p>
+          <figure class="img-wide img-sketch reveal">
+            <img src="img/clip-sketch.webp" alt="Sketches of two ways to attach a clip to the back of the case: a slot the clip slides into, or a screw-in backing" loading="lazy">
+            <figcaption>The two options: slide the clip into a holder, or fix it on.</figcaption>
+          </figure>
+          <p>So the clip went on with pegs, through a backing printed onto the case. The pressure plate got a lip so it can&rsquo;t fall through the lid, and every part was modelled where it actually sits.</p>
+          <div class="img-grid trio reveal">
+            <figure class="img-tile"><img src="img/case-v3-rough.webp" alt="A rough rounded box model for the V3 case in Blender" loading="lazy"><figcaption>V3, roughed out.</figcaption></figure>
+            <figure class="img-tile"><img src="img/case-v3-model.webp" alt="3D model of the V3 case, opened to show the Pi, battery and pressure plate inside" loading="lazy"><figcaption>Then modelled around the parts.</figcaption></figure>
+            <figure class="img-tile"><img src="img/case-v3-clip-model.webp" alt="The clip backing being modelled on the underside of the V3 case" loading="lazy"><figcaption>The clip backing, modelled on. Zubi did the backing.</figcaption></figure>
+          </div>
+          <p><strong>Printed, it was half the size of V2.</strong> The clip fit and held on well. The pegs that hold it mean the back isn&rsquo;t flat anymore, and the finish still needs cleaning up, so that&rsquo;s next, along with more feedback from responders wearing it.</p>
+          <div class="img-grid photo-pair reveal">
+            <figure class="img-tile"><img src="img/case-v3-print.webp" alt="The printed white V3 case with its cable" loading="lazy"><figcaption>V3, printed. Half the size of V2.</figcaption></figure>
+            <figure class="img-tile"><img src="img/case-v3-clip.webp" alt="A hand holding the printed V3 case, showing the black clip on its back" loading="lazy"><figcaption>And the clip on the back.</figcaption></figure>
           </div>
         </div>
       </section>
@@ -1334,41 +1483,73 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">A record only helps if the next person trusts it.</h2>
           <p class="lede">I coded dashboard V1, Alita and Chrisandra designed V2&rsquo;s flows in Figma, and I wired V3 up to the real device data.</p>
+          <figure class="img-wide reveal">
+            <img src="img/user-flow.webp" alt="User flow diagram from the 911 call to hospital staff, with each decision and failure branch for fire, paramedics and the hospital receiver" loading="lazy">
+            <figcaption>The whole route from the 911 call to the chart, with every decision and every place it can fail. Click it to see it full size.</figcaption>
+          </figure>
           <p><strong>V1 tested the technology.</strong> Before anything was designed, I needed to know whether the device&rsquo;s recordings could become a usable draft report while a call was still happening. So I coded a dashboard with three panels: the draft ePCR filling itself in, with fields lighting up as they change; the transcript, showing who said what and when; and the Pi&rsquo;s own diary, live. It updates the moment new data lands, with no refresh, and every session is saved so it survives a server restart.</p>
           <figure class="img-wide reveal">
-            <img src="img/dash-v1.webp" alt="The V1 dashboard, titled nightingale, live feed: a draft ePCR marked pending review with timed interventions, the call transcript labelled by speaker, and a console of the device's uploads and heartbeats" loading="lazy">
-            <figcaption>V1 on the night of the Maryhill drill. &ldquo;Everything below is a draft, nobody&rsquo;s approved it yet, that&rsquo;s the whole point.&rdquo;</figcaption>
+            <video src="img/v1-live.mp4" poster="img/v1-live-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="V1, the dark live feed page, replaying Maryhill case 1 at twelve times speed: the draft ePCR, the transcript labelled by speaker and the server console fill in as each recording lands, with blurred scene photos appearing in the draft"></video>
+            <figcaption>V1 replaying Maryhill case 1 at twelve times speed. &ldquo;Everything below is a draft, nobody&rsquo;s approved it yet, that&rsquo;s the whole point.&rdquo;</figcaption>
           </figure>
-          <p><strong>V1 was built for our team, not for responders.</strong> The interviews, the survey, our user segments and stories, and the flows we mapped from the 911 call all the way to the hospital chart turned it into two connected flows: one for the fire captain, who reviews and shares the crew&rsquo;s account, and one for the paramedic, who needs to see where each value came from and confirm or correct it. V2 designed that whole handoff in Figma.</p>
-          <figure class="img-wide reveal"><img src="img/dash-ff-home.webp" alt="The fire captain's home screen: the current call, an elderly patient who fell down stairs, with a progress track and a dispatch note waiting for review" loading="lazy"><figcaption>The fire captain&rsquo;s view: the current call, and what needs their review.</figcaption></figure>
-          <figure class="img-wide reveal"><img src="img/dash-ff-patient.webp" alt="The draft ePCR for Patient 007 beside the call transcript, with one field marked not captured" loading="lazy"><figcaption>The draft beside the call it came from.</figcaption></figure>
-          <figure class="img-wide img-wide--narrow reveal"><img src="img/dash-review-field.webp" alt="The review field dialog: the supporting speech from the transcript above the suggested value, with Clear value, Restore suggestion and Confirm value" loading="lazy"><figcaption>Every value shows the speech it came from. Confirming it doesn&rsquo;t share anything.</figcaption></figure>
+          <p><strong>V1 was built for our team, not for responders.</strong> The interviews, the survey, our user segments and stories, and the flows we mapped from the 911 call all the way to the hospital chart turned it into two connected flows: one for the officer leading the call, who reviews the crew&rsquo;s account (the captain or chief on the truck, or on a volunteer call, where you don&rsquo;t know who&rsquo;s showing up, whoever&rsquo;s most senior or has the most medical training), and one for the paramedic, who needs to see where each value came from and confirm or correct it. V2 designed that whole handoff in Figma.</p>
           <ul class="plain-list">
             <li><strong>Review before sharing.</strong> A physician told me his colleagues accepted their AI scribe once the reviewed note, not the recording, became the record. Nightingale works the same way.</li>
             <li><strong>Flagged, never guessed.</strong> If something wasn&rsquo;t said, the field stays visibly empty instead of being filled with a likely answer.</li>
-            <li><strong>A closed loop.</strong> The paramedic accepts the record, the ER scans a QR code, and both sides see &ldquo;Received by triage.&rdquo; Nobody in this chain could ever confirm what was received.</li>
-            <li><strong>No hospital integration.</strong> Hospital systems can&rsquo;t take a feed, so the ER gets a read-only link and a printed page that rides its existing scan path.</li>
+            <li><strong>A closed loop.</strong> The paramedic accepts the record and fire sees that it landed. Nobody in this chain could ever confirm what was received.</li>
           </ul>
-          <figure class="img-wide reveal"><img src="img/dash-pm-accept.webp" alt="The paramedic's home screen with a record waiting: Accept record to view" loading="lazy"><figcaption>The paramedic&rsquo;s side: accept the record before you see who it is.</figcaption></figure>
-          <figure class="img-wide reveal"><img src="img/dash-pm-flags.webp" alt="The paramedic's view of the ePCR with the date of birth and mailing address highlighted in red as not captured" loading="lazy"><figcaption>What nobody said stays empty, in red.</figcaption></figure>
-          <figure class="img-wide reveal"><img src="img/dash-handoff.webp" alt="The hospital handoff summary page: identification, mechanism, injuries, signs, treatment, allergies, medications and background, marked received by triage" loading="lazy"><figcaption>What the ER nurse opens. Read-only, no login, nothing to install.</figcaption></figure>
-          <figure class="img-wide img-wide--narrow reveal"><img src="img/dash-qr.webp" alt="The hospital handoff dialog with a QR code: scan to open a secure, read-only handoff page, one-time link that expires in four hours" loading="lazy"><figcaption>One-time link, expires in four hours, every open logged.</figcaption></figure>
-          <p><strong>V3 made it work.</strong> We rebuilt the Figma flows as working code, so responders can click through them, and I wired it to the real drill data coming off the device so we could see how actual scene data fits the design. Here&rsquo;s Maryhill case 1, the backyard barbecue cardiac arrest, as the dashboard holds it now. Every value below came from the recording.</p>
+          <p><strong>No hospital integration, on purpose.</strong> The three big hospital record systems, Cerner, Epic and Meditech, all nominally use the same data standards and each modifies them in ways that block real interoperability, then charges heavily for outside connections. That&rsquo;s a business decision, not a technical limit, and for a student team it&rsquo;s a dead end. Meanwhile, emergency documentation is still mostly paper, and the paramedic&rsquo;s report arrives by fax and gets scanned into the chart by clerks hours or days later. So every ER already has a free way to get a page into its system. Exactly how Nightingale rides that path is still open. It&rsquo;s what our walkthroughs with emergency physicians are for, once we have more first-responder test data to show them a range of calls.</p>
+          <p><strong>Our first mockup organised the record like the paper form.</strong> Five tabs, Summary, Patient, Clinical, Fire sheet and Service, each one its own page. That&rsquo;s the form&rsquo;s hierarchy, not the people&rsquo;s. A captain mid-call, a paramedic on the way and a nurse at triage each need a different few things first, and the tabs made every one of them go looking. It also kept the whole transcript on screen the entire time, right beside the form it was filling in, and responders weren&rsquo;t fans: a full transcript sitting open is a privacy problem.</p>
           <figure class="img-wide reveal">
-            <img src="img/v3-epcr-patient.webp" alt="The full ePCR for Case 1, cardiac arrest at a barbecue: the call transcript on the left, and on the patient tab the age field is flagged red with a conflict between 32 by the cousin, 19 or 50-something by dispatch and 57 by the responder at handoff" loading="lazy">
-            <figcaption>The full ePCR. Three different ages were said on scene, so it keeps all three and flags it for the captain, instead of picking one.</figcaption>
+            <img src="img/dash-v2.webp" alt="The first dashboard mockup: a fall on stairs record with the call transcript permanently open on the left and the ePCR split across five tabs on the right, Summary, Patient, Clinical, Fire sheet and Service" loading="lazy">
+            <figcaption>The first mockup. Five tabs for the record, and the transcript always open beside it.</figcaption>
           </figure>
+          <p><strong>So we went form first, and dropped the traditional nav.</strong> The user testing and cognitive walkthroughs showed people hunting between tabs for the one answer they needed, so we redesigned around the information instead of the pages. Safety and the most important information come first, ordered by who&rsquo;s reading: the captain sees what still needs a person, the paramedic sees what changed, the vitals and the hazards. The transcript moved behind the form. It&rsquo;s there to check a value against, trust but verify, not to read through. Everything you do during a call happens on one screen, in pop-ups built for quick edits. The only other page is the full ePCR, for one last review before it goes to the doctors.</p>
+          <p><strong>V3 made it work.</strong> We rebuilt Alita and Chrisandra&rsquo;s Figma flows as working code, so responders can click through them, and I wired it to the real drill data coming off the device so we could see how actual scene data fits the design. Here&rsquo;s Maryhill case 1, the backyard barbecue cardiac arrest, as the dashboard holds it now. Every value below came from the recording, and every clip is the real dashboard running.</p>
+          <figure class="img-wide reveal">
+            <video src="img/v3-live.mp4" poster="img/v3-live-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Maryhill case 1 replayed from an empty call at ten times speed: the transcript streams in on the left while the ePCR fills itself in, scene first, then the patient, then the care given, until the handoff gives a third age and the age field turns red"></video>
+            <figcaption>An empty call, then the record writes itself as the crew talks. This is the real case 1 recording, played at ten times speed. When the handoff gives a third age, it flags it instead of picking one.</figcaption>
+          </figure>
+          <p>Photos come in the same way, from the second button.</p>
+          <figure class="img-wide reveal">
+            <video src="img/v3-photos.mp4" poster="img/v3-photos-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="The record's Files tab as scene photos arrive from the device one by one, each with a short description of what's in it. The photos are blurred"></video>
+            <figcaption>Photos land in the record as they&rsquo;re taken, each with a line about what&rsquo;s in it. Most are blurred here because the crew are in them. The one that opens shows no faces, just the mask and the bag.</figcaption>
+          </figure>
+          <p>Anything the draft isn&rsquo;t sure about gets flagged, and a flag always explains itself. Walking through the flows, the same three jobs kept coming up: see what&rsquo;s missing, look into a conflict, and get back to a field that needs fixing. So every flag opens straight onto the speech it came from.</p>
           <figure class="img-wide reveal">
             <video src="img/v3-review.mp4" poster="img/v3-review-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Clicking the flagged age field, then Review field: the dialog explains why it was flagged and shows the exact lines of speech it came from"></video>
             <figcaption>Click the flag and it tells you why, then shows you exactly what was said.</figcaption>
           </figure>
+          <p>Back on the home screen, the record says what still needs a person before it goes anywhere.</p>
+          <figure class="img-wide reveal">
+            <video src="img/v3-overview.mp4" poster="img/v3-overview-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Opening the record overview for Luke: a warning that seven fields need a look before sharing, starting with the age conflict, then the vitals, background and scene account"></video>
+            <figcaption>Before it can be shared: seven fields that need a person&rsquo;s eyes.</figcaption>
+          </figure>
+          <p>Every other part of the call is a pop-up away, so nobody loses their place mid-call.</p>
+          <figure class="img-wide reveal">
+            <video src="img/v3-record.mp4" poster="img/v3-record-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Opening the record's other tabs in turn: the transcript with each speaker and time, the care timeline, the files with scene photos and their descriptions, and the ePCR"></video>
+            <figcaption>Everything else about the call, a tab each: what was said, what was done and when, and the photos.</figcaption>
+          </figure>
+          <p>The full ePCR is the one extra page, for the final pass before it goes to the doctors.</p>
           <figure class="img-wide reveal">
             <video src="img/v3-tabs.mp4" poster="img/v3-tabs-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Moving through the ePCR tabs: the scene and call times, the patient, and the care given"></video>
             <figcaption>The record, tab by tab: the scene, the patient, the care.</figcaption>
           </figure>
-          <figure class="img-wide reveal"><img src="img/v3-epcr-handoff.webp" alt="The handoff tab: a timeline of the call from the 911 call to transfer of care, and a narrative of what was said and done" loading="lazy"><figcaption>The handoff tab: the whole call as a timeline, to the second, and a narrative of what was done.</figcaption></figure>
-          <figure class="img-wide reveal"><img src="img/v3-fire-overview.webp" alt="The record overview for Luke with a warning that seven fields need a look before sharing, starting with the age conflict" loading="lazy"><figcaption>Before it can be shared: seven fields that need a person&rsquo;s eyes.</figcaption></figure>
-          <figure class="img-wide reveal"><img src="img/v3-pm-overview.webp" alt="The paramedic's view of the same call: identity locked until the record is accepted, with scene safety shown straight away" loading="lazy"><figcaption>The paramedic&rsquo;s side. Identity stays locked until they accept it, but scene hazards show straight away.</figcaption></figure>
+          <p>Its handoff tab tells the whole call as a timeline and a narrative, for whoever reads it next.</p>
+          <figure class="img-wide reveal">
+            <video src="img/v3-handoff.mp4" poster="img/v3-handoff-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Opening the handoff tab: a timeline of the call from the 911 call to transfer of care, and a narrative of what was done. Selecting the narrative lights up the lines of speech it came from"></video>
+            <figcaption>The handoff tab: the whole call as a timeline, to the second, and a narrative of what was done. Select either one and the speech behind it lights up.</figcaption>
+          </figure>
+          <p>On the paramedic&rsquo;s side, the record is already waiting for whoever&rsquo;s attending. Paramedics work in pairs, one driving and one attending, and they swap after every call to give their brains a break, so the record goes to the role, not a fixed person. It leads with what changed, the vitals and the scene hazards, short enough to scan on the way. That came from the survey: 7 of 25 paramedics said they&rsquo;d ask the patient everything again themselves anyway, so a longer report wasn&rsquo;t the answer. A head start on their own assessment was.</p>
+          <figure class="img-wide reveal">
+            <video src="img/v3-paramedic.mp4" poster="img/v3-paramedic-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="The paramedic's home screen with the fire crew's record already waiting. Opening it shows a locked summary with scene safety up front. After Accept record, the same record opens in full, under the patient's name"></video>
+            <figcaption>The paramedic&rsquo;s side. The record is just there, nobody on fire has to send it. Identity stays locked until they accept it, but scene hazards show straight away.</figcaption>
+          </figure>
+          <p>Before the ER, they verify it, and anything nobody said is called out instead of guessed.</p>
+          <figure class="img-wide reveal">
+            <video src="img/v3-verify.mp4" poster="img/v3-verify-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="The paramedic opens the record to verify it before the ER. Across the patient, history and transport tabs, the age conflict and the fields nobody said, like allergies and medications, are outlined in red"></video>
+            <figcaption>Verifying before the ER. What nobody said, like allergies and medications, is outlined in red instead of guessed.</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -1398,7 +1579,7 @@ figure{
             <figcaption>The scenario cards for the staged calls.</figcaption>
           </figure>
           <p>The draft caught the chief complaint, interventions and clinical details with nobody typing them, and flagged an age a bystander and a responder had given differently. At the end of the dirt bike call, a paramedic joked about the leg and everyone laughed. That joke isn&rsquo;t in the output.</p>
-          <p>It also showed me what&rsquo;s not working yet: a 30-second boot no crew will wait for, nothing reaching the server live, and no clip on the case. A captain called it &ldquo;a step in the right direction&rdquo; that could be &ldquo;very easily adopted,&rdquo; on one condition: security has to hit the mark.</p>
+          <p>It also showed me what&rsquo;s not working yet: a 30-second boot no crew will wait for, nothing reaching the server live, and, at the time, no clip on the case. A captain called it &ldquo;a step in the right direction&rdquo; that could be &ldquo;very easily adopted,&rdquo; on one condition: security has to hit the mark.</p>
         </div>
       </section>
 
@@ -1409,7 +1590,8 @@ figure{
           <ul class="plain-list">
             <li><strong>Cambridge Fire&rsquo;s probationary firefighters</strong> on their own training scenarios, the first test where the script isn&rsquo;t ours. If capture slows the call or crews throw most of the draft away, the design fails and we start again.</li>
             <li><strong>Guelph paramedics</strong>, then their station.</li>
-            <li><strong>The fixes:</strong> a standby mode for the boot time, a hotspot for live sending, a clip, and both SCBA pack types.</li>
+            <li><strong>The fixes:</strong> a standby mode for the boot time and a hotspot for live sending.</li>
+            <li><strong>The clip and the case:</strong> the clip&rsquo;s stability and the case&rsquo;s integrity on real gear, with both SCBA pack types, now that the case has roughly its final shape.</li>
             <li><strong>The legal path</strong> for a fire record to reach paramedics under MFIPPA and PHIPA.</li>
             <li><strong>The number nobody has:</strong> how much of fire&rsquo;s account actually reaches the paramedic.</li>
           </ul>
@@ -1427,10 +1609,11 @@ figure{
             <div class="step-card"><span class="n">04</span><h4>Test the failure before you need it</h4><p>The offline-first path was a hypothetical until the Wi-Fi died. It held because I&rsquo;d built for the network failing, not for it working.</p></div>
           </div>
           <p>The story is never lost at the scene. It&rsquo;s lost on the way out, and everyone downstream pays for it.</p>
-          <div class="img-grid reveal">
+          <div class="img-grid photo-pair reveal">
             <figure class="img-tile"><img src="img/render-transcript.webp" alt="The Nightingale device on a desk in warm light" loading="lazy"><figcaption>Nightingale.</figcaption></figure>
             <figure class="img-tile"><img src="img/render-epcr.webp" alt="The Nightingale device beside a laptop showing its dashboard" loading="lazy"><figcaption>And the dashboard it feeds.</figcaption></figure>
           </div>
+          
           <div class="works-cited reveal">
             <h3>Works Cited</h3>
             <p>Carter, A. J. E., Davis, K. A., Evans, L. V., &amp; Cone, D. C. (2009). Information loss in emergency medical services handover of trauma patients. <em>Prehospital Emergency Care, 13</em>(3).</p>
@@ -1582,14 +1765,12 @@ figure{
           obs.unobserve(en.target);
           const el=en.target;
           const text=el.textContent.trim();
-          // bypass CSS reveal — the scramble IS the reveal
-          el.style.opacity='1'; el.style.transform='none';
-          el.classList.add('h-scrambling');
-          scramble(el, text, 900, ()=>{
-            el.classList.remove('h-scrambling');
-            fontMix(el, text);
-            el.classList.add('h-settled');
-          });
+          // a soft fade instead of the scramble: on this page the random
+          // letters read as noise, so the heading just settles in
+          fontMix(el, text);
+          el.style.transition='opacity .9s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1)';
+          el.style.opacity='0'; el.style.transform='translateY(10px)';
+          requestAnimationFrame(()=>requestAnimationFrame(()=>{ el.style.opacity='1'; el.style.transform='none'; el.classList.add('h-settled'); }));
         });
       },{threshold:0.25});
 
@@ -1700,19 +1881,24 @@ figure{
           cancelAnimationFrame(anim);
           scroller().style.scrollBehavior='';
         };
-        const glide=to=>{
+        /* the target is measured every frame, not once. lazy images and the
+           systems map load in while we glide and push sections down, so a
+           fixed number lands short. after arriving it keeps hold for a beat
+           while things settle, unless the reader scrolls */
+        const glide=target=>{
           const se=scroller();
+          const goal=()=>Math.max(0,Math.min(target(),se.scrollHeight-innerHeight));
           const from=se.scrollTop;
-          const dist=Math.max(0,Math.min(to,se.scrollHeight-innerHeight))-from;
-          if(!dist)return;
+          const dist0=goal()-from;
+          if(!dist0)return;
           stopGlide();
           se.style.scrollBehavior='auto';
           const t0=performance.now();
-          const dur=Math.min(900,Math.max(320,Math.abs(dist)*0.45));
+          const dur=Math.min(900,Math.max(320,Math.abs(dist0)*0.45));
           const step=now=>{
             const t=Math.min(1,(now-t0)/dur);
-            se.scrollTop=from+dist*ease(t);
-            if(t<1)anim=requestAnimationFrame(step);
+            se.scrollTop=from+(goal()-from)*ease(t);
+            if(now-t0<dur+1200)anim=requestAnimationFrame(step);
             else se.style.scrollBehavior='';
           };
           anim=requestAnimationFrame(step);
@@ -1726,7 +1912,7 @@ figure{
           if(d.type==='caseTocRequest')sendToc();
           else if(d.type==='caseScrollTo'){
             const el=d.id?document.getElementById(d.id):null;
-            glide(el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
+            glide(()=>el?el.getBoundingClientRect().top+scroller().scrollTop-16:0);
           }
         });
         /* tell the rail which section the reader is in */
@@ -1790,5 +1976,22 @@ figure{
     })();
   </script>
   <script src="/js/lightbox.js" defer></script>
+  <script>
+    /* the systems map starts its layout with one heavy frame. lazy, that frame
+       landed right as you scrolled past it and felt like the page caught. load
+       it once the page is idle instead, well before anyone gets there */
+    addEventListener('load',()=>{
+      const go=()=>document.querySelectorAll('iframe[data-src]').forEach(f=>{f.src=f.dataset.src;});
+      'requestIdleCallback' in window ? requestIdleCallback(go,{timeout:3000}) : setTimeout(go,1500);
+    });
+  </script>
+  <script>
+    /* the pitch video's cover gets a label until it plays */
+    document.querySelectorAll('.video-file.has-cue').forEach(box=>{
+      const v=box.querySelector('video'), cue=box.querySelector('.play-cue');
+      cue.addEventListener('click',()=>{ v.play(); });
+      v.addEventListener('play',()=>box.classList.add('is-playing'));
+    });
+  </script>
 </body>
 </html>
