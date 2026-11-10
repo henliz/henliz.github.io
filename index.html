@@ -3235,7 +3235,10 @@
 
     .ct-room {
         position: absolute; inset: 0; z-index: 0;
-        background: url('scenes/ct-room.svg') no-repeat center/cover;
+        /* one front-on family kitchen: fridge covered in the kids' stuff,
+           sage cupboards, a cafe curtain, a pot on the stove, and a straight
+           butcher-block worktop so the laptop reads as sitting on it */
+        background: url('scenes/ct-kitchen.svg') no-repeat center/cover;
     }
     /* the lighting event: daylight off the window at the far end of the run */
     .ct-sun {
@@ -3252,30 +3255,15 @@
         position: absolute; inset: 0; z-index: 3;
         background: url('scenes/ct-props.svg') no-repeat center/cover;
     }
-    .ct-steam {                       /* off the kettle, near end */
-        position: absolute; z-index: 5; left: 1%; bottom: 40%;
-        width: 13%; height: 22%;
+    .ct-steam {                       /* off the pot on the stove */
+        position: absolute; z-index: 5; left: 80%; bottom: 65.5%;
+        width: 12%; height: 20%;
         background:
             radial-gradient(closest-side, rgba(255,255,255,.5), transparent 70%) 10% 62%/52% 46% no-repeat,
             radial-gradient(closest-side, rgba(255,255,255,.4), transparent 70%) 66% 24%/44% 42% no-repeat,
             radial-gradient(closest-side, rgba(255,255,255,.3), transparent 70%) 28% 0%/38% 36% no-repeat;
         filter: blur(6px);
         animation: ctSteam 9s ease-in-out infinite;
-    }
-    .ct-pool {                        /* contact shadow under the laptop */
-        position: absolute; z-index: 5; left: 52%; bottom: 28%;
-        width: 32%; height: 6%; transform: translateX(-50%) rotate(5deg);
-        background: radial-gradient(closest-side, rgba(86,56,22,.5), transparent 74%);
-        filter: blur(5px);
-    }
-    .ct-bag {
-        /* the run sits higher now that the cabinets are back in frame: at the
-           bag's x the worktop spans y 42.3%..57.7% of the tile, so the board
-           lands at 55%, on the surface rather than over the lip. */
-        position: absolute; z-index: 6; left: 1%; bottom: 45%; height: 34%;
-        aspect-ratio: 900 / 873;
-        background: url('scenes/ct-bag.webp') no-repeat center bottom/contain;
-        filter: drop-shadow(6px 12px 16px rgba(110,76,34,.30));
     }
     /* sun rays off the window, and the clip as its own card in the corner */
     .ct-rays {
@@ -5926,18 +5914,25 @@ const eul = (x,y,z)=>new THREE.Euler(
         // each side of the card — and it fills the screen with nothing stretched.
         // The UI is near-white on a light lid at ~90px wide, so paintScreen also
         // lifts contrast and saturation or it reads as a blank screen.
+        // a real 3d island (built in buildIsland), turned with the laptop and
+        // seen from a little above, so it's a drawing of a 3d space and not a
+        // slanted shape. everything else stands on it. on: positions are in
+        // laptop widths (x) and island depths (z, 0 = middle, + = front)
+        island:{ yaw:-20, tilt:11, w:3.6, d:2.2, dx:0.1 },
         models:[
           {url:'./models/laptop.glb', scale:0.150, baseEuler:[0,0,0], pos:[0,0,0], on:true,
            screen:{ video:'skrimp/media/menu-scroll.mp4', mesh:'ComputerScreen',
                     fit:'cover', planar:true, bezel:[0.035, 0.05, 0.035],
                     punch:'contrast(1.22) saturate(1.35) brightness(0.97)' }},
-          {url:'./models/yummymeal.glb', scale:0.445, baseEuler:[24,152,0], pos:[2.80,-1.00,2.1]}
+          {url:'./models/yummymeal.glb', scale:0.30, baseEuler:[8,152,0], on:{x:0.98, z:0.1}}
         ],
-        driftAmp:0.10, fitScale:1.06,
-        // swapped: the thinker stands with the groceries, the celebrant with the food
+        // grounded: it rests on something, so no bob, tilt or turn
+        grounded:true, driftAmp:0, fitScale:0.8, frameY:0.9,
+        // the thinker with the groceries, the celebrant by the meal. size is in laptop widths
         decals:[
-          {url:'./SkrimpThinking.webp',  size:[2.80,3.36], pos:[-2.70,1.08,2.6], rotY:0.30},
-          {url:'./SkrimpCelebrate.webp', size:[3.25,3.90], pos:[ 4.35,0.32,4.6], rotY:-0.26}
+          {url:'./scenes/ct-bag.webp',    size:[0.62,0.60], on:{x:-0.9, z:-0.3}},
+          {url:'./SkrimpThinking.webp',   size:[0.80,0.96], on:{x:-1.2, z:0.15}},
+          {url:'./SkrimpCelebrate.webp',  size:[0.84,1.01], on:{x:1.2,  z:-0.35}}
         ]
       },
       {
@@ -6223,6 +6218,53 @@ function paintScreen(v){
   s.live = true;
   drawScreen(s, v);
 }
+/* the skrimp island: a real box in the same 3d space as the laptop, drawn in
+   flat illustration colours so it still looks painted. top, front and side
+   each get their own tone, which is what makes it read as a solid object.
+   sized off the laptop (L = its width), and the laptop is put near the front.
+   returns where things can stand. */
+function buildIsland(group, laptop, o){
+  laptop.updateMatrixWorld(true);
+  const b = new THREE.Box3().setFromObject(laptop);   // laptop on its own, so this is group space
+  const L = b.max.x - b.min.x, Dp = b.max.z - b.min.z;
+  const cx = (b.min.x + b.max.x) / 2 + L * (o.dx || 0);
+  const top = b.min.y, W = L * o.w, D = Dp * o.d, T = L * .07, H = L * 1.6;
+  const front = b.max.z + Dp * .45, cz = front - D / 2;
+  const isl = new THREE.Group(); isl.userData.noFrame = true; group.add(isl);
+  const mat = c => new THREE.MeshBasicMaterial({ color: c, toneMapped: false });
+  // box faces: +x, -x, +y, -y, +z, -z
+  const box = (w, h, d, x, y, z, cols) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), cols.map(mat));
+    m.position.set(x, y, z); isl.add(m); return m;
+  };
+  const BLOCK = ['#c08a52', '#c08a52', '#e4b985', '#9c6c3a', '#b9874f', '#b9874f'];
+  const BODY  = ['#7f9e88', '#7f9e88', '#8fae98', '#6f8c77', '#97b89f', '#97b89f'];
+  box(W, T, D, cx, top - T / 2, cz, BLOCK);                                    // butcher block
+  box(W * .97, H, D * .92, cx, top - T - H / 2, cz - D * .02, BODY);           // cupboards
+  const fz = cz - D * .02 + D * .46 + .002;                                    // the cupboard front
+  const PANEL = ['#a9c6b0', '#a9c6b0', '#b6d0bc', '#8fae98', '#a9c6b0', '#a9c6b0'];
+  const n = 3, gap = L * .04, pw = (W * .97 - gap * (n + 1)) / n;
+  for (let i = 0; i < n; i++) {
+    const x = cx - W * .485 + gap + pw / 2 + i * (pw + gap);
+    box(pw, L * .17, L * .012, x, top - T - L * .04 - L * .085, fz, PANEL);    // drawer
+    box(L * .16, L * .025, L * .02, x, top - T - L * .125, fz + L * .012,
+        ['#b8902f', '#b8902f', '#e8c46a', '#a07a22', '#d8b25a', '#d8b25a']);   // brass pull
+    box(pw, H * .62, L * .012, x, top - T - L * .26 - H * .31, fz, PANEL);    // door
+  }
+  // a soft shadow under the laptop, on the worktop
+  const cv = document.createElement('canvas'); cv.width = cv.height = 128;
+  const g = cv.getContext('2d'), rg = g.createRadialGradient(64, 64, 4, 64, 64, 64);
+  rg.addColorStop(0, 'rgba(86,56,22,.55)'); rg.addColorStop(1, 'rgba(86,56,22,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, 128, 128);
+  const sh = new THREE.Mesh(new THREE.PlaneGeometry(L * 1.3, Dp * 1.5),
+    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false, toneMapped: false }));
+  sh.rotation.x = -Math.PI / 2;
+  sh.position.set((b.min.x + b.max.x) / 2, top + .002, (b.min.z + b.max.z) / 2 + Dp * .08);
+  isl.add(sh);
+  // where things stand: x in laptop widths from the laptop, z from -1 (back) to 1 (front)
+  return { L, top, cx: (b.min.x + b.max.x) / 2, z: f => cz + f * D * .42 };
+}
+
 // one frame of a video, or its poster image, into a screen canvas
 function drawScreen(s, src){
   const {ctx, tex, CW, CH, fit, crop} = s;
@@ -6361,13 +6403,8 @@ stations.forEach((cfg,i) => {
     counter: () => `
       <div class="ct-room"></div>
       <div class="ct-sun"></div>
-      <div class="ct-counter"></div>
-      <div class="ct-props"></div>
-      <div class="ct-rays"></div>
       <div class="ct-steam"></div>
-      <div class="ct-light"></div>
-      <div class="ct-pool"></div>
-      <div class="ct-bag"></div>
+
       <div class="ct-motes"></div>`,
     nursery: () => `
       <div class="ns-layer ns-back"></div>
@@ -6715,6 +6752,21 @@ stations.forEach((cfg,i) => {
   // models hang off `content` so it can be shifted to centre their real bounds
   // without disturbing the pivot's drift rotation
   const content = new THREE.Group(); pivot.add(content);
+  /* an island tile: a stage tilted toward the camera so its top shows, and
+     inside it a group turned to the island's angle. the island is built once
+     the laptop has loaded (its size sets everything), then whatever else
+     stands on it gets placed */
+  let islandGroup = null;
+  if (cfg.island) {
+    const stage = new THREE.Group();
+    stage.rotation.x = THREE.MathUtils.degToRad(cfg.island.tilt);
+    islandGroup = new THREE.Group();
+    islandGroup.rotation.y = THREE.MathUtils.degToRad(cfg.island.yaw);
+    stage.add(islandGroup); content.add(stage);
+  }
+  let islandInfo = null;
+  const islandWaiting = [];
+  const onIsland = f => islandInfo ? f(islandInfo) : islandWaiting.push(f);
   const view = {el, cell, scene, camera, pivot, content, cfg, dust,
                 // drift, not spin: a slow sway around front-on, never a full turn
                 phase: i * 1.7, driftAmp: cfg.driftAmp ?? 0.30, driftRate: 0.36,
@@ -6776,9 +6828,21 @@ stations.forEach((cfg,i) => {
           new THREE.PlaneGeometry(dc.size[0], dc.size[1]),
           new THREE.MeshBasicMaterial({map:tex, transparent:true, depthWrite:false})
         );
+        sprite.renderOrder = 12;
+        if (dc.on && islandGroup) {
+          // stood on the island, turned back to face the camera
+          onIsland(I => {
+            sprite.scale.setScalar(I.L);
+            sprite.position.set(I.cx + dc.on.x * I.L, I.top + dc.size[1] * I.L / 2 - I.L * .02, I.z(dc.on.z));
+            sprite.rotation.y = -islandGroup.rotation.y;
+            islandGroup.add(sprite);
+            rel();
+          });
+          return;
+        }
         sprite.position.set(dc.pos[0], dc.pos[1], dc.pos[2]);
         if (dc.rotY) sprite.rotation.y = dc.rotY;
-        sprite.renderOrder = 12; content.add(sprite);
+        content.add(sprite);
         rel();
       }, undefined, rel);
     });
@@ -6818,7 +6882,20 @@ stations.forEach((cfg,i) => {
         mdl.rotation.copy(eul(...(m.baseEuler ?? [0,0,0])));
         const p = m.pos ?? [(j===0?-1.4:1.4),0,0];
         mdl.position.set(p[0],p[1],p[2]);
-        content.add(mdl);
+        if (m.on && islandGroup) {
+          if (j === 0) {
+            // the laptop sets the island's size and height
+            islandInfo = buildIsland(islandGroup, mdl, cfg.island);
+            islandWaiting.splice(0).forEach(f => f(islandInfo));
+          } else {
+            // measured now, on its own, before it joins the turned group
+            mdl.updateMatrixWorld(true);
+            const bb = new THREE.Box3().setFromObject(mdl);
+            onIsland(I => mdl.position.set(I.cx + m.on.x * I.L, I.top - bb.min.y, I.z(m.on.z)));
+          }
+          islandGroup.add(mdl);
+        } else content.add(mdl);
+        if (j === 0) view.mainModel = mdl;
         if (m.screenColor) {
           mdl.traverse(o => {
             if (o.isMesh && o.material?.name === m.screenColor.mesh) {
@@ -6933,18 +7010,31 @@ stations.forEach((cfg,i) => {
    the bounds get measured and the content shifted onto the middle of the tile.
    The same measurement gives the camera distance, so nothing crops either. */
 const _box = new THREE.Box3(), _sph = new THREE.Sphere();
+// bounds of everything except furniture (userData.noFrame), which is allowed
+// to run off the edges of the tile
+function framedBox(root){
+  root.updateMatrixWorld(true);
+  _box.makeEmpty();
+  (function walk(o){
+    if (o.userData.noFrame) return;
+    if (o.isMesh) _box.expandByObject(o);
+    else o.children.forEach(walk);
+  })(root);
+}
 function frameContent(v){
   if (v.cfg.parallax) return;                 // Equinox is framed by hand
   if (!v.content.children.length) return;
-  _box.setFromObject(v.content);
+  framedBox(v.content);
   if (_box.isEmpty()) return;
   const c = _box.getCenter(new THREE.Vector3());
   v.content.position.sub(c);                  // origin now sits at the true middle
-  _box.setFromObject(v.content);
+  framedBox(v.content);
   const size = _box.getSize(new THREE.Vector3());
   v.halfW = size.x / 2;
   v.halfH = size.y / 2;
   v.halfD = size.z / 2;
+  // a tile with a caption card over its lower third can lift its scene above it
+  if (v.cfg.frameY) v.content.position.y += v.cfg.frameY;
   v.framed = true;
 }
 
@@ -7096,12 +7186,15 @@ function renderFrame(){
     v.driftEase += (v.hover - v.driftEase) * dt * 4;
     const amp  = v.driftAmp * (1 + v.driftEase * 0.5);
     const yaw  = Math.sin(t * v.driftRate + v.phase) * amp;
-    const tilt = Math.sin(t * v.driftRate * 0.7 + v.phase * 1.3) * amp * 0.28;
+    // a grounded tile is something resting on a surface: it can turn a touch,
+    // but it never tips or bobs, or it reads as floating
+    const grounded = v.cfg.grounded;
+    const tilt = grounded ? 0 : Math.sin(t * v.driftRate * 0.7 + v.phase * 1.3) * amp * 0.28;
     _e.set(tilt, yaw, 0);
     v.pivot.quaternion.setFromEuler(_e).premultiply(v.dragQuat);
     // a slow bob so nothing is ever perfectly still
     v.pivot.position.y = (v.framed ? 0 : (LIFT[v.cfg.name] || 0)) - (v.artAnchorY || 0)
-                       + Math.sin(t * .6 + v.cfg.name.length) * (v.artAnchorY ? .02 : .08);
+                       + (grounded ? 0 : Math.sin(t * .6 + v.cfg.name.length) * (v.artAnchorY ? .02 : .08));
     if (v.dust) v.dust.rotation.y += dt * 0.02;
     if (v.screenVideo) paintScreen(v.screenVideo);
 
