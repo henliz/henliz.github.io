@@ -1074,6 +1074,11 @@ a{ color:inherit }
   #panel p{ font-size:.86rem; line-height:1.55; margin-bottom:.6rem }
   #panel li{ font-size:.84rem }
 }
+
+/* wcag 2.5.8: every target at least 24px tall */
+#mac .tab{ min-height:24px; display:inline-flex; align-items:center; }
+#mac .gh .btn{ min-height:24px; display:flex; align-items:center; justify-content:center; }
+#mac .side .it{ min-height:24px; }
 </style>
 </head>
 <body>
@@ -4667,6 +4672,15 @@ function openPanel(spot){
   /* not everybody knows to click off a thing to get out of it */
   backBtn.classList.add('show');
 }
+/* the mac, the record crate and the rugby set are tiny on the desk until you
+   zoom into one. while they're tiny they're inert: no tiny tap targets
+   (wcag 2.5.8) and no tabbing into a screen you can't read */
+[macEl, audioEl, rugbyEl].forEach(el => {
+  if (!el) return;
+  const sync = () => { el.inert = !el.classList.contains('open'); };
+  new MutationObserver(sync).observe(el, { attributes: true, attributeFilter: ['class'] });
+  sync();
+});
 function closePanel(){
   if (!openSpot) return;
   if (crateMode !== 'shelf' && nowPlaying < 0 && cueing < 0){ chosen = -1; setCrateMode('shelf'); }
@@ -5999,5 +6013,12 @@ window.__room = { step, scene, camera, renderer, setStage, SPOTS, openPanel,
 </script>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+<script>
+  // spotify and youtube build their own iframes with no title, so name any untitled one as it appears
+  new MutationObserver(() => document.querySelectorAll('iframe:not([title])').forEach(f => {
+    const u = f.src || '';
+    f.title = /spotify/.test(u) ? 'Spotify player' : /youtube/.test(u) ? 'YouTube video' : 'Embedded content';
+  })).observe(document.documentElement, { childList: true, subtree: true });
+</script>
 </body>
 </html>
