@@ -1136,7 +1136,7 @@ figure{
        as the next paragraph */
     .cap, figcaption, .tot-hint{ font-style:italic; }
     .showcase-stage:has(> .cap){ flex-wrap:wrap !important; row-gap:clamp(14px,2vh,22px); }
-    .showcase-stage > .cap{ flex:0 0 100%; margin:0 !important; text-align:center; max-width:60ch; margin-inline:auto !important; }
+    .showcase-stage > .cap{ flex:0 0 100%; max-width:none !important; margin:0 !important; text-align:center; padding-inline:max(0px, calc((100% - 60ch) / 2)); }
 
     /* wcag 1.4.3: these were 2.1 to 4.4:1 */
     :root:not([data-theme="dark"]) .confidentiality-notice .notice-label{ color:#a85708; }
@@ -1145,7 +1145,18 @@ figure{
     :root:not([data-theme="dark"]) .card h4{ color:#417976; opacity:1; }
 
     /* how it got here: one slide at a time, snapping, the press carousel's buttons */
-    .evo{ margin:2rem 0 1rem; }
+    .evo{ margin:2rem 0 1rem; background:rgba(var(--ink-rgb),.045); border:1px solid var(--glass-border); border-radius:18px;
+          padding:clamp(16px,2.4vw,28px); }
+    .evo-bar{ display:flex; align-items:center; gap:.6rem; margin-bottom:1rem; }
+    .evo-hint{ font:400 .9rem/1 'DotempDemo', monospace; letter-spacing:.06em; color:var(--text-primary); margin-right:auto; }
+    .evo-count{ font-size:.85rem; color:var(--text-secondary); font-variant-numeric:tabular-nums; margin-right:.3rem; }
+    .evo-thumbs{ display:flex; justify-content:center; gap:clamp(6px,1vw,12px); margin-top:1.1rem; flex-wrap:wrap; }
+    .evo-thumb{ width:clamp(54px,9vw,92px); aspect-ratio:4/3; padding:0; border-radius:10px; overflow:hidden; cursor:pointer;
+                border:2px solid transparent; background:var(--inner-card, #fff); opacity:.55; transition:opacity .2s, border-color .2s, transform .2s; }
+    .evo-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .evo-thumb:hover{ opacity:.85; transform:translateY(-2px); }
+    .evo-thumb.on{ opacity:1; border-color:var(--accent-teal); }
+    .evo-thumb:focus-visible{ outline:2px solid var(--accent-teal); outline-offset:2px; }
     .evo-track{ display:flex; gap:clamp(14px,2vw,24px); overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; padding-bottom:.25rem; }
     .evo-track::-webkit-scrollbar{ display:none; }
     .evo-slide{ flex:0 0 100%; margin:0; scroll-snap-align:center; display:flex; flex-direction:column; align-items:center; gap:.7rem; }
@@ -1153,6 +1164,16 @@ figure{
     .evo-slide .phone{ width:min(270px,70vw); }
     .evo-step{ align-self:flex-start; font:400 .82rem/1 'DotempDemo', monospace; letter-spacing:.08em; text-transform:uppercase; color:var(--text-secondary); }
     .evo-slide figcaption{ font-style:italic; text-align:center; max-width:56ch; font-size:.88rem; line-height:1.55; color:var(--text-secondary); }
+
+    /* same phone as everywhere else on the site (dark frame, dynamic island),
+       in the same tinted box, not the white glass frame skrimp used to have */
+    .phone{ background:linear-gradient(155deg,#3c3c41,#17171a 42%,#2e2e33) !important; border:0 !important;
+            padding:9px !important; box-shadow:0 18px 46px rgba(var(--sh-rgb),calc(.30 * var(--sh-k))), inset 0 0 0 1px rgba(255,255,255,.10) !important; }
+    .phone-screen{ position:relative; }
+    .phone-screen::after{ content:''; position:absolute; top:9px; left:50%; transform:translateX(-50%);
+            width:31%; height:22px; border-radius:99px; background:#0b0b0d; z-index:2; pointer-events:none; }
+    .showcase-stage{ background:rgba(var(--ink-rgb),.045); border:1px solid var(--glass-border); border-radius:18px;
+            padding:clamp(22px,3.4vw,46px) clamp(16px,2.4vw,32px) !important; }
 </style>
   <link rel="stylesheet" href="/css/pixel-cursor.css">
 </head>
@@ -1342,6 +1363,12 @@ figure{
           <p class="lede">It started as a piece of paper, and I&rsquo;m glad we never handed it out.</p>
           <p>The very first idea was a printed flyer: hand one out every week with the meal plan and the grocery list on it, and the website would just hold the recipes. We dropped it, partly because we didn&rsquo;t want to get in trouble handing things out, and partly because talking to people made me ask myself whether I&rsquo;d ever actually kept a flyer someone handed me. I hadn&rsquo;t. Do you?</p>
           <div class="evo reveal">
+            <div class="evo-bar">
+              <span class="evo-hint">Flip through it &rarr;</span>
+              <span class="evo-count" id="evo-count" aria-live="polite">1 / 5</span>
+              <button class="press-nav-btn" id="evo-prev" type="button" aria-label="Previous">&larr;</button>
+              <button class="press-nav-btn" id="evo-next" type="button" aria-label="Next">&rarr;</button>
+            </div>
             <div class="evo-track" id="evo-track" tabindex="0" role="region" aria-label="How Skrimp changed, from the first idea to now. Scrolls sideways.">
               <figure class="evo-slide">
                 <span class="evo-step">01 &middot; the flyer</span>
@@ -1371,9 +1398,12 @@ figure{
                 <figcaption>And now: Smart Load fills breakfast, lunch and dinner from this week&rsquo;s deals. Recorded on a local build with sample recipes.</figcaption>
               </figure>
             </div>
-            <div class="press-nav-row">
-              <button class="press-nav-btn" id="evo-prev" type="button" aria-label="Previous">&larr;</button>
-              <button class="press-nav-btn" id="evo-next" type="button" aria-label="Next">&rarr;</button>
+            <div class="evo-thumbs" role="group" aria-label="Jump to a step">
+              <button type="button" class="evo-thumb on" aria-label="01, the flyer"><img src="img/early-flyer.webp" alt=""></button>
+              <button type="button" class="evo-thumb" aria-label="02, the first app"><img src="img/early-flow-v1.webp" alt=""></button>
+              <button type="button" class="evo-thumb" aria-label="03, the reality check"><img src="img/early-receipt.webp" alt=""></button>
+              <button type="button" class="evo-thumb" aria-label="04, it starts planning"><img src="img/early-flow-v2.webp" alt=""></button>
+              <button type="button" class="evo-thumb" aria-label="05, now"><img src="vid/skrimp-now.jpg" alt=""></button>
             </div>
           </div>
         </div>
@@ -2163,12 +2193,22 @@ figure{
   <script src="/js/lightbox.js" defer></script>
 
   <script>
-    /* the progression carousel: arrows move a slide, the phone clip only plays while it's the one showing */
+    /* the progression carousel: arrows and thumbnails move it, the counter and
+       thumbnails follow it, and the phone clip only plays while it's showing */
     (function () {
       const t = document.getElementById('evo-track'); if (!t) return;
-      const step = () => t.clientWidth;
-      document.getElementById('evo-next').onclick = () => t.scrollBy({ left: step(), behavior: 'smooth' });
-      document.getElementById('evo-prev').onclick = () => t.scrollBy({ left: -step(), behavior: 'smooth' });
+      const slides = [...t.querySelectorAll('.evo-slide')], thumbs = [...document.querySelectorAll('.evo-thumb')];
+      const count = document.getElementById('evo-count');
+      const go = i => t.scrollTo({ left: slides[Math.max(0, Math.min(slides.length - 1, i))].offsetLeft - t.offsetLeft, behavior: 'smooth' });
+      const now = () => Math.round(t.scrollLeft / t.clientWidth);
+      document.getElementById('evo-next').onclick = () => go(now() + 1);
+      document.getElementById('evo-prev').onclick = () => go(now() - 1);
+      thumbs.forEach((b, i) => b.onclick = () => go(i));
+      let raf = 0;
+      t.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => {
+        const i = now(); count.textContent = (i + 1) + ' / ' + slides.length;
+        thumbs.forEach((b, k) => { b.classList.toggle('on', k === i); b.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+      }); });
       const v = t.querySelector('video');
       if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.intersectionRatio > .6 ? v.play().catch(() => {}) : v.pause()),
