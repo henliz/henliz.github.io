@@ -1121,7 +1121,31 @@
     /* no white-out any more: the whole intro just fades, starting a little
        before she reaches the planet, while she's still falling */
     #scene-overlay.parting { opacity: 0; transition: opacity .9s ease; }
-    .intro-flash { display: none;
+    /* mini hen hops world to world. her walk strip has 16 frames; the
+       script picks a floaty one (arms out, mid stride) in the air and a
+       feet-together one when she's standing on a planet */
+    .intro-hen-still, .intro-shades { display: none !important; }
+    .mini-hen { position: absolute; left: 0; top: 0; z-index: 2; height: clamp(110px, 20vh, 190px); aspect-ratio: 168 / 255; pointer-events: none; will-change: transform; }
+    .mh-sprite { position: absolute; inset: 0; background: url('/sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat; transform-origin: 50% 100%; }
+    /* floating: one frame cut into parts and posed like she's in water,
+       arms out and bobbing, both knees bent. on a planet she walks the strip */
+    .mh-inner { position: absolute; inset: 0; transform-origin: 50% 100%; }
+    .mh-puppet { position: absolute; inset: 0; }
+    .mh-part { position: absolute; inset: 0; background: url('/sky/chibi-walk.webp') 26.667% 0 / 1600% 100% no-repeat; }
+    .mh-body { clip-path: polygon(0.00% 0.00%, 100.00% 0.00%, 100.00% 45.49%, 70.24% 45.49%, 67.86% 48.63%, 66.67% 52.16%, 69.64% 54.90%, 72.62% 66.67%, 74.40% 76.86%, 61.90% 78.43%, 36.90% 78.43%, 22.62% 76.08%, 26.79% 66.67%, 30.95% 55.69%, 39.29% 52.16%, 38.10% 48.63%, 35.71% 45.49%, 0.00% 45.49%); }
+    .mh-armL { clip-path: polygon(33.33% 43.92%, 41.67% 43.92%, 40.48% 48.63%, 27.38% 58.04%, 26.19% 67.45%, 10.71% 68.24%, 9.52% 58.82%, 26.19% 47.06%); transform-origin: 38.10% 44.71%; animation: mhArmL 1.9s ease-in-out infinite alternate; }
+    .mh-armR { clip-path: polygon(63.10% 43.92%, 70.24% 43.92%, 78.57% 51.76%, 90.48% 58.04%, 91.67% 66.67%, 79.76% 66.67%, 73.81% 57.25%, 63.10% 50.20%); transform-origin: 66.67% 45.49%; animation: mhArmR 1.9s ease-in-out -.35s infinite alternate; }
+    .mh-legA, .mh-legB { clip-path: polygon(40.48% 78.82%, 59.52% 78.82%, 65.48% 100.00%, 33.33% 100.00%); transform-origin: 50.00% 75.29%; }
+    .mh-legA { animation: mhLegA 1.3s ease-in-out infinite alternate; }
+    .mh-legB { animation: mhLegB 1.3s ease-in-out -1.3s infinite alternate; filter: brightness(.88); }
+    @keyframes mhArmL { from { transform: rotate(28deg); } to { transform: rotate(52deg); } }
+    @keyframes mhArmR { from { transform: rotate(-28deg); } to { transform: rotate(-52deg); } }
+    @keyframes mhLegA { from { transform: rotate(26deg); } to { transform: rotate(62deg); } }
+    @keyframes mhLegB { from { transform: translateX(-3%) rotate(30deg); } to { transform: translateX(-3%) rotate(66deg); } }
+    .mini-hen.float .mh-sprite, .mini-hen:not(.float) .mh-puppet { display: none; }
+    @media (prefers-reduced-motion: reduce) { .mh-part { animation: none !important; } }
+    .intro-warp { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .intro-flash {
       position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0;
       background: radial-gradient(60% 50% at 50% 50%, rgba(255,255,255,.98), rgba(234,246,251,.75) 55%, rgba(234,246,251,.2) 85%);
     }
@@ -2209,6 +2233,20 @@
             color: var(--rail-accent);
             border-left-color: var(--rail-accent);
         }
+        /* read mode, above 00. the full read is the intended way in, skim
+           is there for anyone short on time. remembered across studies */
+        .read-mode { display: flex; flex-direction: column; gap: .4rem; margin-bottom: clamp(.4rem, 1.6vh, 1rem); }
+        .read-mode .rm-switch { display: flex; padding: 3px; border-radius: 999px; border: 1px solid rgba(var(--rail-accent-rgb), .35); }
+        .read-mode button {
+            flex: 1; padding: .42rem .5rem; border: 0; border-radius: 999px; background: none; cursor: pointer;
+            font: 700 .66rem/1 'Satoshi', sans-serif; letter-spacing: .1em; text-transform: uppercase;
+            color: rgba(240, 242, 240, .62); transition: background .2s ease, color .2s ease;
+        }
+        .read-mode button[aria-pressed="true"] { background: rgba(var(--rail-accent-rgb), .2); color: var(--rail-accent); }
+        .read-mode .rm-note { margin: 0; font: 400 .74rem/1.3 'Satoshi', sans-serif; color: rgba(240, 242, 240, .55); text-wrap: balance; }   /* if zoom ever wraps it, no lone word */
+        :root[data-theme="light"] .read-mode button { color: rgba(18, 24, 31, .55); }
+        :root[data-theme="light"] .read-mode button[aria-pressed="true"] { color: var(--rail-accent); }
+        :root[data-theme="light"] .read-mode .rm-note { color: rgba(18, 24, 31, .55); }
         .rail-toc .toc-num {
             font-family: 'DotempDemo', monospace;
             font-size: 0.9rem;
@@ -4120,6 +4158,8 @@ body::after{
       <div class="intro-stars"></div>
       <img class="intro-hen-still" src="/sky/hen-fall-1.webp" alt="" aria-hidden="true" fetchpriority="high">
       <canvas class="intro-3d" id="intro3d"></canvas>
+      <canvas class="intro-warp" id="intro-warp" aria-hidden="true"></canvas>
+      <div class="mini-hen float" aria-hidden="true"><div class="mh-inner"><div class="mh-sprite"></div><div class="mh-puppet"><div class="mh-part mh-legB"></div><div class="mh-part mh-legA"></div><div class="mh-part mh-armL"></div><div class="mh-part mh-armR"></div><div class="mh-part mh-body"></div></div></div></div>
       <h2 class="intro-title" aria-label="come fall into hen's orbit"><small>come fall into</small><big>hen's orbit</big></h2>
 
       <!-- her heart shades in the sky, pinned to her face by the script -->
@@ -4173,6 +4213,13 @@ body::after{
         const shades  = overlay.querySelector('.intro-shades');
         const calm    = matchMedia('(prefers-reduced-motion: reduce)').matches;
         const SEEN    = 'hen-intro-seen';
+        // ── the worlds ── the intro is three jumps, each landing somewhere
+        // new, then the landing. a jump happens at each SWITCH: the world swaps
+        // under the flash at its peak. each comic belongs to one world
+        const SWITCH = [.1, .35, .63, .9];
+        const worldOf = p => p < SWITCH[0] ? 0 : p < SWITCH[1] ? 1 : p < SWITCH[2] ? 2 : p < SWITCH[3] ? 3 : 4;
+        const warpOf = p => Math.max(0, ...SWITCH.map(s => 1 - Math.abs(p - s) / .07));
+        window.__introWorld = { SWITCH, worldOf, warpOf };
         let open = true, parting = false;
 
         // her kick goes one way, like the north star: pose 1 to start, 1.5
@@ -4208,7 +4255,7 @@ body::after{
         // one scroll is enough now. once a comic's second frame has had
         // DWELL on screen the fall carries on to the next stop by itself,
         // scrolling just hurries it
-        const DWELL = 1500;
+        const DWELL = 1100;
         let landedAt = 0;
         function hurrying(now) { flicks = flicks.filter(t => now - t < 1400); return flicks.length >= 3; }
         function step(dir) {
@@ -4300,13 +4347,94 @@ body::after{
         const face = comics.find(c => c.hasAttribute('data-face'));
         let current = null, blinkT = [];
 
+        // the warp: dotted ascii streaks bursting out from the middle of the
+        // screen, longer and brighter the deeper into a jump, plus a flash
+        // right at the peak where the world swaps
+        const warpCv = document.getElementById('intro-warp'), wctx = warpCv.getContext('2d');
+        const flash = overlay.querySelector('.intro-flash');
+        const RAY_COL = ['#ffffff', '#ff6fae', '#5fb4ff', '#ffc531', '#2fb8a6', '#9b7bff'];
+        const rays = Array.from({ length: 150 }, (_, i) => ({ a: Math.random() * Math.PI * 2, r: Math.random(), v: .6 + Math.random() * .8, c: RAY_COL[i % RAY_COL.length] }));
+        let warpOn = false;
+        function drawWarp(wv, dt) {
+          const dpr = Math.min(devicePixelRatio, 2), W = innerWidth, Hh = innerHeight;
+          if (warpCv.width !== Math.round(W * dpr)) { warpCv.width = Math.round(W * dpr); warpCv.height = Math.round(Hh * dpr); }
+          if (wv <= 0) { if (warpOn) { wctx.clearRect(0, 0, warpCv.width, warpCv.height); warpOn = false; } return; }
+          warpOn = true;
+          wctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          wctx.clearRect(0, 0, W, Hh);
+          const cx = W / 2, cy = Hh / 2, maxR = Math.hypot(cx, cy), cell = 7;
+          rays.forEach(ray => {
+            ray.r += dt * ray.v * (.6 + wv * 3.2) * (.25 + ray.r);
+            if (ray.r > 1.15) { ray.r = Math.random() * .12; ray.a = Math.random() * Math.PI * 2; }
+            const len = .04 + wv * wv * .45;
+            const r0 = Math.max(.04, ray.r - len) * maxR, r1 = ray.r * maxR;
+            const ca = Math.cos(ray.a), sa = Math.sin(ray.a);
+            wctx.fillStyle = ray.c;
+            wctx.globalAlpha = Math.min(1, wv * 1.4) * Math.min(1, ray.r * 4);
+            for (let d = r0; d < r1; d += cell) wctx.fillRect(Math.round(cx + ca * d), Math.round(cy + sa * d), 3, 3);
+          });
+          wctx.globalAlpha = 1;
+        }
+
+        // ── mini hen ── title float, then one hop per stop onto the next
+        // world's planet, then a last hop down onto the page. the scene
+        // module tells us where each planet's top is on screen
+        const mini = overlay.querySelector('.mini-hen'), miniSp = mini.querySelector('.mh-sprite'), miniIn = mini.querySelector('.mh-inner');
+        const HOP = [0, .21, .49, .77, 1];
+        let stands = null, facing = 1;
+        function spot(k) {
+          const W = innerWidth, Hh = innerHeight, mh = mini.offsetHeight;
+          if (k === 0) return { x: W * .5, y: Hh * .7 };                 // floating under the title
+          if (k === 4) return { x: W * .5, y: Hh + mh * 1.2 };           // down onto the page
+          const st = stands?.[k];
+          return st || { x: W * (k === 2 ? .7 : .3), y: Hh * .62 };
+        }
+        // on a planet she walks her 16 frame strip properly. in the air she
+        // switches to the posed float (see .mh-puppet), never walking on nothing
+        let walkT = 0, lastNow = 0, paceT = 0;
+        function moveMiniHen(now) {
+          const dt = lastNow ? Math.min(.05, (now - lastNow) / 1000) : 0; lastNow = now;
+          // at a stop she has landed, so a stop belongs to the hop that ends there
+          const seg = p <= HOP[1] ? 0 : p <= HOP[2] ? 1 : p <= HOP[3] ? 2 : 3;
+          const h = Math.max(0, Math.min(1, (p - HOP[seg]) / (HOP[seg + 1] - HOP[seg])));
+          const A = spot(seg), B = spot(seg + 1);
+          const e = h < .5 ? 2 * h * h : 1 - Math.pow(-2 * h + 2, 2) / 2;
+          const t = now / 1000;
+          const onPlanet = h >= .97 && seg + 1 <= 3;
+          if (B.x !== A.x && h > .03 && h < .97) facing = B.x > A.x ? 1 : -1;
+          let x = A.x + (B.x - A.x) * e, y = A.y + (B.y - A.y) * e - Math.sin(Math.PI * h) * innerHeight * .22;
+          let rot = 0;
+          if (onPlanet) {
+            // pace along the top of the planet and back, following its curve
+            paceT += dt;
+            const R = innerHeight * .5, span = Math.min(90, innerWidth * .06);
+            const dx = Math.sin(paceT * .55) * span;
+            facing = Math.cos(paceT * .55) >= 0 ? 1 : -1;
+            x += dx; y += dx * dx / (2 * R);
+            rot = Math.atan2(dx, R) * 180 / Math.PI;
+            walkT += dt * 15;                                            // a proper walk
+          } else {
+            paceT = 0;
+            y += Math.sin(t * 2.2) * 7;                                  // a little float
+            const hopping = h > 0 && h < 1;
+            rot = facing * (hopping ? 22 + Math.sin(Math.PI * h) * 10 : 9) + Math.sin(t * 1.7) * 4;
+            // floating: the posed puppet takes over (arms and knees animate in css)
+          }
+          const sq = h > .9 && h < .97 ? 1 - .14 * Math.sin((h - .9) / .07 * Math.PI) : h > 0 && h < .08 ? 1 - .12 * Math.sin(h / .08 * Math.PI) : 1;
+          mini.classList.toggle('float', !onPlanet);
+          if (onPlanet) miniSp.style.backgroundPosition = `${(Math.floor(walkT) % 16 / 15 * 100).toFixed(3)}% 0`;
+          miniIn.style.transform = `scale(${facing * (2 - sq)}, ${sq}) rotate(${rot.toFixed(2)}deg)`;
+          mini.style.transform = `translate(${(x - mini.offsetWidth / 2).toFixed(1)}px, ${(y - mini.offsetHeight).toFixed(1)}px)`;
+        }
+
         let raf = 0, last = performance.now();
         function frame(now) {
           raf = requestAnimationFrame(frame);
           const dt = Math.min(.05, (now - last) / 1000); last = now;
           if (auto) goal = Math.min(1, goal + dt * 1000 / AUTO_MS * (1 - AUTO_AT));
           else if (goal >= AUTO_AT) auto = true;
-          p += (goal - p) * (auto ? .12 : .09);
+          // a hop takes about a second, not a snap
+          p += Math.sign(goal - p) * Math.min(Math.abs(goal - p), dt * (auto ? .45 : .3));
           if (Math.abs(goal - p) < .0004) p = goal;
           mx += (aimX - mx) * .06; my += (aimY - my) * .06;
 
@@ -4318,6 +4446,7 @@ body::after{
           pctEl.textContent = Math.round(p * 100) + '%';
           stopDots.forEach((d, i) => d.classList.toggle('on', p >= STOPS[i] - .02));
           bar.style.transform = `scaleX(${p.toFixed(4)})`;
+          moveMiniHen(now);
 
           // the comic panels. only one is ever live; the live close up
           // canvas moves into whichever one that is
@@ -4360,6 +4489,7 @@ body::after{
 
           const out = window.__introScene?.render(p, mx, my);
           if (!out) return;
+          stands = out.stands;
           const f = out.face;
           shades.classList.toggle('on', face.classList.contains('two'));
           if (f) {
@@ -4404,6 +4534,8 @@ body::after{
         const home = /^\/(index\.html)?$/.test(location.pathname);
         let seen = false;
         try { seen = localStorage.getItem(SEEN) === '1'; } catch (e) {}
+        // ?intro always plays it, seen or not
+        if (new URLSearchParams(location.search).has('intro')) seen = false;
         if (!home || seen) {
           // no fade either, or you'd see a flash of sky on the way in
           open = false;
@@ -4490,6 +4622,7 @@ body::after{
       if (booted) return; booted = true;
       const dark = document.documentElement.getAttribute('data-theme') === 'dark';
       const gfx = window.__gfx || { dpr: Math.min(devicePixelRatio, 1.5), aa: true };
+      const { SWITCH } = window.__introWorld;
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: gfx.aa });
       renderer.setPixelRatio(Math.min(gfx.dpr, 1.5));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -4592,6 +4725,7 @@ body::after{
       });
       const hen = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 48, 48), henMat);
       scene.add(hen);
+      hen.visible = false;   // mini hen does the hopping now; this her lives on in the comic close ups
       // smaller now, she's one of the things in the sky instead of all of it
       const HEN_W = 2.7, HEN_H = HEN_W * 560 / 657;
 
@@ -4614,24 +4748,25 @@ body::after{
       // far: further back and smaller. each part of a model takes the next
       // colour in its list, so a laptop reads as a laptop (screen, keys,
       // body) instead of one grey smudge
+      // each world has its own things floating round her. the cloud kingdom
+      // is the cozy stuff, the moon is the tech, deep space is the late nights.
+      // far ones sit further back and smaller
       const DECALS = [
-        { at: .08, url: '/models/cup_tea.glb',   side:  1, size: 2.1, pal: [0xffffff, 0xff6fae, 0xb5643a, 0xffd84d] },
-        { at: .2,  url: '/models/pothos.glb',    side: -1, size: 2.5, pal: [0x2fbf5f, 0x8ee68f, 0xd0703c, 0x1f8f4a] },
-        { at: .3,  url: '/models/laptop.glb',    side:  1, size: 2.7, pal: [0xc9d2e6, 0x5f8dff, 0x2b3045, 0x9b7bff] },
-        { at: .41, url: '/models/allsorts.glb',  side: -1, size: 2.1, pal: [0xff6fae, 0xffd84d, 0x222222, 0x7fd3ff, 0xffffff, 0xff9a3c] },
-        { at: .5,  url: '/models/iphone.glb',    side:  1, size: 2.1, pal: [0x2b3550, 0x7bd8ff, 0xe3e8f2, 0xff6fae] },
-        { at: .6,  url: '/models/steamdeck.glb', side: -1, size: 2.7, pal: [0x2a2f3a, 0x9b7bff, 0xff6fae, 0x7fd3ff] },
-        { at: .7,  url: '/models/zippo.glb',     side:  1, size: 1.9, pal: [0xe3e8f2, 0xffa040, 0xffd84d, 0xff5a3c] },
-        { at: .79, url: '/models/desk_lamp.glb', side: -1, size: 2.4, pal: [0xffd84d, 0x2fd0bd, 0x30364a, 0xfff4c2] },
-        { at: .14, url: '/models/yummymeal.glb', side: -1, size: 2.6, pal: [0xffc531, 0xff6b4a, 0x7fd36b, 0xffffff, 0xb5643a], far: true },
-        { at: .55, url: '/models/pothos.glb',    side:  1, size: 2.8, pal: [0x2fbf5f, 0x8ee68f, 0xd0703c], far: true },
-        { at: .03, url: '/models/allsorts.glb',  side: -1, size: 2.4, pal: [0xff6fae, 0xffd84d, 0x7fd3ff, 0xffffff], far: true },
-        { at: .25, url: '/models/zippo.glb',     side:  1, size: 2.2, pal: [0xe3e8f2, 0xffa040, 0xffd84d], far: true },
-        { at: .36, url: '/models/cup_tea.glb',   side: -1, size: 2.4, pal: [0xffffff, 0x9b7bff, 0xb5643a], far: true },
-        { at: .46, url: '/models/desk_lamp.glb', side:  1, size: 2.6, pal: [0xff6fae, 0x2fd0bd, 0x30364a], far: true },
-        { at: .66, url: '/models/iphone.glb',    side: -1, size: 2.3, pal: [0x2b3550, 0xff6fae, 0xe3e8f2], far: true },
-        { at: .74, url: '/models/laptop.glb',    side:  1, size: 2.8, pal: [0xc9d2e6, 0x2fd0bd, 0x2b3045], far: true },
-        { at: .86, url: '/models/yummymeal.glb', side: -1, size: 2.4, pal: [0xffc531, 0xff6b4a, 0x7fd36b], far: true },
+        { w: 1, url: '/models/cup_tea.glb',   size: 2.1, pal: [0xffffff, 0xff6fae, 0xb5643a, 0xffd84d] },
+        { w: 1, url: '/models/allsorts.glb',  size: 2.1, pal: [0xff6fae, 0xffd84d, 0x222222, 0x7fd3ff, 0xffffff, 0xff9a3c] },
+        { w: 1, url: '/models/pothos.glb',    size: 2.5, pal: [0x2fbf5f, 0x8ee68f, 0xd0703c, 0x1f8f4a] },
+        { w: 1, url: '/models/yummymeal.glb', size: 2.6, pal: [0xffc531, 0xff6b4a, 0x7fd36b, 0xffffff, 0xb5643a], far: true },
+        { w: 1, url: '/models/cup_tea.glb',   size: 2.4, pal: [0xffffff, 0x9b7bff, 0xb5643a], far: true },
+        { w: 2, url: '/models/laptop.glb',    size: 2.7, pal: [0xc9d2e6, 0x5f8dff, 0x2b3045, 0x9b7bff] },
+        { w: 2, url: '/models/iphone.glb',    size: 2.1, pal: [0x2b3550, 0x7bd8ff, 0xe3e8f2, 0xff6fae] },
+        { w: 2, url: '/models/steamdeck.glb', size: 2.7, pal: [0x2a2f3a, 0x9b7bff, 0xff6fae, 0x7fd3ff] },
+        { w: 2, url: '/models/laptop.glb',    size: 2.8, pal: [0xc9d2e6, 0x2fd0bd, 0x2b3045], far: true },
+        { w: 2, url: '/models/allsorts.glb',  size: 2.4, pal: [0xff6fae, 0xffd84d, 0x7fd3ff, 0xffffff], far: true },
+        { w: 3, url: '/models/desk_lamp.glb', size: 2.4, pal: [0xffd84d, 0x2fd0bd, 0x30364a, 0xfff4c2] },
+        { w: 3, url: '/models/zippo.glb',     size: 1.9, pal: [0xe3e8f2, 0xffa040, 0xffd84d, 0xff5a3c] },
+        { w: 3, url: '/models/iphone.glb',    size: 2.1, pal: [0x2b3550, 0xff6fae, 0xe3e8f2] },
+        { w: 3, url: '/models/pothos.glb',    size: 2.8, pal: [0x2fbf5f, 0x8ee68f, 0xd0703c], far: true },
+        { w: 3, url: '/models/yummymeal.glb', size: 2.4, pal: [0xffc531, 0xff6b4a, 0x7fd36b], far: true },
       ];
       const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
       const decals = DECALS.map(o => {
@@ -4658,6 +4793,9 @@ body::after{
       });
       // little colourful ascii sparkles scattered through the sky
       const sparkles = [];
+      // everything in here gets recycled back below her once it's gone past
+      // overhead, so the sky never runs out however long you fall
+      const ambient = [];
       const SPARK_GEO = [r => new THREE.OctahedronGeometry(r), r => new THREE.TetrahedronGeometry(r * 1.2), r => new THREE.TorusGeometry(r, r * .3, 6, 16)];
       for (let i = 0; i < 90; i++) {
         const col = [0xff6fae, 0xffc531, 0x2fb8a6, 0x9b7bff, 0x5fb4ff][i % 5];
@@ -4676,7 +4814,7 @@ body::after{
         const a = rnd() * Math.PI * 2, r = 8 + rnd() * 14;
         m.position.set(Math.sin(a) * r, 8 - rnd() * (DROP + 14), Math.cos(a) * r);
         m.rotation.set(rnd() * .6, a, (rnd() < .5 ? 1 : -1) * (.5 + rnd() * .6));
-        ascii.add(m);
+        ascii.add(m); ambient.push(m);
       }
       // puffy ascii clouds, a few balls squished together
       for (let i = 0; i < 16; i++) {
@@ -4692,7 +4830,7 @@ body::after{
         const a = rnd() * Math.PI * 2, r = 11 + rnd() * 12;
         g.position.set(Math.sin(a) * r, 6 - rnd() * (DROP + 6), Math.cos(a) * r);
         g.scale.y = .7;
-        ascii.add(g);
+        ascii.add(g); ambient.push(g);
       }
       // lumpy little asteroids tumbling
       for (let i = 0; i < 14; i++) {
@@ -4713,45 +4851,45 @@ body::after{
       planet.position.set(0, -DROP - 34, 0);
       ascii.add(planet);
 
-      // a different world beside her at each stop, so the fall goes somewhere:
-      // a little cratered moon, a ringed orange giant, then a teal planet with
-      // its own moon. they ride the far lane, opposite each comic
+      // every jump lands somewhere new, and each place has its own planet
+      // hanging behind her: a ringed orange giant over the cloud kingdom, a
+      // big cratered moon, then a teal planet with its own moon
       const solid = (geo, color) => new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, roughness: .8 }));
-      const landmark = (at, side, build) => {
+      const landmark = (w, side, rad, build) => {
         const g = new THREE.Group(); g.visible = false;
-        g.userData = { at, side, size: 9, far: true, world: true };
+        g.userData = { w, side, rad, size: 9, far: true, world: true };
         build(g); ascii.add(g); decals.push(g);
       };
-      landmark(.21, -1, g => {
+      landmark(2, 1, 4.4, g => {
         g.add(solid(new THREE.SphereGeometry(4.4, 40, 28), 0xe9e4ff));
         [[1.6, 1.4, 3.9, 1], [-1.8, -1, 3.8, .8], [.4, -2.4, 3.6, .6], [-2.6, 1.8, 3.1, .7]].forEach(([x, y, z, r]) => {
           const c = solid(new THREE.SphereGeometry(r, 16, 12), 0x8f86c2); c.position.set(x, y, z); g.add(c);
         });
       });
-      landmark(.49, 1, g => {
+      landmark(1, -1, 4.8, g => {
         g.add(solid(new THREE.SphereGeometry(4.8, 40, 28), 0xff9a5c));
         const r = solid(new THREE.TorusGeometry(8, .55, 8, 80), 0xffd27a); r.rotation.set(1.3, 0, .25); g.add(r);
       });
-      landmark(.77, -1, g => {
+      landmark(3, 1, 4.2, g => {
         g.add(solid(new THREE.SphereGeometry(4.2, 40, 28), 0x2fd0bd));
         const m = solid(new THREE.SphereGeometry(1.1, 20, 14), 0xffffff); m.position.set(7, 2.4, 0); g.add(m);
       });
 
-      // the sky's colour through the fall, keyed to the stops
+      // a sky per world. it swaps under the flash, so each jump arrives
+      // somewhere instead of the colour just drifting
       const skyEl = document.querySelector('.intro-sky'), starsEl = document.querySelector('.intro-stars');
       const SKY = dark
-        ? [[0, ['#0c1824', '#16283a', '#1d3349']], [.35, ['#2b1f45', '#4a2f5e', '#7a3f62']], [.6, ['#1a1640', '#2e2460', '#4a3070']], [.85, ['#070b22', '#0e1640', '#1d2a6b']]]
-        : [[0, ['#9fd0ea', '#c8e5f3', '#eaf6fb']], [.35, ['#f2a7b8', '#f8c9a8', '#fde3c8']], [.6, ['#5a4b9a', '#a06aa8', '#f09aa0']], [.85, ['#0c1238', '#1a1f55', '#2c2a6e']]];
+        ? [['#0c1824', '#16283a', '#1d3349'], ['#2b1f45', '#5a2f5e', '#8a4562'], ['#141433', '#232457', '#3a2f6a'], ['#05081a', '#0b1338', '#132a5c'], ['#05081a', '#0b1338', '#132a5c']]
+        : [['#9fd0ea', '#c8e5f3', '#eaf6fb'], ['#f29ab4', '#f8c3a2', '#fde3c8'], ['#3b3478', '#6d5aa8', '#b08ac0'], ['#0a1033', '#16205a', '#24357a'], ['#0a1033', '#16205a', '#24357a']];
       const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
-      let lastSky = -1;
-      function paintSky(p) {
-        if (Math.abs(p - lastSky) < .002) return; lastSky = p;
-        let i = 0; while (i < SKY.length - 2 && p > SKY[i + 1][0]) i++;
-        const [a, ca] = SKY[i], [b, cb] = SKY[i + 1];
-        const k = Math.max(0, Math.min(1, (p - a) / (b - a)));
-        const col = ca.map((h, j) => { const x = hexRgb(h), y = hexRgb(cb[j]); return `rgb(${x.map((v, n) => Math.round(v + (y[n] - v) * k)).join(',')})`; });
+      let lastWorld = -1;
+      // wf is the world as a float, so the sky blends while she's mid hop
+      function paintSky(wf) {
+        if (Math.abs(wf - lastWorld) < .004) return; lastWorld = wf;
+        const i = Math.min(SKY.length - 2, Math.floor(wf)), k = wf - i;
+        const col = SKY[i].map((h, j) => { const x = hexRgb(h), y = hexRgb(SKY[i + 1][j]); return `rgb(${x.map((v, n) => Math.round(v + (y[n] - v) * k)).join(',')})`; });
         skyEl.style.background = `linear-gradient(180deg, ${col[0]} 0%, ${col[1]} 55%, ${col[2]} 100%)`;
-        starsEl.style.opacity = Math.max(0, Math.min(1, (p - .45) / .3)).toFixed(3);
+        starsEl.style.opacity = Math.max(0, Math.min(1, wf - 1)).toFixed(3);
       }
 
       // the glyphs, lightest to densest, chunky and a bit wide like the
@@ -4785,13 +4923,13 @@ body::after{
             float g = floor(clamp(.36 + .64 * pow(lum, .8), 0., .999) * N);
             vec2 l = fract(px / cell);
             if (texture2D(atlas, vec2((g + l.x) / N, l.y)).r < .35) discard;
-            vec3 col = mix(vec3(lum), rgb, 1.55);
+            vec3 col = mix(vec3(lum), rgb, 1.9);
             if (outfit > .5 && rgb.b > rgb.r + .04 && rgb.b > rgb.g) col = vec3(1., .36, .64) * (.45 + lum * 1.5);
             gl_FragColor = vec4(clamp(col * lift, 0., 1.), 1.);
           }`
       });
       const rt = new THREE.WebGLRenderTarget(1, 1);
-      const mainGlyph = glyphMat(dark ? 1.15 : .82, false);
+      const mainGlyph = glyphMat(dark ? 1.15 : .7, false);
       const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
       const quad = new THREE.Scene(); quad.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mainGlyph));
 
@@ -4826,6 +4964,7 @@ body::after{
         }
       }
 
+      let baseFov = 50;   // the resting lens, a jump punches out from it
       function resize() {
         const w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
         renderer.setSize(w, h, false);
@@ -4834,7 +4973,7 @@ body::after{
         mainGlyph.uniforms.res.value.copy(b);
         mainGlyph.uniforms.cell.value = Math.round((w < 640 ? 7 : 8) * renderer.getPixelRatio());
         camera.aspect = w / h;
-        camera.fov = w < h ? 64 : 50;
+        camera.fov = baseFov = w < h ? 64 : 50;
         camera.updateProjectionMatrix();
       }
       addEventListener('resize', resize); resize();
@@ -4842,6 +4981,8 @@ body::after{
       const H = new THREE.Vector3(), fwd = new THREE.Vector3(), right = new THREE.Vector3(), upv = new THREE.Vector3();
       const e1 = new THREE.Vector3(), e2 = new THREE.Vector3();
       let awake = true, nextBlink = 2.2, blinkAt = -1;
+      let travel = 0, speed = 1.6, lastT = 0, camX = 0, lastSwing = 1.5;
+      const C = new THREE.Vector3(), RANGE = DROP + 40;
       const t0 = performance.now();
       // her eyes on the art, as spots on the unit plane, for the shades
       const EYE_L = new THREE.Vector3(117 / 657 - .5, .5 - 159 / 560, 0), EYE_R = new THREE.Vector3(164 / 657 - .5, .5 - 149 / 560, 0);
@@ -4878,26 +5019,42 @@ body::after{
           const t = (performance.now() - t0) / 1000;
           const w = canvas.clientWidth, h = canvas.clientHeight, narrow = w < h;
 
-          // her, bobbing a little on the way down
-          H.set(0, henY(p) + Math.sin(t * 1.6) * .12, 0);
-          // the camera, circling her, tilting down more as the planet comes
-          const a = camAngle(p) + mx * .25, R = narrow ? 8.4 : 7.8;
-          camera.position.set(Math.sin(a) * R, H.y + 1.2 + p * 3 - my * .6, Math.cos(a) * R);
+          // which world she's in, and how deep into a jump she is (0 to 1)
+          // the world as a float: whole numbers while she stands on a planet, blending mid hop
+          const sm = (a, b, x) => { const k = Math.max(0, Math.min(1, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+          const wf = SWITCH.reduce((acc, sw) => acc + sm(sw - .07, sw + .07, p), 0), wi = Math.round(wf);
+          const dt = lastT ? Math.min(.05, t - lastT) : 1 / 60; lastT = t;
+          // a gentle drift while she hangs in a world, so it's never frozen
+          travel += speed * dt;
+
+          // her, bobbing a little
+          H.set(0, -travel + Math.sin(t * 1.6) * .12, 0);
+          // the camera chases her sideways a beat late, so when she zigs the
+          // whole sky swings round instead of her just sliding across it
+          const zig = ZIG(p), lean = (ZIG(p + .01) - zig) * 100;   // banks into the turn like a lil ship
+          camX += (zig * lastSwing * .55 - camX) * Math.min(1, dt * 2.5);
+          C.copy(H).addScaledVector(right, camX);
+          // every world is seen from a new angle, so arriving feels like arriving.
+          // within one it keeps slowly circling her
+          const a = -.35 + wf * 1.25 + t * .035 + mx * .25, R = narrow ? 8.4 : 7.8;
+          camera.position.set(C.x + Math.sin(a) * R, H.y + 1.2 + (wi >= 4 ? 3 : 0) - my * .6, C.z + Math.cos(a) * R);
           camera.up.set(0, 1, 0);
-          camera.lookAt(0, H.y - p * 1.5, 0);
+          camera.lookAt(C.x, H.y - (wi >= 4 ? 1.5 : 0), C.z);
+          camera.fov = baseFov;
+          camera.updateProjectionMatrix();
           // the way the camera faces before it rolls, for laying things out
           // beside her on screen
           camera.updateMatrixWorld();
           right.setFromMatrixColumn(camera.matrixWorld, 0);
           upv.setFromMatrixColumn(camera.matrixWorld, 1);
           fwd.setFromMatrixColumn(camera.matrixWorld, 2).negate();
-          camera.rotateZ(Math.sin(p * Math.PI * 1.5) * .08 + mx * .03);
+          camera.rotateZ(Math.sin(t * .3) * .04 + mx * .03 - Math.max(-.14, Math.min(.14, lean * .014)));
 
           const small = narrow ? 1.12 : 1;
           // how far she can swing: clear of the screen edge, a bit further on a wide screen
-          const viewH = camera.position.distanceTo(H) * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+          const viewH = camera.position.distanceTo(H) * Math.tan(THREE.MathUtils.degToRad(baseFov / 2));
           const swing = Math.max(0, viewH * camera.aspect - HEN_W * small / 2 - .3) * (narrow ? .7 : .5);
-          const zig = ZIG(p), lean = (ZIG(p + .01) - zig) * 100;   // banks into the turn like a lil ship
+          lastSwing = swing;
           hen.position.copy(H).addScaledVector(right, zig * swing);
           hen.quaternion.copy(camera.quaternion);
           hen.rotateZ(Math.sin(t * .8) * .05 - Math.max(-.3, Math.min(.3, lean * .025)));
@@ -4907,40 +5064,60 @@ body::after{
           const bt = (t - blinkAt) / .16;
           henMat.uniforms.blink.value = blinkAt < 0 || bt > 2 ? 0 : (bt < 1 ? bt : 2 - bt);
 
-          // clouds thin out as they come right up to the lens
+          // clouds only live in the sky worlds, and thin out right at the lens
           const camPos = camera.position;
-          const cloudFade = 1 - Math.max(0, Math.min(1, (p - .4) / .22));
-          clouds.forEach(c => { c.material.opacity = c.userData.base * cloudFade * Math.min(1, Math.max(0, (c.position.distanceTo(camPos) - 1.5) / 4)); });
-          paintSky(p);
+          const cloudy = Math.max(0, Math.min(1, 2 - wf));
+          clouds.forEach(c => { c.material.opacity = c.userData.base * cloudy * Math.min(1, Math.max(0, (c.position.distanceTo(camPos) - 1.5) / 4)); });
+          paintSky(wf);
 
-          // the decals ride lanes either side of her, rising past as she
-          // falls. on a wide screen they sit level with her, clear of her
-          // edges; on a phone there's no room, so they sit further back,
-          // behind her, peeking out
+          // this world's things float round her in slow orbits, and its
+          // planet hangs big behind her. other worlds' things are hidden
           const dist = camPos.distanceTo(H);
-          const halfH = dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), halfW = halfH * camera.aspect;
-          const henHalf = HEN_W * small / 2;
-          decals.forEach(g => {
-            const o = g.userData, k = (p - o.at) / .12;
-            g.visible = Math.abs(k) < 1.4;
-            if (!g.visible) return;
-            const back = o.far ? 14 : narrow ? 7 : 0;
+          const halfH = dist * Math.tan(THREE.MathUtils.degToRad(baseFov / 2)), halfW = halfH * camera.aspect;
+          // a world's things pop in as she arrives and shrink away as she
+          // leaves; its planet rises from below and sinks back out. each
+          // planet sits under the spot she lands on, and reports its top
+          const STAND_X = { 1: .3, 2: .7, 3: .3 };
+          const stands = {};
+          decals.forEach((g, i) => {
+            const o = g.userData;
+            const pop = Math.max(0, Math.min(1, 1 - Math.abs(wf - o.w) * 1.6));
+            g.visible = pop > .01;
+            const back = o.world ? 26 : o.far ? 14 : narrow ? 7 : 2;
             const s = (dist + back) / dist;
-            // the near ones go by on whichever side she isn't, out by the edge
-            const side = o.far || o.world ? o.side : (ZIG(o.at) > .15 ? -1 : ZIG(o.at) < -.15 ? 1 : o.side);
-            const lat = o.far ? halfW * s * .8
-                      : narrow ? halfW * s * .72
-                      : Math.max(henHalf + o.size * .55 + .4, halfW - o.size * .55);
-            g.position.copy(H)
-              .addScaledVector(right, side * lat + Math.sin(t * .6 + o.at * 20) * .2)
-              .addScaledVector(upv, k * halfH * 1.35 * s)
-              .addScaledVector(fwd, back);
-            g.scale.setScalar(narrow && !o.far ? .8 : 1);
-            g.rotation.y = t * .6 + o.at * 10;
-            g.rotation.x = Math.sin(t * .7 + o.at * 9) * .25;
+            let x, y;
+            if (o.world) {
+              x = (STAND_X[o.w] - .5) * 2 * halfW * s; y = -halfH * s * .8;
+              const sc = 1.9, top = o.rad * sc;
+              e1.copy(C).addScaledVector(right, x).addScaledVector(upv, y + top).addScaledVector(fwd, back).project(camera);
+              stands[o.w] = { x: (e1.x + 1) / 2 * w, y: (1 - e1.y) / 2 * h };
+              y -= (1 - pop) * halfH * s * 1.4;
+              if (!g.visible) return;
+              g.position.copy(C).addScaledVector(right, x).addScaledVector(upv, y).addScaledVector(fwd, back);
+              g.scale.setScalar(sc);
+              g.rotation.y = t * .08 + i;
+              return;
+            }
+            if (!g.visible) return;
+            const ang = t * (o.far ? .07 : .13) + i * 2.4;
+            x = Math.cos(ang) * halfW * s * (o.far ? .8 : .74);
+            y = Math.sin(ang) * halfH * s * (o.far ? .7 : .62);
+            g.position.copy(C).addScaledVector(right, x).addScaledVector(upv, y).addScaledVector(fwd, back);
+            const ease = 1 - Math.pow(1 - pop, 3);
+            g.scale.setScalar((narrow && !o.far ? .8 : 1) * ease);
+            g.rotation.y = t * .6 + i;
+            g.rotation.x = Math.sin(t * .7 + i * 9) * .25;
           });
           sparkles.forEach(m => { m.rotation.y = t * m.userData.spin; m.rotation.x = t * .3; });
           planet.rotation.y = t * .05;
+          // the landing planet only shows up for the landing, coming up to meet her
+          planet.visible = wf > 3.5;
+          planet.position.set(0, H.y - 30 - (1 - p) * 300, 0);
+          // anything that's drifted past overhead goes back round below her
+          const top = H.y + 16;
+          clouds.forEach(c => { if (c.position.y > top) c.position.y -= RANGE; });
+          ambient.forEach(o => { if (o.position.y > top) o.position.y -= RANGE; });
+          sparkles.forEach(o => { if (o.position.y > top) o.position.y -= RANGE; });
 
           renderer.setRenderTarget(rt); renderer.clear();
           renderer.render(ascii, camera);
@@ -4956,7 +5133,7 @@ body::after{
           const l = toScreen(e1.copy(EYE_L).applyMatrix4(hen.matrixWorld).project(camera));
           const r = toScreen(e2.copy(EYE_R).applyMatrix4(hen.matrixWorld).project(camera));
           const face = { x: (l.x + r.x) / 2, y: (l.y + r.y) / 2, a: Math.atan2(r.y - l.y, r.x - l.x), w: Math.hypot(r.x - l.x, r.y - l.y) };
-          return { face, t };
+          return { face, t, stands };
         }
       };
     }
@@ -7633,12 +7810,12 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=3c4d0e00',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=44e834a9',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=56e17cc7',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=850f3a0d', scene: 'myauntie' },
-  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=0e4c6bf1',  scene: 'equinox'  },
-  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=525192b6', scene: 'handoff' },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=9ee5efc3',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=fbb6934b',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=e130a32c',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=d695876d', scene: 'myauntie' },
+  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=13dcf0ad',  scene: 'equinox'  },
+  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=6bebc1b2', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
@@ -7685,10 +7862,37 @@ const CASE_BY_HREF = Object.fromEntries(
   const railBack = document.getElementById('railBack');
   const railKick = document.getElementById('railCaseKicker');
 
+  // full read or skim. the full read is how the studies are meant to be
+  // read; skim keeps the headlines, a short summary per section and every
+  // clip. the case page reads the same key, so it's set once for all of them
+  const SKIM_KEY = 'case-skim';
+  const getSkim = () => { try { return localStorage.getItem(SKIM_KEY) === '1'; } catch (e) { return false; } };
+  const sendSkim = () => { try { frame.contentWindow?.postMessage({ type: 'caseSkim', on: getSkim() }, '*'); } catch (e) {} };
+  function readModeSwitch() {
+    const wrap = document.createElement('div');
+    wrap.className = 'read-mode';
+    wrap.innerHTML = '<div class="rm-switch" role="group" aria-label="How to read this study">'
+      + '<button type="button" data-skim="0">Full read</button><button type="button" data-skim="1">Skim</button></div>'
+      + '<p class="rm-note"></p>';
+    const note = wrap.querySelector('.rm-note');
+    const paint = () => {
+      const on = getSkim();
+      wrap.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.skim === '1') === on)));
+      note.textContent = on ? 'The gist. Full read has the thinking.' : 'How it\u2019s meant to be read.';
+    };
+    wrap.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      try { localStorage.setItem(SKIM_KEY, b.dataset.skim); } catch (e) {}
+      paint(); sendSkim();
+    }));
+    paint();
+    return wrap;
+  }
+
   function renderToc(items) {
     railToc.innerHTML = '';
     if (!items || !items.length) { railToc.hidden = true; return; }
     railToc.hidden = false;
+    if (!CASES[current]?.plainRail) railToc.appendChild(readModeSwitch());   // studies only, not about or the playground
     items.forEach(it => {
       const a = document.createElement('a');
       a.href = '#';
@@ -7723,6 +7927,7 @@ const CASE_BY_HREF = Object.fromEntries(
     }
   });
   frame.addEventListener('load', () => {
+    sendSkim();
     try { frame.contentWindow?.postMessage({ type: 'caseTocRequest' }, '*'); } catch (e) {}
   });
 
