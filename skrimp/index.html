@@ -1129,7 +1129,10 @@
     .mh-sprite { position: absolute; inset: 0; background: url('/sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat; transform-origin: 50% 100%; }
     /* floating: one frame cut into parts and posed like she's in water,
        arms out and bobbing, both knees bent. on a planet she walks the strip */
-    .mh-inner { position: absolute; inset: 0; transform-origin: 50% 100%; }
+    .mh-inner { position: absolute; inset: 0; transform-origin: 50% 60%; }
+    /* the glow she leaves behind, a soft teardrop that stretches with speed */
+    .mh-trail { position: absolute; left: 50%; top: 55%; width: 70%; height: 70%; translate: -50% 0; transform-origin: 50% 0; opacity: 0; pointer-events: none;
+      background: radial-gradient(ellipse 50% 100% at 50% 0%, rgba(255, 255, 255, .9), rgba(255, 190, 230, .45) 45%, rgba(170, 200, 255, 0) 100%); filter: blur(6px); }
     .mh-puppet { position: absolute; inset: 0; }
     .mh-part { position: absolute; inset: 0; background: url('/sky/chibi-walk.webp') 26.667% 0 / 1600% 100% no-repeat; }
     .mh-body { clip-path: polygon(0.00% 0.00%, 100.00% 0.00%, 100.00% 45.49%, 70.24% 45.49%, 67.86% 48.63%, 66.67% 52.16%, 69.64% 54.90%, 72.62% 66.67%, 74.40% 76.86%, 61.90% 78.43%, 36.90% 78.43%, 22.62% 76.08%, 26.79% 66.67%, 30.95% 55.69%, 39.29% 52.16%, 38.10% 48.63%, 35.71% 45.49%, 0.00% 45.49%); }
@@ -4189,7 +4192,7 @@ body::after{
       <img class="intro-hen-still" src="/sky/hen-fall-1.webp" alt="" aria-hidden="true" fetchpriority="high">
       <canvas class="intro-3d" id="intro3d"></canvas>
       <canvas class="intro-warp" id="intro-warp" aria-hidden="true"></canvas>
-      <div class="mini-hen float" aria-hidden="true"><div class="mh-inner"><div class="mh-sprite"></div><div class="mh-puppet"><div class="mh-part mh-legB"></div><div class="mh-part mh-legA"></div><div class="mh-part mh-armL"></div><div class="mh-part mh-armR"></div><div class="mh-part mh-body"></div></div></div></div>
+      <div class="mini-hen float" aria-hidden="true"><div class="mh-trail"></div><div class="mh-inner"><div class="mh-sprite"></div><div class="mh-puppet"><div class="mh-part mh-legB"></div><div class="mh-part mh-legA"></div><div class="mh-part mh-armL"></div><div class="mh-part mh-armR"></div><div class="mh-part mh-body"></div></div></div></div>
       <h2 class="intro-title" aria-label="come fall into hen's orbit"><small>come fall into</small><big>hen's orbit</big></h2>
 
       <!-- her heart shades in the sky, pinned to her face by the script -->
@@ -4282,10 +4285,7 @@ body::after{
         // someone clearly hurrying (three separate flicks in quick succession)
         // gets to blow straight through it
         let lockUntil = 0, holdUntil = 0, flicks = [];
-        // one scroll is enough now. once a comic's second frame has had
-        // DWELL on screen the fall carries on to the next stop by itself,
-        // scrolling just hurries it
-        const DWELL = 1100;
+        // every jump is the reader's: nothing moves on by itself
         let landedAt = 0;
         function hurrying(now) { flicks = flicks.filter(t => now - t < 1400); return flicks.length >= 3; }
         function step(dir) {
@@ -4419,42 +4419,40 @@ body::after{
           const st = stands?.[k];
           return st || { x: W * (k === 2 ? .7 : .3), y: Hh * .62 };
         }
-        // on a planet she walks her 16 frame strip properly. in the air she
-        // switches to the posed float (see .mh-puppet), never walking on nothing
-        let walkT = 0, lastNow = 0, paceT = 0;
+        // she flies like a little ship: round the middle of the frame as you
+        // scroll, on the side away from each comic when it parks (left, right,
+        // left), sweeping over or under between them. she banks and faces the
+        // way she's going, and her trail stretches the faster you scroll
+        const miniTrail = mini.querySelector('.mh-trail');
+        let lastNow = 0, lastX = 0, lastY = 0, lastP = 0, spd = 0, bank = 0;
         function moveMiniHen(now) {
           const dt = lastNow ? Math.min(.05, (now - lastNow) / 1000) : 0; lastNow = now;
-          // at a stop she has landed, so a stop belongs to the hop that ends there
-          const seg = p <= HOP[1] ? 0 : p <= HOP[2] ? 1 : p <= HOP[3] ? 2 : 3;
-          const h = Math.max(0, Math.min(1, (p - HOP[seg]) / (HOP[seg + 1] - HOP[seg])));
-          const A = spot(seg), B = spot(seg + 1);
-          const e = h < .5 ? 2 * h * h : 1 - Math.pow(-2 * h + 2, 2) / 2;
-          const t = now / 1000;
-          const onPlanet = h >= .97 && seg + 1 <= 3;
-          if (B.x !== A.x && h > .03 && h < .97) facing = B.x > A.x ? 1 : -1;
-          let x = A.x + (B.x - A.x) * e, y = A.y + (B.y - A.y) * e - Math.sin(Math.PI * h) * innerHeight * .22;
-          let rot = 0;
-          if (onPlanet) {
-            // pace along the top of the planet and back, following its curve
-            paceT += dt;
-            const R = innerHeight * .5, span = Math.min(90, innerWidth * .06);
-            const dx = Math.sin(paceT * .55) * span;
-            facing = Math.cos(paceT * .55) >= 0 ? 1 : -1;
-            x += dx; y += dx * dx / (2 * R);
-            rot = Math.atan2(dx, R) * 180 / Math.PI;
-            walkT += dt * 15;                                            // a proper walk
-          } else {
-            paceT = 0;
-            y += Math.sin(t * 2.2) * 7;                                  // a little float
-            const hopping = h > 0 && h < 1;
-            rot = facing * (hopping ? 22 + Math.sin(Math.PI * h) * 10 : 9) + Math.sin(t * 1.7) * 4;
-            // floating: the posed puppet takes over (arms and knees animate in css)
+          const t = now / 1000, W = innerWidth, Hh = innerHeight;
+          const ph = 2 * Math.PI * (p - .21) / .56 + Math.PI + Math.sin(t * .6) * .05;
+          let x = W / 2 + Math.cos(ph) * W * .27, y = Hh * .52 + Math.sin(ph) * Hh * .24;
+          // out of the title float at the start, and a dive down onto the page at the end
+          const k0 = Math.min(1, p / .12), sk0 = k0 * k0 * (3 - 2 * k0);
+          x = W / 2 + (x - W / 2) * sk0; y = Hh * .7 + (y - Hh * .7) * sk0;
+          const k1 = Math.max(0, (p - .8) / .2);
+          x += (W / 2 - x) * k1; y += (Hh * 1.25 - y) * k1 * k1;
+          y += Math.sin(t * 2.2) * 6;
+          // which way she's moving, how fast
+          if (dt) {
+            const vx = (x - lastX) / dt, vy = (y - lastY) / dt;
+            spd += (Math.abs(p - lastP) / dt - spd) * Math.min(1, dt * 6);
+            if (Math.abs(vx) > 30) facing = vx > 0 ? 1 : -1;
+            bank += (Math.max(-28, Math.min(28, vy * .05 * facing + vx * .015)) - bank) * Math.min(1, dt * 5);
+            const ang = Math.atan2(-vy, -vx) * 180 / Math.PI - 90;          // tail points back along the path
+            const tl = Math.min(1, spd / .25);
+            miniTrail.style.opacity = (tl * .85).toFixed(3);
+            miniTrail.style.transform = `rotate(${ang.toFixed(1)}deg) scaleY(${(.4 + tl * 2.6).toFixed(3)})`;
           }
-          const sq = h > .9 && h < .97 ? 1 - .14 * Math.sin((h - .9) / .07 * Math.PI) : h > 0 && h < .08 ? 1 - .12 * Math.sin(h / .08 * Math.PI) : 1;
-          mini.classList.toggle('float', !onPlanet);
-          if (onPlanet) miniSp.style.backgroundPosition = `${(Math.floor(walkT) % 16 / 15 * 100).toFixed(3)}% 0`;
-          miniIn.style.transform = `scale(${facing * (2 - sq)}, ${sq}) rotate(${rot.toFixed(2)}deg)`;
-          mini.style.transform = `translate(${(x - mini.offsetWidth / 2).toFixed(1)}px, ${(y - mini.offsetHeight).toFixed(1)}px)`;
+          lastX = x; lastY = y; lastP = p;
+          // a little smaller up top, as if further off
+          const depth = .86 + .14 * (y / Hh);
+          const rot = facing * (14 + bank) + Math.sin(t * 1.7) * 3;
+          miniIn.style.transform = `scale(${facing * depth}, ${depth}) rotate(${rot.toFixed(2)}deg)`;
+          mini.style.transform = `translate(${(x - mini.offsetWidth / 2).toFixed(1)}px, ${(y - mini.offsetHeight * .6).toFixed(1)}px)`;
         }
 
         let raf = 0, last = performance.now();
@@ -4496,11 +4494,6 @@ body::after{
             const w = c.offsetWidth, bob = Math.sin(now / 600 + +c.dataset.at * 9) * 6;
             c.style.transform = `translate(${ride(k, w, +c.dataset.dir).toFixed(1)}px, ${bob.toFixed(1)}px) rotate(${(+c.dataset.dir * -2.5).toFixed(1)}deg)`;
           });
-          // parked at a stop with frame two read, so off to the next one
-          if (!auto && goal > 0 && goal < 1 && Math.abs(goal - p) < .01 && live?.classList.contains('two') && now - landedAt > DWELL) {
-            goal = STOPS.find(v => v > goal + .001) ?? 1;
-            if (goal < 1) holdUntil = now + 4000;
-          }
 
           const beat = live && live.querySelector(live.classList.contains('two') ? '.p2' : '.p1');
           if (beat !== current) {
@@ -4564,7 +4557,10 @@ body::after{
         const home = /^\/(index\.html)?$/.test(location.pathname);
         let seen = false;
         try { seen = localStorage.getItem(SEEN) === '1'; } catch (e) {}
-        // ?intro always plays it, seen or not
+        // the intro is parked for now: the site opens straight on the work.
+        // ?intro still plays it, for tuning. set INTRO_ON to bring it back
+        const INTRO_ON = false;
+        if (!INTRO_ON) seen = true;
         if (new URLSearchParams(location.search).has('intro')) seen = false;
         if (!home || seen) {
           // no fade either, or you'd see a flash of sky on the way in
@@ -4660,12 +4656,24 @@ body::after{
       renderer.setClearColor(0x000000, 0);
       const camera = new THREE.PerspectiveCamera(52, 1, .1, 400);
 
-      // ── the fall ── she drops straight down, so the clouds stream up past
-      // her. the camera circles her slowly as she goes, which is what makes
-      // the world move around her instead of just scrolling
-      const DROP = 90;
-      const camAngle = p => -.35 + p * Math.PI * 1.15;
-      const henY = p => -p * DROP;
+      // ── the flight ── one path through space. the camera flies it, easing
+      // to a stop beside each world's planet and diving at the landing one at
+      // the end, so every world looms in, fills the frame and slides past
+      const GAP = 150, DROP = 4 * GAP;
+      const WAYS = [[0, 0, 0], [5, -3, -GAP], [-5, 2, -2 * GAP], [4, -2, -3 * GAP], [0, -10, -4 * GAP + 30]].map(v => new THREE.Vector3(...v));
+      const path = new THREE.CatmullRomCurve3(WAYS, false, 'centripetal');
+      // scroll stops (p) line up with the waypoints (u); within a stretch the
+      // camera eases out of one stop and into the next
+      const STOP_P = [0, .21, .49, .77, 1];
+      const pToU = p => {
+        let i = 0; while (i < 3 && p > STOP_P[i + 1]) i++;
+        const k = Math.max(0, Math.min(1, (p - STOP_P[i]) / (STOP_P[i + 1] - STOP_P[i])));
+        return (i + k * k * (3 - 2 * k)) / 4;
+      };
+      // where each world's planet hangs: ahead of its stop, low, on the side
+      // away from that world's comic (comics sit right, left, right)
+      const PLANET_AT = { 1: [-6, -8.5, -17], 2: [6, -8.5, -17], 3: [-6, -8.5, -17] };
+      const planetPos = k => WAYS[k].clone().add(new THREE.Vector3(...PLANET_AT[k]));
 
       // ── her and the clouds, drawn as they are ──
       const scene = new THREE.Scene();
@@ -4675,24 +4683,7 @@ body::after{
       let seed = 23;
       const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 
-      const CLOUD = [['/sky/cloud-a.webp', 1259 / 533], ['/sky/cloud-b.webp', 1015 / 314],
-                     ['/sky/cloud-c.webp', 1352 / 533], ['/field/clouds-near.webp', 1100 / 280]]
-        .map(([u, a]) => ({ map: tex(u), a }));
-      const clouds = [];
-      for (let i = 0; i < 100; i++) {
-        const c = CLOUD[Math.floor(rnd() * CLOUD.length)];
-        const ang = rnd() * Math.PI * 2, r = 3 + Math.pow(rnd(), .8) * 26;
-        // the ones in the camera's orbit stay small and thin, so passing
-        // through one is a puff, not a white screen
-        const inOrbit = r > 5.5 && r < 10.5;
-        const w = inOrbit ? 3 + rnd() * 5 : 7 + rnd() * 17;
-        const base = inOrbit ? .45 + rnd() * .25 : .6 + rnd() * .35;
-        const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: c.map, transparent: true, depthWrite: false, opacity: base }));
-        sp.position.set(Math.sin(ang) * r, 14 - rnd() * (DROP + 26), Math.cos(ang) * r);
-        sp.scale.set(w, w / c.a, 1);
-        sp.userData.base = base;
-        scene.add(sp); clouds.push(sp);
-      }
+      const clouds = [];   // no photo clouds any more, the whole sky is ascii
 
       // her. the cutout on a fine mesh so bits of her can move: the raised
       // forearm sways from the elbow, her outer curls and the skirt's hem
@@ -4826,12 +4817,14 @@ body::after{
       // everything in here gets recycled back below her once it's gone past
       // overhead, so the sky never runs out however long you fall
       const ambient = [];
+      // somewhere off the flight path, anywhere along it (or just its first stretch)
+      const scatter = (rmin, rmax, len = DROP + 30) => { const a = rnd() * Math.PI * 2, r = rmin + rnd() * (rmax - rmin); return new THREE.Vector3(Math.cos(a) * r, Math.sin(a) * r * .7, 12 - rnd() * len); };
       const SPARK_GEO = [r => new THREE.OctahedronGeometry(r), r => new THREE.TetrahedronGeometry(r * 1.2), r => new THREE.TorusGeometry(r, r * .3, 6, 16)];
       for (let i = 0; i < 90; i++) {
         const col = [0xff6fae, 0xffc531, 0x2fb8a6, 0x9b7bff, 0x5fb4ff][i % 5];
         const m = new THREE.Mesh(SPARK_GEO[i % 3](.25 + rnd() * .4), new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: .3, roughness: .4 }));
         const a = rnd() * Math.PI * 2, r = 9 + rnd() * 20;
-        m.position.set(Math.sin(a) * r, 10 - rnd() * (DROP + 20), Math.cos(a) * r);
+        m.position.copy(scatter(7, 30));
         m.userData.spin = .5 + rnd();
         ascii.add(m); sparkles.push(m);
       }
@@ -4842,12 +4835,12 @@ body::after{
         const len = 3 + rnd() * 6;
         const m = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, len, 4), new THREE.MeshBasicMaterial({ color: col }));
         const a = rnd() * Math.PI * 2, r = 8 + rnd() * 14;
-        m.position.set(Math.sin(a) * r, 8 - rnd() * (DROP + 14), Math.cos(a) * r);
+        m.position.copy(scatter(8, 26));
         m.rotation.set(rnd() * .6, a, (rnd() < .5 ? 1 : -1) * (.5 + rnd() * .6));
         ascii.add(m); ambient.push(m);
       }
       // puffy ascii clouds, a few balls squished together
-      for (let i = 0; i < 16; i++) {
+      for (let i = 0; i < 44; i++) {
         const col = [0xf4f0ff, 0xd9e8ff, 0xffe3ef][i % 3];
         const mat = new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: .25, roughness: 1 });
         const g = new THREE.Group();
@@ -4858,7 +4851,7 @@ body::after{
           g.add(b);
         }
         const a = rnd() * Math.PI * 2, r = 11 + rnd() * 12;
-        g.position.set(Math.sin(a) * r, 6 - rnd() * (DROP + 6), Math.cos(a) * r);
+        g.position.copy(scatter(9, 24, 2.2 * GAP));   // the cloud kingdom end of the flight
         g.scale.y = .7;
         ascii.add(g); ambient.push(g);
       }
@@ -4867,7 +4860,7 @@ body::after{
         const col = [0x8f86c2, 0xb5643a, 0x6f7f99, 0xff9a5c][i % 4];
         const m = new THREE.Mesh(new THREE.DodecahedronGeometry(.6 + rnd() * .9, 0), new THREE.MeshStandardMaterial({ color: col, roughness: .9, flatShading: true }));
         const a = rnd() * Math.PI * 2, r = 9 + rnd() * 16;
-        m.position.set(Math.sin(a) * r, 6 - rnd() * (DROP + 10), Math.cos(a) * r);
+        m.position.copy(scatter(9, 28));
         m.scale.set(1, .75 + rnd() * .4, .9);
         m.userData.spin = .2 + rnd() * .5;
         ascii.add(m); sparkles.push(m);
@@ -4878,7 +4871,16 @@ body::after{
       planet.add(new THREE.Mesh(new THREE.SphereGeometry(24, 48, 32), new THREE.MeshStandardMaterial({ color: 0x4a2fa8, roughness: .85 })));
       const ring = new THREE.Mesh(new THREE.TorusGeometry(38, .9, 8, 96), new THREE.MeshStandardMaterial({ color: 0x0f7d74, roughness: .6 }));
       ring.rotation.set(1.25, 0, .35); planet.add(ring);
-      planet.position.set(0, -DROP - 34, 0);
+      planet.position.copy(WAYS[4]).add(new THREE.Vector3(0, -34, -36));
+      // a few painted clouds drawn as they are, not ascii, so mini hen isn't
+      // the only illustrated thing in the sky. only in the sky worlds
+      const CLOUD_ART = [['/sky/cloud-a.webp', 1259 / 533], ['/sky/cloud-b.webp', 1015 / 314], ['/sky/cloud-c.webp', 1352 / 533]].map(([u, a]) => ({ map: tex(u), a }));
+      for (let i = 0; i < 26; i++) {
+        const c = CLOUD_ART[i % 3], w = 5 + rnd() * 9, base = .55 + rnd() * .3;
+        const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: c.map, transparent: true, depthWrite: false, opacity: base }));
+        sp.position.copy(scatter(8, 26, 2.3 * GAP)); sp.scale.set(w, w / c.a, 1); sp.userData.base = base;
+        scene.add(sp); clouds.push(sp);
+      }
       ascii.add(planet);
 
       // every jump lands somewhere new, and each place has its own planet
@@ -4958,6 +4960,120 @@ body::after{
             gl_FragColor = vec4(clamp(col * lift, 0., 1.), 1.);
           }`
       });
+      // ── the ascii renderer ── the whole frame goes through it, not just a
+      // few things. three passes: the scene drawn tiny (two samples a cell
+      // each way), then one pass per character cell that averages it and runs
+      // an edge test, then the full size pass that draws each cell's glyph.
+      // outlines come out as - / | \, lit surfaces as density, and anything
+      // dark enough stays empty, which is where the sense of space comes from.
+      // in the empty cells, a slow dither of dust in the sky's own colour
+      const SS = 2, RAMP = ' .:-=+*#%@', EDGE = '-/|\\';
+      const fullAtlasCv = document.createElement('canvas');
+      fullAtlasCv.width = fullAtlasCv.height = 256;
+      { const c = fullAtlasCv.getContext('2d');
+        c.fillStyle = '#000'; c.fillRect(0, 0, 256, 256); c.fillStyle = '#fff';
+        c.font = 'bold 56px ui-monospace, SFMono-Regular, Menlo, monospace'; c.textAlign = 'center'; c.textBaseline = 'middle';
+        [...RAMP, ...EDGE].forEach((ch, i) => { c.save(); c.translate((i % 4) * 64 + 32, Math.floor(i / 4) * 64 + 34); c.scale(1.4, 1); c.fillText(ch, 0, 0); c.restore(); }); }
+      const fullAtlas = new THREE.CanvasTexture(fullAtlasCv);
+      fullAtlas.flipY = false; fullAtlas.generateMipmaps = false; fullAtlas.minFilter = fullAtlas.magFilter = THREE.LinearFilter;
+      const near = { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter };
+      const sceneRT = new THREE.WebGLRenderTarget(1, 1), cellRT = new THREE.WebGLRenderTarget(1, 1, near);
+      const QUAD_VS = `varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }`;
+      const cellMat = new THREE.ShaderMaterial({
+        uniforms: { tScene: { value: sceneRT.texture }, uCells: { value: new THREE.Vector2(1, 1) } },
+        vertexShader: QUAD_VS,
+        fragmentShader: `
+          uniform sampler2D tScene; uniform vec2 uCells; varying vec2 vUv;
+          float lum(vec3 c) { return dot(c, vec3(.2126, .7152, .0722)); }
+          float at(vec2 c) { return lum(texture2D(tScene, (c + .5) / uCells).rgb); }
+          void main() {
+            vec2 c = floor(vUv * uCells);
+            vec4 sum = vec4(0.);
+            for (int y = 0; y < ${SS}; y++) for (int x = 0; x < ${SS}; x++)
+              sum += texture2D(tScene, (c + (vec2(float(x), float(y)) + .5) / ${SS}.) / uCells);
+            vec4 col = sum / ${SS * SS}.;
+            vec3 rgb = pow(max(col.rgb, 0.), vec3(1. / 2.2));
+            float l = lum(rgb) * step(.12, col.a);
+            float tl = at(c + vec2(-1., 1.)), tc = at(c + vec2(0., 1.)), tr = at(c + vec2(1., 1.));
+            float ml = at(c + vec2(-1., 0.)), mr = at(c + vec2(1., 0.));
+            float bl = at(c + vec2(-1., -1.)), bc = at(c + vec2(0., -1.)), br = at(c + vec2(1., -1.));
+            float gx = (tr + 2. * mr + br) - (tl + 2. * ml + bl), gy = (tl + 2. * tc + tr) - (bl + 2. * bc + br);
+            float g = length(vec2(gx, gy)), nb = (tl + tc + tr + ml + mr + bl + bc + br) / 8.;
+            float idx = 0.;
+            if (l > .05) {
+              // silhouettes against space get a stroke along the edge; lit
+              // surfaces and lone sparkles keep their density glyph
+              if (g > .2 && l < .5 && l < nb * 2. + .03) {
+                float a = mod(atan(gy, gx) + 1.5707963 + 3.14159265, 3.14159265);
+                idx = 10. + mod(floor(a / 3.14159265 * 4. + .5), 4.);
+              } else idx = clamp(floor(pow(l, .75) * 9. + .5), 1., 9.);
+            }
+            gl_FragColor = vec4(rgb, (idx + .5) / 16.);
+          }`
+      });
+      const compMat = new THREE.ShaderMaterial({
+        transparent: true, depthTest: false, depthWrite: false,
+        uniforms: { tCells: { value: cellRT.texture }, tAtlas: { value: fullAtlas }, uCells: { value: new THREE.Vector2(1, 1) },
+                    uTime: { value: 0 }, uDrift: { value: 0 }, uDust: { value: new THREE.Vector4(1, 1, 1, .5) }, uLift: { value: 1 },
+                    uN1: { value: new THREE.Vector3() }, uN2: { value: new THREE.Vector3() }, uN3: { value: new THREE.Vector3() }, uNebA: { value: .5 } },
+        vertexShader: QUAD_VS,
+        fragmentShader: `
+          uniform sampler2D tCells, tAtlas; uniform vec2 uCells; uniform float uTime, uDrift, uLift, uNebA; uniform vec4 uDust; uniform vec3 uN1, uN2, uN3; varying vec2 vUv;
+          float h21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+          float vn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
+            return mix(mix(h21(i), h21(i + vec2(1., 0.)), f.x), mix(h21(i + vec2(0., 1.)), h21(i + vec2(1., 1.)), f.x), f.y); }
+          float fbm(vec2 p) { float a = .5, s = 0.; for (int i = 0; i < 4; i++) { s += vn(p) * a; p *= 2.03; a *= .5; } return s; }
+          float bayer2(vec2 a) { a = floor(a); return fract(a.x / 2. + a.y * a.y * .75); }
+          float bayer4(vec2 a) { return bayer2(.5 * a) * .25 + bayer2(a); }
+          float quant(float v, float l, float d) { return clamp(floor(v * l + d) / l, 0., 1.); }
+          // the world's sky behind the glyphs: pixel cloud banks in three of
+          // its colours, banded and dithered on the cell grid, drifting past
+          vec4 nebula(vec2 c) {
+            vec2 q = c / uCells.y; float d = (bayer4(c) - .5) * .55;
+            float A = fbm(q * 2.4 + vec2(uTime * .012, uDrift * .22));
+            float B = fbm(q * 3.6 + vec2(5.2, 1.3) - vec2(uTime * .009, uDrift * .35));
+            float m1 = quant(smoothstep(.42, .78, A), 3., d), m2 = quant(smoothstep(.5, .85, B), 3., d), m3 = quant(smoothstep(.32, .9, A * B * 1.9), 2., d);
+            vec3 col = uN1; float a = m1 * .5;
+            col = mix(col, uN2, m2); a = max(a, m2 * .45);
+            col = mix(col, uN3, m3); a = max(a, m3 * .55);
+            return vec4(col, a * uNebA);
+          }
+          float glyph(float idx, vec2 inCell) { return texture2D(tAtlas, (vec2(mod(idx, 4.), floor(idx / 4.)) + vec2(inCell.x, 1. - inCell.y)) / 4.).r; }
+          void main() {
+            vec2 p = vUv * uCells, c = floor(p), inCell = fract(p);
+            vec4 s = texture2D(tCells, (c + .5) / uCells);
+            float idx = floor(s.a * 16.);
+            if (idx < .5) {
+              // dust: soft drifting patches, a cell lit here and there
+              float n = vn(c * .07 + vec2(uTime * .03, uDrift)) * .65 + vn(c * .19 - vec2(0., uDrift * 1.7)) * .35;
+              float on = step(.6, n) * step(.55, h21(c + floor(uTime * .5)));
+              vec4 neb = nebula(c);
+              float d = on > .5 ? glyph(1. + step(.72, n), inCell) : 0.;
+              d = d < .35 ? 0. : d;
+              vec4 o = vec4(mix(neb.rgb, uDust.rgb, d), max(neb.a, uDust.a * d));
+              if (o.a < .01) discard;
+              gl_FragColor = o;
+              return;
+            }
+            if (glyph(idx, inCell) < .35) discard;
+            vec3 col = mix(vec3(dot(s.rgb, vec3(.299, .587, .114))), s.rgb, 1.7) * uLift;
+            gl_FragColor = vec4(clamp(col, 0., 1.), 1.);
+          }`
+      });
+      const cellQuad = new THREE.Scene(); cellQuad.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), cellMat));
+      const compQuad = new THREE.Scene(); compQuad.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), compMat));
+      compMat.uniforms.uDust.value.set(...(dark ? [.72, .8, 1, .38] : [1, 1, 1, .62]));
+      compMat.uniforms.uLift.value = dark ? 1.15 : .82;
+      // each world's three nebula colours: title sky, cloud kingdom, dusk, deep space (and the landing)
+      const NEB = [[[1, 1, 1], [.86, .84, 1], [1, .88, .95], .55], [[1, .93, .85], [1, .74, .85], [.98, .6, .52], .55],
+                   [[.62, .55, .9], [.86, .6, .9], [.42, .76, .9], .5], [[.25, .2, .55], [.58, .22, .52], [.1, .55, .62], .6], [[.25, .2, .55], [.58, .22, .52], [.1, .55, .62], .6]];
+      function paintNebula(wf) {
+        const i = Math.min(3, Math.floor(wf)), k = wf - i, U = compMat.uniforms, dim = dark ? .6 : 1;
+        ['uN1', 'uN2', 'uN3'].forEach((n, j) => U[n].value.set(...NEB[i][j].map((v, c) => (v + (NEB[i + 1][j][c] - v) * k) * dim)));
+        U.uNebA.value = NEB[i][3] + (NEB[i + 1][3] - NEB[i][3]) * k;
+      }
+      // distance fades to dark, and dark is empty space
+      ascii.fog = new THREE.Fog(0x000000, 45, 175);
       const rt = new THREE.WebGLRenderTarget(1, 1);
       const mainGlyph = glyphMat(dark ? 1.15 : .7, false);
       const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -4999,9 +5115,10 @@ body::after{
         const w = canvas.clientWidth || innerWidth, h = canvas.clientHeight || innerHeight;
         renderer.setSize(w, h, false);
         const b = renderer.getDrawingBufferSize(new THREE.Vector2());
-        rt.setSize(b.x, b.y);
-        mainGlyph.uniforms.res.value.copy(b);
-        mainGlyph.uniforms.cell.value = Math.round((w < 640 ? 7 : 8) * renderer.getPixelRatio());
+        // one character cell per 8 css px (7 on a phone)
+        const cw = w < 640 ? 7 : 8, cells = new THREE.Vector2(Math.ceil(w / cw), Math.ceil(h / cw));
+        cellRT.setSize(cells.x, cells.y); sceneRT.setSize(cells.x * SS, cells.y * SS);
+        cellMat.uniforms.uCells.value.copy(cells); compMat.uniforms.uCells.value.copy(cells);
         camera.aspect = w / h;
         camera.fov = baseFov = w < h ? 64 : 50;
         camera.updateProjectionMatrix();
@@ -5049,111 +5166,63 @@ body::after{
           const t = (performance.now() - t0) / 1000;
           const w = canvas.clientWidth, h = canvas.clientHeight, narrow = w < h;
 
-          // which world she's in, and how deep into a jump she is (0 to 1)
-          // the world as a float: whole numbers while she stands on a planet, blending mid hop
           const sm = (a, b, x) => { const k = Math.max(0, Math.min(1, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
-          const wf = SWITCH.reduce((acc, sw) => acc + sm(sw - .07, sw + .07, p), 0), wi = Math.round(wf);
-          const dt = lastT ? Math.min(.05, t - lastT) : 1 / 60; lastT = t;
-          // a gentle drift while she hangs in a world, so it's never frozen
-          travel += speed * dt;
+          const wf = SWITCH.reduce((acc, sw) => acc + sm(sw - .07, sw + .07, p), 0);
+          paintSky(wf); paintNebula(wf);
 
-          // her, bobbing a little
-          H.set(0, -travel + Math.sin(t * 1.6) * .12, 0);
-          // the camera chases her sideways a beat late, so when she zigs the
-          // whole sky swings round instead of her just sliding across it
-          const zig = ZIG(p), lean = (ZIG(p + .01) - zig) * 100;   // banks into the turn like a lil ship
-          camX += (zig * lastSwing * .55 - camX) * Math.min(1, dt * 2.5);
-          C.copy(H).addScaledVector(right, camX);
-          // every world is seen from a new angle, so arriving feels like arriving.
-          // within one it keeps slowly circling her
-          const a = -.35 + wf * 1.25 + t * .035 + mx * .25, R = narrow ? 8.4 : 7.8;
-          camera.position.set(C.x + Math.sin(a) * R, H.y + 1.2 + (wi >= 4 ? 3 : 0) - my * .6, C.z + Math.cos(a) * R);
+          // fly: along the path, looking a little ahead and down, with a slow
+          // bank that swings one way then back over the whole flight
+          const u = pToU(p);
+          path.getPoint(u, H);
+          path.getPoint(Math.min(1, u + .012), e2); e2.y -= 1.2 + (u > .8 ? (u - .8) * 30 : 0);
+          camera.position.copy(H).add(e1.set(mx * .8, -my * .5, 0));
           camera.up.set(0, 1, 0);
-          camera.lookAt(C.x, H.y - (wi >= 4 ? 1.5 : 0), C.z);
-          camera.fov = baseFov;
-          camera.updateProjectionMatrix();
-          // the way the camera faces before it rolls, for laying things out
-          // beside her on screen
+          camera.lookAt(e2);
           camera.updateMatrixWorld();
           right.setFromMatrixColumn(camera.matrixWorld, 0);
           upv.setFromMatrixColumn(camera.matrixWorld, 1);
           fwd.setFromMatrixColumn(camera.matrixWorld, 2).negate();
-          camera.rotateZ(Math.sin(t * .3) * .04 + mx * .03 - Math.max(-.14, Math.min(.14, lean * .014)));
+          camera.rotateZ(Math.sin(u * Math.PI * 2) * .09 + mx * .03);
+          camera.fov = baseFov; camera.updateProjectionMatrix();
+          camera.updateMatrixWorld();
 
-          const small = narrow ? 1.12 : 1;
-          // how far she can swing: clear of the screen edge, a bit further on a wide screen
-          const viewH = camera.position.distanceTo(H) * Math.tan(THREE.MathUtils.degToRad(baseFov / 2));
-          const swing = Math.max(0, viewH * camera.aspect - HEN_W * small / 2 - .3) * (narrow ? .7 : .5);
-          lastSwing = swing;
-          hen.position.copy(H).addScaledVector(right, zig * swing);
-          hen.quaternion.copy(camera.quaternion);
-          hen.rotateZ(Math.sin(t * .8) * .05 - Math.max(-.3, Math.min(.3, lean * .025)));
-          hen.scale.set(HEN_W * small, HEN_H * small, 1);
-          henMat.uniforms.t.value = t;
           if (t > nextBlink) { blinkAt = t; nextBlink = t + 2.4 + Math.random() * 3.2; }
           const bt = (t - blinkAt) / .16;
+          henMat.uniforms.t.value = t;
           henMat.uniforms.blink.value = blinkAt < 0 || bt > 2 ? 0 : (bt < 1 ? bt : 2 - bt);
 
-          // clouds only live in the sky worlds, and thin out right at the lens
-          const camPos = camera.position;
-          const cloudy = Math.max(0, Math.min(1, 2 - wf));
-          clouds.forEach(c => { c.material.opacity = c.userData.base * cloudy * Math.min(1, Math.max(0, (c.position.distanceTo(camPos) - 1.5) / 4)); });
-          paintSky(wf);
-
-          // this world's things float round her in slow orbits, and its
-          // planet hangs big behind her. other worlds' things are hidden
-          const dist = camPos.distanceTo(H);
-          const halfH = dist * Math.tan(THREE.MathUtils.degToRad(baseFov / 2)), halfW = halfH * camera.aspect;
-          // a world's things pop in as she arrives and shrink away as she
-          // leaves; its planet rises from below and sinks back out. each
-          // planet sits under the spot she lands on, and reports its top
-          const STAND_X = { 1: .3, 2: .7, 3: .3 };
+          // each world: its planet turning slowly, its things in loose orbits
+          // round it. and where the planet's top is on screen, for mini hen
           const stands = {};
           decals.forEach((g, i) => {
-            const o = g.userData;
-            const pop = Math.max(0, Math.min(1, 1 - Math.abs(wf - o.w) * 1.6));
-            g.visible = pop > .01;
-            const back = o.world ? 26 : o.far ? 14 : narrow ? 7 : 2;
-            const s = (dist + back) / dist;
-            let x, y;
+            const o = g.userData, k = o.w;
+            if (!PLANET_AT[k]) { g.visible = false; return; }
+            const c = planetPos(k);
+            g.visible = true;
             if (o.world) {
-              x = (STAND_X[o.w] - .5) * 2 * halfW * s; y = -halfH * s * .8;
-              const sc = 1.9, top = o.rad * sc;
-              e1.copy(C).addScaledVector(right, x).addScaledVector(upv, y + top).addScaledVector(fwd, back).project(camera);
-              stands[o.w] = { x: (e1.x + 1) / 2 * w, y: (1 - e1.y) / 2 * h };
-              y -= (1 - pop) * halfH * s * 1.4;
-              if (!g.visible) return;
-              g.position.copy(C).addScaledVector(right, x).addScaledVector(upv, y).addScaledVector(fwd, back);
-              g.scale.setScalar(sc);
-              g.rotation.y = t * .08 + i;
+              const sc = 1.25;
+              g.position.copy(c); g.scale.setScalar(sc); g.rotation.y = t * .08 + i;
+              const top = e1.copy(c); top.y += o.rad * sc; top.project(camera);
+              if (top.z < 1 && top.z > -1) stands[k] = { x: (top.x + 1) / 2 * w, y: (1 - top.y) / 2 * h };
               return;
             }
-            if (!g.visible) return;
-            const ang = t * (o.far ? .07 : .13) + i * 2.4;
-            x = Math.cos(ang) * halfW * s * (o.far ? .8 : .74);
-            y = Math.sin(ang) * halfH * s * (o.far ? .7 : .62);
-            g.position.copy(C).addScaledVector(right, x).addScaledVector(upv, y).addScaledVector(fwd, back);
-            const ease = 1 - Math.pow(1 - pop, 3);
-            g.scale.setScalar((narrow && !o.far ? .8 : 1) * ease);
+            const R = o.far ? 22 + (i % 3) * 3 : 10 + (i % 4) * 1.6, ang = t * (o.far ? .05 : .1) + i * 2.4;
+            g.position.copy(c).add(e1.set(Math.cos(ang) * R, 7 + Math.sin(ang * 1.3) * 4 + (o.far ? 6 : 0), Math.sin(ang) * R * .6 - (o.far ? 12 : 0)));
+            g.scale.setScalar(narrow && !o.far ? .8 : 1);
             g.rotation.y = t * .6 + i;
             g.rotation.x = Math.sin(t * .7 + i * 9) * .25;
           });
           sparkles.forEach(m => { m.rotation.y = t * m.userData.spin; m.rotation.x = t * .3; });
           planet.rotation.y = t * .05;
-          // the landing planet only shows up for the landing, coming up to meet her
-          planet.visible = wf > 3.5;
-          planet.position.set(0, H.y - 30 - (1 - p) * 300, 0);
-          // anything that's drifted past overhead goes back round below her
-          const top = H.y + 16;
-          clouds.forEach(c => { if (c.position.y > top) c.position.y -= RANGE; });
-          ambient.forEach(o => { if (o.position.y > top) o.position.y -= RANGE; });
-          sparkles.forEach(o => { if (o.position.y > top) o.position.y -= RANGE; });
 
-          renderer.setRenderTarget(rt); renderer.clear();
-          renderer.render(ascii, camera);
+          renderer.setRenderTarget(sceneRT); renderer.clear(); renderer.render(ascii, camera);
+          renderer.setRenderTarget(cellRT); renderer.render(cellQuad, ortho);
           renderer.setRenderTarget(null); renderer.clear();
-          mainGlyph.uniforms.tex.value = rt.texture; renderer.render(quad, ortho);
-          renderer.render(scene, camera);
+          compMat.uniforms.uTime.value = t; compMat.uniforms.uDrift.value = u * 18;
+          renderer.render(compQuad, ortho);
+          const cloudy = Math.max(0, Math.min(1, 2 - wf));
+          clouds.forEach(c => { c.material.opacity = c.userData.base * cloudy * Math.min(1, Math.max(0, (c.position.distanceTo(camera.position) - 2) / 6)); });
+          if (cloudy > 0) renderer.render(scene, camera);
 
           // the live close up, if a panel's up
           drawPanel();
@@ -7840,12 +7909,12 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=9ee5efc3',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=fbb6934b',   scene: 'skrimp'   },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=94ae520b',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=da6badad',   scene: 'skrimp'   },
   menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=e130a32c',    scene: 'menzo'    },
   myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=d695876d', scene: 'myauntie' },
-  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=13dcf0ad',  scene: 'equinox'  },
-  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=6bebc1b2', scene: 'handoff' },
+  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=85f799b8',  scene: 'equinox'  },
+  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=858b91b7', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
