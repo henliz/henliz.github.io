@@ -963,11 +963,11 @@
        never opens on an empty sky while three.js downloads. the live canvas
        fades in over her and this steps aside */
     .intro-hen-still {
-      position: absolute; left: 50%; top: 54%; width: min(42vw, 520px); translate: -50% -50%;
+      position: absolute; left: 50%; top: 54%; width: min(25vw, 305px); translate: -50% -50%;
       pointer-events: none; transition: opacity .4s ease;
     }
     .intro-3d.ready ~ .intro-hen-still, #scene-overlay:has(.intro-3d.ready) .intro-hen-still { opacity: 0; }
-    @media (max-width: 760px) { .intro-hen-still { width: 78vw; } }
+    @media (max-width: 760px) { .intro-hen-still { width: 46vw; } }
 
     /* the title. each letter is its own span so the script can scramble
        it into glyphs and puff it up into the sky as you start falling */
@@ -4037,14 +4037,14 @@ body::after{
 <p>Ongoing, across 140+ contributors: writers, artists, engineers, composers and QA.</p>
 <h4>Skills &amp; Tools</h4>
 <p>Repository architecture, pipeline engineering, version control on Git LFS, engine implementation in BG3, technical documentation, licensing and governance, and cross-department unblocking.</p>
-<p>Path to Menzoberranzan is an active production. Technical architecture, custom toolchain specifications, in-engine system implementations and unreleased content are not discussed here. They live under NDA for good reason. What follows covers publicly announced project scope, publicly available press and screenshots, and the leadership decisions I can speak to without compromising the work of 140+ contributors who trust this project to stay quiet. There is a great deal more I am proud of and cannot yet say.</p>
+<p>Path to Menzoberranzan is an active production. Technical architecture, custom toolchain specifications, in-engine system implementations and unreleased content are not discussed here. They live under NDA for good reason. What follows covers publicly announced project scope, publicly available press and screenshots, and the leadership decisions I can speak to without compromising the work of 140+ contributors who trust this project to stay quiet.</p>
 <h2>Menzoberranzan has never existed in a Baldur’s Gate game. So a hundred and forty people are building it for free.</h2>
 <p>An unofficial expansion for Baldur’s Gate 3, run like a game studio, without the money or the staff of one.</p>
 <p>The progress reel. The tutorial level, taking form.</p>
 <p>Path to Menzoberranzan is a full custom campaign set deep in the Underdark, in Menzoberranzan, the underground drow city from the Forgotten Realms books that the games have never actually let you visit. Original narrative, original art, original audio, original cinematics, original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year of work.</p>
 <p>Everyone on it is a volunteer who does not have to care and does anyway. That is the strangest and most sustaining thing about it, and it is also the fact that decides every technical call I make. I came in as CTO and Technical Director , which sounds like one job with two names and is not.</p>
 <p>The project’s onboarding site, with my profile open. New contributors open folders instead of reading a wall of docs, and every lead says what to ping them for.</p>
-<h2>140 people. Zero salary. An undocumented engine. A 21 year old holding the infrastructure.</h2>
+<h2>140 people. Zero salary. An undocumented engine.</h2>
 <p>In a funded studio, bad infrastructure costs money. In a volunteer studio, it costs people.</p>
 <p>The constraints here do not exist in a paid studio, and they compound. There is no documentation from the engine developer, no on-call support, no ops team, and no way to compel anybody to do anything. The Baldur’s Gate 3 Toolkit exposes a fraction of what the engine actually does. The rest is detective work: pattern recognition, edge cases, anomalies that behave one way on Tuesday and differently on Friday for reasons that take hours to isolate.</p>
 <h4>Nobody wrote it down</h4>
@@ -4057,7 +4057,7 @@ body::after{
 <p>A contributor whose work keeps breaking for reasons they do not control does not file a ticket. They quietly stop showing up, and you find out weeks later.</p>
 <p>Athkatla from Baldur’s Gate 2, rebuilt in the BG3 engine. Via TheGamer, January 2025.</p>
 <h2>The repo was 2.5 GB and heading for 80 GB. We had one weekend and a rewrite that could not be undone.</h2>
-<p>People senior to me said you cannot retrofit Git LFS onto a repo that was not built for it. They were wrong, and then they were very nearly right.</p>
+<p>Retrofitting Git LFS onto a repo that was not built for it is supposed to be a bad idea. It very nearly was.</p>
 <p>Baldur’s Gate 3 modding is a binary-heavy discipline, and a repository that clones in three minutes becomes one that clones in three hours and then does not clone at all. That is not a developer experience problem. That is a contributor retention problem, and we were about eighteen months from it.</p>
 <p>Git LFS keeps large files outside the repository proper. Contributors get a small pointer file in their clone and the real binary arrives on demand. The repo stays light, the workflow stays sane. The catch is that if you did not start that way, adopting it means rewriting every commit that ever touched a binary, and a history rewrite invalidates every open branch and every existing clone on every machine on the project.</p>
 <p>So it all had to happen in one weekend: freeze all work on Friday, rewrite, check everything, and let people back in by Sunday. Before anybody touched anything I wrote fourteen steps, a rollback plan, a troubleshooting guide and an FAQ for the rest of the board: audit everything in history over 10 MB, provision on Hetzner, stand up Forgejo, move the objects to Backblaze B2, freeze the open pull requests, rewrite, verify, communicate, and archive the old instance.</p>
@@ -4104,10 +4104,6 @@ body::after{
 <p>Hen’s Brain: Technical Leadership Manual exists because institutional knowledge living in one head is not an inconvenience at this scale, it is an existential risk. It defines the two domains, their failure modes, their escalation paths, and which decisions fall unambiguously into each. It is not theory. It is operational infrastructure, and it is written so the project survives illness, burnout, exams and time zones.</p>
 <p>What 140 volunteers looks like when you draw it: seven departments, each with a coordinator and its own leads.</p>
 <p>Licensing sits in the same category. The custom toolchains are protected under PolyForm Shield 1.0.0, which prevents commercial appropriation of work built by volunteers, for free, for a community. That is a legal architecture decision rather than a creative one, and it is the sort of thing that is cheap to do early and impossible to do late.</p>
-<h2>There is a whole category of this I am proud of and not allowed to show you.</h2>
-<p>You get the infrastructure decisions. You do not get the blueprints.</p>
-<p>The actual technical architecture, the custom systems, the in-engine implementations that took months to work out: none of that is here. The public face of this project is screenshots and progress updates. The private face is engineering decisions I cannot share, because the project is not finished and the work belongs to a hundred and forty people rather than to me.</p>
-<p>That is the right call, and it is a strange thing, to have done work you cannot show. But the discipline of keeping quiet about active development, of understanding that the story gets told when it is done and not while it is happening, is its own kind of skill. You do not perform progress. You make it, quietly, and you wait.</p>
 <h2>What this project taught me that a classroom couldn’t.</h2>
 <h4>01</h4>
 <h3>Name the domains or watch them collapse</h3>
@@ -4190,6 +4186,7 @@ body::after{
         const comics  = [...overlay.querySelectorAll('.comic')];
         const shades  = overlay.querySelector('.intro-shades');
         const calm    = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const SEEN    = 'hen-intro-seen';
         let open = true, parting = false;
 
         // her kick goes one way, like the north star: pose 1 to start, 1.5
@@ -4222,6 +4219,11 @@ body::after{
         // someone clearly hurrying (three separate flicks in quick succession)
         // gets to blow straight through it
         let lockUntil = 0, holdUntil = 0, flicks = [];
+        // one scroll is enough now. once a comic's second frame has had
+        // DWELL on screen the fall carries on to the next stop by itself,
+        // scrolling just hurries it
+        const DWELL = 1500;
+        let landedAt = 0;
         function hurrying(now) { flicks = flicks.filter(t => now - t < 1400); return flicks.length >= 3; }
         function step(dir) {
           if (!open || parting || calm) return;
@@ -4342,13 +4344,19 @@ body::after{
             const parked = Math.abs(k - .5) < .14;
             if (!on) c._arr = 0; else if (parked && !c._arr) c._arr = now;
             const two = on && c._arr > 0 && now - c._arr > 450;
-            if (two && !c.classList.contains('two')) holdUntil = now + 900;   // let frame two land before moving on
+            if (two && !c.classList.contains('two')) { holdUntil = now + 900; landedAt = now; }   // let frame two land before moving on
             c.classList.toggle('two', two);
             if (!on) return;
             live = c;
             const w = c.offsetWidth, bob = Math.sin(now / 600 + +c.dataset.at * 9) * 6;
             c.style.transform = `translate(${ride(k, w, +c.dataset.dir).toFixed(1)}px, ${bob.toFixed(1)}px) rotate(${(+c.dataset.dir * -2.5).toFixed(1)}deg)`;
           });
+          // parked at a stop with frame two read, so off to the next one
+          if (!auto && goal > 0 && goal < 1 && Math.abs(goal - p) < .01 && live?.classList.contains('two') && now - landedAt > DWELL) {
+            goal = STOPS.find(v => v > goal + .001) ?? 1;
+            if (goal < 1) holdUntil = now + 4000;
+          }
+
           const beat = live && live.querySelector(live.classList.contains('two') ? '.p2' : '.p1');
           if (beat !== current) {
             blinkT.forEach(clearTimeout); blinkT = [];
@@ -4386,6 +4394,7 @@ body::after{
           if (!open || parting) return;
           parting = true;
           goal = 1;                       // she keeps falling while it fades
+          try { localStorage.setItem(SEEN, '1'); } catch (e) {}
           overlay.classList.add('parting');
           // the page settles in from a touch too close as you come through
           setTimeout(() => { if (!calm) document.documentElement.classList.add('intro-landing'); }, 250);
@@ -4403,8 +4412,13 @@ body::after{
 
         // only the homepage gets the intro. a direct link (/trove/ etc)
         // goes straight in
+        // and only the first time. once you've fallen through (or skipped) you
+        // land straight on the work next visit. the footer link and scrolling
+        // up past the top still bring the sky back
         const home = /^\/(index\.html)?$/.test(location.pathname);
-        if (!home) {
+        let seen = false;
+        try { seen = localStorage.getItem(SEEN) === '1'; } catch (e) {}
+        if (!home || seen) {
           // no fade either, or you'd see a flash of sky on the way in
           open = false;
           overlay.style.transition = 'none';
@@ -4474,7 +4488,20 @@ body::after{
 
     const canvas  = document.getElementById('intro3d');
     const overlay = document.getElementById('scene-overlay');
-    if (canvas && !overlay.classList.contains('hidden') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // the same glbs get reused for extra things in the sky, fetch each once
+    THREE.Cache.enabled = true;
+    // skipped on the way in (a return visit, or a direct link), the sky only
+    // builds itself the first time something brings it back
+    let booted = false;
+    if (canvas && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (!overlay.classList.contains('hidden')) boot();
+      else {
+        const mo = new MutationObserver(() => { if (!overlay.classList.contains('hidden')) { mo.disconnect(); boot(); } });
+        mo.observe(overlay, { attributes: true, attributeFilter: ['class'] });
+      }
+    }
+    function boot() {
+      if (booted) return; booted = true;
       const dark = document.documentElement.getAttribute('data-theme') === 'dark';
       const gfx = window.__gfx || { dpr: Math.min(devicePixelRatio, 1.5), aa: true };
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: gfx.aa });
@@ -4579,7 +4606,15 @@ body::after{
       });
       const hen = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 48, 48), henMat);
       scene.add(hen);
-      const HEN_W = 4.6, HEN_H = HEN_W * 560 / 657;
+      // smaller now, she's one of the things in the sky instead of all of it
+      const HEN_W = 2.7, HEN_H = HEN_W * 560 / 657;
+
+      // ── the zigzag ── she weaves side to side on the way down, always on
+      // the other side from the comic that's up (comics park right, left,
+      // right at .21, .49, .77, so she's left, right, left there). eases in
+      // off the title and back to the middle for the landing
+      const ZIG = p => -Math.cos(2 * Math.PI * (p - .21) / .56)
+                       * Math.min(1, p / .12) * (1 - Math.max(0, Math.min(1, (p - .82) / .12)));
 
       // ── the ascii world ── the things in the sky and the planet live in
       // their own scene, get drawn to a texture, then turned into glyphs
@@ -4604,6 +4639,13 @@ body::after{
         { at: .79, url: '/models/desk_lamp.glb', side: -1, size: 2.4, pal: [0xffd84d, 0x2fd0bd, 0x30364a, 0xfff4c2] },
         { at: .14, url: '/models/yummymeal.glb', side: -1, size: 2.6, pal: [0xffc531, 0xff6b4a, 0x7fd36b, 0xffffff, 0xb5643a], far: true },
         { at: .55, url: '/models/pothos.glb',    side:  1, size: 2.8, pal: [0x2fbf5f, 0x8ee68f, 0xd0703c], far: true },
+        { at: .03, url: '/models/allsorts.glb',  side: -1, size: 2.4, pal: [0xff6fae, 0xffd84d, 0x7fd3ff, 0xffffff], far: true },
+        { at: .25, url: '/models/zippo.glb',     side:  1, size: 2.2, pal: [0xe3e8f2, 0xffa040, 0xffd84d], far: true },
+        { at: .36, url: '/models/cup_tea.glb',   side: -1, size: 2.4, pal: [0xffffff, 0x9b7bff, 0xb5643a], far: true },
+        { at: .46, url: '/models/desk_lamp.glb', side:  1, size: 2.6, pal: [0xff6fae, 0x2fd0bd, 0x30364a], far: true },
+        { at: .66, url: '/models/iphone.glb',    side: -1, size: 2.3, pal: [0x2b3550, 0xff6fae, 0xe3e8f2], far: true },
+        { at: .74, url: '/models/laptop.glb',    side:  1, size: 2.8, pal: [0xc9d2e6, 0x2fd0bd, 0x2b3045], far: true },
+        { at: .86, url: '/models/yummymeal.glb', side: -1, size: 2.4, pal: [0xffc531, 0xff6b4a, 0x7fd36b], far: true },
       ];
       const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
       const decals = DECALS.map(o => {
@@ -4630,12 +4672,50 @@ body::after{
       });
       // little colourful ascii sparkles scattered through the sky
       const sparkles = [];
-      for (let i = 0; i < 26; i++) {
+      const SPARK_GEO = [r => new THREE.OctahedronGeometry(r), r => new THREE.TetrahedronGeometry(r * 1.2), r => new THREE.TorusGeometry(r, r * .3, 6, 16)];
+      for (let i = 0; i < 90; i++) {
         const col = [0xff6fae, 0xffc531, 0x2fb8a6, 0x9b7bff, 0x5fb4ff][i % 5];
-        const m = new THREE.Mesh(new THREE.OctahedronGeometry(.25 + rnd() * .4), new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: .3, roughness: .4 }));
+        const m = new THREE.Mesh(SPARK_GEO[i % 3](.25 + rnd() * .4), new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: .3, roughness: .4 }));
         const a = rnd() * Math.PI * 2, r = 9 + rnd() * 20;
         m.position.set(Math.sin(a) * r, 10 - rnd() * (DROP + 20), Math.cos(a) * r);
         m.userData.spin = .5 + rnd();
+        ascii.add(m); sparkles.push(m);
+      }
+      // shooting star trails. long thin sticks on a slant, one glyph wide
+      // once they're ascii, so they read as dotted streaks going by
+      for (let i = 0; i < 26; i++) {
+        const col = [0xffffff, 0xcfe0ff, 0xffe8b0, 0xffd0e6][i % 4];
+        const len = 3 + rnd() * 6;
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, len, 4), new THREE.MeshBasicMaterial({ color: col }));
+        const a = rnd() * Math.PI * 2, r = 8 + rnd() * 14;
+        m.position.set(Math.sin(a) * r, 8 - rnd() * (DROP + 14), Math.cos(a) * r);
+        m.rotation.set(rnd() * .6, a, (rnd() < .5 ? 1 : -1) * (.5 + rnd() * .6));
+        ascii.add(m);
+      }
+      // puffy ascii clouds, a few balls squished together
+      for (let i = 0; i < 16; i++) {
+        const col = [0xf4f0ff, 0xd9e8ff, 0xffe3ef][i % 3];
+        const mat = new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: .25, roughness: 1 });
+        const g = new THREE.Group();
+        const n = 4 + Math.floor(rnd() * 3);
+        for (let j = 0; j < n; j++) {
+          const b = new THREE.Mesh(new THREE.SphereGeometry(.7 + rnd() * .7, 14, 10), mat);
+          b.position.set((j - n / 2) * .9, rnd() * .6, rnd() * .5);
+          g.add(b);
+        }
+        const a = rnd() * Math.PI * 2, r = 11 + rnd() * 12;
+        g.position.set(Math.sin(a) * r, 6 - rnd() * (DROP + 6), Math.cos(a) * r);
+        g.scale.y = .7;
+        ascii.add(g);
+      }
+      // lumpy little asteroids tumbling
+      for (let i = 0; i < 14; i++) {
+        const col = [0x8f86c2, 0xb5643a, 0x6f7f99, 0xff9a5c][i % 4];
+        const m = new THREE.Mesh(new THREE.DodecahedronGeometry(.6 + rnd() * .9, 0), new THREE.MeshStandardMaterial({ color: col, roughness: .9, flatShading: true }));
+        const a = rnd() * Math.PI * 2, r = 9 + rnd() * 16;
+        m.position.set(Math.sin(a) * r, 6 - rnd() * (DROP + 10), Math.cos(a) * r);
+        m.scale.set(1, .75 + rnd() * .4, .9);
+        m.userData.spin = .2 + rnd() * .5;
         ascii.add(m); sparkles.push(m);
       }
       // the planet she lands on, deep violet with a dark teal ring. it's
@@ -4828,9 +4908,13 @@ body::after{
           camera.rotateZ(Math.sin(p * Math.PI * 1.5) * .08 + mx * .03);
 
           const small = narrow ? 1.12 : 1;
-          hen.position.copy(H);
+          // how far she can swing: clear of the screen edge, a bit further on a wide screen
+          const viewH = camera.position.distanceTo(H) * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+          const swing = Math.max(0, viewH * camera.aspect - HEN_W * small / 2 - .3) * (narrow ? .7 : .5);
+          const zig = ZIG(p), lean = (ZIG(p + .01) - zig) * 100;   // banks into the turn like a lil ship
+          hen.position.copy(H).addScaledVector(right, zig * swing);
           hen.quaternion.copy(camera.quaternion);
-          hen.rotateZ(Math.sin(t * .8) * .05);
+          hen.rotateZ(Math.sin(t * .8) * .05 - Math.max(-.3, Math.min(.3, lean * .025)));
           hen.scale.set(HEN_W * small, HEN_H * small, 1);
           henMat.uniforms.t.value = t;
           if (t > nextBlink) { blinkAt = t; nextBlink = t + 2.4 + Math.random() * 3.2; }
@@ -4856,11 +4940,13 @@ body::after{
             if (!g.visible) return;
             const back = o.far ? 14 : narrow ? 7 : 0;
             const s = (dist + back) / dist;
+            // the near ones go by on whichever side she isn't, out by the edge
+            const side = o.far || o.world ? o.side : (ZIG(o.at) > .15 ? -1 : ZIG(o.at) < -.15 ? 1 : o.side);
             const lat = o.far ? halfW * s * .8
                       : narrow ? halfW * s * .72
-                      : Math.min(halfW - o.size * .45, henHalf + o.size * .55 + .4);
+                      : Math.max(henHalf + o.size * .55 + .4, halfW - o.size * .55);
             g.position.copy(H)
-              .addScaledVector(right, o.side * lat + Math.sin(t * .6 + o.at * 20) * .2)
+              .addScaledVector(right, side * lat + Math.sin(t * .6 + o.at * 20) * .2)
               .addScaledVector(upv, k * halfH * 1.35 * s)
               .addScaledVector(fwd, back);
             g.scale.setScalar(narrow && !o.far ? .8 : 1);
@@ -7561,11 +7647,11 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=a6748abc',    scene: 'trove'    },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=a928e1e9',    scene: 'trove'    },
   skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=3e1a32d1',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=f42187e2',    scene: 'menzo'    },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=e87dc0bd',    scene: 'menzo'    },
   myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=7c0d13df', scene: 'myauntie' },
-  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=3c61f663',  scene: 'equinox'  },
+  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=60f53407',  scene: 'equinox'  },
   nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=d6805c4c', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no

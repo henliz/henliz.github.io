@@ -1160,7 +1160,7 @@ figure{
       <!-- CONFIDENTIALITY NOTICE -->
       <div class="confidentiality-notice reveal">
         <span class="notice-label">⚠ Confidentiality Notice</span>
-        <p>Path to Menzoberranzan is an active production. Technical architecture, custom toolchain specifications, in-engine system implementations and unreleased content are not discussed here. They live under NDA for good reason. What follows covers publicly announced project scope, publicly available press and screenshots, and the leadership decisions I can speak to without compromising the work of 140+ contributors who trust this project to stay quiet. There is a great deal more I am proud of and cannot yet say.</p>
+        <p>Path to Menzoberranzan is an active production. Technical architecture, custom toolchain specifications, in-engine system implementations and unreleased content are not discussed here. They live under NDA for good reason. What follows covers publicly announced project scope, publicly available press and screenshots, and the leadership decisions I can speak to without compromising the work of 140+ contributors who trust this project to stay quiet.</p>
       </div>
 
       <!-- THE CITY -->
@@ -1192,7 +1192,7 @@ figure{
       <!-- THE STAKES -->
       <section id="stakes">
         <div class="section-content reveal">
-          <h2 class="section-heading">140 people. Zero salary. An undocumented engine. A 21 year old holding the infrastructure.</h2>
+          <h2 class="section-heading">140 people. Zero salary. An undocumented engine.</h2>
           <p class="lede">In a funded studio, bad infrastructure costs money. In a volunteer studio, it costs people.</p>
 
           <p>The constraints here do not exist in a paid studio, and they compound. There is no documentation from the engine developer, no on-call support, no ops team, and no way to compel anybody to do anything. The Baldur&rsquo;s Gate 3 Toolkit exposes a fraction of what the engine actually does. The rest is detective work: pattern recognition, edge cases, anomalies that behave one way on Tuesday and differently on Friday for reasons that take hours to isolate.</p>
@@ -1238,7 +1238,7 @@ figure{
       <section id="jam">
         <div class="section-content reveal">
           <h2 class="section-heading">The repo was 2.5 GB and heading for 80 GB. We had one weekend and a rewrite that could not be undone.</h2>
-          <p class="lede">People senior to me said you cannot retrofit Git LFS onto a repo that was not built for it. They were wrong, and then they were very nearly right.</p>
+          <p class="lede">Retrofitting Git LFS onto a repo that was not built for it is supposed to be a bad idea. It very nearly was.</p>
 
           <p>Baldur&rsquo;s Gate 3 modding is a binary-heavy discipline, and a repository that clones in three minutes becomes one that clones in three hours and then does not clone at all. That is not a developer experience problem. That is a contributor retention problem, and we were about eighteen months from it.</p>
 
@@ -1458,20 +1458,6 @@ size 48221184
 
       <hr class="section-rule">
 
-      <!-- WHAT I CANNOT SAY -->
-      <section id="quiet">
-        <div class="section-content reveal">
-          <h2 class="section-heading">There is a whole category of this I am proud of and not allowed to show you.</h2>
-          <p class="lede">You get the infrastructure decisions. You do not get the blueprints.</p>
-
-          <p>The actual technical architecture, the custom systems, the in-engine implementations that took months to work out: none of that is here. The public face of this project is screenshots and progress updates. The private face is engineering decisions I cannot share, because the project is not finished and the work belongs to a hundred and forty people rather than to me.</p>
-
-          <p>That is the right call, and it is a strange thing, to have done work you cannot show. But the discipline of keeping quiet about active development, of understanding that the story gets told when it is done and not while it is happening, is its own kind of skill. You do not perform progress. You make it, quietly, and you wait.</p>
-        </div>
-      </section>
-
-      <hr class="section-rule">
-
       <!-- TAKEAWAYS -->
       <section class="takeaways" id="takeaways">
         <div class="section-content reveal">
@@ -1527,40 +1513,16 @@ size 48221184
     (function(){
       const PRESS = [
         {
-          outlet:'FRVR', date:'Feb 3, 2026',
-          headline:'Path to Menzoberranzan Expanding Team as Alpha Launch Looms',
-          href:'https://frvr.com/blog/news/baldurs-gate-3-fan-expansion-path-to-menzoberranzan-expanding-team-as-alpha-launch-looms/',
-          img:'https://frvr.com/wp-content/uploads/2025/11/baldurs-gate-3-path-tp-menzoberranzan.jpg'
-        },
-        {
           outlet:'PC Guide', date:'Feb 2, 2026',
           headline:'Devs of the Biggest BG3 Mod Say They Are "Off to a Great 2026" But Looking for Even More Help',
           href:'https://www.pcguide.com/news/devs-of-the-biggest-baldurs-gate-3-mod-say-they-are-off-to-a-great-2026-but-looking-for-even-more-help/',
           img:'https://www.pcguide.com/wp-content/uploads/2025/05/Baldurs-Gate-3-Astarion.jpg'
         },
         {
-          outlet:'TheGamer', date:'Nov 6, 2025',
-          headline:'Gigantic Baldur\'s Gate 3 Custom Campaign Plans To Release Tutorial Next Year',
-          href:'https://www.thegamer.com/baldurs-gate-3-path-to-menzoberranzan-alpha-2026-release/',
-          img:'https://static0.thegamerimages.com/wordpress/wp-content/uploads/2025/11/baldur-s-gate-3-araj-oblodra.jpg'
-        },
-        {
-          outlet:'GameReactor', date:'Nov 6, 2025',
-          headline:'BG3\'s Path to Menzoberranzan Mod Project Will Launch an Alpha in the First Half of 2026',
-          href:'https://www.gamereactor.eu/baldurs-gate-iii-path-to-menzoberranzan-mod-project-will-launch-an-alpha-in-the-first-half-of-2026-1629153/',
-          img:'https://www.gamereactor.eu/media/09/baldursgateiiis_4220903_650x.jpg'
-        },
-        {
           outlet:'Gaming Bible', date:'Nov 6, 2025',
           headline:'Baldur\'s Gate 3 Is Getting a Brand New Mod Campaign in 2026',
           href:'https://www.gamingbible.com/news/baldurs-gate-3-2026-new-campaign-776353-20251106',
           img:'https://eu-images.contentstack.com/v3/assets/bltbc1876152fcd9f07/bltc5bc4434abb41adb/690c7225f719314f848e09de/baldur_s_gate_3.jpg'
-        },
-        {
-          outlet:'WCCFTech', date:'Nov 5, 2025',
-          headline:'Baldur\'s Gate 3 Path to Menzoberranzan Mod to Get First Playable Alpha By June 2026',
-          href:'https://wccftech.com/baldurs-gate-3-path-to-menzoberranzan-mod-alpha-by-june-2026/',
-          img:'https://cdn.wccftech.com/wp-content/uploads/2025/11/path-menzoberranza-mod-HD-scaled.jpeg'
         },
         {
           outlet:'Kotaku', date:'Nov 5, 2025',
@@ -1573,12 +1535,6 @@ size 48221184
           headline:'Team Behind BG3\'s Path to Menzoberranzan Shares Update as Tutorial Level Starts to Take Form',
           href:'https://frvr.com/blog/news/team-behind-baldurs-gate-3s-ambitious-path-to-menzoberranzan-custom-campaign-shares-update-as-tutorial-level-starts-to-take-form/',
           img:'https://i.ytimg.com/an_webp/1oBlmSvi1So/mqdefault_6s.webp?du=3000&sqp=CLCLps0G&rs=AOn4CLDJK3AK6NLb8vLl6RxnYYsEPZ5oug'
-        },
-        {
-          outlet:'FRVR', date:'Oct 2025',
-          headline:'Baldur\'s Gate 3\'s Biggest Custom Campaign Preps Its First Playable Alpha for Release Next Year',
-          href:'https://frvr.com/blog/baldurs-gate-3s-biggest-custom-campaign-preps-its-first-playable-alpha-for-release-next-year/',
-          img:'https://frvr.com/wp-content/uploads/2025/11/baldurs-gate-3-path-tp-menzoberranzan.jpg'
         },
         {
           outlet:'EGW News', date:'2025',
@@ -1842,7 +1798,6 @@ size 48221184
         'jam':'The Git LFS migration',
         'roles':'CTO and tech director',
         'brain':'Documenting the engine',
-        'quiet':'What I cannot show',
         'takeaways':'Takeaways',
         'press':'In the press'
       };
