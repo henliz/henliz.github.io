@@ -4586,6 +4586,8 @@ body::after{
         }
         // the footer's "back up to the sky": top of the page, then the sky
         window.introReplay = function () {
+          // parked: the footer button just takes you back to the top
+          if (!INTRO_ON) { (window.scroller || window).scrollTo({ top: 0, behavior: 'smooth' }); return; }
           window.muteSnap?.(2000);
           if (window.lenis) window.lenis.scrollTo(0, { immediate: true });
           else (window.scroller || window).scrollTo({ top: 0 });
@@ -4596,15 +4598,8 @@ body::after{
           const sc = window.scroller || document.getElementById('contentCard');
           return !sc || (sc.scrollTop || 0) <= 2;
         }
-        addEventListener('wheel', e => {
-          if (e.deltaY < 0 && atTop()) { pull += -e.deltaY; if (pull > 220) replay(); }
-          else pull = 0;
-        }, { passive: true });
-        let ty = null;
-        addEventListener('touchstart', e => { ty = atTop() ? e.touches[0].clientY : null; }, { passive: true });
-        addEventListener('touchmove', e => {
-          if (ty !== null && e.touches[0].clientY - ty > 110) { ty = null; replay(); }
-        }, { passive: true });
+        // scrolling up past the top no longer brings the sky back: too easy
+        // to hit by accident. only the footer button (and ?intro) replay it
       })();
     </script>
 
