@@ -801,7 +801,28 @@
     .rp-msg{ color:#8b949e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .rp-size{ color:#8b949e; font-size:12px; white-space:nowrap; display:flex; align-items:center; justify-content:flex-end; gap:5px; }
     .rp-lfs{ font-size:10px; font-weight:700; color:#3fb950; border:1px solid rgba(63,185,80,.5); border-radius:999px; padding:0 6px; }
-</style>
+    /* skim. the full read is the intended view; skim keeps headlines, ledes,
+       a short summary per section, stats, callouts, every image and clip, and
+       the takeaways, and folds the body paragraphs away */
+    .skim-sum{display:none}
+    html.skim .skim-sum{display:block;margin:.4rem 0 1.6rem;font-weight:500}
+    /* side-by-side layouts lose their text in skim, so the picture stops
+       hugging one side and sits centred on its own instead of leaving a gap */
+    html.skim .wrap:not(:has(.wrap-text > :not(.skim-hide))){display:block;max-width:min(620px,100%);margin-inline:auto}
+    html.skim .wrap:not(:has(.wrap-text > :not(.skim-hide))) > .wrap-text{display:none}
+    html.skim .chart-aside:not(:has(> p:not(.skim-hide))) .chart-figure{float:none!important;width:min(520px,100%)!important;margin:0 auto 1rem!important}
+    html.skim .challenge-col:not(:has(> :not(.skim-hide))){display:none}
+    /* long paragraphs fold away in skim; short connecting lines stay, and a
+       folded paragraph that explains a clip or a decision leaves its first
+       line or two behind as .skim-gist, in the original words */
+    html.skim .skim-hide{display:none}
+    .skim-gist{display:none}
+    html.skim .skim-gist{display:block}
+    .ql-mode{display:flex;gap:2px;padding:2px;margin-bottom:.3rem;border-radius:999px;border:1px solid var(--glass-border)}
+    .ql-mode button{flex:1;border:0;background:none;border-radius:999px;padding:.35rem .5rem;cursor:pointer;font:700 .62rem/1 'Satoshi',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);opacity:.6}
+    .ql-mode button[aria-pressed="true"]{opacity:1;background:var(--glass-highlight-1)}
+
+  </style>
 
 <style>
 :root{
@@ -1176,9 +1197,11 @@ figure{
             <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
           </div>
 
-          <p>Path to Menzoberranzan is a full custom campaign set deep in the Underdark, in Menzoberranzan, the underground drow city from the Forgotten Realms books that the games have never actually let you visit. Original narrative, original art, original audio, original cinematics, original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year of work.</p>
+          <p class="skim-gist">Path to Menzoberranzan is a full custom campaign set deep in the Underdark, in Menzoberranzan, the underground drow city from the Forgotten Realms books that the games have never actually let you visit.</p>
+          <p class="skim-hide">Path to Menzoberranzan is a full custom campaign set deep in the Underdark, in Menzoberranzan, the underground drow city from the Forgotten Realms books that the games have never actually let you visit. Original narrative, original art, original audio, original cinematics, original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year of work.</p>
 
-          <p>Everyone on it is a volunteer who does not have to care and does anyway. That is the strangest and most sustaining thing about it, and it is also the fact that decides every technical call I make. I came in as <b>CTO and Technical Director</b>, which sounds like one job with two names and is not.</p>
+          <p class="skim-gist">Everyone on it is a volunteer who does not have to care and does anyway. That is the strangest and most sustaining thing about it, and it is also the fact that decides every technical call I make.</p>
+          <p class="skim-hide">Everyone on it is a volunteer who does not have to care and does anyway. That is the strangest and most sustaining thing about it, and it is also the fact that decides every technical call I make. I came in as <b>CTO and Technical Director</b>, which sounds like one job with two names and is not.</p>
 
           <figure class="img-wide reveal"><img src="img/onboarding-console.webp" alt="The Path to Menzoberranzan onboarding site: a terminal-style desktop of folders, with my Technical Director profile open over the department hierarchy" loading="lazy"></figure>
           <p class="cap">The project&rsquo;s onboarding site, with my profile open. New contributors open folders instead of reading a wall of docs, and every lead says what to ping them for.</p>
@@ -1193,8 +1216,9 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">140 people. Zero salary. An undocumented engine.</h2>
           <p class="lede">In a funded studio, bad infrastructure costs money. In a volunteer studio, it costs people.</p>
+          <p class="skim-sum">No engine docs, no ops team, no on-call, and nobody paid to stay.</p>
 
-          <p>The constraints here do not exist in a paid studio, and they compound. There is no documentation from the engine developer, no on-call support, no ops team, and no way to compel anybody to do anything. The Baldur&rsquo;s Gate 3 Toolkit exposes a fraction of what the engine actually does. The rest is detective work: pattern recognition, edge cases, anomalies that behave one way on Tuesday and differently on Friday for reasons that take hours to isolate.</p>
+          <p class="skim-hide">The constraints here do not exist in a paid studio, and they compound. There is no documentation from the engine developer, no on-call support, no ops team, and no way to compel anybody to do anything. The Baldur&rsquo;s Gate 3 Toolkit exposes a fraction of what the engine actually does. The rest is detective work: pattern recognition, edge cases, anomalies that behave one way on Tuesday and differently on Friday for reasons that take hours to isolate.</p>
 
           <div class="steps reveal">
             <div class="step-card reveal">
@@ -1239,11 +1263,12 @@ figure{
           <h2 class="section-heading">The repo was 2.5 GB and heading for 80 GB. We had one weekend and a rewrite that could not be undone.</h2>
           <p class="lede">Retrofitting Git LFS onto a repo that was not built for it is supposed to be a bad idea. It very nearly was.</p>
 
-          <p>Baldur&rsquo;s Gate 3 modding is a binary-heavy discipline, and a repository that clones in three minutes becomes one that clones in three hours and then does not clone at all. That is not a developer experience problem. That is a contributor retention problem, and we were about eighteen months from it.</p>
+          <p class="skim-hide">Baldur&rsquo;s Gate 3 modding is a binary-heavy discipline, and a repository that clones in three minutes becomes one that clones in three hours and then does not clone at all. That is not a developer experience problem. That is a contributor retention problem, and we were about eighteen months from it.</p>
 
-          <p>Git LFS keeps large files outside the repository proper. Contributors get a small pointer file in their clone and the real binary arrives on demand. The repo stays light, the workflow stays sane. The catch is that if you did not start that way, adopting it means rewriting every commit that ever touched a binary, and a history rewrite invalidates every open branch and every existing clone on every machine on the project.</p>
+          <p class="skim-hide">Git LFS keeps large files outside the repository proper. Contributors get a small pointer file in their clone and the real binary arrives on demand. The repo stays light, the workflow stays sane. The catch is that if you did not start that way, adopting it means rewriting every commit that ever touched a binary, and a history rewrite invalidates every open branch and every existing clone on every machine on the project.</p>
 
-          <p>So it all had to happen in one weekend: freeze all work on Friday, rewrite, check everything, and let people back in by Sunday. Before anybody touched anything I wrote fourteen steps, a rollback plan, a troubleshooting guide and an FAQ for the rest of the board: audit everything in history over 10 MB, provision on Hetzner, stand up Forgejo, move the objects to Backblaze B2, freeze the open pull requests, rewrite, verify, communicate, and archive the old instance.</p>
+          <p class="skim-gist">So it all had to happen in one weekend: freeze all work on Friday, rewrite, check everything, and let people back in by Sunday. Before anybody touched anything I wrote fourteen steps, a rollback plan, a troubleshooting guide and an FAQ for the rest of the board: audit everything in history over 10 MB, provision on Hetzner, stand up Forgejo, move the objects to Backblaze B2, freeze the open pull requests, rewrite, verify, communicate, and archive the old instance.</p>
+          <p class="skim-hide">So it all had to happen in one weekend: freeze all work on Friday, rewrite, check everything, and let people back in by Sunday. Before anybody touched anything I wrote fourteen steps, a rollback plan, a troubleshooting guide and an FAQ for the rest of the board: audit everything in history over 10 MB, provision on Hetzner, stand up Forgejo, move the objects to Backblaze B2, freeze the open pull requests, rewrite, verify, communicate, and archive the old instance.</p>
 
           <div class="highlight-box reveal">
             <strong>The step that saved it was step fourteen</strong>
@@ -1270,7 +1295,8 @@ figure{
 
           <h3 class="sub-heading">Then every binary in the project died at once.</h3>
 
-          <p>The rewrite itself went fine. The migration walked the whole history and replaced every matching blob with a pointer. Then we brought the repo across to the new server the obvious way, a mirror clone, and it reported complete success. Every ref, every commit, every tag, no errors.</p>
+          <p class="skim-gist">The rewrite itself went fine. Then we brought the repo across to the new server the obvious way, a mirror clone, and it reported complete success.</p>
+          <p class="skim-hide">The rewrite itself went fine. The migration walked the whole history and replaced every matching blob with a pointer. Then we brought the repo across to the new server the obvious way, a mirror clone, and it reported complete success. Every ref, every commit, every tag, no errors.</p>
 
           <p>This is what a 48 MB character model looked like on every machine that pulled afterwards.</p>
 
@@ -1287,16 +1313,18 @@ size 48221184
           </div>
           <p class="cap">A valid, well formed, three line text file where a character used to be.</p>
 
-          <p>A mirror clone copies every ref and every git object, and it does not copy a single LFS object. LFS objects do not live in the git object store. They move over a separate transfer API to a separate backend, and nothing in a mirror push goes near them. The new server had perfect history in which every binary was a valid pointer to something it had never been given.</p>
+          <p class="skim-gist">A mirror clone copies every ref and every git object, and it does not copy a single LFS object. The new server had perfect history in which every binary was a valid pointer to something it had never been given.</p>
+          <p class="skim-hide">A mirror clone copies every ref and every git object, and it does not copy a single LFS object. LFS objects do not live in the git object store. They move over a separate transfer API to a separate backend, and nothing in a mirror push goes near them. The new server had perfect history in which every binary was a valid pointer to something it had never been given.</p>
 
-          <p>Nothing errored during the migration. Git reported success at every step, because from git&rsquo;s point of view it had succeeded. A pointer file is legal content. It only surfaced when the Toolkit tried to load a model and got ASCII.</p>
+          <p class="skim-hide">Nothing errored during the migration. Git reported success at every step, because from git&rsquo;s point of view it had succeeded. A pointer file is legal content. It only surfaced when the Toolkit tried to load a model and got ASCII.</p>
 
           <div class="highlight-box purple reveal">
             <strong>This is the failure mode that frightens me most</strong>
             A system reporting success while quietly not doing its job. Every light on that weekend was green. The only evidence anything was wrong was that the game would not open.
           </div>
 
-          <p>The read in the room was that the history rewrite had eaten the binaries, and that this was the proof that retroactive LFS does not work on a repo that was not set up for it from the start. It was not. Nothing had been lost. Every object was still sitting in the local LFS cache on the machine that ran the migration, and still on the old instance that step fourteen had told us to archive rather than delete.</p>
+          <p class="skim-gist">The read in the room was that the history rewrite had eaten the binaries, and that this was the proof that retroactive LFS does not work on a repo that was not set up for it from the start. Nothing had been lost. Every object was still sitting in the local LFS cache on the machine that ran the migration, and still on the old instance that step fourteen had told us to archive rather than delete.</p>
+          <p class="skim-hide">The read in the room was that the history rewrite had eaten the binaries, and that this was the proof that retroactive LFS does not work on a repo that was not set up for it from the start. It was not. Nothing had been lost. Every object was still sitting in the local LFS cache on the machine that ran the migration, and still on the old instance that step fourteen had told us to archive rather than delete.</p>
 
           <div class="termcard reveal">
             <div class="bar"><i></i><i></i><i></i><em>the rehydrate</em></div>
@@ -1314,7 +1342,8 @@ size 48221184
           </div>
           <p class="cap">Then everyone ran <b>git lfs pull</b>, the working trees hydrated, and the assets came back at full size.</p>
 
-          <p>The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would. Step fourteen cost nothing on the Friday, and on the Sunday it saved the whole project.</p>
+          <p class="skim-gist">The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would.</p>
+          <p class="skim-hide">The part worth noticing is not the commands. It is that the recovery was written into the plan before the incident, by somebody who did not know what was going to go wrong and assumed something would. Step fourteen cost nothing on the Friday, and on the Sunday it saved the whole project.</p>
 
 <div class="rp-pair reveal" role="img" aria-label="Two repository screens side by side. Before: no Git LFS, every binary in every clone, heading for 80 gigabytes or more. After: Git LFS on self-hosted Forgejo, binaries shown with an LFS badge and kept in object storage, 2.5 gigabytes.">
             <div class="rp before">
@@ -1346,7 +1375,7 @@ size 48221184
           <h2 class="section-heading">CTO and Technical Director. Same person. Completely different jobs.</h2>
           <p class="lede">One of them prevents a collapse in six months. The other one prevents a department going idle this afternoon.</p>
 
-          <p>This distinction usually gets collapsed into one vague &ldquo;technical lead&rdquo; title until something catastrophic happens. We formalised it early because we hit the scale where leaving it implicit was actively dangerous. At 140 contributors, a single ambiguous decision can propagate silently through the pipeline for weeks before it surfaces as months of wasted work.</p>
+          <p class="skim-hide">This distinction usually gets collapsed into one vague &ldquo;technical lead&rdquo; title until something catastrophic happens. We formalised it early because we hit the scale where leaving it implicit was actively dangerous. At 140 contributors, a single ambiguous decision can propagate silently through the pipeline for weeks before it surfaces as months of wasted work.</p>
 
           <div class="highlight-box reveal">CTO failures are long-range and invisible. Technical Director failures are immediate and production-killing. They are not the same job wearing different hats. They are categorically different engineering problems.</div>
 
@@ -1377,7 +1406,8 @@ size 48221184
             </div>
           </div>
 
-          <p>The CTO asks whether this decision hurts us in six months. The Technical Director asks why this cinematic is broken right now and how to fix it before the department goes idle. Neither question can wait for the other. They run in parallel, constantly, across different timescales and different failure modes. Merging them into one technical lead does not simplify the work. It just means both fail quietly until they fail loudly.</p>
+          <p class="skim-gist">The CTO asks whether this decision hurts us in six months. The Technical Director asks why this cinematic is broken right now and how to fix it before the department goes idle.</p>
+          <p class="skim-hide">The CTO asks whether this decision hurts us in six months. The Technical Director asks why this cinematic is broken right now and how to fix it before the department goes idle. Neither question can wait for the other. They run in parallel, constantly, across different timescales and different failure modes. Merging them into one technical lead does not simplify the work. It just means both fail quietly until they fail loudly.</p>
 
           <figure class="img-wide reveal">
             <img src="character-concept.jpg" alt="Path to Menzoberranzan character creation screen concept art" loading="lazy">
@@ -1394,9 +1424,10 @@ size 48221184
           <h2 class="section-heading">The technical spine of a 140 person project lived in one person&rsquo;s working memory.</h2>
           <p class="lede">So I wrote it down, and that document is the most load-bearing thing I have made here.</p>
 
-          <p>The visible part of technical leadership is debugging. The dramatic moment where the cinematic is broken and you find the one misaligned atmosphere preset that caused it. That part is real and it takes real skill. The invisible part is the architecture: the documents, the conventions, the tracking rules, the licensing decisions, the pipeline constraints that stop one department&rsquo;s work silently invalidating another&rsquo;s over a month.</p>
+          <p class="skim-hide">The visible part of technical leadership is debugging. The dramatic moment where the cinematic is broken and you find the one misaligned atmosphere preset that caused it. That part is real and it takes real skill. The invisible part is the architecture: the documents, the conventions, the tracking rules, the licensing decisions, the pipeline constraints that stop one department&rsquo;s work silently invalidating another&rsquo;s over a month.</p>
 
-          <p><i>Hen&rsquo;s Brain: Technical Leadership Manual</i> exists because institutional knowledge living in one head is not an inconvenience at this scale, it is an existential risk. It defines the two domains, their failure modes, their escalation paths, and which decisions fall unambiguously into each. It is not theory. It is operational infrastructure, and it is written so the project survives illness, burnout, exams and time zones.</p>
+          <p class="skim-gist">Hen’s Brain: Technical Leadership Manual exists because institutional knowledge living in one head is not an inconvenience at this scale, it is an existential risk.</p>
+          <p class="skim-hide"><i>Hen&rsquo;s Brain: Technical Leadership Manual</i> exists because institutional knowledge living in one head is not an inconvenience at this scale, it is an existential risk. It defines the two domains, their failure modes, their escalation paths, and which decisions fall unambiguously into each. It is not theory. It is operational infrastructure, and it is written so the project survives illness, burnout, exams and time zones.</p>
 
           <div class="highlight-box reveal">Uncoordinated tooling, incorrect patching, inconsistent LFS tracking or unsound pipeline assumptions can invalidate months of work across entire departments.</div>
 
@@ -1451,7 +1482,7 @@ size 48221184
 </svg></figure>
           <p class="cap">What 140 volunteers looks like when you draw it: seven departments, each with a coordinator and its own leads.</p>
 
-          <p>Licensing sits in the same category. The custom toolchains are protected under PolyForm Shield 1.0.0, which prevents commercial appropriation of work built by volunteers, for free, for a community. That is a legal architecture decision rather than a creative one, and it is the sort of thing that is cheap to do early and impossible to do late.</p>
+          <p class="skim-hide">Licensing sits in the same category. The custom toolchains are protected under PolyForm Shield 1.0.0, which prevents commercial appropriation of work built by volunteers, for free, for a community. That is a legal architecture decision rather than a creative one, and it is the sort of thing that is cheap to do early and impossible to do late.</p>
         </div>
       </section>
 
@@ -1462,10 +1493,11 @@ size 48221184
         <div class="section-content reveal">
           <h2 class="section-heading">There is a whole category of this I am proud of and not allowed to show you.</h2>
           <p class="lede">You get the infrastructure decisions. You do not get the blueprints.</p>
+          <p class="skim-sum">Most of the engineering stays under NDA until the project ships. There’s more to come.</p>
 
-          <p>The actual technical architecture, the custom systems, the in-engine implementations that took months to work out: none of that is here. The public face of this project is screenshots and progress updates. The private face is engineering decisions I cannot share, because the project is not finished and the work belongs to a hundred and forty people rather than to me.</p>
+          <p class="skim-hide">The actual technical architecture, the custom systems, the in-engine implementations that took months to work out: none of that is here. The public face of this project is screenshots and progress updates. The private face is engineering decisions I cannot share, because the project is not finished and the work belongs to a hundred and forty people rather than to me.</p>
 
-          <p>That is the right call, and it is a strange thing, to have done work you cannot show. But the discipline of keeping quiet about active development, of understanding that the story gets told when it is done and not while it is happening, is its own kind of skill. You do not perform progress. You make it, quietly, and you wait.</p>
+          <p class="skim-hide">That is the right call, and it is a strange thing, to have done work you cannot show. But the discipline of keeping quiet about active development, of understanding that the story gets told when it is done and not while it is happening, is its own kind of skill. You do not perform progress. You make it, quietly, and you wait.</p>
         </div>
       </section>
 
@@ -1968,5 +2000,26 @@ size 48221184
     })();
   </script>
   <script src="/js/lightbox.js" defer></script>
+  <script>
+    /* skim mode. the portfolio rail sets it; opened on its own, the
+       sections widget has the same switch. the full read is the default */
+    (function(){
+      const KEY='case-skim', root=document.documentElement;
+      const get=()=>{try{return localStorage.getItem(KEY)==='1';}catch(e){return false;}};
+      const set=on=>{root.classList.toggle('skim',!!on);paint();};
+      let paint=()=>{};
+      addEventListener('message',e=>{const d=e.data;if(d&&d.type==='caseSkim')set(d.on);});
+      const panel=document.getElementById('ql-panel');
+      if(window.parent===window&&panel){
+        const sw=document.createElement('div');
+        sw.className='ql-mode';sw.setAttribute('role','group');sw.setAttribute('aria-label','How to read this study');
+        sw.innerHTML='<button type="button" data-skim="0" title="The way it\u2019s meant to be read">Full read</button><button type="button" data-skim="1">Skim</button>';
+        sw.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{try{localStorage.setItem(KEY,b.dataset.skim);}catch(e){}set(b.dataset.skim==='1');}));
+        paint=()=>sw.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.skim==='1')===root.classList.contains('skim'))));
+        panel.prepend(sw);
+      }
+      set(get());
+    })();
+  </script>
 </body>
 </html>

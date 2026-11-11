@@ -108,8 +108,11 @@ def readable(slug: str) -> str:
     src = src[src.index('<body'):] if '<body' in src else src
     src = re.sub(r'<(script|style)[\s\S]*?</\1>', ' ', src)
     out, seen = [], set()
-    for m in re.finditer(r'<(h1|h2|h3|h4|p|li)\b[^>]*>([\s\S]*?)</\1>', src):
-        tag, inner = m.group(1), m.group(2)
+    for m in re.finditer(r'<(h1|h2|h3|h4|p|li)\b([^>]*)>([\s\S]*?)</\1>', src):
+        tag, attrs, inner = m.group(1), m.group(2), m.group(3)
+        # skim mode's summaries and excerpts repeat the study, so crawlers skip them
+        if re.search(r'class="[^"]*\bskim-(sum|gist)\b', attrs):
+            continue
         text = _html.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', inner))).strip()
         if len(text) < 2 or text in seen:
             continue

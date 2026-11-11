@@ -895,6 +895,27 @@
       backdrop-filter:none; -webkit-backdrop-filter:none;
     }
     .press-wrapper::before,.press-wrapper::after{display:none}
+      /* skim. the full read is the intended view; skim keeps headlines, ledes,
+       a short summary per section, stats, callouts, every image and clip, and
+       the takeaways, and folds the body paragraphs away */
+    .skim-sum{display:none}
+    html.skim .skim-sum{display:block;margin:.4rem 0 1.6rem;font-weight:500}
+    /* side-by-side layouts lose their text in skim, so the picture stops
+       hugging one side and sits centred on its own instead of leaving a gap */
+    html.skim .wrap:not(:has(.wrap-text > :not(.skim-hide))){display:block;max-width:min(620px,100%);margin-inline:auto}
+    html.skim .wrap:not(:has(.wrap-text > :not(.skim-hide))) > .wrap-text{display:none}
+    html.skim .chart-aside:not(:has(> p:not(.skim-hide))) .chart-figure{float:none!important;width:min(520px,100%)!important;margin:0 auto 1rem!important}
+    html.skim .challenge-col:not(:has(> :not(.skim-hide))){display:none}
+    /* long paragraphs fold away in skim; short connecting lines stay, and a
+       folded paragraph that explains a clip or a decision leaves its first
+       line or two behind as .skim-gist, in the original words */
+    html.skim .skim-hide{display:none}
+    .skim-gist{display:none}
+    html.skim .skim-gist{display:block}
+    .ql-mode{display:flex;gap:2px;padding:2px;margin-bottom:.3rem;border-radius:999px;border:1px solid var(--glass-border)}
+    .ql-mode button{flex:1;border:0;background:none;border-radius:999px;padding:.35rem .5rem;cursor:pointer;font:700 .62rem/1 'Satoshi',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);opacity:.6}
+    .ql-mode button[aria-pressed="true"]{opacity:1;background:var(--glass-highlight-1)}
+
   </style>
 
 <style>
@@ -1308,12 +1329,13 @@ figure{
               <figcaption>Food vs. wage inflation, June 2021 to 2024. Sources: Canada Food Price Report 2025, Statistics Canada 2021 to 2024, WSJ March 2024.</figcaption>
             </figure>
 
-            <p>I pulled Statistics Canada's food and wage series for June 2021 to 2024 and plotted them against each other, because I wanted to know whether this was a spending problem or an arithmetic one. Food inflation ran at 6.6%. Wage inflation ran at 3.7%. The lines separate in early 2022 and never come back together.</p>
+            <p class="skim-gist">I pulled Statistics Canada's food and wage series for June 2021 to 2024 and plotted them against each other, because I wanted to know whether this was a spending problem or an arithmetic one. Food inflation ran at 6.6%.</p>
+            <p class="skim-hide">I pulled Statistics Canada's food and wage series for June 2021 to 2024 and plotted them against each other, because I wanted to know whether this was a spending problem or an arithmetic one. Food inflation ran at 6.6%. Wage inflation ran at 3.7%. The lines separate in early 2022 and never come back together.</p>
 
-            <p>In real life that gap is the item you put back on the shelf, the recipe you stopped making, and the Sunday meal prep that used to feel like cooking and now feels like damage control. Younger households feel it the most, since they already have 30% less wealth than boomers did at the same age.</p>
+            <p class="skim-hide">In real life that gap is the item you put back on the shelf, the recipe you stopped making, and the Sunday meal prep that used to feel like cooking and now feels like damage control. Younger households feel it the most, since they already have 30% less wealth than boomers did at the same age.</p>
           </div>
 
-          <p>Nobody can really control their rent, their utilities or their car insurance. Groceries were the one line families told me felt like something they could actually tackle, which is exactly why they were already working so hard at it. Every household I spoke to was already doing the maths in their head every week: checking flyers, comparing stores, planning meals around deals. They had plenty of motivation. What they didn&rsquo;t have was a tool that did it for them.</p>
+          <p class="skim-hide">Nobody can really control their rent, their utilities or their car insurance. Groceries were the one line families told me felt like something they could actually tackle, which is exactly why they were already working so hard at it. Every household I spoke to was already doing the maths in their head every week: checking flyers, comparing stores, planning meals around deals. They had plenty of motivation. What they didn&rsquo;t have was a tool that did it for them.</p>
           <div class="challenge-row">
           <div class="ctv-video-wrap">
             <div id="ctv-yt-player"></div>
@@ -1328,8 +1350,9 @@ figure{
             <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
           </div>
 <div class="challenge-col right">
-              <p>Three tools. None of them talking to each other.<br>→ Flyer apps show what's on sale. They have no idea what you're cooking.<br>→ Recipe apps look beautiful. They have no idea what things cost.<br>→ Budget apps tell you what you spent. After you've already spent it.</p>
-              <p>Families don&rsquo;t give up because they stop caring. They give up because juggling three apps that don&rsquo;t talk to each other wears them down: the deal that expired before they got to the store, the &ldquo;budget recipe&rdquo; that needs three specialty items, the list they made carefully at home and gave up on halfway down the aisle. All of it costs real money, every week.</p>
+              <p class="skim-hide">Three tools. None of them talking to each other.<br>→ Flyer apps show what's on sale. They have no idea what you're cooking.<br>→ Recipe apps look beautiful. They have no idea what things cost.<br>→ Budget apps tell you what you spent. After you've already spent it.</p>
+              <p class="skim-gist">Families don’t give up because they stop caring. They give up because juggling three apps that don’t talk to each other wears them down: the deal that expired before they got to the store, the “budget recipe” that needs three specialty items, the list they made carefully at home and gave up on halfway down the aisle.</p>
+              <p class="skim-hide">Families don&rsquo;t give up because they stop caring. They give up because juggling three apps that don&rsquo;t talk to each other wears them down: the deal that expired before they got to the store, the &ldquo;budget recipe&rdquo; that needs three specialty items, the list they made carefully at home and gave up on halfway down the aisle. All of it costs real money, every week.</p>
             </div>
           
           <div class="steps reveal">
@@ -1358,7 +1381,8 @@ figure{
 
 
 
-          <p>Families were already running this algorithm in their heads, so Skrimp was never allowed to ask them to change. It compares live flyer prices across 15+ Canadian grocery stores, plans the week around whatever is actually on sale, and auto-adds the list to the cart. Families save <b>$50-$100 a week</b>, and it stays free, because a household that cannot afford food cannot afford a subscription to save on it either.</p>
+          <p class="skim-gist">Families were already running this algorithm in their heads, so Skrimp was never allowed to ask them to change.</p>
+          <p class="skim-hide">Families were already running this algorithm in their heads, so Skrimp was never allowed to ask them to change. It compares live flyer prices across 15+ Canadian grocery stores, plans the week around whatever is actually on sale, and auto-adds the list to the cart. Families save <b>$50-$100 a week</b>, and it stays free, because a household that cannot afford food cannot afford a subscription to save on it either.</p>
         
         </div>
       </section>
@@ -1367,9 +1391,10 @@ figure{
 
       <section class="research" id="research-results">
         <div class="section-content reveal">
-          <h2 class="section-heading">I ran listening sessions instead of surveys, and gave up a clean number to do it.</h2>
+          <h2 class="section-heading">I ran listening sessions instead of surveys, then put numbers to what I heard.</h2>
           <p class="lede">Ask someone their budget and you get a number. Ask about last Sunday and you get a system.</p>
-          <p>I ran listening sessions, not questionnaires. Not what would you want from a grocery app, but tell me about last Sunday. Asked to narrate the shop, people describe a system they did not know they had: flyer-first thinking, mental price matching, routes through the store that save six minutes, recipes that live in the body and were never written down.</p><p>The cost of that choice is that I came out with no clean quantitative baseline, only patterns. I took it, because the insight underneath was the whole product. Families had already figured out how to save money on food. Skrimp didn&rsquo;t need to invent a new way of doing it, it needed to do their existing way for them.</p>
+          <p class="skim-sum">Families had already figured out how to save on food. Skrimp just had to do it for them.</p>
+          <p class="skim-hide">I ran listening sessions, not questionnaires. Not what would you want from a grocery app, but tell me about last Sunday. Asked to narrate the shop, people describe a system they did not know they had: flyer-first thinking, mental price matching, routes through the store that save six minutes, recipes that live in the body and were never written down.</p><p class="skim-hide">The sessions gave me patterns, and my modelling put numbers on them. The insight underneath was the whole product. Families had already figured out how to save money on food. Skrimp didn&rsquo;t need to invent a new way of doing it, it needed to do their existing way for them.</p>
 
           <div class="quote-grid reveal">
             <div class="quote-card reveal">
@@ -1386,7 +1411,7 @@ figure{
             </div>
           </div>
 
-          <h3 class="sub-heading" style="margin-top:2rem;margin-bottom:2rem">Key Findings</h3>
+          <h3 class="sub-heading" style="margin-top:2rem;margin-bottom:2rem">Key Findings, from my modelling and interviews</h3>
           <div class="stats-grid reveal">
             <div class="stats-card reveal">
               <div class="stats-number">60%</div>
@@ -1418,8 +1443,10 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">It didn&rsquo;t start as an app.</h2>
           <p class="lede">It started as a piece of paper, and I&rsquo;m glad we never handed it out.</p>
-          <p>The very first idea was a printed flyer: hand one out every week with the meal plan and the grocery list on it, and the website would just hold the recipes. We dropped it, partly because we didn&rsquo;t want to get in trouble handing things out, and partly because talking to people made me ask myself whether I&rsquo;d ever actually kept a flyer someone handed me. I hadn&rsquo;t. Do you?</p>
-          <p>The first app was proof that the idea worked, and honestly, it kind of sucked to use. It was very mathy: cost per serving, how much of each package you&rsquo;d use, and the deal on every single item, all of it on every card. It was all correct, and it felt like doing homework. Every version after that came from working closely with about 15 people and their families, some more closely than others, and each round made Skrimp nicer to look at and easier to use. Saving money already feels like a chore, so I wanted planning your week to feel more like picking out food you actually want to eat. The math moved behind the scenes. It still does all the work, but the food is what you see first.</p>
+          <p class="skim-gist">The very first idea was a printed flyer: hand one out every week with the meal plan and the grocery list on it, and the website would just hold the recipes. We dropped it, partly because we didn’t want to get in trouble handing things out, and partly because talking to people made me ask myself whether I’d ever actually kept a flyer someone handed me.</p>
+          <p class="skim-hide">The very first idea was a printed flyer: hand one out every week with the meal plan and the grocery list on it, and the website would just hold the recipes. We dropped it, partly because we didn&rsquo;t want to get in trouble handing things out, and partly because talking to people made me ask myself whether I&rsquo;d ever actually kept a flyer someone handed me. I hadn&rsquo;t. Do you?</p>
+          <p class="skim-gist">The first app was proof that the idea worked, and honestly, it kind of sucked to use. It was all correct, and it felt like doing homework. The math moved behind the scenes. It still does all the work, but the food is what you see first.</p>
+          <p class="skim-hide">The first app was proof that the idea worked, and honestly, it kind of sucked to use. It was very mathy: cost per serving, how much of each package you&rsquo;d use, and the deal on every single item, all of it on every card. It was all correct, and it felt like doing homework. Every version after that came from working closely with about 15 people and their families, some more closely than others, and each round made Skrimp nicer to look at and easier to use. Saving money already feels like a chore, so I wanted planning your week to feel more like picking out food you actually want to eat. The math moved behind the scenes. It still does all the work, but the food is what you see first.</p>
           <div class="evo reveal">
             <div class="evo-bar">
               <span class="evo-step evo-step--bar" id="evo-step" aria-live="polite">01 &middot; the flyer</span>
@@ -1458,10 +1485,14 @@ figure{
               <button type="button" class="evo-thumb" aria-label="04, now"><img src="vid/skrimp-now.jpg?v=5" alt=""></button>
             </div>
           </div>
-          <p><strong>Less on every card.</strong> Early meal cards showed servings, cost, deals and a quantity stepper all at once. Now a card is mostly the photo and the name, with the price and the deal tucked underneath, so you can tell at a glance whether you&rsquo;d actually want to eat it.</p>
-          <p><strong>Rows you swipe, not a two-column grid.</strong> The early app laid every meal out as two columns of cards, which on a phone meant tiny cards and a lot of scrolling. Now each meal is one row you swipe through with your thumb, so breakfast, lunch and dinner each take up a single line of the screen.</p>
-          <p><strong>From switching recipes on and off, to Smart Load or the whole catalogue.</strong> The first app handed you a preset week, and you clicked recipes on or off to keep them, which is why some of them are greyed out in those early screens. Now you can let Smart Load fill a meal with the best deals in one tap, or browse the full catalogue and pick whatever you like. Browsing gives you more freedom and usually a bit less saving, since sales change every week, but plenty of the catalogue is still a really good deal.</p>
-          <p><strong>A chef, not a faceless logo.</strong> Skrimp&rsquo;s first mascot was just the shopping-cart S you can see on the flyer. Between having no face and the idea of a robot in your home, it made some people uneasy, especially parents, who were the most careful about their family&rsquo;s privacy. So Skrimp became a chef: a friendly face whose whole job is helping you eat well.</p>
+          <p class="skim-gist"><strong>Less on every card.</strong> Now a card is mostly the photo and the name, with the price and the deal tucked underneath, so you can tell at a glance whether you’d actually want to eat it.</p>
+          <p class="skim-hide"><strong>Less on every card.</strong> Early meal cards showed servings, cost, deals and a quantity stepper all at once. Now a card is mostly the photo and the name, with the price and the deal tucked underneath, so you can tell at a glance whether you&rsquo;d actually want to eat it.</p>
+          <p class="skim-gist"><strong>Rows you swipe, not a two-column grid.</strong> Now each meal is one row you swipe through with your thumb, so breakfast, lunch and dinner each take up a single line of the screen.</p>
+          <p class="skim-hide"><strong>Rows you swipe, not a two-column grid.</strong> The early app laid every meal out as two columns of cards, which on a phone meant tiny cards and a lot of scrolling. Now each meal is one row you swipe through with your thumb, so breakfast, lunch and dinner each take up a single line of the screen.</p>
+          <p class="skim-gist"><strong>From switching recipes on and off, to Smart Load or the whole catalogue.</strong> Now you can let Smart Load fill a meal with the best deals in one tap, or browse the full catalogue and pick whatever you like.</p>
+          <p class="skim-hide"><strong>From switching recipes on and off, to Smart Load or the whole catalogue.</strong> The first app handed you a preset week, and you clicked recipes on or off to keep them, which is why some of them are greyed out in those early screens. Now you can let Smart Load fill a meal with the best deals in one tap, or browse the full catalogue and pick whatever you like. Browsing gives you more freedom and usually a bit less saving, since sales change every week, but plenty of the catalogue is still a really good deal.</p>
+          <p class="skim-gist"><strong>A chef, not a faceless logo.</strong> Between having no face and the idea of a robot in your home, it made some people uneasy, especially parents, who were the most careful about their family’s privacy. So Skrimp became a chef: a friendly face whose whole job is helping you eat well.</p>
+          <p class="skim-hide"><strong>A chef, not a faceless logo.</strong> Skrimp&rsquo;s first mascot was just the shopping-cart S you can see on the flyer. Between having no face and the idea of a robot in your home, it made some people uneasy, especially parents, who were the most careful about their family&rsquo;s privacy. So Skrimp became a chef: a friendly face whose whole job is helping you eat well.</p>
         </div>
       </section>
 
@@ -1471,6 +1502,7 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">Most food apps start with a recipe. Skrimp starts with what&rsquo;s on sale.</h2>
           <p class="lede">Which means I cannot promise you a specific meal. I decided that trade was worth making.</p>
+          <p class="skim-sum">What’s on sale this week is the prompt and the meal plan is the answer. Every meal shows its prices item by item, swaps recalculate instantly, and households plan together.</p>
           <div class="two-col">
             <div>
               <p>Recipe-first apps are beautiful and aspirational, and the price comes last. I inverted it. What is on sale at your store this week is the prompt; the meal plan is the answer. Deals are not a filter applied after you have committed to a recipe, they are the foundation the plan is built on.</p><p>The price of that is real. A family who wants lasagne on Tuesday regardless of cost is not who this is for, and the family who needs the forty dollars more than the lasagne is.</p>
@@ -1513,7 +1545,8 @@ figure{
           <h2 class="section-heading">Grocery flyers are just pictures, so getting prices out of them was the hardest technical problem.</h2>
           <p class="lede">New flyers come out every week, and none of them were made for a computer to read.</p>
 
-          <p>Stores don&rsquo;t publish their flyers the same way twice, so I designed the pipeline to expect a mess every time. Nothing goes straight onto a family&rsquo;s list. Every product gets checked first, and the different names one ingredient goes by get matched up across hundreds of recipes behind the scenes. Families who can&rsquo;t afford for the numbers to be wrong also don&rsquo;t have time to fix them, so it has to be right without their help.</p>
+          <p class="skim-gist">Stores don’t publish their flyers the same way twice, so I designed the pipeline to expect a mess every time. Nothing goes straight onto a family’s list.</p>
+          <p class="skim-hide">Stores don&rsquo;t publish their flyers the same way twice, so I designed the pipeline to expect a mess every time. Nothing goes straight onto a family&rsquo;s list. Every product gets checked first, and the different names one ingredient goes by get matched up across hundreds of recipes behind the scenes. Families who can&rsquo;t afford for the numbers to be wrong also don&rsquo;t have time to fix them, so it has to be right without their help.</p>
 
           <div class="steps reveal">
             <div class="step-card">
@@ -1545,15 +1578,18 @@ figure{
 
           <div class="highlight-box"><strong>Quality is not evenly distributed</strong>The same pipeline is close to twice as accurate on one chain’s flyer as on another’s, and the variable is not my code. It is how good a photograph the store published that week. The discount chains, the ones our families actually shop at, publish the worst ones.</div>
 
-          <p>Families never see any of that mess. They see a plan that shows its working: which items are on sale, at which store, and what they cost this week, like a receipt they can check. Changed layouts, missing products and store quirks all get handled before the plan reaches them.</p>
+          <p class="skim-gist">Families never see any of that mess. They see a plan that shows its working: which items are on sale, at which store, and what they cost this week, like a receipt they can check.</p>
+          <p class="skim-hide">Families never see any of that mess. They see a plan that shows its working: which items are on sale, at which store, and what they cost this week, like a receipt they can check. Changed layouts, missing products and store quirks all get handled before the plan reaches them.</p>
           <img class="body-img" src="img/early-receipt.webp" alt="A real grocery receipt totalling $212.00 next to an early Skrimp shopping list showing a grocery bill of $198.13 before tax" loading="lazy">
           <p class="body-img-caption">Early testing against a real shop: the first app said $198.13 before tax, and the receipt came to $212.00 after.</p>
 
           <div class="vid-crop"><video data-src="media/skrimp-browse-flyers.mp4" autoplay muted loop playsinline preload="none"></video></div>
 
-          <p>The most useful thing testing taught us wasn&rsquo;t about a screen, it was that meal planning isn&rsquo;t a one person job. Household sharing turned out to be the piece Skrimp was missing, not a nice extra for later.</p>
+          <p class="skim-gist">The most useful thing testing taught us wasn’t about a screen, it was that meal planning isn’t a one person job. Household sharing turned out to be the piece Skrimp was missing, not a nice extra for later.</p>
+          <p class="skim-hide">The most useful thing testing taught us wasn&rsquo;t about a screen, it was that meal planning isn&rsquo;t a one person job. Household sharing turned out to be the piece Skrimp was missing, not a nice extra for later.</p>
 
-          <p>Everything else is about keeping the number honest and the setup light. Per meal and per week totals update with every change, so there&rsquo;s no surprise at the till, and allergies, store preferences and dietary needs are set once and remembered.</p>
+          <p class="skim-gist">Everything else is about keeping the number honest and the setup light. Per meal and per week totals update with every change, so there’s no surprise at the till, and allergies, store preferences and dietary needs are set once and remembered.</p>
+          <p class="skim-hide">Everything else is about keeping the number honest and the setup light. Per meal and per week totals update with every change, so there&rsquo;s no surprise at the till, and allergies, store preferences and dietary needs are set once and remembered.</p>
         </div>
       </section>
 
@@ -1563,7 +1599,7 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">Sixty seconds was the ceiling, so anything that did not fit inside it died.</h2>
           <p class="lede">If a step felt like homework, I cut it. Including several I liked.</p>
-<p>Sixty seconds wasn&rsquo;t just a speed goal. If it takes longer than a minute, families go back to doing it in their heads for free, and Skrimp is pointless. So every feature had to survive the same question: does a household get a usable week out of this faster than they could assemble one themselves? Most of what I wanted to build did not.</p>
+<p class="skim-hide">Sixty seconds wasn&rsquo;t just a speed goal. If it takes longer than a minute, families go back to doing it in their heads for free, and Skrimp is pointless. So every feature had to survive the same question: does a household get a usable week out of this faster than they could assemble one themselves? Most of what I wanted to build did not.</p>
 
           <div class="steps reveal">
             <div class="step-card">
@@ -1588,7 +1624,8 @@ figure{
             </div>
           </div>
 
-          <p>What was left isn&rsquo;t a meal kit or a subscription box. It&rsquo;s the part that connects everything: the deals shape the plan, the plan makes the list, the list fills your online cart, and all of it happens in under a minute.</p>
+          <p class="skim-gist">What was left isn’t a meal kit or a subscription box. It’s the part that connects everything: the deals shape the plan, the plan makes the list, the list fills your online cart, and all of it happens in under a minute.</p>
+          <p class="skim-hide">What was left isn&rsquo;t a meal kit or a subscription box. It&rsquo;s the part that connects everything: the deals shape the plan, the plan makes the list, the list fills your online cart, and all of it happens in under a minute.</p>
 
           <div class="vid-crop"><video data-src="media/skrimp-smartload-demo.mp4" autoplay muted loop playsinline preload="none"></video></div>
 
@@ -1620,9 +1657,10 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">Most of my engineers were first and second years, so the system had to be easy to understand.</h2>
           <p class="lede">Teaching people why it worked mattered more than teaching them how.</p>
-          <p>Six engineers came through Skrimp in rotations, most of them first or second years. The risk was never that they would write bad code. It was that someone who does not know why a pipeline is shaped a certain way will quietly reshape it, and that breaks silently and compounds for weeks before it surfaces as something catastrophic.</p>
+          <p class="skim-sum">Six engineers rotated through, mostly first and second years, so the system had to be easy to reason about under pressure.</p>
+          <p class="skim-hide">Six engineers came through Skrimp in rotations, most of them first or second years. The risk was never that they would write bad code. It was that someone who does not know why a pipeline is shaped a certain way will quietly reshape it, and that breaks silently and compounds for weeks before it surfaces as something catastrophic.</p>
 
-          <p>No amount of clever design fixes that, so my job became making the system easy enough to understand that someone new could reason about it under pressure, and explaining why things worked before how. They already knew how to code. What they had to learn was to ask what does this break before writing the first line, and the intern who understands the constraint makes a better call than the one who only knows the command.</p>
+          <p class="skim-hide">No amount of clever design fixes that, so my job became making the system easy enough to understand that someone new could reason about it under pressure, and explaining why things worked before how. They already knew how to code. What they had to learn was to ask what does this break before writing the first line, and the intern who understands the constraint makes a better call than the one who only knows the command.</p>
 
         </div>
       </section>
@@ -2277,6 +2315,27 @@ figure{
       if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.intersectionRatio > .6 ? v.play().catch(() => {}) : v.pause()),
         { root: t, threshold: [0, .6, 1] }).observe(v.closest('.evo-slide'));
+    })();
+  </script>
+  <script>
+    /* skim mode. the portfolio rail sets it; opened on its own, the
+       sections widget has the same switch. the full read is the default */
+    (function(){
+      const KEY='case-skim', root=document.documentElement;
+      const get=()=>{try{return localStorage.getItem(KEY)==='1';}catch(e){return false;}};
+      const set=on=>{root.classList.toggle('skim',!!on);paint();};
+      let paint=()=>{};
+      addEventListener('message',e=>{const d=e.data;if(d&&d.type==='caseSkim')set(d.on);});
+      const panel=document.getElementById('ql-panel');
+      if(window.parent===window&&panel){
+        const sw=document.createElement('div');
+        sw.className='ql-mode';sw.setAttribute('role','group');sw.setAttribute('aria-label','How to read this study');
+        sw.innerHTML='<button type="button" data-skim="0" title="The way it\u2019s meant to be read">Full read</button><button type="button" data-skim="1">Skim</button>';
+        sw.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{try{localStorage.setItem(KEY,b.dataset.skim);}catch(e){}set(b.dataset.skim==='1');}));
+        paint=()=>sw.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.skim==='1')===root.classList.contains('skim'))));
+        panel.prepend(sw);
+      }
+      set(get());
     })();
   </script>
 </body>

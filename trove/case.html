@@ -829,6 +829,27 @@
       backdrop-filter:none; -webkit-backdrop-filter:none;
     }
     .press-wrapper::before,.press-wrapper::after{display:none}
+      /* skim. the full read is the intended view; skim keeps headlines, ledes,
+       a short summary per section, stats, callouts, every image and clip, and
+       the takeaways, and folds the body paragraphs away */
+    .skim-sum{display:none}
+    html.skim .skim-sum{display:block;margin:.4rem 0 1.6rem;font-weight:500}
+    /* side-by-side layouts lose their text in skim, so the picture stops
+       hugging one side and sits centred on its own instead of leaving a gap */
+    html.skim .wrap:not(:has(.wrap-text > :not(.skim-hide))){display:block;max-width:min(620px,100%);margin-inline:auto}
+    html.skim .wrap:not(:has(.wrap-text > :not(.skim-hide))) > .wrap-text{display:none}
+    html.skim .chart-aside:not(:has(> p:not(.skim-hide))) .chart-figure{float:none!important;width:min(520px,100%)!important;margin:0 auto 1rem!important}
+    html.skim .challenge-col:not(:has(> :not(.skim-hide))){display:none}
+    /* long paragraphs fold away in skim; short connecting lines stay, and a
+       folded paragraph that explains a clip or a decision leaves its first
+       line or two behind as .skim-gist, in the original words */
+    html.skim .skim-hide{display:none}
+    .skim-gist{display:none}
+    html.skim .skim-gist{display:block}
+    .ql-mode{display:flex;gap:2px;padding:2px;margin-bottom:.3rem;border-radius:999px;border:1px solid var(--glass-border)}
+    .ql-mode button{flex:1;border:0;background:none;border-radius:999px;padding:.35rem .5rem;cursor:pointer;font:700 .62rem/1 'Satoshi',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);opacity:.6}
+    .ql-mode button[aria-pressed="true"]{opacity:1;background:var(--glass-highlight-1)}
+
   </style>
 
 <style>
@@ -1200,9 +1221,11 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">Trove figures out your personality from what you do, so it never asks you a single question.</h2>
           <p class="lede">A quiz can only hand back what you already told it about yourself.</p>
-          <p>Most apps that try to understand you start by making you describe yourself, like a LinkedIn bio or a Hinge profile. Trove doesn&rsquo;t. Every day there&rsquo;s a short interactive story (we call them tangles) where you make choices that don&rsquo;t have an obvious right answer. Trove looks at what you chose, writes you a short personality read, and builds up a profile of you over time, a bit like how a friend gets to know you.</p>
-          <p>That&rsquo;s easy to describe and hard to build. I started in March and went full time in April as the first hire on this version of Trove. The idea had been tested once, as a Valentine&rsquo;s Day release in February, and what existed was small: eight pages, sixteen components, and a profile that was still only a mockup. There were no writers and no animators, so over eighteen weeks I designed and built the systems that do those jobs: the pipeline that writes and checks the stories, the story cards, the mascot and the profile.</p>
-          <p>This is what I inherited. One tangle, a start button, and an invite once you finished. The profile wasn&rsquo;t something you could click into, and there was no way to tell if you&rsquo;d already played something.</p>
+          <p class="skim-hide">Most apps that try to understand you start by making you describe yourself, like a LinkedIn bio or a Hinge profile. Trove doesn&rsquo;t. Every day there&rsquo;s a short interactive story (we call them tangles) where you make choices that don&rsquo;t have an obvious right answer. Trove looks at what you chose, writes you a short personality read, and builds up a profile of you over time, a bit like how a friend gets to know you.</p>
+          <p class="skim-gist">That’s easy to describe and hard to build. I started in March and went full time in April as the first hire on this version of Trove.</p>
+          <p class="skim-hide">That&rsquo;s easy to describe and hard to build. I started in March and went full time in April as the first hire on this version of Trove. The idea had been tested once, as a Valentine&rsquo;s Day release in February, and what existed was small: eight pages, sixteen components, and a profile that was still only a mockup. There were no writers and no animators, so over eighteen weeks I designed and built the systems that do those jobs: the pipeline that writes and checks the stories, the story cards, the mascot and the profile.</p>
+          <p class="skim-gist">This is what I inherited. One tangle, a start button, and an invite once you finished.</p>
+          <p class="skim-hide">This is what I inherited. One tangle, a start button, and an invite once you finished. The profile wasn&rsquo;t something you could click into, and there was no way to tell if you&rsquo;d already played something.</p>
           <div class="showcase reveal">
             <div class="showcase-stage before-stage">
               <div class="desk-screen"><img src="img/before-desktop.webp" alt="Trove in April on desktop: a single tangle card called Which Button on a pastel gradient, with a start button and a sign in button, and nothing else" loading="lazy"></div>
@@ -1234,10 +1257,13 @@ figure{
           <div class="skip-link reveal">
             <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
           </div>
-          <p>A new story every day means a new real dilemma every day. The stories are written by language models, and another model checks them. The checker I inherited scored ten qualities and then threw nearly all of that away to give one answer: publish, yes or no. The problem is that a story can be <em>not broken</em> and still have no real dilemma in it, and if there&rsquo;s no real choice to make, your choice says nothing about you. With only pass or fail, nothing pushed the stories to get <b>better</b>, and Trove would slowly turn back into a quiz with nicer typography.</p>
-          <p>So I built a quality score out of the ten numbers we were already throwing away. It cares most about a story&rsquo;s weakest moment, and about whether two different people playing it actually end up somewhere different.</p>
+          <p class="skim-gist">The checker I inherited scored ten qualities and then threw nearly all of that away to give one answer: publish, yes or no. The problem is that a story can be not broken and still have no real dilemma in it, and if there’s no real choice to make, your choice says nothing about you.</p>
+          <p class="skim-hide">A new story every day means a new real dilemma every day. The stories are written by language models, and another model checks them. The checker I inherited scored ten qualities and then threw nearly all of that away to give one answer: publish, yes or no. The problem is that a story can be <em>not broken</em> and still have no real dilemma in it, and if there&rsquo;s no real choice to make, your choice says nothing about you. With only pass or fail, nothing pushed the stories to get <b>better</b>, and Trove would slowly turn back into a quiz with nicer typography.</p>
+          <p class="skim-gist">So I built a quality score out of the ten numbers we were already throwing away. It cares most about a story’s weakest moment, and about whether two different people playing it actually end up somewhere different.</p>
+          <p class="skim-hide">So I built a quality score out of the ten numbers we were already throwing away. It cares most about a story&rsquo;s weakest moment, and about whether two different people playing it actually end up somewhere different.</p>
           <div class="highlight-box warm"><strong>The score is honest about what it is</strong>How much each quality counts is my judgement call, not something calculated. We tested whether players&rsquo; star ratings could tell us which stories were well made, and with the number of players we&rsquo;ll realistically have, they can&rsquo;t. So nothing is fitted to data, and the score card says that right on it.</div>
-          <p>The pipeline that makes a story is the most complicated thing I worked on. Someone gives it a one line idea and a category. Before a person reads a word of the result, it has been played start to finish by a cast of made-up players inside the real app, every playthrough has been reviewed, and it has been fixed automatically a few times if it needed it. Most stories come out playable on the first try.</p>
+          <p class="skim-gist">The pipeline that makes a story is the most complicated thing I worked on. Before a person reads a word of the result, it has been played start to finish by a cast of made-up players inside the real app, every playthrough has been reviewed, and it has been fixed automatically a few times if it needed it. Most stories come out playable on the first try.</p>
+          <p class="skim-hide">The pipeline that makes a story is the most complicated thing I worked on. Someone gives it a one line idea and a category. Before a person reads a word of the result, it has been played start to finish by a cast of made-up players inside the real app, every playthrough has been reviewed, and it has been fixed automatically a few times if it needed it. Most stories come out playable on the first try.</p>
           <div class="steps reveal">
             <div class="step-card">
               <span class="n">01</span>
@@ -1266,14 +1292,16 @@ figure{
           </div>
           <p class="cap">Steps two and three repeat a limited number of times: a fixed draft gets played again before it can move on. Once a story is live, a player&rsquo;s choices become their read, the read nudges their trait scores, and those build into their profile.</p>
           <div class="highlight-box"><strong>Passing isn&rsquo;t the same as approved</strong>The pipeline&rsquo;s report is there to make a person&rsquo;s sign-off quick, not to replace it.</div>
-          <p>Checking before building also saved us a feature. &ldquo;Stop the stories repeating themselves&rdquo; was on the roadmap and we all assumed it was a real problem, so I measured it first: <b>139 tangles</b>, <b>950 pairs</b> of text real players had been shown, and <b>one actual duplicate</b>. We didn&rsquo;t build it.</p>
+          <p class="skim-gist">Checking before building also saved us a feature. “Stop the stories repeating themselves” was on the roadmap and we all assumed it was a real problem, so I measured it first: 139 tangles, 950 pairs of text real players had been shown, and one actual duplicate. We didn’t build it.</p>
+          <p class="skim-hide">Checking before building also saved us a feature. &ldquo;Stop the stories repeating themselves&rdquo; was on the roadmap and we all assumed it was a real problem, so I measured it first: <b>139 tangles</b>, <b>950 pairs</b> of text real players had been shown, and <b>one actual duplicate</b>. We didn&rsquo;t build it.</p>
         </div>
       </section>
       <section id="living">
         <div class="section-content reveal">
           <h2 class="section-heading">People change over time, so Trove only works if they keep coming back.</h2>
           <p class="lede">One story tells you about one day. A profile needs weeks of them.</p>
-          <p>Getting people to come back was the hardest part. Each week comes as a pack of seven cards, one story a day, and you rip the pack open to start. The explore page, where the daily stories live, adapts to you as you play: it shows you stories based on your patterns, and it remembers the one you left halfway through.</p>
+          <p class="skim-gist">Getting people to come back was the hardest part. Each week comes as a pack of seven cards, one story a day, and you rip the pack open to start.</p>
+          <p class="skim-hide">Getting people to come back was the hardest part. Each week comes as a pack of seven cards, one story a day, and you rip the pack open to start. The explore page, where the daily stories live, adapts to you as you play: it shows you stories based on your patterns, and it remembers the one you left halfway through.</p>
           <div class="showcase reveal">
           <div class="showcase-stage">
           <div class="phone">
@@ -1289,8 +1317,9 @@ figure{
             <p class="cap">The pack rip and the home screen. Both exist so that opening Trove on day nine feels different from opening it on day one.</p>
           </div>
           </div>
-          <p>Every story also needs its own card, and in April each one was put together by hand, which doesn&rsquo;t work when there&rsquo;s a new story every day. So I made the cards build themselves: the system reads what the story is about and picks the art, like which sky suits a tense late night scene, or which mascot fits a story about being the outsider.</p>
-          <p>If you ask a language model where to put things in pixels, about half the time it puts them on top of something already on the card, and nothing warns you. You just get an ugly card.</p>
+          <p class="skim-gist">Every story also needs its own card, and in April each one was put together by hand, which doesn’t work when there’s a new story every day.</p>
+          <p class="skim-hide">Every story also needs its own card, and in April each one was put together by hand, which doesn&rsquo;t work when there&rsquo;s a new story every day. So I made the cards build themselves: the system reads what the story is about and picks the art, like which sky suits a tense late night scene, or which mascot fits a story about being the outsider.</p>
+          <p class="skim-hide">If you ask a language model where to put things in pixels, about half the time it puts them on top of something already on the card, and nothing warns you. You just get an ugly card.</p>
           <div class="highlight-box"><strong>The model chooses, the code places</strong>The model only picks what goes on the card (this sky, this mascot), and regular code decides exactly where it goes. So the preview in the admin dashboard is exactly what players see.</div>
           <p>An unplayed card shows blurred slots, one sticker for each topic its results will touch on. Play it and they fill in with the ones you earned.</p>
           <div class="showcase reveal">
@@ -1309,8 +1338,8 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">The mascot wears what you unlock, so he&rsquo;s a record of what you&rsquo;ve played.</h2>
           <p class="lede">He isn&rsquo;t just happy to see you. His face shows how you&rsquo;ve been looking after him.</p>
-          <p>Trove tot greets you, reacts to a read, sleeps when you have been away and wears what you unlock. Fourteen poses times twenty-eight accessories is <b>392 drawings</b> nobody was going to make, so he is composited at runtime from one pose sprite with accessory art on top.</p>
-          <p>Every accessory has one right spot on every pose, and at first I tried to work those spots out with code. I tried measuring his yarn ball body, but it isn&rsquo;t the same shape from pose to pose. Two attempts later I had written a foot detector that confidently found his mouth. None of it failed loudly, because a hat that&rsquo;s 2% off his head doesn&rsquo;t cause an error. It just looks a bit cursed on that one pose.</p>
+          <p class="skim-hide">Trove tot greets you, reacts to a read, sleeps when you have been away and wears what you unlock. Fourteen poses times twenty-eight accessories is <b>392 drawings</b> nobody was going to make, so he is composited at runtime from one pose sprite with accessory art on top.</p>
+          <p class="skim-hide">Every accessory has one right spot on every pose, and at first I tried to work those spots out with code. I tried measuring his yarn ball body, but it isn&rsquo;t the same shape from pose to pose. Two attempts later I had written a foot detector that confidently found his mouth. None of it failed loudly, because a hat that&rsquo;s 2% off his head doesn&rsquo;t cause an error. It just looks a bit cursed on that one pose.</p>
           <div class="highlight-box warm"><strong>So I stopped calculating and built a placement tool</strong>One page with the real sprite underneath and the real accessory on top. You drag, scroll and nudge it in tenths of a percent. I placed every spot by hand in an afternoon and deleted the three automatic systems it replaced.</div>
           <div class="tot-matrix-wrap reveal">
           <div class="tot-viewport">
@@ -1321,8 +1350,9 @@ figure{
           <p class="tot-hint">Every cell is composited live by the real placeFit() from the codebase, running on the real anchors over the real art. &rarr;&nbsp; Scroll sideways for the other nine poses.</p>
           </div>
           <p class="cap">Four outfits across all fourteen poses. Fifty six combinations, none of them drawn.</p>
-          <p>A mascot who misses you is good for retention, and that&rsquo;s part of why he&rsquo;s there. But everything he wears, you unlocked by playing a story, and what you play is the only thing Trove knows about you. So looking at him tells you something about your month without the app having to spell it out.</p>
-          <p>He runs on one rule. <b>His pose follows the time of day, and his face follows how you&rsquo;ve been treating him.</b> His pose changes through the day so there&rsquo;s a reason to check in again, but his face only changes when your care does, so he can never look like he&rsquo;s having a lovely afternoon when you&rsquo;ve ignored him for a week.</p>
+          <p class="skim-hide">A mascot who misses you is good for retention, and that&rsquo;s part of why he&rsquo;s there. But everything he wears, you unlocked by playing a story, and what you play is the only thing Trove knows about you. So looking at him tells you something about your month without the app having to spell it out.</p>
+          <p class="skim-gist">He runs on one rule. His pose follows the time of day, and his face follows how you’ve been treating him.</p>
+          <p class="skim-hide">He runs on one rule. <b>His pose follows the time of day, and his face follows how you&rsquo;ve been treating him.</b> His pose changes through the day so there&rsquo;s a reason to check in again, but his face only changes when your care does, so he can never look like he&rsquo;s having a lovely afternoon when you&rsquo;ve ignored him for a week.</p>
           <div class="tot-park reveal" id="totPark" aria-label="Four Trove tots wandering a park, each at a different level of care"></div>
           <p class="cap">Four of him out in the park, one for each level of care, in the outfits from the table above. Watch their faces. The one who&rsquo;s been looked after cycles through four kinds of happy. The one who&rsquo;s been ignored for two weeks only has two faces left, both of them bad. Neglect doesn&rsquo;t just make him sad, it takes away his range, and nobody has to be told that to feel it.</p>
         </div>
@@ -1331,7 +1361,8 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">The patterns worth knowing about yourself are the ones you cannot see from the inside.</h2>
           <p class="lede">The catch is that anything specific enough to be interesting is specific enough to be wrong.</p>
-          <p>Every story you play also moves your trait scores, and over time those add up to your profile. I didn&rsquo;t want the profile to look like a dashboard, because a dashboard says <em>here is your data</em>, and your data is only ever what you put in. This needed to say <em>here is you</em>, which is a much bolder thing to say and has to be earned. So I designed it as a 3D diorama: your player pass, the journal your reads live in and the postcards you&rsquo;ve sent all sit on one floor, with one piece in focus at a time while the rest wait around it.</p>
+          <p class="skim-gist">Every story you play also moves your trait scores, and over time those add up to your profile. I didn’t want the profile to look like a dashboard, because a dashboard says here is your data, and your data is only ever what you put in.</p>
+          <p class="skim-hide">Every story you play also moves your trait scores, and over time those add up to your profile. I didn&rsquo;t want the profile to look like a dashboard, because a dashboard says <em>here is your data</em>, and your data is only ever what you put in. This needed to say <em>here is you</em>, which is a much bolder thing to say and has to be earned. So I designed it as a 3D diorama: your player pass, the journal your reads live in and the postcards you&rsquo;ve sent all sit on one floor, with one piece in focus at a time while the rest wait around it.</p>
           <div class="showcase reveal">
           <div class="showcase-stage solo">
           <div class="phone">
@@ -1347,7 +1378,8 @@ figure{
             <video src="vid/profile-diorama.mp4" poster="vid/profile-diorama-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Scrolling through the Trove profile: the journal, the postcards and the pass each fly to the centre and park again"></video>
           </figure>
           <p class="cap">The profile diorama: scroll and each piece flies to the centre, then parks again. The one part of this page that can&rsquo;t be shown as a still.</p>
-          <p>The part I&rsquo;m proudest of: right after it tells you who you are, it asks whether it got you right. You pick a face, write a sentence, and Trove compares what you said with the choices you actually made.</p>
+          <p class="skim-gist">The part I’m proudest of: right after it tells you who you are, it asks whether it got you right. You pick a face, write a sentence, and Trove compares what you said with the choices you actually made.</p>
+          <p class="skim-hide">The part I&rsquo;m proudest of: right after it tells you who you are, it asks whether it got you right. You pick a face, write a sentence, and Trove compares what you said with the choices you actually made.</p>
           <div class="showcase reveal">
           <div class="showcase-stage solo">
           <div class="phone">
@@ -1364,13 +1396,14 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">Then real people used it, and things broke quietly.</h2>
           <p class="lede">Nothing crashed, which was the problem.</p>
+          <p class="skim-sum">Three bugs cost real players and none threw an error: missing result cards, one unindexed query taking down three surfaces, and share images that grew to eight times their size.</p>
           <p>Three bugs cost us real players that summer and none of them threw an error, because in each one the system reported success while it was failing.</p>
           <div class="outcome-strip reveal" style="margin:1.4rem 0">
           <div class="outcome-item"><span class="outcome-num">10.2%</span><span class="outcome-label">of finished one-page games ended with no result card at all</span></div>
           <div class="outcome-item"><span class="outcome-num">3</span><span class="outcome-label">surfaces taken down by one unindexed query on 11 June</span></div>
           <div class="outcome-item"><span class="outcome-num">20.3 MB</span><span class="outcome-label">the ninth share-card capture in a session, up from 2.4 on the first</span></div>
           </div>
-          <p>In the first, a player&rsquo;s result came back with the right content in the wrong format. The check that was meant to catch bad results didn&rsquo;t recognise it, so everything after it logged a success while the player got no result card. In the second, one database query without an index took three parts of the app down on 11 June, and to players it just looked like slow wifi. In the third, the image you get when you share your card got bigger every time you pressed share, until it was eight times its original size, while still technically working.</p>
+          <p class="skim-hide">In the first, a player&rsquo;s result came back with the right content in the wrong format. The check that was meant to catch bad results didn&rsquo;t recognise it, so everything after it logged a success while the player got no result card. In the second, one database query without an index took three parts of the app down on 11 June, and to players it just looked like slow wifi. In the third, the image you get when you share your card got bigger every time you pressed share, until it was eight times its original size, while still technically working.</p>
           <div class="highlight-box"><strong>Why it mattered here</strong>A product whose whole promise is being honest with you about yourself was quietly telling us things that weren&rsquo;t true.</div>
         </div>
       </section>
@@ -1378,7 +1411,8 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">Ten thousand people let a piece of software tell them something about themselves.</h2>
           <p class="lede">And then they showed their friends.</p>
-          <p>Sharing is the part I didn&rsquo;t see coming, and I should have. The things about you that you can&rsquo;t see yourself are usually obvious to the people around you. Trove gives everyone words for them, and lets two people play the same story and compare what they did.</p>
+          <p class="skim-gist">Sharing is the part I didn’t see coming, and I should have. The things about you that you can’t see yourself are usually obvious to the people around you.</p>
+          <p class="skim-hide">Sharing is the part I didn&rsquo;t see coming, and I should have. The things about you that you can&rsquo;t see yourself are usually obvious to the people around you. Trove gives everyone words for them, and lets two people play the same story and compare what they did.</p>
           <div class="showcase reveal">
           <div class="showcase-stage solo">
           <div class="phone">
@@ -1395,7 +1429,8 @@ figure{
           <div class="outcome-item"><span class="outcome-num">183</span><span class="outcome-label">tangles live on the platform</span></div>
           <div class="outcome-item"><span class="outcome-num">1,331</span><span class="outcome-label">of my commits in 18 weeks, more than any other contributor on the repo</span></div>
           </div>
-          <p>By August the product had seven main parts. The iOS app wraps the web app, and a teammate built it in two weeks. I take that as a compliment: by July the web app was solid enough that going native meant a wrapper, not a rewrite.</p>
+          <p class="skim-gist">By August the product had seven main parts. The iOS app wraps the web app, and a teammate built it in two weeks.</p>
+          <p class="skim-hide">By August the product had seven main parts. The iOS app wraps the web app, and a teammate built it in two weeks. I take that as a compliment: by July the web app was solid enough that going native meant a wrapper, not a rewrite.</p>
           <p>At an event we hosted, someone recognised themselves in most of their read and argued with the part that did not fit, for about five minutes, to my face.</p>
           <div class="showcase reveal">
           <div class="showcase-stage solo">
@@ -2040,5 +2075,26 @@ figure{
     }));
   </script>
   <script src="/js/lightbox.js" defer></script>
+  <script>
+    /* skim mode. the portfolio rail sets it; opened on its own, the
+       sections widget has the same switch. the full read is the default */
+    (function(){
+      const KEY='case-skim', root=document.documentElement;
+      const get=()=>{try{return localStorage.getItem(KEY)==='1';}catch(e){return false;}};
+      const set=on=>{root.classList.toggle('skim',!!on);paint();};
+      let paint=()=>{};
+      addEventListener('message',e=>{const d=e.data;if(d&&d.type==='caseSkim')set(d.on);});
+      const panel=document.getElementById('ql-panel');
+      if(window.parent===window&&panel){
+        const sw=document.createElement('div');
+        sw.className='ql-mode';sw.setAttribute('role','group');sw.setAttribute('aria-label','How to read this study');
+        sw.innerHTML='<button type="button" data-skim="0" title="The way it\u2019s meant to be read">Full read</button><button type="button" data-skim="1">Skim</button>';
+        sw.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{try{localStorage.setItem(KEY,b.dataset.skim);}catch(e){}set(b.dataset.skim==='1');}));
+        paint=()=>sw.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.skim==='1')===root.classList.contains('skim'))));
+        panel.prepend(sw);
+      }
+      set(get());
+    })();
+  </script>
 </body>
 </html>

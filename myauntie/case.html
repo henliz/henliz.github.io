@@ -808,6 +808,27 @@
     }
     @media(max-width:900px){ .meta-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
     @media(max-width:560px){ .meta-grid{grid-template-columns:1fr} }
+      /* skim. the full read is the intended view; skim keeps headlines, ledes,
+       a short summary per section, stats, callouts, every image and clip, and
+       the takeaways, and folds the body paragraphs away */
+    .skim-sum{display:none}
+    html.skim .skim-sum{display:block;margin:.4rem 0 1.6rem;font-weight:500}
+    /* side-by-side layouts lose their text in skim, so the picture stops
+       hugging one side and sits centred on its own instead of leaving a gap */
+    html.skim .wrap:not(:has(.wrap-text > :not(.skim-hide))){display:block;max-width:min(620px,100%);margin-inline:auto}
+    html.skim .wrap:not(:has(.wrap-text > :not(.skim-hide))) > .wrap-text{display:none}
+    html.skim .chart-aside:not(:has(> p:not(.skim-hide))) .chart-figure{float:none!important;width:min(520px,100%)!important;margin:0 auto 1rem!important}
+    html.skim .challenge-col:not(:has(> :not(.skim-hide))){display:none}
+    /* long paragraphs fold away in skim; short connecting lines stay, and a
+       folded paragraph that explains a clip or a decision leaves its first
+       line or two behind as .skim-gist, in the original words */
+    html.skim .skim-hide{display:none}
+    .skim-gist{display:none}
+    html.skim .skim-gist{display:block}
+    .ql-mode{display:flex;gap:2px;padding:2px;margin-bottom:.3rem;border-radius:999px;border:1px solid var(--glass-border)}
+    .ql-mode button{flex:1;border:0;background:none;border-radius:999px;padding:.35rem .5rem;cursor:pointer;font:700 .62rem/1 'Satoshi',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);opacity:.6}
+    .ql-mode button[aria-pressed="true"]{opacity:1;background:var(--glass-highlight-1)}
+
   </style>
 
 <style>
@@ -1153,12 +1174,14 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">It is three in the morning and the phone is at four percent.</h2>
           <p class="lede">Every product built for new parents assumes a spare hand and a spare mind. At 3 a.m. there is neither.</p>
-          <p>Postpartum depression and anxiety are common, and a lot of it is never caught, because the people living inside them are too tired, too ashamed, or too busy being told they should feel lucky. The window is also longer than anyone plans for.</p>
+          <p class="skim-gist">Postpartum depression and anxiety are common, and a lot of it is never caught, because the people living inside them are too tired, too ashamed, or too busy being told they should feel lucky. The window is also longer than anyone plans for.</p>
+          <p class="skim-hide">Postpartum depression and anxiety are common, and a lot of it is never caught, because the people living inside them are too tired, too ashamed, or too busy being told they should feel lucky. The window is also longer than anyone plans for.</p>
           <figure class="img-wide reveal">
             <img src="auntiegraph.png" alt="Problem slide: 15% of mothers experience postpartum depression and 85% never get treatment, with a chart of prevalence against treatment access from 2020 to 2024" loading="lazy">
             <figcaption>Prevalence goes up, treatment access goes down. The two lines have been heading in opposite directions for five years.</figcaption>
           </figure>
-          <p>So the need was never the question. The delivery was. Every serious attempt at this problem is an app, and an app asks a parent to download something, invent a password, answer twenty questions about her mood, and then come back daily to log how she is doing. That is homework. Handing homework to somebody running on four broken hours of sleep is not support. It is one more thing to fail at.</p>
+          <p class="skim-gist">So the need was never the question. The delivery was.</p>
+          <p class="skim-hide">So the need was never the question. The delivery was. Every serious attempt at this problem is an app, and an app asks a parent to download something, invent a password, answer twenty questions about her mood, and then come back daily to log how she is doing. That is homework. Handing homework to somebody running on four broken hours of sleep is not support. It is one more thing to fail at.</p>
           <figure class="img-wide reveal">
             <img src="auntieproblem.webp" alt="Problem slide: how might we capture the comfort of calling your auntie, kind, awake and practical, while eliminating the risk of dated or unsafe advice" loading="lazy">
             <figcaption>The question we started from, and the only framing that survived the interviews.</figcaption>
@@ -1172,7 +1195,8 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">We asked five mothers and then shut up.</h2>
           <p class="lede">No surveys. A survey tells you what somebody is willing to put in a form.</p>
-          <p>We ran Indi Young style listening sessions, which is a polite way of saying we asked one question and then got out of the way for an hour. Five mothers: a first timer with an infant, a mother of twins, one juggling a toddler and a newborn, one still expecting, and one whose children are grown and who had the clearest memory of the whole thing.</p>
+          <p class="skim-sum">Five listening sessions with mothers. Every one described tracking as a chore, so the symptom tracker was cut before we wrote a line of it.</p>
+          <p class="skim-hide">We ran Indi Young style listening sessions, which is a polite way of saying we asked one question and then got out of the way for an hour. Five mothers: a first timer with an infant, a mother of twins, one juggling a toddler and a newborn, one still expecting, and one whose children are grown and who had the clearest memory of the whole thing.</p>
           <p>The sentence that built the product arrived in the second session. She said she did not want to be onboarded. She wanted to be held together.</p>
           <div class="quote-grid reveal">
             <div class="quote-card reveal"><p class="quote-text">&ldquo;When I&rsquo;m exhausted, even opening an app feels like a test.&rdquo;</p><div class="quote-author">Mother of one toddler and one infant</div></div>
@@ -1201,7 +1225,8 @@ figure{
           <h2 class="section-heading">A judge picked up the phone and she answered.</h2>
           <p class="lede">Skip to the end of the weekend for a second, because everything after this makes more sense once you have heard her.</p>
           <p>The demo was not a video. It was a phone number on a slide, and we asked the room to dial it.</p>
-          <p>She answered in under five seconds. Comforted first, then two local lactation lines, then a follow up text so the guidance outlived the panic. Behind her on the screen we left the receipts running: the classifier's output, the row landing in the database, the query pulling it back out. Here is the thing itself, before any of the explaining.</p>
+          <p class="skim-gist">She answered in under five seconds. Comforted first, then two local lactation lines, then a follow up text so the guidance outlived the panic.</p>
+          <p class="skim-hide">She answered in under five seconds. Comforted first, then two local lactation lines, then a follow up text so the guidance outlived the panic. Behind her on the screen we left the receipts running: the classifier's output, the row landing in the database, the query pulling it back out. Here is the thing itself, before any of the explaining.</p>
           <div class="video-embed reveal">
             <iframe
               id="yt-auntie-call"
@@ -1224,7 +1249,8 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">The channel was the product.</h2>
           <p class="lede">Distribution is not a marketing problem you get to solve after the build. Here it was the build.</p>
-          <p>SMS shipped first because SMS is the most boring and most reliable thing in the world. It works at four percent battery, on a cracked screen, in a hospital corridor with one bar, and it never needs updating. Voice came second, once texting was steady, because a parent holding a baby has no hands.</p>
+          <p class="skim-gist">SMS shipped first because SMS is the most boring and most reliable thing in the world. It works at four percent battery, on a cracked screen, in a hospital corridor with one bar, and it never needs updating.</p>
+          <p class="skim-hide">SMS shipped first because SMS is the most boring and most reliable thing in the world. It works at four percent battery, on a cracked screen, in a hospital corridor with one bar, and it never needs updating. Voice came second, once texting was steady, because a parent holding a baby has no hands.</p>
           <figure class="img-wide reveal">
             <img src="auntiesolution.png" alt="Solution diagram: one Auntie persona across SMS and voice, with escalation routes" loading="lazy">
             <figcaption>One persona, two surfaces, no costume change between them.</figcaption>
@@ -1240,7 +1266,8 @@ figure{
             ></iframe>
           </div>
           <p class="cap">The text line. One caring line, one action, one thing to watch, with region aware resources attached.</p>
-          <p>Same Auntie on both. That sounds obvious and it is the part most multi channel products get wrong: they let the voice assistant become a brighter, more corporate person than the chat. We wrote one persona and sized her per channel. Texts get one breath. Calls get warmth, real pauses, and permission to trail off. After any call she texts you the key steps, because nobody at 3 a.m. remembers what a kind voice just said.</p>
+          <p class="skim-gist">Same Auntie on both. We wrote one persona and sized her per channel. Texts get one breath. Calls get warmth, real pauses, and permission to trail off. After any call she texts you the key steps, because nobody at 3 a.m. remembers what a kind voice just said.</p>
+          <p class="skim-hide">Same Auntie on both. That sounds obvious and it is the part most multi channel products get wrong: they let the voice assistant become a brighter, more corporate person than the chat. We wrote one persona and sized her per channel. Texts get one breath. Calls get warmth, real pauses, and permission to trail off. After any call she texts you the key steps, because nobody at 3 a.m. remembers what a kind voice just said.</p>
         </div>
       </section>
 
@@ -1248,7 +1275,8 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">One breath, one step, one thing to watch.</h2>
           <p class="lede">Our first drafts were paragraphs. A tired parent skims a paragraph and misses the only sentence that mattered.</p>
-          <p>So we made a rule, and then we made the rule testable. If a message took two breaths to read out loud, it got cut. Reading them aloud was not a flourish, it was the test, and it killed more copy than anything else we did.</p>
+          <p class="skim-gist">So we made a rule, and then we made the rule testable. If a message took two breaths to read out loud, it got cut.</p>
+          <p class="skim-hide">So we made a rule, and then we made the rule testable. If a message took two breaths to read out loud, it got cut. Reading them aloud was not a flourish, it was the test, and it killed more copy than anything else we did.</p>
           <div class="steps reveal">
             <div class="step-card">
               <span class="n">01</span>
@@ -1276,7 +1304,7 @@ figure{
             </div>
           </div>
           <div class="highlight-box"><strong>The escalation rewrite</strong>Our first red flag script said <em>seek medical attention</em>. Clinically correct, emotionally useless. It became: <em>Love, with a baby this young that can be serious. Let&rsquo;s head to the nearest emergency department now, I&rsquo;m sending the address. You&rsquo;re not alone.</em> The mothers we had interviewed confirmed it read as safe without reading as frightening.</div>
-          <p>The voice had the same problem in a different key. OpenAI&rsquo;s realtime text to speech is warm out of the box and also, in certain voices, deeply uncanny. We auditioned until Auntie sounded like somebody&rsquo;s actual aunt rather than a hold message.</p>
+          <p class="skim-hide">The voice had the same problem in a different key. OpenAI&rsquo;s realtime text to speech is warm out of the box and also, in certain voices, deeply uncanny. We auditioned until Auntie sounded like somebody&rsquo;s actual aunt rather than a hold message.</p>
         </div>
       </section>
 
@@ -1284,24 +1312,28 @@ figure{
         <div class="section-content reveal">
           <h2 class="section-heading">The one part that was never allowed to improvise.</h2>
           <p class="lede">A warm companion that guesses about a newborn&rsquo;s fever is not a warm companion. It is a liability with a nice voice.</p>
-          <p>So the model never answers. It classifies. Gemini reads the message and returns a structure: an intent, a topic, a region, a draft reply, and any red flags it spotted. The intent can only ever be one of three things.</p>
+          <p class="skim-gist">So the model never answers. It classifies. Gemini reads the message and returns a structure: an intent, a topic, a region, a draft reply, and any red flags it spotted. The intent can only ever be one of three things.</p>
+          <p class="skim-hide">So the model never answers. It classifies. Gemini reads the message and returns a structure: an intent, a topic, a region, a draft reply, and any red flags it spotted. The intent can only ever be one of three things.</p>
           <div class="chip-row"><span class="chip">Comfort</span><span class="chip">Resource</span><span class="chip">Escalate</span></div>
           <figure class="img-wide img-flow reveal">
             <img src="svg/flow.svg" alt="Flow: a text or a call arrives, is classified into intent, topic and region, routes to comfort, resource or escalate, and always ends in a follow up text" loading="lazy">
             <figcaption>Text in or call in, one classifier, three possible ends, and a follow up text whichever way it goes.</figcaption>
           </figure>
-          <p>From there it is deterministic code. Topic plus region goes to Snowflake and comes back with two or three vetted resources you can actually phone. The evidence is short pre written cards drawn from the WHO, the CDC, the American College of Obstetricians and Gynecologists and Postpartum Support International, fed in rather than recalled. Auntie never freestyles medical advice because she structurally cannot.</p>
+          <p class="skim-gist">From there it is deterministic code. Topic plus region goes to Snowflake and comes back with two or three vetted resources you can actually phone.</p>
+          <p class="skim-hide">From there it is deterministic code. Topic plus region goes to Snowflake and comes back with two or three vetted resources you can actually phone. The evidence is short pre written cards drawn from the WHO, the CDC, the American College of Obstetricians and Gynecologists and Postpartum Support International, fed in rather than recalled. Auntie never freestyles medical advice because she structurally cannot.</p>
           <div class="highlight-box"><strong>Contracts are what let four people ship like one mind</strong>The classifier service returns { intent, topic, region, reply_text, red_flags }. The phone and text service asks the resource database for the local lines and the profile store for the small bit of context. Nobody had to read anybody else&rsquo;s code, and nothing had to be rewritten at hour thirty.</div>
           <figure class="mini-images reveal">
             <img src="auntiestack.png" alt="Architecture: Twilio telephony, Gemini intent and safety, Snowflake resources, MongoDB Atlas session context, orchestrated in TypeScript" loading="lazy">
           </figure>
           <p class="cap">Four services, four owners, one written contract between each pair.</p>
-          <p>Memory is the other thing we kept deliberately small. Four fields: delivery type, feeding, weeks postpartum, region, tied to a hashed number and short lived. Enough that a mother who had a caesarean never has to say so twice. Not enough to feel watched.</p>
+          <p class="skim-gist">Memory is the other thing we kept deliberately small. Four fields: delivery type, feeding, weeks postpartum, region, tied to a hashed number and short lived.</p>
+          <p class="skim-hide">Memory is the other thing we kept deliberately small. Four fields: delivery type, feeding, weeks postpartum, region, tied to a hashed number and short lived. Enough that a mother who had a caesarean never has to say so twice. Not enough to feel watched.</p>
           <figure class="mini-images reveal">
             <img src="auntieinfo.webp" alt="Information architecture for Auntie's evidence cards and region aware resource lookup" loading="lazy">
           </figure>
           <p class="cap">Evidence as pre written cards, so the answer is retrieved and never invented.</p>
-          <p>What we cut to get there: WhatsApp, every dashboard, and semantic embeddings over the whole corpus. A short list of topic tags and a small lookup answered faster and were far easier to reason about at hour thirty with four underslept people.</p>
+          <p class="skim-gist">What we cut to get there: WhatsApp, every dashboard, and semantic embeddings over the whole corpus. A short list of topic tags and a small lookup answered faster and were far easier to reason about at hour thirty with four underslept people.</p>
+          <p class="skim-hide">What we cut to get there: WhatsApp, every dashboard, and semantic embeddings over the whole corpus. A short list of topic tags and a small lookup answered faster and were far easier to reason about at hour thirty with four underslept people.</p>
         </div>
       </section>
 
@@ -1709,5 +1741,26 @@ figure{
     })();
   </script>
   <script src="/js/lightbox.js" defer></script>
+  <script>
+    /* skim mode. the portfolio rail sets it; opened on its own, the
+       sections widget has the same switch. the full read is the default */
+    (function(){
+      const KEY='case-skim', root=document.documentElement;
+      const get=()=>{try{return localStorage.getItem(KEY)==='1';}catch(e){return false;}};
+      const set=on=>{root.classList.toggle('skim',!!on);paint();};
+      let paint=()=>{};
+      addEventListener('message',e=>{const d=e.data;if(d&&d.type==='caseSkim')set(d.on);});
+      const panel=document.getElementById('ql-panel');
+      if(window.parent===window&&panel){
+        const sw=document.createElement('div');
+        sw.className='ql-mode';sw.setAttribute('role','group');sw.setAttribute('aria-label','How to read this study');
+        sw.innerHTML='<button type="button" data-skim="0" title="The way it\u2019s meant to be read">Full read</button><button type="button" data-skim="1">Skim</button>';
+        sw.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{try{localStorage.setItem(KEY,b.dataset.skim);}catch(e){}set(b.dataset.skim==='1');}));
+        paint=()=>sw.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.skim==='1')===root.classList.contains('skim'))));
+        panel.prepend(sw);
+      }
+      set(get());
+    })();
+  </script>
 </body>
 </html>
