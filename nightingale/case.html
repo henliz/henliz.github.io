@@ -1272,9 +1272,6 @@ figure{
         </div>
       </div>
 
-      <div class="skip-link reveal">
-        <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
-      </div>
 
       <aside class="wip-note" aria-label="Project status">
         <span class="wip-tape" aria-hidden="true"></span>
@@ -1321,6 +1318,9 @@ figure{
               <p>The film walks through one call. It starts at the station, goes through my sketches and what&rsquo;s inside the case, shows where it clips onto a turnout coat, and ends on the Maryhill cardiac arrest drill turning into a draft ePCR. Watch for the moment it catches the cousin and the responder giving two different ages and flags it, instead of picking one. That&rsquo;s the whole idea in one field.</p>
             <p>None of it started with the device, though. It started with the people whose job this is.</p>
             </div>
+          </div>
+          <div class="skip-link reveal">
+            <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
           </div>
         </div>
       </section>
@@ -1433,7 +1433,7 @@ figure{
           </div>
           <p><strong>The first microphone failed in my bedroom.</strong> A lavalier through a sound card came back garbled at 30 cm in the quietest room I had. If it couldn&rsquo;t work there it couldn&rsquo;t work on a scene, so I swapped it for an INMP441, a digital mic that skips the sound card entirely. It hears in every direction, which suits a captain collecting the story from family across a room. The trade-off is that it hears everything, noise included.</p>
           <p><strong>Photos, never video.</strong> A Cambridge crew strongly preferred photos on a button press over anything recording continuously, because of privacy, storage and the legal side, and an ER nurse told us paramedics never pass photos on at all, it&rsquo;s all verbal. A photo gives the next person what they actually need: the pill bottle, the vehicle damage, how the scene looked before it changed. Video would capture far more of strangers and their homes than care needs, and Ontario&rsquo;s health privacy law says to collect only what&rsquo;s reasonably necessary. The camera has autofocus because the person wearing it is moving, and every press takes a quick burst and keeps only the sharpest frame.</p>
-          <p><strong>Two physical buttons, one job each.</strong> Gloves can&rsquo;t work a touchscreen, so there isn&rsquo;t one. &ldquo;If it&rsquo;s not easy to turn on, it&rsquo;s not going to get used,&rdquo; a volunteer firefighter told us, so one press always means one thing, with no holding for three seconds. And it never records or takes a photo on its own, because, as an emergency physician put it, &ldquo;you need to make sure that the people using it feel safe.&rdquo;</p>
+          <p><strong>Two physical buttons, one job each.</strong> Gloves can&rsquo;t work a touchscreen, so there isn&rsquo;t one, and one press always means one thing, with no holding for three seconds. And it never records or takes a photo on its own, because, as an emergency physician put it, &ldquo;you need to make sure that the people using it feel safe.&rdquo;</p>
           <div class="img-grid trio reveal">
             <figure class="img-tile"><img src="img/cardboard.webp" alt="The cardboard prototype: Pi, camera, breadboard and wired buttons taped into a cardboard box" loading="lazy"><figcaption>V1, cardboard and tape.</figcaption></figure>
             <figure class="img-tile"><img src="img/solder-bench.webp" alt="A soldering bench with an iron, wire strippers, tiny buttons and the cardboard prototype" loading="lazy"><figcaption>Off the breadboard. Four wires took forever.</figcaption></figure>
@@ -1532,12 +1532,12 @@ figure{
             <video src="img/v3-record.mp4" poster="img/v3-record-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Opening the record's other tabs in turn: the transcript with each speaker and time, the care timeline, the files with scene photos and their descriptions, and the ePCR"></video>
             <figcaption>Everything else about the call, a tab each: what was said, what was done and when, and the photos.</figcaption>
           </figure>
-          <p>The full ePCR is the one extra page, for the final pass before it goes to the doctors.</p>
+          <p>Then the full ePCR.</p>
           <figure class="img-wide reveal">
             <video src="img/v3-tabs.mp4" poster="img/v3-tabs-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Moving through the ePCR tabs: the scene and call times, the patient, and the care given"></video>
             <figcaption>The record, tab by tab: the scene, the patient, the care.</figcaption>
           </figure>
-          <p>Its handoff tab tells the whole call as a timeline and a narrative, for whoever reads it next.</p>
+          <p>Its handoff tab is for whoever reads it next.</p>
           <figure class="img-wide reveal">
             <video src="img/v3-handoff.mp4" poster="img/v3-handoff-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Opening the handoff tab: a timeline of the call from the 911 call to transfer of care, and a narrative of what was done. Selecting the narrative lights up the lines of speech it came from"></video>
             <figcaption>The handoff tab: the whole call as a timeline, to the second, and a narrative of what was done. Select either one and the speech behind it lights up.</figcaption>
@@ -1547,7 +1547,7 @@ figure{
             <video src="img/v3-paramedic.mp4" poster="img/v3-paramedic-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="The paramedic's home screen with the fire crew's record already waiting. Opening it shows a locked summary with scene safety up front. After Accept record, the same record opens in full, under the patient's name"></video>
             <figcaption>The paramedic&rsquo;s side. The record is just there, nobody on fire has to send it. Identity stays locked until they accept it, but scene hazards show straight away.</figcaption>
           </figure>
-          <p>Before the ER, they verify it, and anything nobody said is called out instead of guessed.</p>
+          <p>Then the paramedic verifies it before the ER.</p>
           <figure class="img-wide reveal">
             <video src="img/v3-verify.mp4" poster="img/v3-verify-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="The paramedic opens the record to verify it before the ER. Across the patient, history and transport tabs, the age conflict and the fields nobody said, like allergies and medications, are outlined in red"></video>
             <figcaption>Verifying before the ER. What nobody said, like allergies and medications, is outlined in red instead of guessed.</figcaption>
@@ -1603,11 +1603,11 @@ figure{
       <section class="takeaways" id="takeaways">
         <div class="section-content reveal">
           <h2 class="section-heading">What I&rsquo;m taking from it.</h2>
-          <p class="lede">Four things I&rsquo;d carry into anything that has to be trusted.</p>
+          <p class="lede">Four things for anything that has to be trusted.</p>
           <div class="steps reveal">
             <div class="step-card"><span class="n">01</span><h4>Read the need, not the solution</h4><p>Three people asked for an iPad, a form and a listening device. They were all asking for the same thing, and if I&rsquo;d built any one of them as described, I&rsquo;d have built the wrong tool.</p></div>
             <div class="step-card"><span class="n">02</span><h4>Remove a step or don&rsquo;t bother</h4><p>Fire&rsquo;s own history is clear about this. Anything that adds work on scene gets dropped, however good it is.</p></div>
-            <div class="step-card"><span class="n">03</span><h4>Trust is the design</h4><p>Review before sharing, flagged fields instead of guesses, photos instead of video, a closed loop instead of hope. Every one of those makes the tool claim less, and every one came from someone telling me what would make them refuse to use it.</p></div>
+            <div class="step-card"><span class="n">03</span><h4>Trust is the design</h4><p>Review before sharing, flagged fields instead of guesses, photos instead of video, a closed loop instead of hope. Every one of those is the tool being modest about what it knows, and every one came from someone telling me what would make them refuse to use it.</p></div>
             <div class="step-card"><span class="n">04</span><h4>Test the failure before you need it</h4><p>The offline-first path was a hypothetical until the Wi-Fi died. It held because I&rsquo;d built for the network failing, not for it working.</p></div>
           </div>
           <p>The story is never lost at the scene. It&rsquo;s lost on the way out, and everyone downstream pays for it.</p>

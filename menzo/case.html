@@ -1120,7 +1120,7 @@ figure{
         </div>
         <div class="meta-col">
           <h4>Role</h4>
-          <p>CTO and Technical Director. Two roles, one person.</p>
+          <p>CTO and Technical Director.</p>
         </div>
         <div class="meta-col">
           <h4>Timeline</h4>
@@ -1152,10 +1152,6 @@ figure{
         </div>
       </div>
 
-      <!-- SKIP -->
-      <div class="skip-link reveal">
-        <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
-      </div>
 
       <!-- CONFIDENTIALITY NOTICE -->
       <div class="confidentiality-notice reveal">
@@ -1176,6 +1172,9 @@ figure{
                     allowfullscreen loading="lazy"></iframe>
           </div>
           <p class="cap">The progress reel. The tutorial level, taking form.</p>
+          <div class="skip-link reveal">
+            <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+          </div>
 
           <p>Path to Menzoberranzan is a full custom campaign set deep in the Underdark, in Menzoberranzan, the underground drow city from the Forgotten Realms books that the games have never actually let you visit. Original narrative, original art, original audio, original cinematics, original engineering. It is not a mod in the sense of a texture swap or a balance patch. It is a production, with departments, pipelines, documentation, and the kind of technical debt that can silently crater a year of work.</p>
 
@@ -1399,7 +1398,7 @@ size 48221184
 
           <p><i>Hen&rsquo;s Brain: Technical Leadership Manual</i> exists because institutional knowledge living in one head is not an inconvenience at this scale, it is an existential risk. It defines the two domains, their failure modes, their escalation paths, and which decisions fall unambiguously into each. It is not theory. It is operational infrastructure, and it is written so the project survives illness, burnout, exams and time zones.</p>
 
-          <div class="highlight-box reveal">Technical debt is not a minor inconvenience in a project at this scale. It is fatal. Uncoordinated tooling, incorrect patching, inconsistent LFS tracking or unsound pipeline assumptions can invalidate months of work across entire departments.</div>
+          <div class="highlight-box reveal">Uncoordinated tooling, incorrect patching, inconsistent LFS tracking or unsound pipeline assumptions can invalidate months of work across entire departments.</div>
 
           <figure class="fig-scroll reveal"><svg class="org-chart" viewBox="0 0 1120 300" role="img" aria-label="Path to Menzoberranzan departments: writing, visual design, spatial design, programming, audio and music, community and moderation, each with a coordinator, team leads and a team">
 <rect x="20.0" y="10" width="150" height="40" rx="8" fill="#e9973f" fill-opacity=".9"/><text x="95.0" y="35" text-anchor="middle" class="oc-h">Writing</text>
@@ -1480,12 +1479,12 @@ size 48221184
             <div class="card reveal">
               <h4>01</h4>
               <h3>Name the domains or watch them collapse</h3>
-              <p>Splitting CTO and Technical Director into two clearly defined jobs stopped me failing at both at once. One is about the next six months, the other is about this afternoon.</p>
+              <p>Splitting CTO and Technical Director into two clearly defined jobs stopped me failing at both at once. Naming them is what let them run side by side.</p>
             </div>
             <div class="card reveal">
               <h4>02</h4>
               <h3>Write the undo before the do</h3>
-              <p>Archive, not delete. Keeping the old server instead of deleting it cost nothing on Friday and saved the migration on Sunday. Plan the recovery while you&rsquo;re calm, and assume you&rsquo;ll be wrong about something.</p>
+              <p>Archive, not delete. Plan the recovery while you&rsquo;re calm, and assume you&rsquo;ll be wrong about something.</p>
             </div>
             <div class="card reveal">
               <h4>03</h4>

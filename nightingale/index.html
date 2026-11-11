@@ -4104,7 +4104,7 @@ body::after{
 <p>A Pi Zero 2 W, because it’s a real computer small enough to clip on. It records audio in 15-second pieces, keeps the sharpest frame from a photo burst, fingerprints every file and retries uploads, all at once. Pieces, not one long stream, because it has to keep recording while it uploads and transcribes in real time. If the signal drops mid-call, we know exactly which pieces made it and which didn’t, and one cut-out can never corrupt the whole recording. It runs no AI, so it can stay small, and the transcription happens on the server.</p>
 <p>The first microphone failed in my bedroom. A lavalier through a sound card came back garbled at 30 cm in the quietest room I had. If it couldn’t work there it couldn’t work on a scene, so I swapped it for an INMP441, a digital mic that skips the sound card entirely. It hears in every direction, which suits a captain collecting the story from family across a room. The trade-off is that it hears everything, noise included.</p>
 <p>Photos, never video. A Cambridge crew strongly preferred photos on a button press over anything recording continuously, because of privacy, storage and the legal side, and an ER nurse told us paramedics never pass photos on at all, it’s all verbal. A photo gives the next person what they actually need: the pill bottle, the vehicle damage, how the scene looked before it changed. Video would capture far more of strangers and their homes than care needs, and Ontario’s health privacy law says to collect only what’s reasonably necessary. The camera has autofocus because the person wearing it is moving, and every press takes a quick burst and keeps only the sharpest frame.</p>
-<p>Two physical buttons, one job each. Gloves can’t work a touchscreen, so there isn’t one. “If it’s not easy to turn on, it’s not going to get used,” a volunteer firefighter told us, so one press always means one thing, with no holding for three seconds. And it never records or takes a photo on its own, because, as an emergency physician put it, “you need to make sure that the people using it feel safe.”</p>
+<p>Two physical buttons, one job each. Gloves can’t work a touchscreen, so there isn’t one, and one press always means one thing, with no holding for three seconds. And it never records or takes a photo on its own, because, as an emergency physician put it, “you need to make sure that the people using it feel safe.”</p>
 <p>Nothing is deleted until the server confirms a perfect copy. Scenes happen on highways and farms, where nobody hands over a Wi-Fi password.</p>
 <p>Breadboard jumper wires work loose, and a gear pocket isn’t a desk, so everything got soldered. The buttons are tiny and there were no helping hands, so pliers held it all still.</p>
 <p>The case took three versions before anything clipped on. We started with cardboard and tape so responders had something to hold in drills straight away, and so we could see where their hands went.</p>
@@ -4129,10 +4129,10 @@ body::after{
 <p>Anything the draft isn’t sure about gets flagged, and a flag always explains itself. Walking through the flows, the same three jobs kept coming up: see what’s missing, look into a conflict, and get back to a field that needs fixing. So every flag opens straight onto the speech it came from.</p>
 <p>Back on the home screen, the record says what still needs a person before it goes anywhere. Right now that banner is a wall of text, every flag note strung together. That’s the MVP showing, not the design: it’s next on the list to break into one line per field, ordered by what matters most.</p>
 <p>Every other part of the call is a pop-up away, so nobody loses their place mid-call.</p>
-<p>The full ePCR is the one extra page, for the final pass before it goes to the doctors.</p>
-<p>Its handoff tab tells the whole call as a timeline and a narrative, for whoever reads it next.</p>
+<p>Then the full ePCR.</p>
+<p>Its handoff tab is for whoever reads it next.</p>
 <p>On the paramedic’s side, the record is already waiting for whoever’s attending. Paramedics work in pairs, one driving and one attending, and they swap after every call to give their brains a break, so the record goes to the role, not a fixed person. It leads with what changed, the vitals and the scene hazards, short enough to scan on the way. That came from the survey: 7 of 25 paramedics said they’d ask the patient everything again themselves anyway, so a longer report wasn’t the answer. A head start on their own assessment was.</p>
-<p>Before the ER, they verify it, and anything nobody said is called out instead of guessed.</p>
+<p>Then the paramedic verifies it before the ER.</p>
 <h2>Privacy was the reason anyone would use it.</h2>
 <p>Responders and physicians raised privacy and control more than anything else, so Cindy and I made them the first thing the backend got right.</p>
 <p>Cindy and I worked out the security and privacy approach and built it together, with Cindy taking the lead on more of the implementation. Here’s what it does now:</p>
@@ -4155,13 +4155,13 @@ body::after{
 <li>The legal path for a fire record to reach paramedics under MFIPPA and PHIPA.</li>
 <li>The number nobody has: how much of fire’s account actually reaches the paramedic.</li>
 <h2>What I’m taking from it.</h2>
-<p>Four things I’d carry into anything that has to be trusted.</p>
+<p>Four things for anything that has to be trusted.</p>
 <h4>Read the need, not the solution</h4>
 <p>Three people asked for an iPad, a form and a listening device. They were all asking for the same thing, and if I’d built any one of them as described, I’d have built the wrong tool.</p>
 <h4>Remove a step or don’t bother</h4>
 <p>Fire’s own history is clear about this. Anything that adds work on scene gets dropped, however good it is.</p>
 <h4>Trust is the design</h4>
-<p>Review before sharing, flagged fields instead of guesses, photos instead of video, a closed loop instead of hope. Every one of those makes the tool claim less, and every one came from someone telling me what would make them refuse to use it.</p>
+<p>Review before sharing, flagged fields instead of guesses, photos instead of video, a closed loop instead of hope. Every one of those is the tool being modest about what it knows, and every one came from someone telling me what would make them refuse to use it.</p>
 <h4>Test the failure before you need it</h4>
 <p>The offline-first path was a hypothetical until the Wi-Fi died. It held because I’d built for the network failing, not for it working.</p>
 <p>The story is never lost at the scene. It’s lost on the way out, and everyone downstream pays for it.</p>
@@ -7701,12 +7701,12 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=a928e1e9',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=3e1a32d1',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=869bc2e1',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=7c0d13df', scene: 'myauntie' },
-  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=b2f26991',  scene: 'equinox'  },
-  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=d6805c4c', scene: 'handoff' },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=3c4d0e00',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=44e834a9',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=56e17cc7',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=850f3a0d', scene: 'myauntie' },
+  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=0e4c6bf1',  scene: 'equinox'  },
+  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=525192b6', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,

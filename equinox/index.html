@@ -4040,12 +4040,12 @@ body::after{
 <h2>A wizard’s tower locked in winter, eighteen days to bring spring back, and first place out of eighty eight.</h2>
 <p>Fourteen people, eighteen days, four of us writing code. I built the moments where the game responds to you: finishing a floor, cleaning an artefact, closing a minigame and unlocking a journal page.</p>
 <p>Comfy Jam: Winter 2026, hosted by Macrow. 88 entries, 1,350 ratings. Every category, including the one we came fifteenth in.</p>
-<p>We won it on how the game lands rather than on what it asks. First in Visuals. First in Audio. Second in the Limitation, which was the one rule every single entry had to compete on. Third in Gameplay, and fifteenth in Theme. Equinox did not win on its mechanics, and it certainly did not win on being wintry. It won on how it feels to be inside, and on doing the thing the jam actually asked for.</p>
+<p>We won it on how the game lands rather than on what it asks. Equinox did not win on its mechanics, and it certainly did not win on being wintry. It won on how it feels to be inside, and on doing the thing the jam actually asked for.</p>
 <p>The full showcase, with sound. Every clip below is cut out of these same three minutes.</p>
 <h3>The game</h3>
 <p>You are not the hero. You are the person the hero hired. The wizard’s tower is meant to burn a light that ends winter and brings spring, and it has been dark long enough that the town below is frightened. They hire you, an adventurer at the tail end of a bad run, to go up there and find out why.</p>
 <p>Four floors. Nine artefacts. No fail states, no timer, no combat, nothing at all to lose. You clean centuries of neglect off things, put fractured things back together, and read the wizard’s notes as the journal hands them to you, until it becomes clear what he did. At the top there is a beacon with three concentric rings and nine seasonal inscriptions, and it is not going to hint at the answer.</p>
-<p>Fourteen people built it in eighteen days. Four of us wrote code, and 281 commits later it was on itch.</p>
+<p>281 commits later, it was on itch.</p>
 <h2>It was my first game jam, and the first time I had used Godot for anything real.</h2>
 <p>First time in Godot, and shipping systems the rest of the team leaned on by day three.</p>
 <p>Another programmer set up the 3D pipeline and player movement in the first forty eight hours, which is what let the rest of us move fast. Getting the foundations solid in the first two days is the highest leverage thing anybody can do on a jam team.</p>
@@ -4059,7 +4059,7 @@ body::after{
 <p>The intro got reworked in one sitting: 109 lines added and 249 deleted. What shipped is shorter than what came before it and better for it, because a cozy game should not open by lecturing you.</p>
 <h4>The credits</h4>
 <p>Opening credits over the tower, so the game reads as a thing that was made, by people, on purpose, before it asks you for anything at all.</p>
-<p>Leaving a finished floor. The stairs are a portal, the climb covers the load, and the floor name lands in the middle of the screen before the library appears.</p>
+<p>Leaving a finished floor for the library.</p>
 <p>Where a player starts. Our artists drew the screen; turning it into one that actually works was my first job on the project.</p>
 <h2>Three of the four floors end the same way, and I built the end.</h2>
 <p>Find something the wizard broke. Put it back together. Get the dirt off it. The tower gives you a page of his diary in return.</p>
@@ -4089,7 +4089,7 @@ body::after{
 <p>Binary files do not merge. Two people touching the same model or the same scene file produce a conflict git cannot resolve, and on a jam clock that costs an afternoon nobody has to spare. Git LFS fixes it by keeping the large files outside the repository proper, but only if the tracking rules exist before the assets land.</p>
 <p>Committed 10 January, the first day of the jam, before a single asset existed.</p>
 <p>The last block is the part people miss. Most gamedev templates cover models, images and audio. Godot has its own binary formats on top of those, and .scn, .res, .material, .anim, .mesh and .lmbake will bloat a repository and conflict just as badly if nobody tracks them. It is the least glamorous thing on this page and it is the one I would do again first.</p>
-<h2>What my first jam taught me that a solo project could not.</h2>
+<h2>What fourteen people taught a first timer.</h2>
 <h4>01</h4>
 <h3>The payoff is a job</h3>
 <p>Every moment a game confirms you did something right is a design problem of its own, and on most teams nobody owns it. On this one I did.</p>
@@ -4101,7 +4101,7 @@ body::after{
 <p>Cleaning and repair were built on long pairing calls, swapping who typed, so two people understood the core loop instead of one. It’s the fastest I’ve learned a codebase.</p>
 <h4>04</h4>
 <h3>The constraint was the brief</h3>
-<p>“Overcomplicated Screen Transitions” sounds like a gag. It was the only category every entry competed in, and treating it as a pacing problem rather than a visual one is why we placed second in it.</p>
+<p>“Overcomplicated Screen Transitions” sounds like a gag. Treating it as pacing instead of polish is the call I’d make again.</p>
 <h3>The top of the tower</h3>
 <p>Solve the beacon and the tower does the rest. The rings come down, the light catches properly for the first time, and the winter breaks over the valley while the credits roll. Eighteen days, fourteen people, and this is the minute all of it was for.</p>
 <p>Unedited, all the way through: an inscription going home, the flame catching, the rings coming down, and the first sunrise the valley has seen in a very long time.</p>
@@ -7633,12 +7633,12 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=a928e1e9',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=3e1a32d1',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=869bc2e1',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=7c0d13df', scene: 'myauntie' },
-  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=b2f26991',  scene: 'equinox'  },
-  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=d6805c4c', scene: 'handoff' },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=3c4d0e00',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=44e834a9',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=56e17cc7',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=850f3a0d', scene: 'myauntie' },
+  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=0e4c6bf1',  scene: 'equinox'  },
+  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=525192b6', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,

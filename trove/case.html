@@ -1194,10 +1194,6 @@ figure{
         <p>Trove is a live product and I worked on it under contract. Nothing here covers the authoring system&rsquo;s prompts, the scoring weights, unreleased roadmap, commercial terms or any non-public user data. What follows is the design reasoning, the research, the craft decisions and the outcome numbers achieved while I was there, which is everything I can show without handing somebody a copy of the thing.</p>
       </div>
 
-      <!-- SKIP -->
-      <div class="skip-link reveal">
-        <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
-      </div>
 
       <!-- THE GAP -->
       <section id="ask">
@@ -1235,6 +1231,9 @@ figure{
               <p class="cap">A whole first session: everything before the game, the game itself at four times speed, and the personality read that follows. It opens by telling you it starts with what you do, offers a self-description step where every field has an &ldquo;I don&rsquo;t know yet&rdquo;, and asks you to make an account only after it has already told you something about yourself.</p>
           </div>
           </div>
+          <div class="skip-link reveal">
+            <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
+          </div>
           <p>A new story every day means a new real dilemma every day. The stories are written by language models, and another model checks them. The checker I inherited scored ten qualities and then threw nearly all of that away to give one answer: publish, yes or no. The problem is that a story can be <em>not broken</em> and still have no real dilemma in it, and if there&rsquo;s no real choice to make, your choice says nothing about you. With only pass or fail, nothing pushed the stories to get <b>better</b>, and Trove would slowly turn back into a quiz with nicer typography.</p>
           <p>So I built a quality score out of the ten numbers we were already throwing away. It cares most about a story&rsquo;s weakest moment, and about whether two different people playing it actually end up somewhere different.</p>
           <div class="highlight-box warm"><strong>The score is honest about what it is</strong>How much each quality counts is my judgement call, not something calculated. We tested whether players&rsquo; star ratings could tell us which stories were well made, and with the number of players we&rsquo;ll realistically have, they can&rsquo;t. So nothing is fitted to data, and the score card says that right on it.</div>
@@ -1265,8 +1264,8 @@ figure{
               <div class="step-art"><img src="img/tot/button.webp" alt="Trove tot holding up a button" loading="lazy"></div>
             </div>
           </div>
-          <p class="cap">Steps two and three repeat a limited number of times: a fixed draft gets played again before it can move on. Once a story is live, a player&rsquo;s choices become their read, the read nudges their trait scores, and their profile updates every seventh day they play.</p>
-          <div class="highlight-box"><strong>Passing isn&rsquo;t the same as approved</strong>A story that passes works and has survived being played. That doesn&rsquo;t make it good, so a person still signs it off, and the pipeline&rsquo;s report is there to make that decision quick for them.</div>
+          <p class="cap">Steps two and three repeat a limited number of times: a fixed draft gets played again before it can move on. Once a story is live, a player&rsquo;s choices become their read, the read nudges their trait scores, and those build into their profile.</p>
+          <div class="highlight-box"><strong>Passing isn&rsquo;t the same as approved</strong>The pipeline&rsquo;s report is there to make a person&rsquo;s sign-off quick, not to replace it.</div>
           <p>Checking before building also saved us a feature. &ldquo;Stop the stories repeating themselves&rdquo; was on the roadmap and we all assumed it was a real problem, so I measured it first: <b>139 tangles</b>, <b>950 pairs</b> of text real players had been shown, and <b>one actual duplicate</b>. We didn&rsquo;t build it.</p>
         </div>
       </section>
@@ -1372,7 +1371,7 @@ figure{
           <div class="outcome-item"><span class="outcome-num">20.3 MB</span><span class="outcome-label">the ninth share-card capture in a session, up from 2.4 on the first</span></div>
           </div>
           <p>In the first, a player&rsquo;s result came back with the right content in the wrong format. The check that was meant to catch bad results didn&rsquo;t recognise it, so everything after it logged a success while the player got no result card. In the second, one database query without an index took three parts of the app down on 11 June, and to players it just looked like slow wifi. In the third, the image you get when you share your card got bigger every time you pressed share, until it was eight times its original size, while still technically working.</p>
-          <div class="highlight-box"><strong>The kind of failure I care about most</strong>Software telling us it had done its job when it hadn&rsquo;t, inside a product whose whole promise is being honest with you about yourself.</div>
+          <div class="highlight-box"><strong>Why it mattered here</strong>A product whose whole promise is being honest with you about yourself was quietly telling us things that weren&rsquo;t true.</div>
         </div>
       </section>
       <section id="became">
@@ -1417,7 +1416,7 @@ figure{
           <div class="role-cols reveal" style="grid-template-columns:repeat(2,minmax(0,1fr))">
             <div class="role-card"><h4>You cannot ask someone who they are</h4><ul><li>The question changes the answer. Every system in Trove exists so that nobody has to answer one.</li></ul></div>
             <div class="role-card"><h4>Automate the work, not the judgement</h4><ul><li>We had no writers or animators, so I built systems to do that work. The judgement calls, like whether a hat sits right or whether a story is actually good, I kept with people on purpose.</li></ul></div>
-            <div class="role-card"><h4>A person is not a result</h4><ul><li>A read that never changes is a horoscope, and a read that changes every time is noise. Every seven days of play turned out to be the right pace.</li></ul></div>
+            <div class="role-card"><h4>A person is not a result</h4><ul><li>Every seven days of play turned out to be the right pace for a read to change: slow enough to mean something, often enough to stay true.</li></ul></div>
             <div class="role-card"><h4>It has to be willing to be wrong out loud</h4><ul><li>The note on the score, the step that asks if it got you right, the wait before re-reading. Each one makes the product claim less, and claiming less is what made people believe it.</li></ul></div>
           </div>
           <p>I spent eighteen weeks building something that tries to understand people, and what I learned is that it has to be honest enough to argue with. Nobody argues with a horoscope. People argued with this.</p>

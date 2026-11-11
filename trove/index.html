@@ -4058,7 +4058,7 @@ body::after{
 <p>Every playthrough gets reviewed. The weakest moment decides whether the story passes, because that’s the part a writer can actually fix.</p>
 <h4>A person still says yes</h4>
 <p>Passing means it works, not that it’s good, so a person approves every story before players see it.</p>
-<p>Steps two and three repeat a limited number of times: a fixed draft gets played again before it can move on. Once a story is live, a player’s choices become their read, the read nudges their trait scores, and their profile updates every seventh day they play.</p>
+<p>Steps two and three repeat a limited number of times: a fixed draft gets played again before it can move on. Once a story is live, a player’s choices become their read, the read nudges their trait scores, and those build into their profile.</p>
 <p>Checking before building also saved us a feature. “Stop the stories repeating themselves” was on the roadmap and we all assumed it was a real problem, so I measured it first: 139 tangles , 950 pairs of text real players had been shown, and one actual duplicate . We didn’t build it.</p>
 <h2>People change over time, so Trove only works if they keep coming back.</h2>
 <p>One story tells you about one day. A profile needs weeks of them.</p>
@@ -4101,7 +4101,7 @@ body::after{
 <h4>Automate the work, not the judgement</h4>
 <li>We had no writers or animators, so I built systems to do that work. The judgement calls, like whether a hat sits right or whether a story is actually good, I kept with people on purpose.</li>
 <h4>A person is not a result</h4>
-<li>A read that never changes is a horoscope, and a read that changes every time is noise. Every seven days of play turned out to be the right pace.</li>
+<li>Every seven days of play turned out to be the right pace for a read to change: slow enough to mean something, often enough to stay true.</li>
 <h4>It has to be willing to be wrong out loud</h4>
 <li>The note on the score, the step that asks if it got you right, the wait before re-reading. Each one makes the product claim less, and claiming less is what made people believe it.</li>
 <p>I spent eighteen weeks building something that tries to understand people, and what I learned is that it has to be honest enough to argue with. Nobody argues with a horoscope. People argued with this.</p>
@@ -7631,12 +7631,12 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=a928e1e9',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=3e1a32d1',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=869bc2e1',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=7c0d13df', scene: 'myauntie' },
-  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=b2f26991',  scene: 'equinox'  },
-  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=d6805c4c', scene: 'handoff' },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=3c4d0e00',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=44e834a9',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=56e17cc7',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=850f3a0d', scene: 'myauntie' },
+  equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=0e4c6bf1',  scene: 'equinox'  },
+  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=525192b6', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
