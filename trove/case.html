@@ -611,6 +611,9 @@
     .steps:has(+ .cap){ margin-bottom:1.4rem }
 
     /* a caption belongs to the thing above it, not to the paragraph below */
+    .img-wide{margin:clamp(20px,2.8vh,32px) 0 .4rem}
+    .img-wide img{width:100%;height:auto;display:block;border-radius:16px;box-shadow:0 14px 40px rgba(60,35,15,.16)}
+    .img-wide figcaption{font-size:0.84rem;color:var(--text-secondary);opacity:.8;text-align:center}
     .cap, .img-grid figcaption, .img-wide figcaption{ margin-top:.55rem; margin-bottom:0 }
     .video-embed + .cap, .mini-images + .cap, .img-wide + .cap,
     .showcase + .cap{ margin-top:.75rem }
@@ -1243,7 +1246,7 @@ figure{
               </div>
               <div class="phone">
                 <div class="phone-screen">
-                  <video data-src="vid/ob-play.mp4?v=6" poster="vid/ob-play-poster.jpg?v=6" muted loop playsinline preload="none" aria-label="The first story in real time: prose with stickers, a character speaking, and answering them in your own words"></video>
+                  <video data-src="vid/ob-play.mp4?v=7" poster="vid/ob-play-poster.jpg?v=7" muted loop playsinline preload="none" aria-label="The first story in real time: prose with stickers, a character speaking, and answering them in your own words"></video>
                 </div>
               </div>
               <div class="phone">
@@ -1296,6 +1299,34 @@ figure{
           <p class="skim-hide">Checking before building also saved us a feature. &ldquo;Stop the stories repeating themselves&rdquo; was on the roadmap and we all assumed it was a real problem, so I measured it first: <b>139 tangles</b>, <b>950 pairs</b> of text real players had been shown, and <b>one actual duplicate</b>. We didn&rsquo;t build it.</p>
         </div>
       </section>
+      <section id="listened">
+        <div class="section-content reveal">
+          <h2 class="section-heading">I kept asking people what was wrong with it.</h2>
+          <p class="lede">About ten recorded sessions between late May and early August, many more informal conversations, and four things that kept coming back.</p>
+          <p class="skim-sum">I ran most of the user sessions myself, usually with Helen asking her own questions. Most testers came through LinkedIn, Product Hunt or a job post, so I read what they said as patterns, not proof.</p>
+          <p>From late May to early August I sat in about ten recorded one-on-one sessions with players, and had many more informal conversations at events and in our Discord. I ran most of the recorded ones, and Helen often joined with her own questions. I also got advice from people who have built social products, including Chris Messina.</p>
+          <div class="outcome-strip reveal" style="margin:1.4rem 0">
+          <div class="outcome-item"><span class="outcome-num">~10</span><span class="outcome-label">recorded one-on-one sessions, late May to early August, plus many informal conversations</span></div>
+          <div class="outcome-item"><span class="outcome-num">6 of ~10</span><span class="outcome-label">had not shared Trove, or found sharing costly</span></div>
+          </div>
+          <figure class="img-wide reveal">
+            <img src="slides/listened.webp" alt="Slide: four things kept coming back. A timeline of about ten recorded sessions from late May to early August, and four notes: what&rsquo;s a tangle, I&rsquo;m not sending this to anyone, I looked at my profile once, and it&rsquo;s a lot to read" loading="lazy">
+            <figcaption>What came up across different kinds of players, not what one person said once.</figcaption>
+          </figure>
+          <p class="skim-hide">Most of the people I talked to found Trove through a LinkedIn post, Product Hunt or a job posting. That makes them more technical than the readers and journal-keepers we most wanted to reach, and ten people can show you a pattern but can&rsquo;t prove one. So I looked for things that came up across different kinds of players, and I went back to ask why.</p>
+          <div class="highlight-box"><strong>What this can and can&rsquo;t show</strong>People behave differently when they know they&rsquo;re watched, and new changes get inflated clicks on day one. So I trusted what people did over what they said, and I never trusted a first-day number.</div>
+        </div>
+      </section>
+      <section id="onboarding">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Almost everyone asked what a tangle was.</h2>
+          <p class="lede">So I stopped explaining it and let people start.</p>
+          <p class="skim-sum">The first onboarding opened with a popup offering three starter stories, and it confused nearly every early tester. I replaced the explanation with the story itself, and moved the account prompt to after the first read.</p>
+          <p>The first onboarding opened with a popup offering three starter stories. It confused nearly everyone in the early sessions, and kept coming up informally too. By the feedback page people were asking what a tangle was. One player who sped through onboarding was still lost on the home screen afterwards.</p>
+          <p class="skim-hide">I replaced the explanation with the story itself. A few taps about why you&rsquo;re here and what you already know, then you&rsquo;re playing. Trove waits until it has told you something about yourself before it asks you to make an account, which is the flow in the three clips above.</p>
+          <p class="skim-hide">In an A/B test, people who came in through the daily story did better than people who went through the old onboarding flow. I don&rsquo;t have a number I&rsquo;d defend.</p>
+        </div>
+      </section>
       <section id="living">
         <div class="section-content reveal">
           <h2 class="section-heading">People change over time, so Trove only works if they keep coming back.</h2>
@@ -1306,17 +1337,17 @@ figure{
           <div class="showcase-stage trio">
           <div class="phone">
           <div class="phone-screen">
-          <video data-src="vid/pack.mp4" poster="vid/pack-poster.jpg" muted loop playsinline preload="none" aria-label="A sealed pack being ripped open, the week&rsquo;s seven cards fanning out, and the days after today still locked"></video>
+          <video data-src="vid/pack.mp4?v=2" poster="vid/pack-poster.jpg?v=2" muted loop playsinline preload="none" aria-label="A sealed pack being ripped open and the week&rsquo;s seven cards fanning out, then flicking through the days"></video>
           </div>
           </div>
           <div class="phone">
           <div class="phone-screen">
-          <video data-src="vid/explore.mp4" poster="vid/explore-poster.jpg" muted loop playsinline preload="none" aria-label="Explore: search, filter chips, today&rsquo;s pick, Trove Mysteries, and the continue rail"></video>
+          <video data-src="vid/explore.mp4?v=2" poster="vid/explore-poster.jpg?v=2" muted loop playsinline preload="none" aria-label="Explore: the limited-edition summer pick, Trove Mysteries, the keep going and hot rails, filtering to love stories, and a story&rsquo;s page"></video>
           </div>
           </div>
           <div class="phone">
           <div class="phone-screen">
-          <video data-src="vid/history.mp4" poster="vid/history-poster.jpg" muted loop playsinline preload="none" aria-label="Your history: the cards you&rsquo;ve finished with the stickers you earned, then one opened to its read and what each page noticed"></video>
+          <video data-src="vid/history.mp4?v=2" poster="vid/history-poster.jpg?v=2" muted loop playsinline preload="none" aria-label="Your history: finished cards with the stickers you earned, then three of them opened to their read and what each page noticed"></video>
           </div>
           </div>
             <p class="cap">The pack rip, explore, and your history. All three exist so that opening Trove on day nine feels different from opening it on day one, and every card you finish keeps its stickers and its read.</p>
@@ -1387,6 +1418,15 @@ figure{
           </div>
         </div>
       </section>
+      <section id="return">
+        <div class="section-content reveal">
+          <h2 class="section-heading">The profile was something people looked at once.</h2>
+          <p class="lede">Several players told me so, in different words.</p>
+          <p class="skim-sum">At least four players said the profile felt static, too dense or not worth a second visit. So it started showing what changed since you last looked.</p>
+          <p>At least four players said the profile felt static, too dense or not worth a second visit. One checks it after every story and noticed it leans on the most recent one. When I used it myself, I opened my own profile two or three times.</p>
+          <p class="skim-hide">So the profile stopped showing only where you are and started showing what changed since you last looked, with a push notification when there&rsquo;s something new. A monthly arc, showing how a player has changed over a month of play, was next.</p>
+        </div>
+      </section>
       <section id="bill">
         <div class="section-content reveal">
           <h2 class="section-heading">Then real people used it, and things broke quietly.</h2>
@@ -1440,14 +1480,44 @@ figure{
           </div>
         </div>
       </section>
+      <section id="share">
+        <div class="section-content reveal">
+          <h2 class="section-heading">People weren&rsquo;t against sharing. It cost them something.</h2>
+          <p class="lede">Most of the people I talked to hadn&rsquo;t sent Trove to anyone.</p>
+          <p class="skim-sum">Friends who weren&rsquo;t into self-reflection apps, a link that takes effort to explain, and an old flow that compared results too quickly. So closeness now decides what a friend sees.</p>
+          <p>The reasons were ordinary. Their friends weren&rsquo;t into self-reflection apps, a link takes effort to explain, and for some people the AI angle was a barrier. One player hadn&rsquo;t added a single friend because she assumed everything would be shared the moment she did.</p>
+          <figure class="img-wide reveal">
+            <img src="slides/share.webp" alt="Slide: the closer the friend, the more they see. Three rings around Trove&rsquo;s yarn mascot: a shared link, a friend, a close friend. A link never shows your answers, and comparing waits for closeness" loading="lazy">
+            <figcaption>A link never shows your answers. The closer the friend, the more of your profile they get.</figcaption>
+          </figure>
+          <p class="skim-hide">The old flow compared results the moment two people connected, and for some players that felt too exposed. So closeness decides what a friend sees: the closer the friend, the more of your profile they get. The share step also says plainly that sending a link doesn&rsquo;t expose your answers. When one player learned about the tiers, she said she&rsquo;d now add people.</p>
+          <p class="skim-hide">Compare is where the best conversations already happened, so the job was getting more people to it without making them feel exposed on the way.</p>
+        </div>
+      </section>
+      <section id="changed">
+        <div class="section-content reveal">
+          <h2 class="section-heading">I changed what people told me was broken.</h2>
+          <p class="lede">Weekly growth roughly tripled over the same months, and I can&rsquo;t say how much of that was the fixes.</p>
+          <p class="skim-sum">Every change in this section answered something a player told me. Over the same months, new players per week went from about 240 to about 710. Growth had other causes too, so I don&rsquo;t claim the fixes did it.</p>
+          <p>Every change above answered something a player told me. New players were lost in onboarding, so Trove started with a story and asked for an account later. Sharing felt exposed, so closeness decides what a friend sees. The profile felt static, so it started showing what changed. Text was hard to read, so I worked on hierarchy and a clearer place to start reading.</p>
+          <figure class="img-wide reveal">
+            <img src="slides/changed.webp" alt="Slide: every change answered someone. Four player quotes, each with the change it led to, beside new players a week: about 240 in March, about 710 in July, and 826 in the best week" loading="lazy">
+            <figcaption>New players a week went from about 240 in March to about 710 in July, with 826 in the week of July 19.</figcaption>
+          </figure>
+          <p class="skim-hide">Other things moved those numbers too: a Product Hunt launch, events, a Reddit version of the games and word of mouth. I can&rsquo;t separate them, so I don&rsquo;t say the fixes caused the growth. What I can say is that I didn&rsquo;t ship on a hunch, every change answered something a person told me, and growth kept climbing while I made them.</p>
+          <p class="skim-hide">The research also told me what not to build. When advisors suggested a long debrief after every result, I pushed back: ratings already got little engagement, and I thought a heavy debrief would lose casual players. I offered an optional &ldquo;question of the day&rdquo; instead.</p>
+          <div class="highlight-box"><strong>What I&rsquo;d measure next</strong>Each change on its own: how many people finish onboarding at each step before and after, which kind of share actually brings someone back, and how many players open the &ldquo;what changed&rdquo; view. One growth curve can&rsquo;t tell me which fix worked.</div>
+        </div>
+      </section>
 <section id="takeaways">
         <div class="section-content reveal">
-          <h2 class="section-heading">Four things I would carry into the next one.</h2>
-          <div class="role-cols reveal" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+          <h2 class="section-heading">Five things I would carry into the next one.</h2>
+          <div class="role-cols reveal" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
             <div class="role-card"><h4>You cannot ask someone who they are</h4><ul><li>The question changes the answer. Every system in Trove exists so that nobody has to answer one.</li></ul></div>
             <div class="role-card"><h4>Automate the work, not the judgement</h4><ul><li>We had no writers or animators, so I built systems to do that work. The judgement calls, like whether a hat sits right or whether a story is actually good, I kept with people on purpose.</li></ul></div>
             <div class="role-card"><h4>A person is not a result</h4><ul><li>Every seven days of play turned out to be the right pace for a read to change: slow enough to mean something, often enough to stay true.</li></ul></div>
             <div class="role-card"><h4>It has to be willing to be wrong out loud</h4><ul><li>The note on the score, the step that asks if it got you right, the wait before re-reading. Each one makes the product claim less, and claiming less is what made people believe it.</li></ul></div>
+            <div class="role-card"><h4>Ask why, not what</h4><ul><li>Counting what people pick tells you what was easy to pick. The useful part is asking why they picked it, and what they expected to happen next.</li></ul></div>
           </div>
           <p>I spent eighteen weeks building something that tries to understand people, and what I learned is that it has to be honest enough to argue with. Nobody argues with a horoscope. People argued with this.</p>
         </div>
@@ -1857,11 +1927,16 @@ figure{
       const ITEMS=[{id:'',label:'Overview',num:0}];
       const LABELS={
         'ask':'Behaviour, not questions',
+        'listened':'What players told me',
+        'onboarding':'What&rsquo;s a tangle?',
         'living':'Personality over time',
         'companion':'The companion system',
         'patterns':'Surfacing blind spots',
+        'return':'A profile you look at once',
         'bill':'Three silent failures',
         'became':'Ten thousand users',
+        'share':'Why people didn&rsquo;t share',
+        'changed':'What changed',
         'takeaways':'Takeaways'
       };
       let n=1;
