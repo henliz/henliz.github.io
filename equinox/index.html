@@ -2447,7 +2447,7 @@
             --case-edge: rgba(127, 155, 209, 0.22);
         }
         :root[data-case="handoff"] .rail-sky {
-            filter: saturate(1.1) brightness(.92) contrast(.96);
+            filter: hue-rotate(20deg) saturate(1.2) brightness(.9) contrast(.96);
         }
         /* sunset in the top corner fading to navy, like the brand gradient */
         :root[data-case="handoff"] .sky-tint {
@@ -2922,22 +2922,23 @@
         background: linear-gradient(160deg, rgba(255,203,219,.27) 0%, rgba(248,171,193,.16) 45%, rgba(196,96,122,.19) 100%);
     }
 
+    /* nightingale day: blue paper + rail, red-orange glow over a blue sky. no beige */
     :root[data-theme="light"][data-case="handoff"] {
         --rail-accent: #BD4B2B;
         --rail-accent-rgb: 189, 75, 43;
         --muted: #192B52;
         --muted-rgb: 25, 43, 82;
-        --rail-tint-rgb: 250, 245, 238;
+        --rail-tint-rgb: 226, 233, 247;
         --accent: #BD4B2B;
-        --case-paper: #F6EEDA;
-        --case-paper-rgb: 246, 238, 218;
-        --case-edge: rgba(61,88,137,0.20);
+        --case-paper: #F1F4FB;
+        --case-paper-rgb: 241, 244, 251;
+        --case-edge: rgba(61,88,137,0.22);
     }
     :root[data-theme="light"][data-case="handoff"] .rail-sky {
-        filter: saturate(1.05) brightness(1.25) contrast(.88);
+        filter: hue-rotate(20deg) saturate(1.2) brightness(1.22) contrast(.88);
     }
     :root[data-theme="light"][data-case="handoff"] .sky-tint {
-        background: linear-gradient(160deg, rgba(240,106,69,.18) 0%, rgba(242,231,210,.22) 45%, rgba(61,88,137,.18) 100%);
+        background: linear-gradient(160deg, rgba(240,106,69,.30) 0%, rgba(189,75,43,.14) 40%, rgba(61,88,137,.26) 100%);
     }
 
     :root[data-theme="light"][data-case="equinox"] {
@@ -6501,9 +6502,8 @@ const eul = (x,y,z)=>new THREE.Euler(
         href:'/nightingale/',
         // the slide cover recomposed at 4:3: paper and halftone extended top
         // and bottom, the two of them fading into it (/lostinhandoff/cover-43.webp).
-        // the title on it now says NIGHTINGALE, with lost in handoff under it.
-        // halftone recoloured to the brand (tangerine, sunset, viridian, navy)
-        cover:'/lostinhandoff/cover-43.webp?v=brand',
+        // the title on it now says NIGHTINGALE, with lost in handoff under it
+        cover:'/lostinhandoff/cover-43.webp?v=nightingale5',
         theme:{ accent:'189, 75, 43', accent2:'61, 88, 137', scene:'handoff' },
       },
       {
@@ -7962,7 +7962,7 @@ const CASES = {
   menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=e130a32c',    scene: 'menzo'    },
   myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=d695876d', scene: 'myauntie' },
   equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=85f799b8',  scene: 'equinox'  },
-  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=20387e91', scene: 'handoff' },
+  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=92a9aded', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
