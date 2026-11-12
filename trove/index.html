@@ -4087,7 +4087,7 @@ body::after{
 <p>This is what I inherited. One tangle, a start button, and an invite once you finished. The profile wasn’t something you could click into, and there was no way to tell if you’d already played something.</p>
 <p>Where Trove was when I started, on desktop and on a phone after finishing the day’s tangle. That was the whole app.</p>
 <p>Here’s the first few minutes now.</p>
-<p>A whole first session: everything before the game, the game itself at double speed, and the personality read that follows, a page at a time. It opens by telling you it starts with what you do, offers a self-description step where every field has an “I don’t know yet”, and asks you to make an account only after it has already told you something about yourself.</p>
+<p>A whole first session: everything before the game, the game itself at double speed, and the personality read that follows, a page at a time. It opens by telling you it starts with what you do, offers a self-description step where you only tap what you already know and skip the rest, and asks you to make an account only after it has already told you something about yourself.</p>
 <p>A new story every day means a new real dilemma every day. The stories are written by language models, and another model checks them. The checker I inherited scored ten qualities and then threw nearly all of that away to give one answer: publish, yes or no. The problem is that a story can be not broken and still have no real dilemma in it, and if there’s no real choice to make, your choice says nothing about you. With only pass or fail, nothing pushed the stories to get better , and Trove would slowly turn back into a quiz with nicer typography.</p>
 <p>So I built a quality score out of the ten numbers we were already throwing away. It cares most about a story’s weakest moment, and about whether two different people playing it actually end up somewhere different.</p>
 <p>The pipeline that makes a story is the most complicated thing I worked on. Someone gives it a one line idea and a category. Before a person reads a word of the result, it has been played start to finish by a cast of made-up players inside the real app, every playthrough has been reviewed, and it has been fixed automatically a few times if it needed it. Most stories come out playable on the first try.</p>
@@ -7872,7 +7872,7 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=d49ae978',    scene: 'trove'    },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=9fa5f8cc',    scene: 'trove'    },
   skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=da6badad',   scene: 'skrimp'   },
   menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=e130a32c',    scene: 'menzo'    },
   myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=d695876d', scene: 'myauntie' },
