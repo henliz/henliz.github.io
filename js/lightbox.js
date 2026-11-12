@@ -3,8 +3,9 @@
    it has to be on purpose: a quick press that barely moves. a scroll, a
    swipe, a pinch or a long press over an image never opens it. links,
    buttons, decorative images (alt="") and anything small stay as they were.
-   in the viewer, tap the image to see it at full size and drag around,
-   tap outside it or press esc to close. */
+   in the viewer: tap to zoom in where you tapped, pinch or ctrl/cmd + scroll
+   (trackpad pinch) to zoom, drag to pan, + / − / fit buttons and keys, tap
+   outside it or press esc to close. made for walking someone through a diagram. */
 (function () {
   const SKIP = 'a, button, [role="button"], .phone, .tot-matrix, .tot-park, .no-zoom, nav';
   const MIN = 140;           // px on screen. smaller than this is an icon, not a picture
@@ -27,14 +28,22 @@
                    border-radius:8px; box-shadow:0 20px 60px rgba(0,0,0,.45); cursor:zoom-in;
                    transform:scale(.97); transition:transform .22s cubic-bezier(.2,.8,.2,1) }
     .lb.on .lb-stage img{ transform:none }
-    .lb.full .lb-stage{ place-items:start; }
-    .lb.full .lb-stage img{ max-width:none; max-height:none; cursor:zoom-out; border-radius:0 }
-    .lb-cap{ color:#eee; font:14px/1.45 system-ui,-apple-system,sans-serif; text-align:center;
+    .lb.full .lb-stage{ place-items:start; cursor:grab; touch-action:none }
+    .lb.full .lb-stage.drag{ cursor:grabbing }
+    .lb.full .lb-stage img{ max-width:none; max-height:none; cursor:inherit; border-radius:0; transition:none }
+    .lb-zoom{ position:absolute; top:calc(10px + env(safe-area-inset-top)); left:50%; transform:translateX(-50%);
+              display:flex; align-items:center; gap:2px; padding:4px; border-radius:24px; background:rgba(20,18,16,.82); box-shadow:0 4px 18px rgba(0,0,0,.3); z-index:2 }
+    .lb-zoom button{ min-width:36px; height:36px; padding:0 10px; border:0; border-radius:18px; background:none; color:#fff;
+                     font:600 15px/36px system-ui,-apple-system,sans-serif; cursor:pointer }
+    .lb-zoom button:hover{ background:rgba(255,255,255,.18) }
+    .lb-zoom button:focus-visible,.lb-x:focus-visible{ outline:2px solid #fff; outline-offset:1px }
+    .lb-zoom .lb-pct{ min-width:64px; font-size:13px; font-variant-numeric:tabular-nums }
+    .lb-cap{ position:relative; z-index:2; background:rgba(14,12,10,.92); padding-top:10px !important; color:#eee; font:14px/1.45 system-ui,-apple-system,sans-serif; text-align:center;
              padding:0 16px calc(14px + env(safe-area-inset-bottom)); max-width:760px; margin:0 auto; opacity:.85 }
     .lb-x{ position:absolute; top:calc(10px + env(safe-area-inset-top)); right:10px; width:44px; height:44px;
            border:0; border-radius:50%; background:rgba(255,255,255,.14); color:#fff; font-size:24px;
-           line-height:44px; cursor:pointer; z-index:2 }
-    .lb-x:hover{ background:rgba(255,255,255,.26) }
+           line-height:44px; cursor:pointer; z-index:2; background:rgba(20,18,16,.82) }
+    .lb-x:hover{ background:rgba(60,56,52,.9) }
     @media (prefers-reduced-motion:reduce){ .lb, .lb-stage img{ transition:none } }`;
   document.head.appendChild(css);
 
@@ -93,26 +102,96 @@
     const x = document.createElement('button'); x.className = 'lb-x'; x.type = 'button';
     x.setAttribute('aria-label', 'Close'); x.textContent = '×';
     const cap = document.createElement('p'); cap.className = 'lb-cap'; cap.textContent = caption(img);
-    box.append(x, stage, cap);
+    const bar = document.createElement('div'); bar.className = 'lb-zoom';
+    const mk = (label, text) => { const btn = document.createElement('button'); btn.type = 'button'; btn.setAttribute('aria-label', label); btn.textContent = text; bar.appendChild(btn); return btn; };
+    const out = mk('Zoom out', '−'), pct = mk('Fit to screen', 'Fit'), inn = mk('Zoom in', '+');
+    pct.classList.add('lb-pct');
+    box.append(x, bar, stage, cap);
     document.body.appendChild(box);
     document.documentElement.style.overflow = 'hidden';
     requestAnimationFrame(() => box.classList.add('on'));
     x.focus({ preventScroll: true });
 
-    // tap the picture for full size (only if there is more to see), tap around it to close
+    // zoom is relative to the fitted size. z = 1 fits the screen, up to 6x for small diagram text
+    let z = 1, fitW = 0;
+    const MAXZ = 6;
+    const measure = () => { if (z === 1) fitW = big.getBoundingClientRect().width || fitW; };
+    big.addEventListener('load', measure); requestAnimationFrame(measure);
+    function zoomTo(nz, cx, cy) {
+      measure();
+      nz = Math.min(MAXZ, Math.max(1, nz));
+      if (Math.abs(nz - z) < 0.001) return;
+      const r = stage.getBoundingClientRect();
+      const px = (cx ?? r.left + r.width / 2) - r.left, py = (cy ?? r.top + r.height / 2) - r.top;
+      const ib = big.getBoundingClientRect();
+      // which spot of the picture is under the pointer, 0 to 1
+      const fx = (px + r.left - ib.left) / ib.width, fy = (py + r.top - ib.top) / ib.height;
+      z = nz;
+      if (z === 1) { box.classList.remove('full'); big.style.width = ''; pct.textContent = 'Fit'; return; }
+      box.classList.add('full');
+      big.style.width = (fitW * z) + 'px';
+      const nb = big.getBoundingClientRect();
+      stage.scrollLeft += nb.left + fx * nb.width - (px + r.left);
+      stage.scrollTop += nb.top + fy * nb.height - (py + r.top);
+      pct.textContent = Math.round(z * 100) + '%';
+    }
+    out.addEventListener('click', () => zoomTo(z / 1.5));
+    inn.addEventListener('click', () => zoomTo(z * 1.5));
+    pct.addEventListener('click', () => zoomTo(1));
+    box._key = e => {
+      if (e.key === '+' || e.key === '=') zoomTo(z * 1.5);
+      else if (e.key === '-' || e.key === '_') zoomTo(z / 1.5);
+      else if (e.key === '0') zoomTo(1);
+    };
+    // trackpad pinch arrives as ctrl + wheel. plain wheel scrolls around when zoomed
+    stage.addEventListener('wheel', e => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      zoomTo(z * Math.exp(-e.deltaY * 0.01), e.clientX, e.clientY);
+    }, { passive: false });
+
+    // drag to pan, two fingers to pinch
+    const pts = new Map(); let pan = null, pinch = null, moved = false;
+    stage.addEventListener('pointerdown', e => {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      moved = false;
+      if (pts.size === 2) {
+        const [a, b2] = [...pts.values()];
+        pinch = { d: Math.hypot(a.x - b2.x, a.y - b2.y), z };
+        pan = null;
+      } else if (z > 1) {
+        pan = { x: e.clientX, y: e.clientY, sl: stage.scrollLeft, st: stage.scrollTop };
+        stage.setPointerCapture(e.pointerId); stage.classList.add('drag');
+      }
+    });
+    stage.addEventListener('pointermove', e => {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pinch && pts.size === 2) {
+        const [a, b2] = [...pts.values()];
+        zoomTo(pinch.z * Math.hypot(a.x - b2.x, a.y - b2.y) / pinch.d, (a.x + b2.x) / 2, (a.y + b2.y) / 2);
+        moved = true;
+      } else if (pan) {
+        const dx = e.clientX - pan.x, dy = e.clientY - pan.y;
+        if (Math.hypot(dx, dy) > 4) moved = true;
+        stage.scrollLeft = pan.sl - dx; stage.scrollTop = pan.st - dy;
+      }
+    });
+    const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; if (!pts.size) { pan = null; stage.classList.remove('drag'); } };
+    stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up);
+
+    // a tap on the picture zooms in where you tapped, a tap when zoomed in goes back to fit
     big.addEventListener('click', e => {
       e.stopPropagation();
-      if (performance.now() - openedAt < 400) return;
-      if (!box.classList.contains('full') && big.naturalWidth <= big.clientWidth * 1.05 &&
-          big.naturalHeight <= big.clientHeight * 1.05) return;
-      box.classList.toggle('full');
+      if (moved || performance.now() - openedAt < 400) return;
+      if (z > 1) zoomTo(1); else zoomTo(2.5, e.clientX, e.clientY);
     });
     // the tap that opened it can arrive here as a click on some phones, so give it a moment
-    stage.addEventListener('click', e => { if (e.target === stage && performance.now() - openedAt > 400) close(); });
+    stage.addEventListener('click', e => { if (e.target === stage && !moved && z === 1 && performance.now() - openedAt > 400) close(); });
     x.addEventListener('click', close);
     addEventListener('keydown', onKey);
   }
-  function onKey(e) { if (e.key === 'Escape') close(); }
+  function onKey(e) { if (e.key === 'Escape') close(); else if (box && box._key) box._key(e); }
   function close() {
     if (!box) return;
     const b = box; box = null;

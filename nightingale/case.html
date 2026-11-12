@@ -1449,7 +1449,7 @@ figure{
       <section id="the-need">
         <div class="section-content reveal">
           <h2 class="section-heading">Nobody asked for a wearable.</h2>
-          <p class="lede">They asked for an iPad checklist, a shared form, a printed summary, and &ldquo;something strapped to my arm and it&rsquo;s listening to all the questions.&rdquo;</p>
+          <p class="lede">They asked for an iPad checklist, a shared form, a printed summary, and, from a Cambridge captain, something he could just &ldquo;tap and give&rdquo; to the paramedics: instant, and a real thing in his hand, not another screen.</p>
           <p class="skim-gist">Four formats, one need: capture what the crew learns once, as it happens, and get it to the next person without more work. A form or an iPad still needs a free hand at the exact moment responders have neither.</p>
           <p class="skim-hide">Four formats, one need: capture what the crew learns once, as it happens, and get it to the next person without more work. A form or an iPad still needs a free hand at the exact moment responders have neither. And paramedics already say out loud what they&rsquo;re doing as they do it. The data is already being spoken. It just isn&rsquo;t being captured. So the brief came straight from them.</p>
           <div class="steps reveal">
@@ -1538,7 +1538,7 @@ figure{
           <p class="lede">I coded dashboard V1, Alita and Chrisandra designed V2&rsquo;s flows in Figma, and I wired V3 up to the real device data.</p>
           <figure class="img-wide reveal">
             <img src="img/user-flow.webp" alt="User flow diagram from the 911 call to hospital staff, with each decision and failure branch for fire, paramedics and the hospital receiver" loading="lazy">
-            <figcaption>The whole route from the 911 call to the chart, with every decision and every place it can fail. Click it to see it full size.</figcaption>
+            <figcaption>The whole route from the 911 call to the chart, with every decision and every place it can fail. Click it, then zoom in and drag around to follow a path.</figcaption>
           </figure>
           <p class="skim-gist"><strong>V1 tested the technology.</strong> Before anything was designed, I needed to know whether the device’s recordings could become a usable draft report while a call was still happening.</p>
           <p class="skim-hide"><strong>V1 tested the technology.</strong> Before anything was designed, I needed to know whether the device&rsquo;s recordings could become a usable draft report while a call was still happening. So I coded a dashboard with three panels: the draft ePCR filling itself in, with fields lighting up as they change; the transcript, showing who said what and when; and the Pi&rsquo;s own diary, live. It updates the moment new data lands, with no refresh, and every session is saved so it survives a server restart.</p>
@@ -1602,7 +1602,8 @@ figure{
             <video src="img/v4-tabs.mp4" poster="img/v4-tabs-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Moving through the ePCR tabs: the scene and call times, the patient with the age conflict outlined, and the care tab with vitals as monitor tiles and the interventions as a timed log"></video>
             <figcaption>The record, tab by tab: the scene, the patient, the care. Vitals read like a monitor, interventions read like a log, and each tab says how many things still need a look.</figcaption>
           </figure>
-          <p>And this is what the hospital opens.</p>
+          <p class="skim-gist"><strong>The hospital reads it in IMIST-AMBO.</strong> We learnt the format formally from emergency department staff during user acceptance testing on V3, and rebuilt the hospital page around it.</p>
+          <p class="skim-hide"><strong>The hospital reads it in IMIST-AMBO.</strong> We learnt the format formally from emergency department staff during user acceptance testing on V3, and rebuilt the hospital page around it. It&rsquo;s the order a structured paramedic-to-ED handover follows, so the nurse always knows where to look: <strong>I</strong>dentification, <strong>M</strong>echanism or medical complaint, <strong>I</strong>njuries or information about the complaint, <strong>S</strong>igns and vitals, <strong>T</strong>reatment and trends, then <strong>A</strong>llergies, <strong>M</strong>edications, <strong>B</strong>ackground and <strong>O</strong>ther. The first five are what the team needs before they touch the patient, so they come first and get said without interruptions. The rest can wait a minute. Every row on the page carries its letter, so &ldquo;M for meds&rdquo; is something you find, not something you read for.</p>
           <figure class="img-wide reveal">
             <video src="img/v4-handoff.mp4" poster="img/v4-handoff-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="The hospital handoff page the triage nurse opens from the QR code: scene safety first, IMIST-AMBO rows with lettered badges, vitals tiles under signs and a timed treatment table. Confirming receipt unlocks the identity and the photos beside each row"></video>
             <figcaption>What the triage nurse opens from the QR code, in IMIST-AMBO order. Each line is a fact instead of a sentence, and photos sit beside what they show. Identity and photos stay locked until the nurse confirms receipt.</figcaption>
