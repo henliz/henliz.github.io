@@ -4125,14 +4125,29 @@ body::after{
 <p>Convex schema, indexes and migrations, React, TanStack, TypeScript, LLM authoring and eval pipelines, illustration, layout and motion.</p>
 <p>Sourced summer 2026 from analytics</p>
 <p>Trove is a live product and I worked on it under contract. Nothing here covers the authoring system’s prompts, the scoring weights, unreleased roadmap, commercial terms or any non-public user data. What follows is the design reasoning, the research, the craft decisions and the outcome numbers achieved while I was there, which is everything I can show without handing somebody a copy of the thing.</p>
+<h2>Ten thousand people let a piece of software tell them something about themselves.</h2>
+<p>From a standing start in March to August, as the first hire on this version of Trove.</p>
+<p>A Product Hunt launch, events, a Reddit version and word of mouth all moved these numbers alongside the work on this page, so I don’t claim the work caused them. What follows is what I inherited, what people told me, and what I did about it.</p>
 <h2>Trove figures out your personality from what you do, so it never asks you a single question.</h2>
 <p>A quiz can only hand back what you already told it about yourself.</p>
 <p>Most apps that try to understand you start by making you describe yourself, like a LinkedIn bio or a Hinge profile. Trove doesn’t. Every day there’s a short interactive story (we call them tangles) where you make choices that don’t have an obvious right answer. Trove looks at what you chose, writes you a short personality read, and builds up a profile of you over time, a bit like how a friend gets to know you.</p>
 <p>That’s easy to describe and hard to build. I started in March and went full time in April as the first hire on this version of Trove. The idea had been tested once, as a Valentine’s Day release in February, and what existed was small: eight pages, sixteen components, and a profile that was still only a mockup. There were no writers and no animators, so over eighteen weeks I designed and built the systems that do those jobs: the pipeline that writes and checks the stories, the story cards, the mascot and the profile.</p>
 <p>This is what I inherited. One tangle, a start button, and an invite once you finished. The profile wasn’t something you could click into, and there was no way to tell if you’d already played something.</p>
 <p>Where Trove was when I started, on desktop and on a phone after finishing the day’s tangle. That was the whole app.</p>
+<h2>I kept asking people what was wrong with it.</h2>
+<p>About ten recorded sessions between late May and early August, many more informal conversations, and four things that kept coming back.</p>
+<p>The February test was the only evidence that came with the product, and one release can’t tell you why people come back. So I went and asked.</p>
+<p>From late May to early August I sat in about ten recorded one-on-one sessions with players, and had many more informal conversations at events and in our Discord. I ran most of the recorded ones, and Helen often joined with her own questions. I also got advice from people who have built social products, including Chris Messina.</p>
+<p>Most of the people I talked to found Trove through a LinkedIn post, Product Hunt or a job posting. That makes them more technical than the readers and journal-keepers we most wanted to reach, and ten people can show you a pattern but can’t prove one. So I looked for things that came up across different kinds of players, and I went back to ask why.</p>
+<h2>Almost everyone asked what a tangle was.</h2>
+<p>So I stopped explaining it and let people start.</p>
+<p>The first onboarding opened with a popup offering three starter stories. It confused nearly everyone in the early sessions, and kept coming up informally too. By the feedback page people were asking what a tangle was. One player who sped through onboarding was still lost on the home screen afterwards.</p>
+<p>I replaced the explanation with the story itself. A few taps about why you’re here and what you already know, then you’re playing. Trove waits until it has told you something about yourself before it asks you to make an account, which is the flow in the three clips above.</p>
+<p>In an A/B test, people who came in through the daily story did better than people who went through the old onboarding flow. I don’t have a number I’d defend.</p>
 <p>Here’s the first few minutes now.</p>
 <p>A whole first session: everything before the game, the game itself in real time, and the personality read that follows, a page at a time. It opens by telling you it starts with what you do, offers a self-description step where you only tap what you already know and skip the rest, and asks you to make an account only after it has already told you something about yourself.</p>
+<h2>A new story every day needs a checker you can trust.</h2>
+<p>Tangles are written by language models, so the work was deciding what counts as good enough.</p>
 <p>A new story every day means a new real dilemma every day. The stories are written by language models, and another model checks them. The checker I inherited scored ten qualities and then threw nearly all of that away to give one answer: publish, yes or no. The problem is that a story can be not broken and still have no real dilemma in it, and if there’s no real choice to make, your choice says nothing about you. With only pass or fail, nothing pushed the stories to get better , and Trove would slowly turn back into a quiz with nicer typography.</p>
 <p>So I built a quality score out of the ten numbers we were already throwing away. It cares most about a story’s weakest moment, and about whether two different people playing it actually end up somewhere different.</p>
 <p>The pipeline that makes a story is the most complicated thing I worked on. Someone gives it a one line idea and a category. Before a person reads a word of the result, it has been played start to finish by a cast of made-up players inside the real app, every playthrough has been reviewed, and it has been fixed automatically a few times if it needed it. Most stories come out playable on the first try.</p>
@@ -4146,15 +4161,10 @@ body::after{
 <p>Passing means it works, not that it’s good, so a person approves every story before players see it.</p>
 <p>Steps two and three repeat a limited number of times: a fixed draft gets played again before it can move on. Once a story is live, a player’s choices become their read, the read nudges their trait scores, and those build into their profile.</p>
 <p>Checking before building also saved us a feature. “Stop the stories repeating themselves” was on the roadmap and we all assumed it was a real problem, so I measured it first: 139 tangles , 950 pairs of text real players had been shown, and one actual duplicate . We didn’t build it.</p>
-<h2>I kept asking people what was wrong with it.</h2>
-<p>About ten recorded sessions between late May and early August, many more informal conversations, and four things that kept coming back.</p>
-<p>From late May to early August I sat in about ten recorded one-on-one sessions with players, and had many more informal conversations at events and in our Discord. I ran most of the recorded ones, and Helen often joined with her own questions. I also got advice from people who have built social products, including Chris Messina.</p>
-<p>Most of the people I talked to found Trove through a LinkedIn post, Product Hunt or a job posting. That makes them more technical than the readers and journal-keepers we most wanted to reach, and ten people can show you a pattern but can’t prove one. So I looked for things that came up across different kinds of players, and I went back to ask why.</p>
-<h2>Almost everyone asked what a tangle was.</h2>
-<p>So I stopped explaining it and let people start.</p>
-<p>The first onboarding opened with a popup offering three starter stories. It confused nearly everyone in the early sessions, and kept coming up informally too. By the feedback page people were asking what a tangle was. One player who sped through onboarding was still lost on the home screen afterwards.</p>
-<p>I replaced the explanation with the story itself. A few taps about why you’re here and what you already know, then you’re playing. Trove waits until it has told you something about yourself before it asks you to make an account, which is the flow in the three clips above.</p>
-<p>In an A/B test, people who came in through the daily story did better than people who went through the old onboarding flow. I don’t have a number I’d defend.</p>
+<h2>The profile was something people looked at once.</h2>
+<p>Several players told me so, in different words.</p>
+<p>At least four players said the profile felt static, too dense or not worth a second visit. One checks it after every story and noticed it leans on the most recent one. When I used it myself, I opened my own profile two or three times.</p>
+<p>So the profile stopped showing only where you are and started showing what changed since you last looked, with a push notification when there’s something new. A monthly arc, showing how a player has changed over a month of play, was next.</p>
 <h2>People change over time, so Trove only works if they keep coming back.</h2>
 <p>One story tells you about one day. A profile needs weeks of them.</p>
 <p>Getting people to come back was the hardest part. Each week comes as a pack of seven cards, one story a day, and you rip the pack open to start. The explore page, where the daily stories live, adapts to you as you play: it shows you stories based on your patterns, and it remembers the one you left halfway through.</p>
@@ -4178,31 +4188,30 @@ body::after{
 <p>The profile, and two of the types it opens into. Everything on it comes from what you played.</p>
 <p>The part I’m proudest of: right after it tells you who you are, it asks whether it got you right. You pick a face, write a sentence, and Trove compares what you said with the choices you actually made.</p>
 <p>Everything before this step is the app talking about you. This is the app listening, and it’s what makes it OK for the read to be so confident.</p>
-<h2>The profile was something people looked at once.</h2>
-<p>Several players told me so, in different words.</p>
-<p>At least four players said the profile felt static, too dense or not worth a second visit. One checks it after every story and noticed it leans on the most recent one. When I used it myself, I opened my own profile two or three times.</p>
-<p>So the profile stopped showing only where you are and started showing what changed since you last looked, with a push notification when there’s something new. A monthly arc, showing how a player has changed over a month of play, was next.</p>
-<h2>Then real people used it, and things broke quietly.</h2>
-<p>Nothing crashed, which was the problem.</p>
-<p>Three bugs cost us real players that summer and none of them threw an error, because in each one the system reported success while it was failing.</p>
-<p>In the first, a player’s result came back with the right content in the wrong format. The check that was meant to catch bad results didn’t recognise it, so everything after it logged a success while the player got no result card. In the second, one database query without an index took three parts of the app down on 11 June, and to players it just looked like slow wifi. In the third, the image you get when you share your card got bigger every time you pressed share, until it was eight times its original size, while still technically working.</p>
-<h2>Ten thousand people let a piece of software tell them something about themselves.</h2>
-<p>And then they showed their friends.</p>
-<p>Sharing is the part I didn’t see coming, and I should have. The things about you that you can’t see yourself are usually obvious to the people around you. Trove gives everyone words for them, and lets two people play the same story and compare what they did.</p>
-<p>A comparison: same tangle, two people, one idea per page, and an argument worth having over dinner.</p>
-<p>By August the product had seven main parts. The iOS app wraps the web app, and a teammate built it in two weeks. I take that as a compliment: by July the web app was solid enough that going native meant a wrapper, not a rewrite.</p>
-<p>At an event we hosted, someone recognised themselves in most of their read and argued with the part that did not fit, for about five minutes, to my face.</p>
-<p>A pitch night in Toronto I helped run, filmed by Draft One Collective.</p>
 <h2>People weren’t against sharing. It cost them something.</h2>
 <p>Most of the people I talked to hadn’t sent Trove to anyone.</p>
 <p>The reasons were ordinary. Their friends weren’t into self-reflection apps, a link takes effort to explain, and for some people the AI angle was a barrier. One player hadn’t added a single friend because she assumed everything would be shared the moment she did.</p>
 <p>The old flow compared results the moment two people connected, and for some players that felt too exposed. So closeness decides what a friend sees: the closer the friend, the more of your profile they get. The share step also says plainly that sending a link doesn’t expose your answers. When one player learned about the tiers, she said she’d now add people.</p>
 <p>Compare is where the best conversations already happened, so the job was getting more people to it without making them feel exposed on the way.</p>
+<p>Sharing is the part I didn’t see coming, and I should have. The things about you that you can’t see yourself are usually obvious to the people around you. Trove gives everyone words for them, and lets two people play the same story and compare what they did.</p>
+<p>A comparison: same tangle, two people, one idea per page, and an argument worth having over dinner.</p>
+<h2>Then real people used it, and things broke quietly.</h2>
+<p>Nothing crashed, which was the problem.</p>
+<p>Three bugs cost us real players that summer and none of them threw an error, because in each one the system reported success while it was failing.</p>
+<p>In the first, a player’s result came back with the right content in the wrong format. The check that was meant to catch bad results didn’t recognise it, so everything after it logged a success while the player got no result card. In the second, one database query without an index took three parts of the app down on 11 June, and to players it just looked like slow wifi. In the third, the image you get when you share your card got bigger every time you pressed share, until it was eight times its original size, while still technically working.</p>
 <h2>I changed what people told me was broken.</h2>
 <p>Weekly growth roughly tripled over the same months, and I can’t say how much of that was the fixes.</p>
 <p>Every change above answered something a player told me. New players were lost in onboarding, so Trove started with a story and asked for an account later. Sharing felt exposed, so closeness decides what a friend sees. The profile felt static, so it started showing what changed. Text was hard to read, so I worked on hierarchy and a clearer place to start reading.</p>
 <p>Other things moved those numbers too: a Product Hunt launch, events, a Reddit version of the games and word of mouth. I can’t separate them, so I don’t say the fixes caused the growth. What I can say is that I didn’t ship on a hunch, every change answered something a person told me, and growth kept climbing while I made them.</p>
 <p>The research also told me what not to build. When advisors suggested a long debrief after every result, I pushed back: ratings already got little engagement, and I thought a heavy debrief would lose casual players. I offered an optional “question of the day” instead.</p>
+<h2>People argued with it, to my face.</h2>
+<p>Which is the reaction a personality read should get.</p>
+<p>By August the product had seven main parts. The iOS app wraps the web app, and a teammate built it in two weeks. I take that as a compliment: by July the web app was solid enough that going native meant a wrapper, not a rewrite.</p>
+<p>At an event we hosted, someone recognised themselves in most of their read and argued with the part that did not fit, for about five minutes, to my face.</p>
+<p>A pitch night in Toronto I helped run, filmed by Draft One Collective.</p>
+<h2>What it doesn’t prove yet.</h2>
+<p>Ten people and one growth curve can only say so much.</p>
+<p>The numbers went up while I made these changes, and so did launches, events and word of mouth. Ten recorded sessions show a pattern, not proof, and most of the people in them were more technical than the readers Trove is for.</p>
 <h2>Five things I would carry into the next one.</h2>
 <h4>You cannot ask someone who they are</h4>
 <li>The question changes the answer. Every system in Trove exists so that nobody has to answer one.</li>
@@ -7979,7 +7988,7 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=d76e16de',    scene: 'trove'    },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=61ee48ac',    scene: 'trove'    },
   skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=da6badad',   scene: 'skrimp'   },
   menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=e130a32c',    scene: 'menzo'    },
   myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=d695876d', scene: 'myauntie' },
@@ -7989,7 +7998,7 @@ const CASES = {
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
   // which on a page with no table of contents just reads as a missing nav.
-  about:      { name: 'About Me',               href: '/about/case.html?v=a1cb530b',      plainRail: true },
+  about:      { name: 'About Me',               href: '/about/case.html?v=dcd7c1a1',      plainRail: true },
   playground: { name: 'Playground',             href: '/playground/case.html?v=0d46802f', plainRail: true },
   resume:     { name: 'Résumé',   href: '/resume/case.html?v=0db74187',     plainRail: true },
 };

@@ -1220,6 +1220,19 @@ figure{
 
 
       <!-- THE GAP -->
+            <section id="outcomes">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Ten thousand people let a piece of software tell them something about themselves.</h2>
+          <p class="lede">From a standing start in March to August, as the first hire on this version of Trove.</p>
+          <div class="outcome-strip reveal" style="margin:1.4rem 0">
+          <div class="outcome-item"><span class="outcome-num">0 &rarr; 10,250</span><span class="outcome-label">new players from a standing start, March to August</span></div>
+          <div class="outcome-item"><span class="outcome-num">4,479</span><span class="outcome-label">completed playthroughs counted by one production query on 28 August, and the true figure is higher</span></div>
+          <div class="outcome-item"><span class="outcome-num">183</span><span class="outcome-label">tangles live on the platform</span></div>
+          <div class="outcome-item"><span class="outcome-num">1,331</span><span class="outcome-label">of my commits in 18 weeks, more than any other contributor on the repo</span></div>
+          </div>
+          <p class="skim-hide">A Product Hunt launch, events, a Reddit version and word of mouth all moved these numbers alongside the work on this page, so I don&rsquo;t claim the work caused them. What follows is what I inherited, what people told me, and what I did about it.</p>
+        </div>
+      </section>
       <section id="ask">
         <div class="section-content reveal">
           <h2 class="section-heading">Trove figures out your personality from what you do, so it never asks you a single question.</h2>
@@ -1236,6 +1249,42 @@ figure{
               <p class="cap">Where Trove was when I started, on desktop and on a phone after finishing the day&rsquo;s tangle. That was the whole app.</p>
             </div>
           </div>
+          
+          <figure class="img-wide reveal">
+            <img src="slides/inherited.webp" alt="Slide: what I started with in April, one tangle, eight pages, sixteen components and a profile mockup, against August, 183 tangles live, seven main parts, a profile that re-reads you every seven days, an iOS app and 10,250 players" loading="lazy">
+            <figcaption>April on the left, August on the right.</figcaption>
+          </figure>
+        </div>
+      </section>
+      <section id="listened">
+        <div class="section-content reveal">
+          <h2 class="section-heading">I kept asking people what was wrong with it.</h2>
+          <p class="lede">About ten recorded sessions between late May and early August, many more informal conversations, and four things that kept coming back.</p>
+          <p>The February test was the only evidence that came with the product, and one release can&rsquo;t tell you why people come back. So I went and asked.</p>
+          <p class="skim-sum">I ran most of the user sessions myself, usually with Helen asking her own questions. Most testers came through LinkedIn, Product Hunt or a job post, so I read what they said as patterns, not proof.</p>
+          <p>From late May to early August I sat in about ten recorded one-on-one sessions with players, and had many more informal conversations at events and in our Discord. I ran most of the recorded ones, and Helen often joined with her own questions. I also got advice from people who have built social products, including Chris Messina.</p>
+          <div class="outcome-strip reveal" style="margin:1.4rem 0;grid-template-columns:repeat(2,minmax(0,1fr));max-width:620px">
+          <div class="outcome-item"><span class="outcome-num">~10</span><span class="outcome-label">recorded one-on-one sessions, late May to early August, plus many informal conversations</span></div>
+          <div class="outcome-item"><span class="outcome-num">6 of ~10</span><span class="outcome-label">had not shared Trove, or found sharing costly</span></div>
+          </div>
+          <figure class="img-wide reveal">
+            <img src="slides/listened.webp" alt="Slide: four things kept coming back. A timeline of about ten recorded sessions from late May to early August, and four notes: what&rsquo;s a tangle, I&rsquo;m not sending this to anyone, I looked at my profile once, and it&rsquo;s a lot to read" loading="lazy">
+            <figcaption>What came up across different kinds of players, not what one person said once.</figcaption>
+          </figure>
+          <p class="skim-hide">Most of the people I talked to found Trove through a LinkedIn post, Product Hunt or a job posting. That makes them more technical than the readers and journal-keepers we most wanted to reach, and ten people can show you a pattern but can&rsquo;t prove one. So I looked for things that came up across different kinds of players, and I went back to ask why.</p>
+          <div class="highlight-box"><strong>What this can and can&rsquo;t show</strong>People behave differently when they know they&rsquo;re watched, and new changes get inflated clicks on day one. So I trusted what people did over what they said, and I never trusted a first-day number.</div>
+        
+        </div>
+      </section>
+      <section id="onboarding">
+        <div class="section-content reveal">
+          <h2 class="section-heading">Almost everyone asked what a tangle was.</h2>
+          <p class="lede">So I stopped explaining it and let people start.</p>
+          <p class="skim-sum">The first onboarding opened with a popup offering three starter stories, and it confused nearly every early tester. I replaced the explanation with the story itself, and moved the account prompt to after the first read.</p>
+          <p>The first onboarding opened with a popup offering three starter stories. It confused nearly everyone in the early sessions, and kept coming up informally too. By the feedback page people were asking what a tangle was. One player who sped through onboarding was still lost on the home screen afterwards.</p>
+          <p class="skim-hide">I replaced the explanation with the story itself. A few taps about why you&rsquo;re here and what you already know, then you&rsquo;re playing. Trove waits until it has told you something about yourself before it asks you to make an account, which is the flow in the three clips above.</p>
+          <p class="skim-hide">In an A/B test, people who came in through the daily story did better than people who went through the old onboarding flow. I don&rsquo;t have a number I&rsquo;d defend.</p>
+        
           <p>Here&rsquo;s the first few minutes now.</p>
           <div class="showcase reveal">
             <div class="showcase-stage trio">
@@ -1260,6 +1309,12 @@ figure{
           <div class="skip-link reveal">
             <a href="#takeaways" class="skip-button">SKIP → THE TAKEAWAYS</a>
           </div>
+        </div>
+      </section>
+      <section id="stories">
+        <div class="section-content reveal">
+          <h2 class="section-heading">A new story every day needs a checker you can trust.</h2>
+          <p class="lede">Tangles are written by language models, so the work was deciding what counts as good enough.</p>
           <p class="skim-gist">The checker I inherited scored ten qualities and then threw nearly all of that away to give one answer: publish, yes or no. The problem is that a story can be not broken and still have no real dilemma in it, and if there’s no real choice to make, your choice says nothing about you.</p>
           <p class="skim-hide">A new story every day means a new real dilemma every day. The stories are written by language models, and another model checks them. The checker I inherited scored ten qualities and then threw nearly all of that away to give one answer: publish, yes or no. The problem is that a story can be <em>not broken</em> and still have no real dilemma in it, and if there&rsquo;s no real choice to make, your choice says nothing about you. With only pass or fail, nothing pushed the stories to get <b>better</b>, and Trove would slowly turn back into a quiz with nicer typography.</p>
           <p class="skim-gist">So I built a quality score out of the ten numbers we were already throwing away. It cares most about a story’s weakest moment, and about whether two different people playing it actually end up somewhere different.</p>
@@ -1297,37 +1352,19 @@ figure{
           <div class="highlight-box"><strong>Passing isn&rsquo;t the same as approved</strong>The pipeline&rsquo;s report is there to make a person&rsquo;s sign-off quick, not to replace it.</div>
           <p class="skim-gist">Checking before building also saved us a feature. “Stop the stories repeating themselves” was on the roadmap and we all assumed it was a real problem, so I measured it first: 139 tangles, 950 pairs of text real players had been shown, and one actual duplicate. We didn’t build it.</p>
           <p class="skim-hide">Checking before building also saved us a feature. &ldquo;Stop the stories repeating themselves&rdquo; was on the roadmap and we all assumed it was a real problem, so I measured it first: <b>139 tangles</b>, <b>950 pairs</b> of text real players had been shown, and <b>one actual duplicate</b>. We didn&rsquo;t build it.</p>
+        
         </div>
       </section>
-      <section id="listened">
+<section id="return">
         <div class="section-content reveal">
-          <h2 class="section-heading">I kept asking people what was wrong with it.</h2>
-          <p class="lede">About ten recorded sessions between late May and early August, many more informal conversations, and four things that kept coming back.</p>
-          <p class="skim-sum">I ran most of the user sessions myself, usually with Helen asking her own questions. Most testers came through LinkedIn, Product Hunt or a job post, so I read what they said as patterns, not proof.</p>
-          <p>From late May to early August I sat in about ten recorded one-on-one sessions with players, and had many more informal conversations at events and in our Discord. I ran most of the recorded ones, and Helen often joined with her own questions. I also got advice from people who have built social products, including Chris Messina.</p>
-          <div class="outcome-strip reveal" style="margin:1.4rem 0;grid-template-columns:repeat(2,minmax(0,1fr));max-width:620px">
-          <div class="outcome-item"><span class="outcome-num">~10</span><span class="outcome-label">recorded one-on-one sessions, late May to early August, plus many informal conversations</span></div>
-          <div class="outcome-item"><span class="outcome-num">6 of ~10</span><span class="outcome-label">had not shared Trove, or found sharing costly</span></div>
-          </div>
-          <figure class="img-wide reveal">
-            <img src="slides/listened.webp" alt="Slide: four things kept coming back. A timeline of about ten recorded sessions from late May to early August, and four notes: what&rsquo;s a tangle, I&rsquo;m not sending this to anyone, I looked at my profile once, and it&rsquo;s a lot to read" loading="lazy">
-            <figcaption>What came up across different kinds of players, not what one person said once.</figcaption>
-          </figure>
-          <p class="skim-hide">Most of the people I talked to found Trove through a LinkedIn post, Product Hunt or a job posting. That makes them more technical than the readers and journal-keepers we most wanted to reach, and ten people can show you a pattern but can&rsquo;t prove one. So I looked for things that came up across different kinds of players, and I went back to ask why.</p>
-          <div class="highlight-box"><strong>What this can and can&rsquo;t show</strong>People behave differently when they know they&rsquo;re watched, and new changes get inflated clicks on day one. So I trusted what people did over what they said, and I never trusted a first-day number.</div>
+          <h2 class="section-heading">The profile was something people looked at once.</h2>
+          <p class="lede">Several players told me so, in different words.</p>
+          <p class="skim-sum">At least four players said the profile felt static, too dense or not worth a second visit. So it started showing what changed since you last looked.</p>
+          <p>At least four players said the profile felt static, too dense or not worth a second visit. One checks it after every story and noticed it leans on the most recent one. When I used it myself, I opened my own profile two or three times.</p>
+          <p class="skim-hide">So the profile stopped showing only where you are and started showing what changed since you last looked, with a push notification when there&rsquo;s something new. A monthly arc, showing how a player has changed over a month of play, was next.</p>
         </div>
       </section>
-      <section id="onboarding">
-        <div class="section-content reveal">
-          <h2 class="section-heading">Almost everyone asked what a tangle was.</h2>
-          <p class="lede">So I stopped explaining it and let people start.</p>
-          <p class="skim-sum">The first onboarding opened with a popup offering three starter stories, and it confused nearly every early tester. I replaced the explanation with the story itself, and moved the account prompt to after the first read.</p>
-          <p>The first onboarding opened with a popup offering three starter stories. It confused nearly everyone in the early sessions, and kept coming up informally too. By the feedback page people were asking what a tangle was. One player who sped through onboarding was still lost on the home screen afterwards.</p>
-          <p class="skim-hide">I replaced the explanation with the story itself. A few taps about why you&rsquo;re here and what you already know, then you&rsquo;re playing. Trove waits until it has told you something about yourself before it asks you to make an account, which is the flow in the three clips above.</p>
-          <p class="skim-hide">In an A/B test, people who came in through the daily story did better than people who went through the old onboarding flow. I don&rsquo;t have a number I&rsquo;d defend.</p>
-        </div>
-      </section>
-      <section id="living">
+<section id="living">
         <div class="section-content reveal">
           <h2 class="section-heading">People change over time, so Trove only works if they keep coming back.</h2>
           <p class="lede">One story tells you about one day. A profile needs weeks of them.</p>
@@ -1360,7 +1397,7 @@ figure{
           <p>An unplayed card shows blurred slots, one sticker for each topic its results will touch on. Play it and they fill in with the ones you earned.</p>
         </div>
       </section>
-      <section id="companion">
+<section id="companion">
         <div class="section-content reveal">
           <h2 class="section-heading">The mascot wears what you unlock, so he&rsquo;s a record of what you&rsquo;ve played.</h2>
           <p class="lede">He isn&rsquo;t just happy to see you. His face shows how you&rsquo;ve been looking after him.</p>
@@ -1383,7 +1420,7 @@ figure{
           <p class="cap">Four of him out in the park, one for each level of care, with nothing on so you can see his face. Watch their faces. The one who&rsquo;s been looked after cycles through four kinds of happy. The one who&rsquo;s been ignored for two weeks only has two faces left, both of them bad. Neglect doesn&rsquo;t just make him sad, it takes away his range, and nobody has to be told that to feel it.</p>
         </div>
       </section>
-      <section id="patterns">
+<section id="patterns">
         <div class="section-content reveal">
           <h2 class="section-heading">The patterns worth knowing about yourself are the ones you cannot see from the inside.</h2>
           <p class="lede">The catch is that anything specific enough to be interesting is specific enough to be wrong.</p>
@@ -1429,16 +1466,34 @@ figure{
           </div>
         </div>
       </section>
-      <section id="return">
+      <section id="share">
         <div class="section-content reveal">
-          <h2 class="section-heading">The profile was something people looked at once.</h2>
-          <p class="lede">Several players told me so, in different words.</p>
-          <p class="skim-sum">At least four players said the profile felt static, too dense or not worth a second visit. So it started showing what changed since you last looked.</p>
-          <p>At least four players said the profile felt static, too dense or not worth a second visit. One checks it after every story and noticed it leans on the most recent one. When I used it myself, I opened my own profile two or three times.</p>
-          <p class="skim-hide">So the profile stopped showing only where you are and started showing what changed since you last looked, with a push notification when there&rsquo;s something new. A monthly arc, showing how a player has changed over a month of play, was next.</p>
+          <h2 class="section-heading">People weren&rsquo;t against sharing. It cost them something.</h2>
+          <p class="lede">Most of the people I talked to hadn&rsquo;t sent Trove to anyone.</p>
+          <p class="skim-sum">Friends who weren&rsquo;t into self-reflection apps, a link that takes effort to explain, and an old flow that compared results too quickly. So closeness now decides what a friend sees.</p>
+          <p>The reasons were ordinary. Their friends weren&rsquo;t into self-reflection apps, a link takes effort to explain, and for some people the AI angle was a barrier. One player hadn&rsquo;t added a single friend because she assumed everything would be shared the moment she did.</p>
+          <figure class="img-wide reveal">
+            <img src="slides/share.webp" alt="Slide: the closer the friend, the more they see. Three rings around Trove&rsquo;s yarn mascot: a shared link, a friend, a close friend. A link never shows your answers, and comparing waits for closeness" loading="lazy">
+            <figcaption>A link never shows your answers. The closer the friend, the more of your profile they get.</figcaption>
+          </figure>
+          <p class="skim-hide">The old flow compared results the moment two people connected, and for some players that felt too exposed. So closeness decides what a friend sees: the closer the friend, the more of your profile they get. The share step also says plainly that sending a link doesn&rsquo;t expose your answers. When one player learned about the tiers, she said she&rsquo;d now add people.</p>
+          <p class="skim-hide">Compare is where the best conversations already happened, so the job was getting more people to it without making them feel exposed on the way.</p>
+        
+          <p class="skim-gist">Sharing is the part I didn’t see coming, and I should have. The things about you that you can’t see yourself are usually obvious to the people around you.</p>
+          <p class="skim-hide">Sharing is the part I didn&rsquo;t see coming, and I should have. The things about you that you can&rsquo;t see yourself are usually obvious to the people around you. Trove gives everyone words for them, and lets two people play the same story and compare what they did.</p>
+          <div class="showcase reveal">
+          <div class="showcase-stage solo">
+          <div class="phone">
+          <div class="phone-screen">
+          <video data-src="vid/compare.mp4?v=3" poster="vid/compare-poster.jpg?v=3" muted loop playsinline preload="none" aria-label="A comparison building, then two people who played the same tangle: the stickers each earned, each person&rsquo;s line and moment, where they met, where they split, and their group card"></video>
+          </div>
+          </div>
+            <p class="cap">A comparison: same tangle, two people, one idea per page, and an argument worth having over dinner.</p>
+          </div>
+          </div>
         </div>
       </section>
-      <section id="bill">
+<section id="bill">
         <div class="section-content reveal">
           <h2 class="section-heading">Then real people used it, and things broke quietly.</h2>
           <p class="lede">Nothing crashed, which was the problem.</p>
@@ -1453,28 +1508,25 @@ figure{
           <div class="highlight-box"><strong>Why it mattered here</strong>A product whose whole promise is being honest with you about yourself was quietly telling us things that weren&rsquo;t true.</div>
         </div>
       </section>
-      <section id="became">
+      <section id="changed">
         <div class="section-content reveal">
-          <h2 class="section-heading">Ten thousand people let a piece of software tell them something about themselves.</h2>
-          <p class="lede">And then they showed their friends.</p>
-          <p class="skim-gist">Sharing is the part I didn’t see coming, and I should have. The things about you that you can’t see yourself are usually obvious to the people around you.</p>
-          <p class="skim-hide">Sharing is the part I didn&rsquo;t see coming, and I should have. The things about you that you can&rsquo;t see yourself are usually obvious to the people around you. Trove gives everyone words for them, and lets two people play the same story and compare what they did.</p>
-          <div class="showcase reveal">
-          <div class="showcase-stage solo">
-          <div class="phone">
-          <div class="phone-screen">
-          <video data-src="vid/compare.mp4?v=3" poster="vid/compare-poster.jpg?v=3" muted loop playsinline preload="none" aria-label="A comparison building, then two people who played the same tangle: the stickers each earned, each person&rsquo;s line and moment, where they met, where they split, and their group card"></video>
-          </div>
-          </div>
-            <p class="cap">A comparison: same tangle, two people, one idea per page, and an argument worth having over dinner.</p>
-          </div>
-          </div>
-          <div class="outcome-strip reveal" style="margin:1.4rem 0">
-          <div class="outcome-item"><span class="outcome-num">0 &rarr; 10,250</span><span class="outcome-label">new players from a standing start, March to August</span></div>
-          <div class="outcome-item"><span class="outcome-num">4,479</span><span class="outcome-label">completed playthroughs counted by one production query on 28 August, and the true figure is higher</span></div>
-          <div class="outcome-item"><span class="outcome-num">183</span><span class="outcome-label">tangles live on the platform</span></div>
-          <div class="outcome-item"><span class="outcome-num">1,331</span><span class="outcome-label">of my commits in 18 weeks, more than any other contributor on the repo</span></div>
-          </div>
+          <h2 class="section-heading">I changed what people told me was broken.</h2>
+          <p class="lede">Weekly growth roughly tripled over the same months, and I can&rsquo;t say how much of that was the fixes.</p>
+          <p class="skim-sum">Every change in this section answered something a player told me. Over the same months, new players per week went from about 240 to about 710. Growth had other causes too, so I don&rsquo;t claim the fixes did it.</p>
+          <p>Every change above answered something a player told me. New players were lost in onboarding, so Trove started with a story and asked for an account later. Sharing felt exposed, so closeness decides what a friend sees. The profile felt static, so it started showing what changed. Text was hard to read, so I worked on hierarchy and a clearer place to start reading.</p>
+          <figure class="img-wide reveal">
+            <img src="slides/changed.webp" alt="Slide: every change answered someone. Four player quotes, each with the change it led to, beside new players a week: about 240 in March, about 710 in July, and 826 in the best week" loading="lazy">
+            <figcaption>New players a week went from about 240 in March to about 710 in July, with 826 in the week of July 19.</figcaption>
+          </figure>
+          <p class="skim-hide">Other things moved those numbers too: a Product Hunt launch, events, a Reddit version of the games and word of mouth. I can&rsquo;t separate them, so I don&rsquo;t say the fixes caused the growth. What I can say is that I didn&rsquo;t ship on a hunch, every change answered something a person told me, and growth kept climbing while I made them.</p>
+          <p class="skim-hide">The research also told me what not to build. When advisors suggested a long debrief after every result, I pushed back: ratings already got little engagement, and I thought a heavy debrief would lose casual players. I offered an optional &ldquo;question of the day&rdquo; instead.</p>
+        
+        </div>
+      </section>
+      <section id="argued">
+        <div class="section-content reveal">
+          <h2 class="section-heading">People argued with it, to my face.</h2>
+          <p class="lede">Which is the reaction a personality read should get.</p>
           <p class="skim-gist">By August the product had seven main parts. The iOS app wraps the web app, and a teammate built it in two weeks.</p>
           <p class="skim-hide">By August the product had seven main parts. The iOS app wraps the web app, and a teammate built it in two weeks. I take that as a compliment: by July the web app was solid enough that going native meant a wrapper, not a rewrite.</p>
           <p>At an event we hosted, someone recognised themselves in most of their read and argued with the part that did not fit, for about five minutes, to my face.</p>
@@ -1489,37 +1541,18 @@ figure{
             <p class="cap">A pitch night in Toronto I helped run, filmed by Draft One Collective.</p>
           </div>
           </div>
+        
         </div>
       </section>
-      <section id="share">
+      <section id="next">
         <div class="section-content reveal">
-          <h2 class="section-heading">People weren&rsquo;t against sharing. It cost them something.</h2>
-          <p class="lede">Most of the people I talked to hadn&rsquo;t sent Trove to anyone.</p>
-          <p class="skim-sum">Friends who weren&rsquo;t into self-reflection apps, a link that takes effort to explain, and an old flow that compared results too quickly. So closeness now decides what a friend sees.</p>
-          <p>The reasons were ordinary. Their friends weren&rsquo;t into self-reflection apps, a link takes effort to explain, and for some people the AI angle was a barrier. One player hadn&rsquo;t added a single friend because she assumed everything would be shared the moment she did.</p>
-          <figure class="img-wide reveal">
-            <img src="slides/share.webp" alt="Slide: the closer the friend, the more they see. Three rings around Trove&rsquo;s yarn mascot: a shared link, a friend, a close friend. A link never shows your answers, and comparing waits for closeness" loading="lazy">
-            <figcaption>A link never shows your answers. The closer the friend, the more of your profile they get.</figcaption>
-          </figure>
-          <p class="skim-hide">The old flow compared results the moment two people connected, and for some players that felt too exposed. So closeness decides what a friend sees: the closer the friend, the more of your profile they get. The share step also says plainly that sending a link doesn&rsquo;t expose your answers. When one player learned about the tiers, she said she&rsquo;d now add people.</p>
-          <p class="skim-hide">Compare is where the best conversations already happened, so the job was getting more people to it without making them feel exposed on the way.</p>
-        </div>
-      </section>
-      <section id="changed">
-        <div class="section-content reveal">
-          <h2 class="section-heading">I changed what people told me was broken.</h2>
-          <p class="lede">Weekly growth roughly tripled over the same months, and I can&rsquo;t say how much of that was the fixes.</p>
-          <p class="skim-sum">Every change in this section answered something a player told me. Over the same months, new players per week went from about 240 to about 710. Growth had other causes too, so I don&rsquo;t claim the fixes did it.</p>
-          <p>Every change above answered something a player told me. New players were lost in onboarding, so Trove started with a story and asked for an account later. Sharing felt exposed, so closeness decides what a friend sees. The profile felt static, so it started showing what changed. Text was hard to read, so I worked on hierarchy and a clearer place to start reading.</p>
-          <figure class="img-wide reveal">
-            <img src="slides/changed.webp" alt="Slide: every change answered someone. Four player quotes, each with the change it led to, beside new players a week: about 240 in March, about 710 in July, and 826 in the best week" loading="lazy">
-            <figcaption>New players a week went from about 240 in March to about 710 in July, with 826 in the week of July 19.</figcaption>
-          </figure>
-          <p class="skim-hide">Other things moved those numbers too: a Product Hunt launch, events, a Reddit version of the games and word of mouth. I can&rsquo;t separate them, so I don&rsquo;t say the fixes caused the growth. What I can say is that I didn&rsquo;t ship on a hunch, every change answered something a person told me, and growth kept climbing while I made them.</p>
-          <p class="skim-hide">The research also told me what not to build. When advisors suggested a long debrief after every result, I pushed back: ratings already got little engagement, and I thought a heavy debrief would lose casual players. I offered an optional &ldquo;question of the day&rdquo; instead.</p>
+          <h2 class="section-heading">What it doesn&rsquo;t prove yet.</h2>
+          <p class="lede">Ten people and one growth curve can only say so much.</p>
+          <p>The numbers went up while I made these changes, and so did launches, events and word of mouth. Ten recorded sessions show a pattern, not proof, and most of the people in them were more technical than the readers Trove is for.</p>
           <div class="highlight-box"><strong>What I&rsquo;d measure next</strong>Each change on its own: how many people finish onboarding at each step before and after, which kind of share actually brings someone back, and how many players open the &ldquo;what changed&rdquo; view. One growth curve can&rsquo;t tell me which fix worked.</div>
         </div>
       </section>
+
 <section id="takeaways">
         <div class="section-content reveal">
           <h2 class="section-heading">Five things I would carry into the next one.</h2>
@@ -1938,17 +1971,20 @@ figure{
       panel.appendChild(mkLink('#',0,'Overview',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});close();}));
       const ITEMS=[{id:'',label:'Overview',num:0}];
       const LABELS={
-        'ask':'Behaviour, not questions',
+        'outcomes':'Ten thousand people',
+        'ask':'What I inherited',
         'listened':'What players told me',
         'onboarding':'What’s a tangle?',
-        'living':'Personality over time',
+        'stories':'A story every day',
+        'return':'A profile you look at once',
+        'living':'Coming back',
         'companion':'The companion system',
         'patterns':'Surfacing blind spots',
-        'return':'A profile you look at once',
-        'bill':'Three silent failures',
-        'became':'Ten thousand users',
         'share':'Why people didn’t share',
+        'bill':'Three silent failures',
         'changed':'What changed',
+        'argued':'People argued with it',
+        'next':'What it doesn’t prove',
         'takeaways':'Takeaways'
       };
       let n=1;
