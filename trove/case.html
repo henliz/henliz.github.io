@@ -1305,7 +1305,7 @@ figure{
           <p class="lede">About ten recorded sessions between late May and early August, many more informal conversations, and four things that kept coming back.</p>
           <p class="skim-sum">I ran most of the user sessions myself, usually with Helen asking her own questions. Most testers came through LinkedIn, Product Hunt or a job post, so I read what they said as patterns, not proof.</p>
           <p>From late May to early August I sat in about ten recorded one-on-one sessions with players, and had many more informal conversations at events and in our Discord. I ran most of the recorded ones, and Helen often joined with her own questions. I also got advice from people who have built social products, including Chris Messina.</p>
-          <div class="outcome-strip reveal" style="margin:1.4rem 0">
+          <div class="outcome-strip reveal" style="margin:1.4rem 0;grid-template-columns:repeat(2,minmax(0,1fr));max-width:620px">
           <div class="outcome-item"><span class="outcome-num">~10</span><span class="outcome-label">recorded one-on-one sessions, late May to early August, plus many informal conversations</span></div>
           <div class="outcome-item"><span class="outcome-num">6 of ~10</span><span class="outcome-label">had not shared Trove, or found sharing costly</span></div>
           </div>
@@ -1337,7 +1337,7 @@ figure{
           <div class="showcase-stage trio">
           <div class="phone">
           <div class="phone-screen">
-          <video data-src="vid/pack.mp4?v=2" poster="vid/pack-poster.jpg?v=2" muted loop playsinline preload="none" aria-label="A sealed pack being ripped open and the week&rsquo;s seven cards fanning out, then flicking through the days"></video>
+          <video data-src="vid/pack.mp4?v=3" poster="vid/pack-poster.jpg?v=3" muted loop playsinline preload="none" aria-label="A sealed pack being ripped open and the week&rsquo;s seven cards fanning out, then flicking through the days"></video>
           </div>
           </div>
           <div class="phone">
@@ -1380,7 +1380,7 @@ figure{
           <p class="skim-gist">He runs on one rule. His pose follows the time of day, and his face follows how you’ve been treating him.</p>
           <p class="skim-hide">He runs on one rule. <b>His pose follows the time of day, and his face follows how you&rsquo;ve been treating him.</b> His pose changes through the day so there&rsquo;s a reason to check in again, but his face only changes when your care does, so he can never look like he&rsquo;s having a lovely afternoon when you&rsquo;ve ignored him for a week.</p>
           <div class="tot-park reveal" id="totPark" aria-label="Four Trove tots wandering a park, each at a different level of care"></div>
-          <p class="cap">Four of him out in the park, one for each level of care, in the outfits from the table above. Watch their faces. The one who&rsquo;s been looked after cycles through four kinds of happy. The one who&rsquo;s been ignored for two weeks only has two faces left, both of them bad. Neglect doesn&rsquo;t just make him sad, it takes away his range, and nobody has to be told that to feel it.</p>
+          <p class="cap">Four of him out in the park, one for each level of care, with nothing on so you can see his face. Watch their faces. The one who&rsquo;s been looked after cycles through four kinds of happy. The one who&rsquo;s been ignored for two weeks only has two faces left, both of them bad. Neglect doesn&rsquo;t just make him sad, it takes away his range, and nobody has to be told that to feel it.</p>
         </div>
       </section>
       <section id="patterns">
@@ -1748,13 +1748,13 @@ figure{
 
       // one guy per level of care. speed is % of the park per second
       const GUYS=[
-        {mood:'thriving',  pose:'kite',     outfit:0, speed:6.5, x:14, b:15,
+        {bare:true, mood:'thriving',  pose:'kite',     outfit:0, speed:6.5, x:14, b:15,
          faces:['delighted','starstruck','silly','adoring']},
-        {mood:'content',   pose:'standing', outfit:3, speed:4,   x:40, b:11,
+        {bare:true, mood:'content',   pose:'standing', outfit:3, speed:4,   x:40, b:11,
          faces:['content','sly','sideeye','mischief']},
-        {mood:'sleepy',    pose:'coffee',   outfit:1, speed:1.8, x:63, b:17,
+        {bare:true, mood:'sleepy',    pose:'coffee',   outfit:1, speed:1.8, x:63, b:17,
          faces:['yawning','content','sideeye']},
-        {mood:'withdrawn', pose:'tangled',  outfit:2, speed:.7,  x:85, b:12,
+        {bare:true, mood:'withdrawn', pose:'tangled',  outfit:2, speed:.7,  x:85, b:12,
          faces:['sobbing','worried']}
       ];
       const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1769,7 +1769,7 @@ figure{
         art.style.setProperty('--ar', box.w+'/'+box.h);
         art.style.setProperty('--s', POSES[g.pose].scale);
         const body=document.createElement('img'); body.className='pk-body';
-        body.src='img/tot/'+g.pose+'.webp'; body.alt='Trove tot, '+g.mood+', in '+TOT_OUTFITS[g.outfit].name.toLowerCase();
+        body.src='img/tot/'+g.pose+'.webp'; body.alt='Trove tot, '+g.mood;
         art.appendChild(body);
         const faces={};
         for(const f of g.faces){
@@ -1780,7 +1780,8 @@ figure{
             transform:'rotate('+pl.rotate+'deg) scaleY('+pl.squash+')'});
           art.appendChild(im); faces[f]=im;
         }
-        for(const slot of TOT_SLOTS){
+        // the park guys go bare so their faces read; the table above shows the outfits
+        for(const slot of (g.bare ? [] : TOT_SLOTS)){
           const id=fit[slot]; if(!id) continue;
           const pl=placeFit(D,g.pose,slot,id); if(!pl) continue;   // no anchor = pose does not wear it
           const im=document.createElement('img'); im.className='pk-acc'; im.src=accSrc(slot,id); im.alt='';
@@ -1928,14 +1929,14 @@ figure{
       const LABELS={
         'ask':'Behaviour, not questions',
         'listened':'What players told me',
-        'onboarding':'What&rsquo;s a tangle?',
+        'onboarding':'What’s a tangle?',
         'living':'Personality over time',
         'companion':'The companion system',
         'patterns':'Surfacing blind spots',
         'return':'A profile you look at once',
         'bill':'Three silent failures',
         'became':'Ten thousand users',
-        'share':'Why people didn&rsquo;t share',
+        'share':'Why people didn’t share',
         'changed':'What changed',
         'takeaways':'Takeaways'
       };
