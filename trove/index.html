@@ -1275,6 +1275,48 @@
     }
     .pe-source:hover { color: var(--muted); }
 
+    /* endorsement source screenshot */
+    .pe-lightbox {
+      /* the global reset zeroes margin, which un-centres a modal dialog */
+      position: fixed;
+      inset: 0;
+      margin: auto;
+      width: fit-content;
+      height: fit-content;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      max-width: min(92vw, 520px);
+      max-height: 90vh;
+      overflow: visible;
+    }
+    .pe-lightbox::backdrop { background: rgba(10, 20, 30, .55); backdrop-filter: blur(4px); }
+    .pe-lightbox img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.35);
+    }
+    .pe-lightbox-close {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 0;
+      background: #fff;
+      color: #1b2430;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,.25);
+    }
+    .pe-lightbox-close:focus-visible { outline: 2px solid #1b2430; outline-offset: 2px; }
+
     /* Press list */
     .pe-press-list { display: flex; flex-direction: column; }
     .pe-press-item {
@@ -4104,11 +4146,10 @@ body::after{
 <h2>People change over time, so Trove only works if they keep coming back.</h2>
 <p>One story tells you about one day. A profile needs weeks of them.</p>
 <p>Getting people to come back was the hardest part. Each week comes as a pack of seven cards, one story a day, and you rip the pack open to start. The explore page, where the daily stories live, adapts to you as you play: it shows you stories based on your patterns, and it remembers the one you left halfway through.</p>
-<p>The pack rip and the home screen. Both exist so that opening Trove on day nine feels different from opening it on day one.</p>
+<p>The pack rip, explore, and your history. All three exist so that opening Trove on day nine feels different from opening it on day one, and every card you finish keeps its stickers and its read.</p>
 <p>Every story also needs its own card, and in April each one was put together by hand, which doesn’t work when there’s a new story every day. So I made the cards build themselves: the system reads what the story is about and picks the art, like which sky suits a tense late night scene, or which mascot fits a story about being the outsider.</p>
 <p>If you ask a language model where to put things in pixels, about half the time it puts them on top of something already on the card, and nothing warns you. You just get an ugly card.</p>
 <p>An unplayed card shows blurred slots, one sticker for each topic its results will touch on. Play it and they fill in with the ones you earned.</p>
-<p>The same card after you play it, with your stickers filled in and your read underneath.</p>
 <h2>The mascot wears what you unlock, so he’s a record of what you’ve played.</h2>
 <p>He isn’t just happy to see you. His face shows how you’ve been looking after him.</p>
 <p>Trove tot greets you, reacts to a read, sleeps when you have been away and wears what you unlock. Fourteen poses times twenty-eight accessories is 392 drawings nobody was going to make, so he is composited at runtime from one pose sprite with accessory art on top.</p>
@@ -5626,6 +5667,21 @@ body::after{
 
                   <div class="pe-endorse-card">
                     <div class="pe-card-header">
+                      <img class="pe-avatar" src="/endorsements/helen-huang.webp" alt="Helen Huang"
+                           width="48" height="48" loading="lazy" decoding="async" />
+                      <div class="pe-attrib">
+                        <span class="pe-name">Helen Huang</span>
+                        <span class="pe-role">Founder of Trove &middot; Forbes 30 Under 30</span>
+                      </div>
+                    </div>
+                    <p class="pe-quote">One thing I really appreciated about working with Henrietta was that she brought her own creative perspective to the table! She has a strong point of view when it comes to visual design and isn&rsquo;t afraid to try something different. What&rsquo;s also great is that she can take her designs a step further by actually implementing them as production-ready features. This combination is a huge asset!</p>
+                    <!-- opens the original message in a lightbox, plain link if js is off -->
+                    <a class="pe-source" href="/endorsements/helen-huang-message.webp" data-pe-lightbox
+                       aria-haspopup="dialog">Message &rarr;</a>
+                  </div>
+
+                  <div class="pe-endorse-card">
+                    <div class="pe-card-header">
                       <img class="pe-avatar" src="/endorsements/mary-wells.webp" alt="Mary Wells"
                            width="48" height="48" loading="lazy" decoding="async" />
                       <div class="pe-attrib">
@@ -5663,6 +5719,29 @@ body::after{
                   </div>
 
                 </div>
+                <dialog class="pe-lightbox" id="peLightbox" aria-label="Endorsement source">
+                  <img src="/endorsements/helen-huang-message.webp" alt="Helen Huang's message, the endorsement above as she sent it"
+                       width="680" height="810" loading="lazy" decoding="async" />
+                  <button type="button" class="pe-lightbox-close" aria-label="Close">&times;</button>
+                </dialog>
+                <script>
+                  // endorsement screenshots open over the page instead of a new tab
+                  (() => {
+                    const box = document.getElementById('peLightbox');
+                    if (!box || !box.showModal) return;
+                    const img = box.querySelector('img');
+                    document.querySelectorAll('[data-pe-lightbox]').forEach((a) => {
+                      a.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        img.src = a.getAttribute('href');
+                        box.showModal();
+                      });
+                    });
+                    box.querySelector('.pe-lightbox-close').addEventListener('click', () => box.close());
+                    // click outside the image closes it
+                    box.addEventListener('click', (e) => { if (e.target === box) box.close(); });
+                  })();
+                </script>
               </div>
 
               <!-- Right: Press -->
@@ -7872,7 +7951,7 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=cfc0a488',    scene: 'trove'    },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=ed17cd47',    scene: 'trove'    },
   skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=da6badad',   scene: 'skrimp'   },
   menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=e130a32c',    scene: 'menzo'    },
   myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=d695876d', scene: 'myauntie' },
