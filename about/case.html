@@ -508,10 +508,8 @@ a{ color:inherit }
 #mac .notes{ padding:20px 26px; background:#fffdf7 }
 #mac .notes h3{ font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; font-size:22px; margin-bottom:11px }
 #mac .notes p{ font-size:11.5px; line-height:1.72; margin-bottom:9px; opacity:.84 }
-#mac .notes .cred{ font-size:9.5px; line-height:1.7; opacity:.55; margin-top:16px;
-  border-top:1px solid #e6e2d6; padding-top:10px }
-#mac .notes .cred b{ display:block; font-size:9.5px; letter-spacing:.1em;
-  text-transform:uppercase; margin-bottom:4px; opacity:.8 }
+#mac .notes .note[hidden]{ display:none !important }
+#mac .notes .cred{ font-size:10.5px; line-height:1.75; opacity:.7 }
 #mac .notes .cred a{ color:#2f6f68 }
 
 #mac .work{ padding:8px }
@@ -886,6 +884,7 @@ a{ color:inherit }
   width:100%; aspect-ratio:16/9; height:auto; border:0; border-radius:12px; display:block;
 }
 #rugby .meta{ font-size:.76rem; opacity:.62; margin-top:.7rem; line-height:1.6 }
+#rugby .say{ font-size:.86rem; line-height:1.6; margin-top:.75rem; opacity:.9 }
 /* the crate: six sleeves, two across and three down, with the disc
    peeking out from behind whichever one is on */
 #crate{ display:grid; grid-template-columns:1fr 1fr; gap:.55rem; margin-bottom:.8rem }
@@ -990,74 +989,52 @@ a{ color:inherit }
 }
 #boot.gone{ opacity:0; pointer-events:none }
 
+/* the desk being set. one line per thing on it, each ticked off when its
+   file has actually arrived, and a lamp glow that warms up with the total.
+   nothing here is a fake timer: the lines follow preload() byte for byte. */
 .boot-card{
-  position:relative; text-align:center;
-  background:rgba(var(--ink-rgb),.05);
-  backdrop-filter:blur(38px); -webkit-backdrop-filter:blur(38px);
-  border:1px solid rgba(var(--muted-rgb),.22); border-radius:32px;
-  padding:2.6rem 2.4rem 2.2rem;
-  box-shadow:0 20px 60px rgba(0,0,0,.34), inset 0 1px 0 rgba(var(--ink-rgb),.06);
-  max-width:440px; width:min(90vw,440px);
-  animation:bootFloat 6s ease-in-out infinite;
+  position:relative; width:min(88vw,360px);
+  display:grid; gap:1.1rem; text-align:left;
 }
-@keyframes bootFloat{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-
-.boot-orb{ position:relative; margin-bottom:1.6rem; display:grid; place-items:center }
-.boot-orb img{
-  width:110px; height:110px; border-radius:50%; object-fit:cover;
-  border:3px solid rgba(var(--muted-rgb),.4);
-  background:rgba(var(--muted-rgb),.1);
-  box-shadow:0 0 30px rgba(var(--accent-rgb),.3);
-  animation:bootOrb 4s ease-in-out infinite;
+.boot-glow{
+  position:absolute; left:50%; top:-40%; width:140%; aspect-ratio:1;
+  transform:translateX(-50%); pointer-events:none; z-index:-1;
+  background:radial-gradient(closest-side, rgba(255,196,120,.34), rgba(255,196,120,0));
+  opacity:calc(.15 + var(--p, 0) * .85); transition:opacity .4s ease;
 }
-@keyframes bootOrb{ 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-8px) scale(1.02)} }
-
-.boot-sparks{ position:absolute; width:190px; height:190px; pointer-events:none }
-.boot-sparks i{
-  position:absolute; width:6px; height:6px; border-radius:50%;
-  background:linear-gradient(45deg, var(--accent), var(--muted));
-  box-shadow:0 0 8px rgba(var(--accent-rgb),.5);
-  animation:bootSpark 3s ease-in-out infinite; opacity:.7;
-}
-.boot-sparks i:nth-child(1){ top:20%; left:15%; animation-delay:0s }
-.boot-sparks i:nth-child(2){ top:30%; right:20%; animation-delay:.5s }
-.boot-sparks i:nth-child(3){ bottom:25%; left:25%; animation-delay:1s }
-.boot-sparks i:nth-child(4){ bottom:35%; right:15%; animation-delay:1.5s }
-.boot-sparks i:nth-child(5){ top:50%; left:5%;  animation-delay:2s }
-.boot-sparks i:nth-child(6){ top:15%; right:5%; animation-delay:2.5s }
-@keyframes bootSpark{ 0%,100%{transform:translateY(0) scale(1);opacity:.35} 50%{transform:translateY(-14px) scale(1.2);opacity:.9} }
-
 .boot-title{
-  font-family:'DotempDemo', monospace; font-style:normal; font-weight:400; font-size:2.3rem; 
-  letter-spacing:.02em; margin-bottom:.7rem;
-  background:linear-gradient(45deg, var(--ink), var(--muted), var(--accent), var(--muted));
-  background-size:200% 200%; background-clip:text; -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent; color:transparent;
-  animation:bootShift 8s ease infinite;
+  font-family:'DotempDemo', monospace; font-weight:400; font-size:2rem;
+  line-height:1; color:var(--ink); margin:0;
 }
-@keyframes bootShift{ 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-
 .boot-msg{
-  font-family:'Bodoni Moda', serif; font-style:italic; font-size:1.15rem;
-  color:var(--muted); opacity:.9; margin-bottom:1.6rem; min-height:1.5em;
+  font-family:'Satoshi', sans-serif; font-size:.95rem; line-height:1.5;
+  color:var(--muted); margin:-.4rem 0 0;
 }
-.boot-track{
-  height:6px; border-radius:10px; overflow:hidden;
-  background:rgba(var(--muted-rgb),.1); border:1px solid rgba(var(--muted-rgb),.2);
+.boot-list{ list-style:none; margin:0; padding:0; display:grid; gap:.42rem }
+.boot-list li{
+  display:grid; grid-template-columns:1.1rem 1fr auto; align-items:center; gap:.6rem;
+  font-family:'Satoshi', sans-serif; font-size:.92rem; color:var(--ink);
+  opacity:.38; transition:opacity .3s ease;
 }
-.boot-fill{
-  height:100%; width:0%; border-radius:10px;
-  background:linear-gradient(90deg, var(--accent), var(--muted), var(--accent));
-  background-size:200% 100%; box-shadow:0 0 12px rgba(var(--accent-rgb),.4);
-  transition:width .3s ease; animation:bootShimmer 2s ease-in-out infinite;
+.boot-list li .mk{
+  width:.62rem; height:.62rem; border-radius:50%; justify-self:center;
+  border:1.5px solid rgba(var(--muted-rgb),.7);
+  transition:background .25s ease, border-color .25s ease, transform .25s cubic-bezier(.23,1,.32,1);
 }
-@keyframes bootShimmer{ 0%{background-position:-200% 0} 100%{background-position:200% 0} }
-.boot-pct{
-  font-family:'DotempDemo',monospace; font-size:.95rem; color:var(--accent);
-  letter-spacing:.12em; opacity:.85; margin-top:.8rem;
+.boot-list li .kb{ font-family:'DotempDemo', monospace; font-size:.8rem; color:var(--muted) }
+.boot-list li.go{ opacity:.75 }
+.boot-list li.go .mk{ border-color:var(--accent) }
+.boot-list li.ok{ opacity:1 }
+.boot-list li.ok .mk{ background:var(--accent); border-color:var(--accent); transform:scale(1.15) }
+.boot-track{ height:3px; border-radius:3px; overflow:hidden; background:rgba(var(--muted-rgb),.18) }
+.boot-fill{ height:100%; width:0%; background:var(--accent); transition:width .25s ease-out }
+.boot-foot{
+  display:flex; justify-content:space-between; gap:1rem;
+  font-family:'Satoshi', sans-serif; font-size:.8rem; color:var(--muted);
 }
+.boot-pct{ font-family:'DotempDemo', monospace; color:var(--accent) }
 @media (prefers-reduced-motion: reduce){
-  .boot-card, .boot-orb img, .boot-sparks i, .boot-title, .boot-fill{ animation:none }
+  .boot-glow, .boot-list li, .boot-list li .mk, .boot-fill{ transition:none }
 }
 
 /* phones: every card is a short sheet along the bottom, and the camera
@@ -1377,20 +1354,34 @@ a{ color:inherit }
       <div class="bd split">
         <div class="side">
           <p class="hd">iCloud</p>
-          <button class="it on">about me<span>Sideways into software</span></button>
-          <button class="it">reading<span>The Master and Margarita</span></button>
-          <button class="it">gym<span>Lifting since 2021</span></button>
+          <button class="it on" data-note="me">about me<span>Hi, I&rsquo;m Hen</span></button>
+          <button class="it" data-note="read">reading<span>The Master and Margarita</span></button>
+          <button class="it" data-note="gym">gym<span>Lifting since 2021</span></button>
+          <button class="it" data-note="credits">credits<span>Who made this desk</span></button>
         </div>
         <div class="pane notes">
-          <h3>I came to software sideways.</h3>
-          <p>Growing up I trained myself to see. Really see. How light pulls through curtain fabric, how shadow gives a sketch weight. Software arrived through aesthetics, through the kind of attention that makes you want to stop on something and understand it completely.</p>
-          <p>I think about incentive structures the way other people think about colour. The architecture of a thing tells you what it values. I try to build tools that belong to their users and leave scaffolding for whoever comes after me.</p>
-          <p>An endometriosis screener disguised as combat mechanics, because people do not fill out forms about their pain but they do finish games. A Baldur&rsquo;s Gate 3 expansion at actual studio scale. Every project starts the same way: a question I cannot put down.</p>
-          <p>4A Interaction Design &amp; Business, University of Waterloo.</p>
-        <!-- the attributions used to live in the Say hello panel. That
-             panel is gone, and CC BY needs them somewhere a person can
-             actually read them, so they live here now. -->
-        <p class="cred"><b>Credits</b><br>Surfaces from ambientCG (CC0). &ldquo;<a class="link" href="https://skfb.ly/ostwx" target="_blank" rel="noopener">Cup tea</a>&rdquo; by rigart and &ldquo;<a class="link" href="https://skfb.ly/oDsVN" target="_blank" rel="noopener">[FREE] Pothos Potted Plant - Money Plant</a>&rdquo; by AllQuad and &ldquo;<a class="link" href="https://skfb.ly/6CzIJ" target="_blank" rel="noopener">Old Desk Lamp</a>&rdquo; by Maxence Rouillet, all <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6GoDo" target="_blank" rel="noopener">Vinyl / Record Player</a>&rdquo; by Phaedrus, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/oHrDH" target="_blank" rel="noopener">Antique wooden desk with props</a>&rdquo; by shuvalov.di, <a class="link" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6FUoz" target="_blank" rel="noopener">Zippo Lighter - 60s Style, Vietnam War Era</a>&rdquo; by Kingy, <a class="link" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/p7qM9" target="_blank" rel="noopener">Tape Recorder with cassettes</a>&rdquo; by Varvara Dolgova, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6SBPP" target="_blank" rel="noopener">SpringBok - Rugby Jersey</a>&rdquo; by OmegaRedZA, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6nEHT" target="_blank" rel="noopener">Fallout 4 Nuka Cola Bottle</a>&rdquo; by Aike, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/oPvW9" target="_blank" rel="noopener">Porsche 911 turbo 930 Johnny Silverhand&rsquo;s</a>&rdquo; by valvetin, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/pCFBN" target="_blank" rel="noopener">Decorative plate</a>&rdquo; by Daria and &ldquo;<a class="link" href="https://skfb.ly/6XrZJ" target="_blank" rel="noopener">3December 2020 - Liquorice allsorts</a>&rdquo; by Jack Kelly, both <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
+          <div class="note" data-note="me">
+          <h3>Hi, I&rsquo;m Hen.</h3>
+          <p>I&rsquo;m a design engineer from South Africa, finishing Interaction Design &amp; Business at the University of Waterloo. I design products and then build them myself, so nothing gets lost between the mockup and the real thing.</p>
+          <p>I started with drawing. Growing up I trained myself to really look: how light comes through a curtain, how shadow gives a sketch weight. Code came later, as a way to make what I drew actually work, and I still bring that same attention to it.</p>
+          <p>Right now I&rsquo;m the founding product design engineer at Trove, the founder of Skrimp, and technical director on Path to Menzoberranzan. The case studies are in Finder, in the dock.</p>
+          </div>
+          <div class="note" data-note="read" hidden>
+          <h3>Reading</h3>
+          <p><i>The Master and Margarita</i> is my beloved. The rest of what I&rsquo;m reading is on the shelf on the desk: lean in and tap a spine.</p>
+          <p>I&rsquo;m also writing a novel of my own, slowly.</p>
+          </div>
+          <div class="note" data-note="gym" hidden>
+          <h3>Gym</h3>
+          <p>Lifting since 2021.</p>
+          </div>
+          <div class="note" data-note="credits" hidden>
+          <h3>Credits</h3>
+          <!-- CC BY needs the attributions somewhere a person can actually
+               read them, so they get a note of their own -->
+          <p>I built the room and wrote the code. Most of what&rsquo;s on the desk is someone else&rsquo;s 3D model, used under its licence:</p>
+          <p class="cred">Surfaces from ambientCG (CC0). &ldquo;<a class="link" href="https://skfb.ly/ostwx" target="_blank" rel="noopener">Cup tea</a>&rdquo; by rigart and &ldquo;<a class="link" href="https://skfb.ly/oDsVN" target="_blank" rel="noopener">[FREE] Pothos Potted Plant - Money Plant</a>&rdquo; by AllQuad and &ldquo;<a class="link" href="https://skfb.ly/6CzIJ" target="_blank" rel="noopener">Old Desk Lamp</a>&rdquo; by Maxence Rouillet, all <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6GoDo" target="_blank" rel="noopener">Vinyl / Record Player</a>&rdquo; by Phaedrus, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/oHrDH" target="_blank" rel="noopener">Antique wooden desk with props</a>&rdquo; by shuvalov.di, <a class="link" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6FUoz" target="_blank" rel="noopener">Zippo Lighter - 60s Style, Vietnam War Era</a>&rdquo; by Kingy, <a class="link" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/p7qM9" target="_blank" rel="noopener">Tape Recorder with cassettes</a>&rdquo; by Varvara Dolgova, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6SBPP" target="_blank" rel="noopener">SpringBok - Rugby Jersey</a>&rdquo; by OmegaRedZA, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/6nEHT" target="_blank" rel="noopener">Fallout 4 Nuka Cola Bottle</a>&rdquo; by Aike, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/oPvW9" target="_blank" rel="noopener">Porsche 911 turbo 930 Johnny Silverhand&rsquo;s</a>&rdquo; by valvetin, <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. &ldquo;<a class="link" href="https://skfb.ly/pCFBN" target="_blank" rel="noopener">Decorative plate</a>&rdquo; by Daria and &ldquo;<a class="link" href="https://skfb.ly/6XrZJ" target="_blank" rel="noopener">3December 2020 - Liquorice allsorts</a>&rdquo; by Jack Kelly, both <a class="link" href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1481,28 +1472,34 @@ a{ color:inherit }
        quietly refuses to start in: playVideo() returned, the state went
        back to unstarted, and there was no error to see. An <audio>
        element returns a promise that actually says why it failed. -->
-  <audio id="poemAudio" src="/about/media/poem.mp3" preload="auto" loop></audio>
-  <audio id="tapeAudio" src="/about/media/tape.mp3" preload="auto"></audio><div id="tape"></div></div>
+  <audio id="poemAudio" src="/about/media/poem.mp3" preload="none" loop></audio>
+  <audio id="tapeAudio" src="/about/media/tape.mp3" preload="none"></audio><div id="tape"></div></div>
 
   <!-- the rugby, which is the one clip you are meant to watch rather
        than just hear, so its player is on the card -->
   <div id="rugby" aria-label="Rugby World Cup highlights">
     <span class="eyebrow">Where I am from</span>
     <div id="rugbyPlayer"></div>
-    <p class="meta">South Africa. The 2023 final was decided by a point,
-      three matches running, and I have not been normal about it since.</p>
+    <p class="say">I&rsquo;m South African, and that&rsquo;s a Springbok
+      jersey. The Springboks are our national rugby team, and at home rugby
+      is bigger than sport. In 1995, a year after our first democratic
+      election, Nelson Mandela walked out in the green and gold to hand
+      over the World Cup, and the country still tells its story with that
+      picture.</p>
+    <p class="say">This is the 2023 World Cup. We won the quarter final,
+      the semi and the final by one point each (29-28, 16-15,
+      12-11) for a record fourth title, and I have not been normal
+      about it since.</p>
   </div>
 
   <div id="boot">
     <div class="boot-card">
-      <div class="boot-orb">
-        <span class="boot-sparks"><i></i><i></i><i></i><i></i><i></i><i></i></span>
-        <img src="../loading.gif" alt="" onerror="this.remove()">
-      </div>
-      <h1 class="boot-title">Warming the room&hellip;</h1>
-      <p class="boot-msg" id="bootMsg">Pulling the chair out for you</p>
+      <div class="boot-glow" aria-hidden="true"></div>
+      <h1 class="boot-title">Hen&rsquo;s desk</h1>
+      <p class="boot-msg">Setting it up for you. It&rsquo;s a little 3D room, so the first visit takes a moment.</p>
+      <ul class="boot-list" id="bootList" aria-hidden="true"></ul>
       <div class="boot-track"><div class="boot-fill" id="bootFill"></div></div>
-      <div class="boot-pct" id="bootPct">0%</div>
+      <div class="boot-foot"><span>Sound on is best</span><span class="boot-pct" id="bootPct" role="status">0%</span></div>
     </div>
   </div>
 </div>
@@ -2015,7 +2012,8 @@ const SHELF_BOOKS = [
       <p>Listen to them. The children of the night. What music they make.</p>` },
   { t:'Words of Radiance', a:'Brandon Sanderson', c:'#2f6f68',
     img:'/about/media/wor-cover.jpg', spine:'/about/media/wor-spine.jpg',
-    note:`<p>Book two of the Stormlight Archive, and the one where the
+    note:`<p>Book two of the Stormlight Archive, Sanderson's huge fantasy
+      series about a world wracked by storms, and the one where the
       whole thing snaps into focus. A thousand pages of setup paying off
       at once is its own kind of engineering.</p>
       <p>Journey before destination.</p>` },
@@ -2023,7 +2021,11 @@ const SHELF_BOOKS = [
     img:'/about/media/hobbit-cover.jpg', spine:'/about/media/hobbit-spine.jpg',
     /* the Alan Lee illustrated hardback: chunky, but nothing like the
        leather-bound volumes the desk shipped with */
-    spineRatio: 178 / 1484 },
+    spineRatio: 178 / 1484,
+    note:`<p>Tolkien's first trip to Middle-earth, written for his own
+      children in 1937, years before <i>The Lord of the Rings</i>. A hobbit
+      who likes his armchair gets talked into stealing from a dragon.</p>
+      <p>This copy is the one Alan Lee illustrated.</p>` },
   { t:'Before the Coffee Gets Cold', a:'Toshikazu Kawaguchi', c:'#5b9ea6',
     img:'/about/media/coffee-cover.jpg', spine:'/about/media/coffee-spine.jpg',
     /* thickness over height, straight off the printed wrap. The desk's
@@ -2031,7 +2033,12 @@ const SHELF_BOOKS = [
        paperback at a third of that, and without saying so its spine art
        would have to stretch to three times its printed width to fill
        the face. */
-    spineRatio: 39 / 528 },
+    spineRatio: 39 / 528,
+    note:`<p>A tiny café in Tokyo where you can travel back in time, as
+      long as you never leave your seat and you drink your coffee before
+      it gets cold. Nothing you do there changes the present.</p>
+      <p>So why go? Four short stories answer that, and it is a quiet book
+      about saying the thing while you still can.</p>` },
   { t:'The Great Gatsby', a:'F. Scott Fitzgerald', c:'#123a8a',
     img:'/about/media/gatsby-cover.jpg', spine:'/about/media/gatsby-spine.jpg',
     /* Cugat's 1925 celestial eyes, cut out of a scan of the whole wrap.
@@ -2039,7 +2046,12 @@ const SHELF_BOOKS = [
        hardback is a fatter object than a modern paperback, so the spine
        keeps its own printed width rather than the row's default. */
     tall: 0.150,
-    spineRatio: 74 / 476 },
+    spineRatio: 74 / 476,
+    note:`<p>Fitzgerald's 1925 novel about a man who throws enormous parties
+      on Long Island, hoping one particular person will walk through the
+      door.</p>
+      <p>The cover is the original 1925 art by Francis Cugat: the eyes and
+      the lips floating over the lights of the city.</p>` },
   /* closes the row, and the only one that leans. There used to be two
      plain spines here; Gatsby took the width of one and this took the
      other, and the shelf silently drops anything past its right edge. */
@@ -2048,7 +2060,11 @@ const SHELF_BOOKS = [
     /* the tall trade paperback, so it is the big one on the shelf: the
        same height as the Alan Lee Hobbit and a 400-page spine to match. */
     tall: 0.198,
-    spineRatio: 76 / 474 },
+    spineRatio: 76 / 474,
+    note:`<p>Science fiction on a Mars run by a caste system sorted by
+      colour. Darrow is a Red, a miner at the very bottom, until he is
+      rebuilt to pass as a Gold and sent to take the system apart from the
+      top.</p>` },
 ];
 
 /* Prop it on the foot of the lamp: handle down on the desk, glass end
@@ -4442,21 +4458,20 @@ const SPOTS = [
   { id:'laptop', label:'what I build', at:() => P.laptop, stage:'seated',
     cam:() => screenCam(), overlay:'mac',
     eyebrow:'What I build',
-    title:'Design engineer, founder, and occasional chaos architect.',
-    html:`<p>I build at the intersection of structure and experience. Diagnostic games, ARGs inside AI tools, studio-scale mods, and chat platforms written from scratch because I did not want my community's data sitting on somebody else's servers.</p>
-      <p>An endometriosis screener disguised as combat mechanics, because people do not fill out forms about their pain but they do finish games. A Baldur's Gate 3 expansion at actual studio scale. Every project starts the same way: a question I cannot put down.</p>
+    title:'I design things, then build them myself.',
+    html:`<p>I&rsquo;m a design engineer. I do the design and write the code, so nothing gets lost between the mockup and the real thing. Right now that&rsquo;s at Trove, an app that gets to know you through short interactive stories instead of a quiz.</p>
+      <p>A lot of what I make is a game, or works like one. EndoQuest is a story game that screens for endometriosis, because people don&rsquo;t fill out forms about their pain but they do finish games. I&rsquo;ve hidden an alternate reality game inside a university AI chatbot, and written a chat app from scratch so my community&rsquo;s messages stay on our own server.</p>
       <div class="row"><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Three.js</span><span class="chip">Convex</span><span class="chip">Godot</span><span class="chip">Python</span></div>
       <p class="meta">Founding product design engineer at Trove. Founder and CEO at Skrimp AI. CTO and Technical Director on Path to Menzoberranzan.</p>` },
 
-  { id:'notes', label:'how I got here', at:() => P.notes, stage:'seated',
+  { id:'notes', label:'how I work', at:() => P.notes, stage:'seated',
     cam:() => closeUp(P.notes, 0.3, 34),
-    eyebrow:'What I read',
-    title:'I came to software sideways.',
-    html:`<p>Growing up, I trained myself to see. Really see. How light pulls through curtain fabric, how shadow gives a sketch weight. Software arrived through aesthetics, through the kind of attention that makes you want to stop on something and understand it completely.</p>
-      <p>I think about incentive structures the way other people think about colour. The architecture of a thing tells you what it values. I try to build tools that belong to their users and leave scaffolding for whoever comes after me.</p>
-      <ul><li><i>The Master and Margarita</i> is my beloved</li>
-      <li>Writing a novel of my own, slowly</li>
-      <li>4A Interaction Design &amp; Business, University of Waterloo</li></ul>` },
+    eyebrow:'How I work',
+    title:'Every project starts with a question I can&rsquo;t put down.',
+    html:`<p>Usually a question about people. Why someone gives up halfway through a form. What they&rsquo;d say if nobody was grading it. What an app is quietly rewarding them for.</p>
+      <p>I look at how a thing is built to see what it actually values, because the structure always tells on it. Then I try to make tools that work for the people using them, and leave them tidy enough that whoever comes after me can pick them up.</p>
+      <ul><li>4A Interaction Design &amp; Business, University of Waterloo</li>
+      <li>Writing a novel of my own, slowly</li></ul>` },
 
   { id:'deck', label:'what I play', at:() => P.deck, stage:'seated',
     /* the radio sits on the left of frame and the player on the right.
@@ -4467,8 +4482,8 @@ const SPOTS = [
     cam:() => offsetCloseUp(P.deckAim || P.deck, 0.92, 32, 0.20, 0.02), overlay:'audio',
     eyebrow:'What I play',
     title:'Games are how I learned what a system feels like from the inside.',
-    html:`<p>Baldur's Gate 3 and Disco Elysium are the two I keep going back to, and these days I am helping build a third. Path to Menzoberranzan is a 140 person volunteer studio making a full custom campaign in the Underdark, and I run its technical direction.</p>
-      <p>Equinox came out of my first game jam. Eighteen days, fourteen people, first place out of eighty eight entries.</p>
+    html:`<p>Baldur's Gate 3 and Disco Elysium are the two I keep going back to, and these days I am helping build a third. Path to Menzoberranzan is a 140 person volunteer studio making a full custom campaign for Baldur&rsquo;s Gate 3, set in the Underdark (the huge underground world of Dungeons &amp; Dragons), and I run its technical direction.</p>
+      <p>Equinox came out of my first game jam, a contest where teams make a whole game against the clock. Eighteen days, fourteen people, first place out of eighty eight entries.</p>
       <ul><li>Path to Menzoberranzan, CTO and Technical Director</li>
       <li>Equinox, Comfy Jam Winter 2026 winner</li></ul>` },
 
@@ -4480,7 +4495,9 @@ const SPOTS = [
       whole performance. Something about the way it hits me does not
       agree with me at all though, so one cup can write off an
       afternoon and I have mostly made my peace with that.</p>
-      <p>So it is tea now. Rooibos when I want something warm and round,
+      <p>So it is tea now. Rooibos when I want something warm and round
+      (it&rsquo;s South African, and grows almost nowhere but the
+      Cederberg mountains north of Cape Town),
       earl grey when I want the bergamot to do the waking up instead.
       Bubble tea when I am out, matcha when I am pretending to have my
       life together.</p>` },
@@ -4489,10 +4506,14 @@ const SPOTS = [
     cam:() => aimBeside(P.glass, 0.34, 34, 0.078),
     eyebrow:'What I chase',
     title:'I love analog horror and ARGs.',
-    html:`<p>The genre that hides a story in the gaps: a corrupted tape, a
-      page that should not exist, a number that answers. I build them too,
-      which is a different way of saying I cannot leave a puzzle alone.</p>
-      <p>I am on level 24 of <a class="link" href="https://ae27ff.com/about.php" target="_blank" rel="noopener">AE27FF</a>. Can you beat me? :^)</p>
+    html:`<p>Analog horror is horror told through fake found footage: an old
+      VHS tape, an emergency broadcast, a training video where something
+      is slightly wrong. ARGs, alternate reality games, hide a story across
+      real websites, puzzles and phone numbers for players to dig up
+      together.</p>
+      <p>Both hide the story in the gaps, and I build them too, which is a
+      different way of saying I cannot leave a puzzle alone.</p>
+      <p>I am on level 24 of <a class="link" href="https://ae27ff.com/about.php" target="_blank" rel="noopener">AE27FF</a>, an online riddle game. Can you beat me? :^)</p>
       <p class="meta"><a class="link" href="https://ae27ff.com/about.php" target="_blank" rel="noopener">ae27ff.com &nearr;</a></p>` },
 
   /* the shelf. No panel: you lean in and the books tell you themselves. */
@@ -4514,14 +4535,20 @@ const SPOTS = [
     tape:true,
     eyebrow:'',
     title:'The Archivist got to me.',
-    html:`<p>I came to <a class="link" href="https://rustyquill.com/show/the-magnus-archives/" target="_blank" rel="noopener"><i>The Magnus Archives</i></a> for the horror and stayed
-      for Jonathan Sims. His whole job is taking other people's accounts
-      and reading them out loud, and he cannot stop at the reading. He has
-      to know, it costs him, and he goes back anyway.</p>
-      <p>Look at the rest of this desk and the connection is not subtle. I
-      build institutional things that watch people and hand them back their
-      own patterns, and more than one rewards whoever reads the output
-      instead of skimming it. There is Magnus in my wardrobe too.</p>
+    html:`<p>What&rsquo;s playing is <a class="link" href="https://rustyquill.com/show/the-magnus-archives/" target="_blank" rel="noopener"><i>The Magnus Archives</i></a>,
+      a horror audio drama by Rusty Quill: a podcast told like a radio play,
+      with actors and sound and no pictures. Each episode is one
+      statement, a stranger&rsquo;s account of something terrible that
+      happened to them, read onto tape by the Head Archivist of an odd
+      research institute in London.</p>
+      <p>I came for the horror and stayed for the Archivist, Jonathan
+      Sims. His whole job is taking other people&rsquo;s accounts and
+      reading them out loud, and he cannot stop at the reading. He has to
+      know, it costs him, and he goes back anyway.</p>
+      <p>That&rsquo;s close to what I build. Trove watches what people
+      choose and hands them back their own patterns, and more than one of
+      my projects rewards whoever reads the output instead of skimming it.
+      There is Magnus in my wardrobe too.</p>
       <p>No spoilers on the fears. Go in cold. The tape picks up where you
       left it.</p>` },
 
@@ -4532,10 +4559,14 @@ const SPOTS = [
     cam:() => offsetCloseUp(P.zippoAim || P.zippo, 0.30, 30, 0.055, 0.004), lighter:true,
     eyebrow:'',            /* the SOUND ON badge is the eyebrow here */
     title:'A poem and a promise it is short.',
-    html:`<p>This is John Doe reading Frost's <i>Stopping By The Woods On
-      A Snowy Evening</i> to Arthur, from
-      <a class="link" href="https://www.malevolent.ca/" target="_blank" rel="noopener">Malevolent</a>.
-      About a minute, and it loops, so you can leave it burning while
+    html:`<p>This is a clip from
+      <a class="link" href="https://www.malevolent.ca/" target="_blank" rel="noopener">Malevolent</a>,
+      a horror audio drama: a podcast told like a radio play, with actors
+      and sound and no pictures. It follows Arthur Lester, a private
+      investigator, and John, the voice that lives in his head. Here John
+      reads Robert Frost&rsquo;s <i>Stopping By Woods On A Snowy
+      Evening</i> to Arthur.</p>
+      <p>About a minute, and it loops, so you can leave it burning while
       you look at the rest of the desk.</p>
       <p>The poem and the show both changed my life. The poem is the one
       I go back to when a thing is hard and temporary, which is why it is
@@ -5751,20 +5782,41 @@ function sitDown(){
 const bootEl   = document.getElementById('boot');
 const bootFill = document.getElementById('bootFill');
 const bootPct  = document.getElementById('bootPct');
-const bootMsg  = document.getElementById('bootMsg');
-const BOOT_MSGS = [
-  'Pulling the chair out for you',
-  'Putting the kettle on',
-  'Finding the good lamp',
-  'Watering the pothos',
-  'Almost there'
+const bootList = document.getElementById('bootList');
+/* what each preloaded file is, in the order preload() is handed them */
+const BOOT_ITEMS = [
+  [DESK_GLB,   'The desk'],
+  [MINE_MAC,   'The laptop'],
+  [LAMP_GLB,   'The lamp'],
+  [DECK_GLB,   'The record player'],
+  [POTHOS_GLB, 'The plant'],
+  [CUP_GLB,    'A cup of rooibos'],
+  [ZIPPO_GLB,  'The lighter'],
+  [TAPE_GLB,   'The tape recorder'],
+  [JERSEY_GLB, 'The Springbok jersey'],
 ];
+const bootRows = BOOT_ITEMS.map(([, label]) => {
+  const li = document.createElement('li');
+  li.innerHTML = '<span class="mk"></span><span></span><span class="kb"></span>';
+  li.children[1].textContent = label;
+  bootList.appendChild(li);
+  return li;
+});
+const lastRow = document.createElement('li');
+lastRow.innerHTML = '<span class="mk"></span><span>Putting it all down</span><span class="kb"></span>';
+bootList.appendChild(lastRow);
+
 function boot(pct){
   const p = Math.max(0, Math.min(100, Math.round(pct)));
   bootFill.style.width = p + '%';
   bootPct.textContent  = p + '%';
-  const m = BOOT_MSGS[Math.min(BOOT_MSGS.length - 1, Math.floor(p / 100 * BOOT_MSGS.length))];
-  if (bootMsg.textContent !== m) bootMsg.textContent = m;
+  bootEl.style.setProperty('--p', p / 100);
+  if (p >= 100){ lastRow.className = 'ok'; bootRows.forEach(r => r.className = 'ok'); }
+}
+function bootRow(i, frac){
+  const r = bootRows[i]; if (!r) return;
+  r.className = frac >= 1 ? 'ok' : frac > 0 ? 'go' : '';
+  if (bootRows.every(x => x.className === 'ok')) lastRow.className = 'go';
 }
 
 async function preload(urls){
@@ -5772,8 +5824,12 @@ async function preload(urls){
   const cap = new Array(urls.length).fill(0);
   const report = () => {
     let done = 0;
-    for (let i = 0; i < urls.length; i++) if (cap[i]) done += Math.min(1, got[i] / cap[i]);
-    boot(done / urls.length * 100);
+    for (let i = 0; i < urls.length; i++){
+      const f = cap[i] ? Math.min(1, got[i] / cap[i]) : 0;
+      done += f; bootRow(i, f);
+    }
+    /* the files are 90% of the wait; parsing them is the last 10 */
+    boot(done / urls.length * 90);
   };
   await Promise.all(urls.map(async (url, i) => {
     try {
@@ -5814,11 +5870,23 @@ function openTheDoor(){
   step();
   startRoom();
   setTimeout(sitDown, 260);
+  setTimeout(loadTheRest, 900);
+}
+/* everything you only need once you are sat down: the two embeds and the
+   two spoken-word files. They used to load alongside the desk and slowed
+   the boot card down for things nobody can see yet. */
+function loadTheRest(){
+  for (const src of ['https://www.youtube.com/iframe_api', 'https://open.spotify.com/embed/iframe-api/v1']){
+    const sc = document.createElement('script'); sc.src = src; sc.async = true;
+    document.body.appendChild(sc);
+  }
+  for (const a of [poem, tape]){ try { a.preload = 'auto'; a.load(); } catch (e) {} }
+  dispatchEvent(new Event('room:open'));
 }
 
 /* the desk goes first on its own: the plant and the speaker need its
    measured surfaces before they know where they live. */
-preload([DESK_GLB, MINE_MAC, LAMP_GLB, DECK_GLB, POTHOS_GLB, CUP_GLB, ZIPPO_GLB, TAPE_GLB, JERSEY_GLB])
+preload(BOOT_ITEMS.map(([url]) => url))
   .then(loadDesk)
   .then(() => Promise.all([loadLaptop(), loadCup(), loadPlant(), loadLamp(), loadDeck(), loadLighter(), loadTape(), loadJersey(), loadNuka(), loadPorsche(),
                    loadPlate().then(loadAllsorts)]))
@@ -5982,7 +6050,21 @@ window.__room = { step, scene, camera, renderer, setStage, SPOTS, openPanel,
     else if (e.key === 'ArrowRight'){ openAt(at + 1); e.preventDefault(); }
   });
 
-  paint(PHOTOS);
+  /* the thumbnails wait until the room is up, so they are not
+     fighting the desk for the connection */
+  addEventListener('room:open', () => setTimeout(() => paint(PHOTOS), 2500), { once:true });
+})();
+
+/* the notes app: one note at a time, picked from the sidebar */
+(function () {
+  const win = document.getElementById('w-notes');
+  if (!win) return;
+  win.querySelectorAll('.side .it').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    win.querySelectorAll('.side .it').forEach(o => o.classList.toggle('on', o === b));
+    win.querySelectorAll('.pane .note').forEach(n => n.hidden = n.dataset.note !== b.dataset.note);
+    win.querySelector('.pane').scrollTop = 0;
+  }));
 })();
 
 /* ── pane wiring, the same contract the playground uses ───────── */
@@ -6011,8 +6093,6 @@ window.__room = { step, scene, camera, renderer, setStage, SPOTS, openPanel,
   addEventListener('mouseout',  e => { if (e.target.closest(HOVER)) post({ type:'iframeHover', on:false }); });
 })();
 </script>
-<script src="https://www.youtube.com/iframe_api"></script>
-<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 <script>
   // spotify and youtube build their own iframes with no title, so name any untitled one as it appears
   new MutationObserver(() => document.querySelectorAll('iframe:not([title])').forEach(f => {
