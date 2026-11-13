@@ -4200,7 +4200,7 @@ body::after{
 <p>And the people who did compare loved it. Once someone had compared with one friend, they did it with all of them. So the new compare flow is my answer to the old share button: two people who played the same story, side by side, one idea per page. The stickers you each earned, a page each for who you were in it and the moment that showed it, where you met, where you split, and a group card at the end worth sending to the next friend.</p>
 <p>A comparison: same tangle, two people, one idea per page, and an argument worth having over dinner.</p>
 <h2>Then real people used it, and things broke quietly.</h2>
-<p>Nothing crashed, which was the problem.</p>
+<p>Nothing crashed, so nothing told us anything was wrong.</p>
 <p>Three bugs cost us real players that summer and none of them threw an error, because in each one the system reported success while it was failing.</p>
 <p>In the first, a player’s result came back with the right content in the wrong format. The check that was meant to catch bad results didn’t recognise it, so everything after it logged a success while the player got no result card. In the second, one database query without an index took three parts of the app down on 11 June, and to players it just looked like slow wifi. In the third, the image you get when you share your card got bigger every time you pressed share, until it was eight times its original size, while still technically working.</p>
 <h2>I changed what people told me was broken.</h2>
@@ -7991,10 +7991,10 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=58b235a1',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=da6badad',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=e130a32c',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=d695876d', scene: 'myauntie' },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=71a359bd',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=8dc7ab1f',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=aee64102',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=4979126f', scene: 'myauntie' },
   equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=85f799b8',  scene: 'equinox'  },
   nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=6a058abc', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the

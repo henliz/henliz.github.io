@@ -4133,7 +4133,7 @@ body::after{
 <h2>It is three in the morning and the phone is at four percent.</h2>
 <p>Every product built for new parents assumes a spare hand and a spare mind. At 3 a.m. there is neither.</p>
 <p>Postpartum depression and anxiety are common, and a lot of it is never caught, because the people living inside them are too tired, too ashamed, or too busy being told they should feel lucky. The window is also longer than anyone plans for.</p>
-<p>So the need was never the question. The delivery was. Every serious attempt at this problem is an app, and an app asks a parent to download something, invent a password, answer twenty questions about her mood, and then come back daily to log how she is doing. That is homework. Handing homework to somebody running on four broken hours of sleep is not support. It is one more thing to fail at.</p>
+<p>So the need was never the question. The delivery was. Every serious attempt at this problem is an app, and an app asks a parent to download something, invent a password, answer twenty questions about her mood, and then come back daily to log how she is doing. That is homework. For someone running on four broken hours of sleep, that’s not support, just one more thing to feel behind on.</p>
 <p>That idea took about nine minutes. The other thirty five hours and fifty one minutes went on finding out what it costs.</p>
 <h2>We asked five mothers and then shut up.</h2>
 <p>No surveys. A survey tells you what somebody is willing to put in a form.</p>
@@ -4151,7 +4151,7 @@ body::after{
 <p>Better awareness, same gaps. The need is not shrinking, it is just better counted.</p>
 <h2>A judge picked up the phone and she answered.</h2>
 <p>Skip to the end of the weekend for a second, because everything after this makes more sense once you have heard her.</p>
-<p>The demo was not a video. It was a phone number on a slide, and we asked the room to dial it.</p>
+<p>For the demo we skipped the video. We put a phone number on a slide and asked the room to call it.</p>
 <p>She answered in under five seconds. Comforted first, then two local lactation lines, then a follow up text so the guidance outlived the panic. Behind her on the screen we left the receipts running: the classifier&#x27;s output, the row landing in the database, the query pulling it back out. Here is the thing itself, before any of the explaining.</p>
 <p>The voice line. Same persona, sized for audio.</p>
 <p>Thirty six hours earlier none of it existed. The rest of this is how a weekend got from there to here, and what we refused to build along the way.</p>
@@ -4162,7 +4162,7 @@ body::after{
 <p>Same Auntie on both. That sounds obvious and it is the part most multi channel products get wrong: they let the voice assistant become a brighter, more corporate person than the chat. We wrote one persona and sized her per channel. Texts get one breath. Calls get warmth, real pauses, and permission to trail off. After any call she texts you the key steps, because nobody at 3 a.m. remembers what a kind voice just said.</p>
 <h2>One breath, one step, one thing to watch.</h2>
 <p>Our first drafts were paragraphs. A tired parent skims a paragraph and misses the only sentence that mattered.</p>
-<p>So we made a rule, and then we made the rule testable. If a message took two breaths to read out loud, it got cut. Reading them aloud was not a flourish, it was the test, and it killed more copy than anything else we did.</p>
+<p>So we made a rule, and then we made the rule testable. If a message took two breaths to read out loud, it got cut. Reading out loud became our actual test, and it cut more copy than anything else we tried.</p>
 <h4>Say the kind thing first</h4>
 <p>You are not alone. That line buys the next twelve seconds of her attention, and nothing else works without it.</p>
 <h4>Give exactly one action</h4>
@@ -4173,7 +4173,7 @@ body::after{
 <p>Two breaths meant too long. This is the only rule that reliably caught our own cleverness.</p>
 <p>The voice had the same problem in a different key. OpenAI’s realtime text to speech is warm out of the box and also, in certain voices, deeply uncanny. We auditioned until Auntie sounded like somebody’s actual aunt rather than a hold message.</p>
 <h2>The one part that was never allowed to improvise.</h2>
-<p>A warm companion that guesses about a newborn’s fever is not a warm companion. It is a liability with a nice voice.</p>
+<p>If a friendly assistant guesses about a newborn’s fever, being friendly doesn’t help. It’s still a dangerous guess.</p>
 <p>So the model never answers. It classifies. Gemini reads the message and returns a structure: an intent, a topic, a region, a draft reply, and any red flags it spotted. The intent can only ever be one of three things.</p>
 <p>From there it is deterministic code. Topic plus region goes to Snowflake and comes back with two or three vetted resources you can actually phone. The evidence is short pre written cards drawn from the WHO, the CDC, the American College of Obstetricians and Gynecologists and Postpartum Support International, fed in rather than recalled. Auntie never freestyles medical advice because she structurally cannot.</p>
 <p>Four services, four owners, one written contract between each pair.</p>
@@ -4191,7 +4191,7 @@ body::after{
 <h4>Personalise light, and say so</h4>
 <p>Four fields, hashed, short lived. Remembering the caesarean matters. Remembering everything is surveillance with a friendly voice.</p>
 <p>The thing I did not expect was how much of it was writing. Not copywriting, writing: the taxonomy, the red flag lexicon, the escalation script, the four fields we were willing to keep. By Sunday the repository held less code than I assumed it would and more decisions than I thought a weekend could hold.</p>
-<p>And the instinct that turned out to be real is the one I keep building on. The load was always going to exist. The only question is whether the system carries it or the person does.</p>
+<p>And the instinct that turned out to be real is the one I keep building on. Parents were always going to have this much to carry. What I can change is how much of it the system takes off them.</p>
 <h3>Works Cited</h3>
 <p>Carlson, K., Mughal, S., Azhar, Y., &amp; Siddiqui, W. (2025, January 22). Perinatal depression. StatPearls, NCBI Bookshelf. https://www.ncbi.nlm.nih.gov/books/NBK519070/</p>
 <p>Centers for Disease Control and Prevention. (2024, May 15). Symptoms of depression among women. Reproductive Health. https://www.cdc.gov/reproductive-health/depression/index.html</p>
@@ -7960,10 +7960,10 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=58b235a1',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=da6badad',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=e130a32c',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=d695876d', scene: 'myauntie' },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=71a359bd',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=8dc7ab1f',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=aee64102',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=4979126f', scene: 'myauntie' },
   equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=85f799b8',  scene: 'equinox'  },
   nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=6a058abc', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the

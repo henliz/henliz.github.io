@@ -4189,18 +4189,18 @@ body::after{
 <li>Inheritance chains, story logic, atmosphere systems</li>
 <li>Translating architecture into workflows people can follow</li>
 <li>Rapid diagnosis under production pressure</li>
-<p>The CTO asks whether this decision hurts us in six months. The Technical Director asks why this cinematic is broken right now and how to fix it before the department goes idle. Neither question can wait for the other. They run in parallel, constantly, across different timescales and different failure modes. Merging them into one technical lead does not simplify the work. It just means both fail quietly until they fail loudly.</p>
+<p>The CTO asks whether this decision hurts us in six months. The Technical Director asks why this cinematic is broken right now and how to fix it before the department goes idle. Neither question can wait for the other. They run in parallel, constantly, across different timescales and different failure modes. Give both jobs to one technical lead and the work doesn’t get simpler. Problems just pile up unnoticed in both until something big breaks.</p>
 <p>Character creation screen concept art, by junjoba, Environment Art Lead.</p>
 <h2>The technical spine of a 140 person project lived in one person’s working memory.</h2>
 <p>So I wrote it down, and that document is the most load-bearing thing I have made here.</p>
 <p>The visible part of technical leadership is debugging. The dramatic moment where the cinematic is broken and you find the one misaligned atmosphere preset that caused it. That part is real and it takes real skill. The invisible part is the architecture: the documents, the conventions, the tracking rules, the licensing decisions, the pipeline constraints that stop one department’s work silently invalidating another’s over a month.</p>
-<p>Hen’s Brain: Technical Leadership Manual exists because institutional knowledge living in one head is not an inconvenience at this scale, it is an existential risk. It defines the two domains, their failure modes, their escalation paths, and which decisions fall unambiguously into each. It is not theory. It is operational infrastructure, and it is written so the project survives illness, burnout, exams and time zones.</p>
+<p>Hen’s Brain: Technical Leadership Manual exists because at this scale, if everything important only lives in my head, the project is one bad week away from stalling. It defines the two domains, their failure modes, their escalation paths, and which decisions fall unambiguously into each. It’s meant to be used day to day, and it’s written so the project keeps going through illness, burnout, exams and time zones.</p>
 <p>What 140 volunteers looks like when you draw it: seven departments, each with a coordinator and its own leads.</p>
 <p>Licensing sits in the same category. The custom toolchains are protected under PolyForm Shield 1.0.0, which prevents commercial appropriation of work built by volunteers, for free, for a community. That is a legal architecture decision rather than a creative one, and it is the sort of thing that is cheap to do early and impossible to do late.</p>
 <h2>There is a whole category of this I am proud of and not allowed to show you.</h2>
 <p>You get the infrastructure decisions. You do not get the blueprints.</p>
 <p>The actual technical architecture, the custom systems, the in-engine implementations that took months to work out: none of that is here. The public face of this project is screenshots and progress updates. The private face is engineering decisions I cannot share, because the project is not finished and the work belongs to a hundred and forty people rather than to me.</p>
-<p>That is the right call, and it is a strange thing, to have done work you cannot show. But the discipline of keeping quiet about active development, of understanding that the story gets told when it is done and not while it is happening, is its own kind of skill. You do not perform progress. You make it, quietly, and you wait.</p>
+<p>That is the right call, and it is a strange thing, to have done work you cannot show. But the discipline of keeping quiet about active development, of understanding that the story gets told when it is done and not while it is happening, takes practice. I had to get used to doing the work, not talking about it, and waiting until it was ready to show.</p>
 <h2>What this project taught me that a classroom couldn’t.</h2>
 <h4>01</h4>
 <h3>Name the domains or watch them collapse</h3>
@@ -7982,10 +7982,10 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    this pane is open — about and playground have none, so the shell stays
    in its own colours for them. */
 const CASES = {
-  trove:      { name: 'Trove',                  href: '/trove/case.html?v=58b235a1',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=da6badad',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=e130a32c',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=d695876d', scene: 'myauntie' },
+  trove:      { name: 'Trove',                  href: '/trove/case.html?v=71a359bd',    scene: 'trove'    },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=8dc7ab1f',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=aee64102',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=4979126f', scene: 'myauntie' },
   equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=85f799b8',  scene: 'equinox'  },
   nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=6a058abc', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the
