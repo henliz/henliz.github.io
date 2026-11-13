@@ -5986,9 +5986,9 @@ body::after{
           if (footer && mount) {
             footer.id = 'contact';
             mount.replaceWith(footer);
-            // the guestbook's code isn't copied with the footer, so load it here
-            if (footer.querySelector('[data-guestbook]') && !document.querySelector('script[src="/js/guestbook.js"]')) {
-              const gs = document.createElement('script'); gs.src = '/js/guestbook.js'; document.body.appendChild(gs);
+            // the cafe's code isn't copied with the footer, so load it here
+            if (footer.querySelector('[data-cafe]') && !document.querySelector('script[src="/js/cafe.js"]')) {
+              const cs = document.createElement('script'); cs.src = '/js/cafe.js'; document.body.appendChild(cs);
             }
             if (window.lucide) window.lucide.createIcons(footer);
 
@@ -7984,11 +7984,11 @@ if (!firstScreen.length){ firstScreen = null; window.postMessage({ type: 'models
    in its own colours for them. */
 const CASES = {
   trove:      { name: 'Trove',                  href: '/trove/case.html?v=71a359bd',    scene: 'trove'    },
-  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=8dc7ab1f',   scene: 'skrimp'   },
-  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=aee64102',    scene: 'menzo'    },
-  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=4979126f', scene: 'myauntie' },
+  skrimp:     { name: 'Skrimp AI',              href: '/skrimp/case.html?v=e69b5ef8',   scene: 'skrimp'   },
+  menzo:      { name: 'Path to Menzoberranzan', href: '/menzo/case.html?v=14e55634',    scene: 'menzo'    },
+  myauntie:   { name: 'MyAuntie',               href: '/myauntie/case.html?v=34a3c473', scene: 'myauntie' },
   equinox:    { name: 'Equinox',                href: '/equinox/case.html?v=85f799b8',  scene: 'equinox'  },
-  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=6a058abc', scene: 'handoff' },
+  nightingale: { name: 'Nightingale',           href: '/nightingale/case.html?v=5482cf25', scene: 'handoff' },
   // About and the playground are Hen's own pages rather than studies, so the
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,

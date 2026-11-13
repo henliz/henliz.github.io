@@ -1666,9 +1666,9 @@ size 48221184
       if (footer && mount) {
         footer.id = 'contact';
         mount.replaceWith(footer);
-        // the guestbook's code isn't copied with the footer, so load it here
-        if (footer.querySelector('[data-guestbook]') && !document.querySelector('script[src="/js/guestbook.js"]')) {
-          const gs = document.createElement('script'); gs.src = '/js/guestbook.js'; document.body.appendChild(gs);
+        // the cafe's code isn't copied with the footer, so load it here
+        if (footer.querySelector('[data-cafe]') && !document.querySelector('script[src="/js/cafe.js"]')) {
+          const cs = document.createElement('script'); cs.src = '/js/cafe.js'; document.body.appendChild(cs);
         }
         const hydrate = () => (window.lucide && window.lucide.createIcons());
         if (document.readyState === 'complete') hydrate();
