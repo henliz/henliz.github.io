@@ -989,53 +989,43 @@ a{ color:inherit }
 }
 #boot.gone{ opacity:0; pointer-events:none }
 
-/* the desk being set. one line per thing on it, each ticked off when its
-   file has actually arrived, and a lamp glow that warms up with the total.
-   nothing here is a fake timer: the lines follow preload() byte for byte. */
-.boot-card{
-  position:relative; width:min(88vw,360px);
-  display:grid; gap:1.1rem; text-align:left;
+/* mini hen walking round a little planet while the desk loads. she walks
+   on the spot and the planet turns under her, so she seems to go round.
+   the number underneath is real: preload() reports bytes as they land. */
+.boot-card{ display:grid; justify-items:center; gap:1.9rem; text-align:center }
+.boot-world{ position:relative; width:180px; height:210px }
+.boot-planet{
+  position:absolute; left:50%; bottom:0; width:150px; height:150px; margin-left:-75px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #9fe3cf, #4fb39a 55%, #2f7f74);
+  box-shadow:0 10px 30px rgba(var(--accent-rgb),.18);
 }
-.boot-glow{
-  position:absolute; left:50%; top:-40%; width:140%; aspect-ratio:1;
-  transform:translateX(-50%); pointer-events:none; z-index:-1;
-  background:radial-gradient(closest-side, rgba(255,196,120,.34), rgba(255,196,120,0));
-  opacity:calc(.15 + var(--p, 0) * .85); transition:opacity .4s ease;
+/* the light stays put; only the ground turns */
+.boot-planet::after{ content:""; position:absolute; inset:0; border-radius:50%;
+  box-shadow:inset -14px -16px 0 rgba(0,0,0,.12); pointer-events:none }
+.boot-ground{ position:absolute; inset:0; animation:bootSpin 9s linear infinite }
+.boot-ground i{ position:absolute; border-radius:50%; background:rgba(0,0,0,.12) }
+.boot-ground i:nth-child(1){ width:22px; height:22px; left:28px; top:44px }
+.boot-ground i:nth-child(2){ width:12px; height:12px; left:92px; top:96px }
+.boot-ground i:nth-child(3){ width:16px; height:16px; left:62px; top:112px }
+/* a little flag and a tree ride round with the planet, so you can see it turn */
+.boot-ground b{ position:absolute; left:50%; top:50%; width:0; height:0 }
+.boot-ground b::before{ content:""; position:absolute; left:-1px; bottom:75px; width:2px; height:20px; background:#2c3a44 }
+.boot-ground b::after{ content:""; position:absolute; left:1px; bottom:85px; width:13px; height:9px; background:#ff8a65; clip-path:polygon(0 0,100% 50%,0 100%) }
+.boot-ground b:nth-of-type(1){ rotate:110deg }
+.boot-ground b:nth-of-type(2){ rotate:230deg }
+.boot-ground b:nth-of-type(2)::before{ width:3px; height:12px; left:-1.5px; background:#7a5236 }
+.boot-ground b:nth-of-type(2)::after{ left:-8px; bottom:85px; width:16px; height:16px; border-radius:50%; background:#3f8f5a; clip-path:none }
+.boot-hen{
+  position:absolute; left:50%; bottom:142px; width:58px; height:88px; margin-left:-29px;
+  background:url('/sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat;
+  animation:bootWalk .96s steps(16) infinite;
 }
-.boot-title{
-  font-family:'DotempDemo', monospace; font-weight:400; font-size:2rem;
-  line-height:1; color:var(--ink); margin:0;
-}
-.boot-msg{
-  font-family:'Satoshi', sans-serif; font-size:.95rem; line-height:1.5;
-  color:var(--muted); margin:-.4rem 0 0;
-}
-.boot-list{ list-style:none; margin:0; padding:0; display:grid; gap:.42rem }
-.boot-list li{
-  display:grid; grid-template-columns:1.1rem 1fr auto; align-items:center; gap:.6rem;
-  font-family:'Satoshi', sans-serif; font-size:.92rem; color:var(--ink);
-  opacity:.38; transition:opacity .3s ease;
-}
-.boot-list li .mk{
-  width:.62rem; height:.62rem; border-radius:50%; justify-self:center;
-  border:1.5px solid rgba(var(--muted-rgb),.7);
-  transition:background .25s ease, border-color .25s ease, transform .25s cubic-bezier(.23,1,.32,1);
-}
-.boot-list li .kb{ font-family:'DotempDemo', monospace; font-size:.8rem; color:var(--muted) }
-.boot-list li.go{ opacity:.75 }
-.boot-list li.go .mk{ border-color:var(--accent) }
-.boot-list li.ok{ opacity:1 }
-.boot-list li.ok .mk{ background:var(--accent); border-color:var(--accent); transform:scale(1.15) }
-.boot-track{ height:3px; border-radius:3px; overflow:hidden; background:rgba(var(--muted-rgb),.18) }
-.boot-fill{ height:100%; width:0%; background:var(--accent); transition:width .25s ease-out }
-.boot-foot{
-  display:flex; justify-content:space-between; gap:1rem;
-  font-family:'Satoshi', sans-serif; font-size:.8rem; color:var(--muted);
-}
-.boot-pct{ font-family:'DotempDemo', monospace; color:var(--accent) }
-@media (prefers-reduced-motion: reduce){
-  .boot-glow, .boot-list li, .boot-list li .mk, .boot-fill{ transition:none }
-}
+@keyframes bootWalk{ to{ background-position:calc(100% * 16 / 15) 0 } }
+@keyframes bootSpin{ to{ rotate:-360deg } }
+.boot-msg{ font-family:'Satoshi', sans-serif; font-size:.95rem; color:var(--muted); margin:0 }
+.boot-pct{ font-family:'DotempDemo', monospace; color:var(--accent); margin-left:.35rem }
+@media (prefers-reduced-motion: reduce){ .boot-ground, .boot-hen{ animation:none } }
 
 /* phones: every card is a short sheet along the bottom, and the camera
    (see openPanel) frames the thing you tapped in the top half, so the card
@@ -1362,9 +1352,10 @@ a{ color:inherit }
         <div class="pane notes">
           <div class="note" data-note="me">
           <h3>Hi, I&rsquo;m Hen.</h3>
-          <p>I&rsquo;m a design engineer from South Africa, finishing Interaction Design &amp; Business at the University of Waterloo. I design products and then build them myself, so nothing gets lost between the mockup and the real thing.</p>
-          <p>I started with drawing. Growing up I trained myself to really look: how light comes through a curtain, how shadow gives a sketch weight. Code came later, as a way to make what I drew actually work, and I still bring that same attention to it.</p>
-          <p>Right now I&rsquo;m the founding product design engineer at Trove, the founder of Skrimp, and technical director on Path to Menzoberranzan. The case studies are in Finder, in the dock.</p>
+          <p>I&rsquo;m a design engineer, and South African Canadian: born here, first generation, to a South African family. I grew up in Breslau, a tiny farm-country township outside Waterloo, and I&rsquo;m finishing Interaction Design &amp; Business at the University of Waterloo.</p>
+          <p>Art came first. I was always buried in books and games, making up my own characters and wanting to draw them, and trying to draw them well gave me a high bar for how things should look.</p>
+          <p>Code came from the half of me that loves a puzzle. My dad and my brother were both into it, so I learned JavaScript in high school and rebuilt the arcade game Asteroids in a course. Later I taught myself Python off forums to sort 60,000 comments for a research job. I wouldn&rsquo;t have called myself a builder at 17. Waterloo changed that.</p>
+          <p>Now I do both: I design the thing, then build it. I&rsquo;m the founding product design engineer at Trove, the founder of Skrimp, and technical director on Path to Menzoberranzan. The case studies are in Finder, in the dock.</p>
           </div>
           <div class="note" data-note="read" hidden>
           <h3>Reading</h3>
@@ -1480,13 +1471,14 @@ a{ color:inherit }
   <div id="rugby" aria-label="Rugby World Cup highlights">
     <span class="eyebrow">Where I am from</span>
     <div id="rugbyPlayer"></div>
-    <p class="say">I&rsquo;m South African, and that&rsquo;s a Springbok
-      jersey. The Springboks are our national rugby team, and at home rugby
-      is bigger than sport. In 1995, a year after our first democratic
-      election, Nelson Mandela walked out in the green and gold to hand
-      over the World Cup, and the country still tells its story with that
-      picture.</p>
-    <p class="say">This is the 2023 World Cup. We won the quarter final,
+    <p class="say">I&rsquo;m South African Canadian: born in Canada, first
+      generation, to a South African family. That&rsquo;s a Springbok
+      jersey. The Springboks are South Africa&rsquo;s national rugby team,
+      and there rugby is bigger than sport. In 1995, a year after the
+      country&rsquo;s first democratic election, Nelson Mandela walked out
+      in the green and gold to hand over the World Cup, and South Africa
+      still tells its story with that picture.</p>
+    <p class="say">This is the 2023 World Cup. The Boks won the quarter final,
       the semi and the final by one point each (29-28, 16-15,
       12-11) for a record fourth title, and I have not been normal
       about it since.</p>
@@ -1494,12 +1486,11 @@ a{ color:inherit }
 
   <div id="boot">
     <div class="boot-card">
-      <div class="boot-glow" aria-hidden="true"></div>
-      <h1 class="boot-title">Hen&rsquo;s desk</h1>
-      <p class="boot-msg">Setting it up for you. It&rsquo;s a little 3D room, so the first visit takes a moment.</p>
-      <ul class="boot-list" id="bootList" aria-hidden="true"></ul>
-      <div class="boot-track"><div class="boot-fill" id="bootFill"></div></div>
-      <div class="boot-foot"><span>Sound on is best</span><span class="boot-pct" id="bootPct" role="status">0%</span></div>
+      <div class="boot-world" aria-hidden="true">
+        <div class="boot-planet"><div class="boot-ground"><i></i><i></i><i></i><b></b><b></b></div></div>
+        <div class="boot-hen"></div>
+      </div>
+      <p class="boot-msg" role="status">setting up my desk<span class="boot-pct" id="bootPct">0%</span></p>
     </div>
   </div>
 </div>
@@ -4468,7 +4459,8 @@ const SPOTS = [
     cam:() => closeUp(P.notes, 0.3, 34),
     eyebrow:'How I work',
     title:'Every project starts with a question I can&rsquo;t put down.',
-    html:`<p>Usually a question about people. Why someone gives up halfway through a form. What they&rsquo;d say if nobody was grading it. What an app is quietly rewarding them for.</p>
+    html:`<p>I was always the kid who found the loophole in a board game and broke it so my team would win. Escape rooms, coding puzzles, unsolved mysteries: if it had a hidden rule, I wanted it.</p>
+      <p>Now it&rsquo;s usually a question about people. Why someone gives up halfway through a form. What they&rsquo;d say if nobody was grading it. What an app is quietly rewarding them for.</p>
       <p>I look at how a thing is built to see what it actually values, because the structure always tells on it. Then I try to make tools that work for the people using them, and leave them tidy enough that whoever comes after me can pick them up.</p>
       <ul><li>4A Interaction Design &amp; Business, University of Waterloo</li>
       <li>Writing a novel of my own, slowly</li></ul>` },
@@ -5780,43 +5772,14 @@ function sitDown(){
    geometry and uploading it to the GPU while rAF runs flat out is
    what the stutter was. */
 const bootEl   = document.getElementById('boot');
-const bootFill = document.getElementById('bootFill');
 const bootPct  = document.getElementById('bootPct');
-const bootList = document.getElementById('bootList');
-/* what each preloaded file is, in the order preload() is handed them */
+/* what preload() fetches before the room opens */
 const BOOT_ITEMS = [
-  [DESK_GLB,   'The desk'],
-  [MINE_MAC,   'The laptop'],
-  [LAMP_GLB,   'The lamp'],
-  [DECK_GLB,   'The record player'],
-  [POTHOS_GLB, 'The plant'],
-  [CUP_GLB,    'A cup of rooibos'],
-  [ZIPPO_GLB,  'The lighter'],
-  [TAPE_GLB,   'The tape recorder'],
-  [JERSEY_GLB, 'The Springbok jersey'],
+  [DESK_GLB], [MINE_MAC], [LAMP_GLB], [DECK_GLB], [POTHOS_GLB],
+  [CUP_GLB], [ZIPPO_GLB], [TAPE_GLB], [JERSEY_GLB],
 ];
-const bootRows = BOOT_ITEMS.map(([, label]) => {
-  const li = document.createElement('li');
-  li.innerHTML = '<span class="mk"></span><span></span><span class="kb"></span>';
-  li.children[1].textContent = label;
-  bootList.appendChild(li);
-  return li;
-});
-const lastRow = document.createElement('li');
-lastRow.innerHTML = '<span class="mk"></span><span>Putting it all down</span><span class="kb"></span>';
-bootList.appendChild(lastRow);
-
 function boot(pct){
-  const p = Math.max(0, Math.min(100, Math.round(pct)));
-  bootFill.style.width = p + '%';
-  bootPct.textContent  = p + '%';
-  bootEl.style.setProperty('--p', p / 100);
-  if (p >= 100){ lastRow.className = 'ok'; bootRows.forEach(r => r.className = 'ok'); }
-}
-function bootRow(i, frac){
-  const r = bootRows[i]; if (!r) return;
-  r.className = frac >= 1 ? 'ok' : frac > 0 ? 'go' : '';
-  if (bootRows.every(x => x.className === 'ok')) lastRow.className = 'go';
+  bootPct.textContent = Math.max(0, Math.min(100, Math.round(pct))) + '%';
 }
 
 async function preload(urls){
@@ -5826,7 +5789,7 @@ async function preload(urls){
     let done = 0;
     for (let i = 0; i < urls.length; i++){
       const f = cap[i] ? Math.min(1, got[i] / cap[i]) : 0;
-      done += f; bootRow(i, f);
+      done += f;
     }
     /* the files are 90% of the wait; parsing them is the last 10 */
     boot(done / urls.length * 90);

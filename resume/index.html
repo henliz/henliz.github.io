@@ -3841,8 +3841,9 @@ body::after{
 .rail-walk{ position:relative; flex:0 1000 calc(150px + .3rem); min-height:0; max-height:calc(150px + .3rem);
   margin-top:auto; pointer-events:none; container-type:size; }
 :root:not([data-pane-open]) .rail-walk + .sb-foot{ margin-top:0 !important; }
-/* homepage only, never inside a case study (or about / resume) */
-:root[data-pane-open] .rail-walk{ display:none; }
+/* the home zone: the homepage, plus about and resume, which open as panes
+   but are part of home. never inside a case study or the playground */
+:root[data-pane-open]:not([data-pane="about"]):not([data-pane="resume"]) .rail-walk{ display:none; }
 /* the button is her + her speech bubble. the button does the pacing and the
    sprite inside does the stepping and turning around, so the bubble rides
    along with her without getting mirrored on the walk back.
@@ -3944,7 +3945,9 @@ body::after{
   border-color:rgba(168, 218, 220, .35);
 }
 .hen-chat[hidden]{ display:none; }
-:root[data-pane-open] .hen-chat{ display:none; }
+/* about and resume open as panes (z 800), so she has to sit above them */
+:root[data-pane="about"] .hen-chat, :root[data-pane="resume"] .hen-chat{ z-index:900; }
+:root[data-pane-open]:not([data-pane="about"]):not([data-pane="resume"]) .hen-chat{ display:none; }
 @keyframes hcIn{ from{ opacity:0; transform:translateY(10px) scale(.9); } to{ opacity:1; transform:none; } }
 
 /* header: her in a little sky, two clouds drifting behind */
@@ -7940,7 +7943,7 @@ const CASES = {
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
   // which on a page with no table of contents just reads as a missing nav.
-  about:      { name: 'About Me',               href: '/about/case.html?v=5966d38f',      plainRail: true },
+  about:      { name: 'About Me',               href: '/about/case.html?v=7e870659',      plainRail: true },
   playground: { name: 'Playground',             href: '/playground/case.html?v=0d46802f', plainRail: true },
   resume:     { name: 'Résumé',   href: '/resume/case.html?v=0db74187',     plainRail: true },
 };
@@ -8098,6 +8101,7 @@ const CASE_BY_HREF = Object.fromEntries(
     if (c.scene) root.setAttribute('data-case', c.scene);
     else root.removeAttribute('data-case');
     root.setAttribute('data-pane-open', '');
+    root.setAttribute('data-pane', slug);
     pane.classList.add('open');
     pane.setAttribute('aria-hidden', 'false');
     markActive(slug);
@@ -8118,7 +8122,7 @@ const CASE_BY_HREF = Object.fromEntries(
     if (!current) return;
     current = null;
     root.removeAttribute('data-case');
-    root.removeAttribute('data-pane-open');
+    root.removeAttribute('data-pane-open'); root.removeAttribute('data-pane');
     document.title = "Henrietta's Portfolio";
     pane.classList.remove('open');
     pane.setAttribute('aria-hidden', 'true');
@@ -8157,7 +8161,7 @@ const CASE_BY_HREF = Object.fromEntries(
       // hash left the case route (back button) — tear down without touching it
       current = null;
       root.removeAttribute('data-case');
-      root.removeAttribute('data-pane-open');
+      root.removeAttribute('data-pane-open'); root.removeAttribute('data-pane');
       document.title = "Henrietta's Portfolio";
       pane.classList.remove('open');
       pane.setAttribute('aria-hidden', 'true');
