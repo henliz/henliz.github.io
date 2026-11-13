@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Footer (Universal + Mobile-fixed)</title>
   <link rel="icon" type="image/png" href="/favicon.png" />
-  <script src="https://unpkg.com/lucide@0.474.0/dist/umd/lucide.js"></script>
   <style>
     /* Satoshi, same as the rest of the site. This file is opened on its
        own as well as injected, so it carries its own @font-face rather
@@ -37,9 +36,6 @@
        outranks the shell's own body rule. */
     html,body{margin:0;padding:0}
 
-    /* the last panel of the comic. the intro opens on comic panels of her
-       falling in, so the page ends on one: a caption, her name as the big
-       sound effect, "to be continued". no links here, they live in the rail */
     footer.hen-footer{
       display:block; container-type:inline-size;
       color:var(--fg);
@@ -51,130 +47,64 @@
       scroll-margin-top:80px;
     }
 
-    /* the whole footer is space. a canvas draws the stars, her real clouds and
-       some ascii ones drifting past, an ascii planet turning slowly with
-       everyone's doodles going round it, and a tiny 707 station. chibi hen
-       walks on top of the planet, and a little signpost opens the drawing pad.
-       js/guestbook.js runs it; without it you just get the sky and the links */
-    :root footer.hen-footer.gb-space{
-      display:block !important; position:relative; padding:0 !important; border-top:0 !important; overflow:hidden;
-      background:radial-gradient(120% 90% at 50% 110%, #1d2a6b 0%, #0e1640 45%, #070b22 100%) !important;
-      color:#f6eeda;
+    /* hen's cafe. a tiny counter in the footer where you make yourself a
+       drink for the road. everything on it is a real physics thing
+       (matter.js), js/cafe.js runs it. without js you just get the counter */
+    :root footer.hen-footer.cafe-foot{
+      display:block; position:relative; overflow:hidden;
+      padding:2.4rem clamp(1rem,4cqi,2.5rem) 1.1rem;
+      background:linear-gradient(180deg, #0f1419 0%, #151b2b 100%) !important;
     }
-    .gb{ position:relative; width:100%; height:clamp(320px, 40vh, 420px); }
-    .gb-orbit{ position:absolute; inset:0; width:100%; height:100%; display:block; }
-    .gb-bubble{
-      position:relative; margin:0 0 .55rem; white-space:nowrap; pointer-events:none;
-      font:600 .74rem/1 'Satoshi',sans-serif; color:#13204a; background:#f6eeda;
-      padding:.4rem .65rem; border-radius:999px; box-shadow:0 3px 0 rgba(0,0,0,.25);
+    /* light mode: the same cyan as the sky behind the glass card, just a
+       touch deeper, and still see-through so the sky shows through it */
+    :root[data-theme="light"] footer.hen-footer.cafe-foot{
+      background:linear-gradient(180deg, rgba(120,198,226,.2) 0%, rgba(86,174,212,.34) 100%) !important;
+      border-top-color:rgba(255,255,255,.55);
     }
-    .gb-bubble::after{ content:''; position:absolute; left:50%; bottom:-5px; width:9px; height:9px; background:#f6eeda; transform:translateX(-50%) rotate(45deg); }
-    /* the button is a little ascii satellite drifting in the sky */
-    .gb-sat{
-      all:unset; position:absolute; left:var(--sx,24%); top:var(--sy,22%); transform:translate(-50%,0);
-      display:flex; flex-direction:column; align-items:center; cursor:pointer;
-      animation:gbBob 8s ease-in-out infinite;
+    .cafe-title{
+      position:relative; z-index:1; margin:0 auto; text-align:center; max-width:30ch;
+      font:400 clamp(1rem,2.4cqi,1.25rem)/1.25 'DotempDemo', monospace; color:var(--fg);
     }
-    .gb:not(.gb-ready) .gb-sat{ display:none; }
-    @keyframes gbBob{ 0%,100%{ translate:0 0; rotate:-1deg; } 50%{ translate:0 -4px; rotate:1deg; } }
-    .gb-sat-art{ display:block; height:auto; filter:drop-shadow(0 0 6px rgba(159,180,255,.55)); transition:filter .2s ease; }
-    /* a speech bubble from the satellite, tail pointing down at it */
-    .gb-sat-label{
-      position:relative; margin-bottom:.7rem; text-align:center; white-space:nowrap;
-      font:700 .76rem/1.35 'Satoshi',sans-serif; color:#13204a;
-      padding:.5rem .8rem; border-radius:14px; background:#f6eeda;
-      box-shadow:0 3px 0 rgba(0,0,0,.25); transition:background .2s ease;
-    }
-    .gb-sat-label::after{
-      content:''; position:absolute; left:50%; bottom:-6px; width:11px; height:11px;
-      background:inherit; transform:translateX(-50%) rotate(45deg); border-radius:0 0 3px 0;
-    }
-    .gb-sat:hover .gb-sat-art{ filter:drop-shadow(0 0 10px rgba(255,228,92,.8)) brightness(1.25); }
-    .gb-sat:hover .gb-sat-label{ background:#fff8d6; }
-    .gb-sat:focus-visible .gb-sat-label{ outline:2px solid #ffe45c; outline-offset:3px; }
-    .gb-count{ position:absolute; right:clamp(1rem,4cqi,2.5rem); top:16px; margin:0; text-align:right; font:500 .74rem/1 'Satoshi',sans-serif; color:rgba(246,238,218,.55); pointer-events:none; }
-    .gb .ft-base{ position:absolute; left:0; right:0; bottom:0; margin:0 auto; padding:0 clamp(1rem,4cqi,2.5rem) 1rem; max-width:none; }
-    .gb .ft-base p{ color:rgba(246,238,218,.7); opacity:1; }
-    .gb .ft-sky{
-      background:rgba(246,238,218,.08); color:#f6eeda; border:1px solid rgba(246,238,218,.3);
-      box-shadow:none; font-weight:600; padding:.5rem .95rem;
-      -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
-    }
-    .gb .ft-sky:hover{ transform:none; box-shadow:none; background:rgba(246,238,218,.16); border-color:rgba(246,238,218,.55); }
-    .gb .ft-sky:active{ transform:none; box-shadow:none; }
+    /* the stall itself is drawn on the canvas, this box just says where it
+       goes. the canvas covers the whole footer so you can drag things off
+       the counter and leave them anywhere */
+    .cafe{ position:relative; width:100%; max-width:860px; height:330px; margin:.8rem auto 0; }
+    .cafe-canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; z-index:2; }
+    .cafe-canvas.grab{ cursor:grab; }
+    .cafe-canvas.grabbing{ cursor:grabbing; }
 
-    /* the drawing pad, in a modal */
-    .gb-modal{
-      /* the site resets every margin to 0, which stops a dialog centring itself */
-      position:fixed; inset:0; margin:auto; height:fit-content; max-height:calc(100dvh - 32px); overflow:auto;
-      width:min(410px, calc(100vw - 32px)); padding:0; border:1px solid rgba(159,180,255,.3); border-radius:20px;
-      background:#111c45; color:#f6eeda; box-shadow:0 30px 80px rgba(0,0,0,.5);
+    /* the drink's name pops up beside the glass, same sticker as mini hen's bubble */
+    .cafe-order{
+      position:absolute; left:0; top:0; z-index:3; margin:0; pointer-events:none;
+      width:max-content; max-width:min(180px, 40vw); text-align:center;
+      font:400 .85rem/1.2 'DotempDemo', monospace; color:#14202b;
+      padding:.35rem .5rem; background:#fff;
+      box-shadow:0 0 0 2px #fff, 0 0 0 4px #14202b, 3px 5px 0 2px rgba(20,32,43,.3);
+      opacity:0; transform:translate(-100%, -50%) scale(.6); transform-origin:100% 50%;
+      transition:opacity .18s ease, transform .35s cubic-bezier(.34,1.5,.64,1);
     }
-    .gb-modal, .gb-modal *{ cursor:auto !important; }
-    .gb-modal button, .gb-modal .gb-ink, .gb-modal .gb-size{ cursor:pointer !important; }
-    .gb-modal .gb-draw{ cursor:crosshair !important; }
-    .gb-modal .gb-name{ cursor:text !important; }
-    body.gb-drawing .custom-cursor{ opacity:0 !important; }
-    .gb-modal::backdrop{ background:rgba(5,8,25,.55); backdrop-filter:blur(3px); }
-    .gb-modal[open]{ animation:gbPop .28s cubic-bezier(.2,1.3,.5,1); }
-    @keyframes gbPop{ from{ opacity:0; transform:translateY(10px) scale(.96); } }
-    .gb-pad{ padding:1.2rem; display:flex; flex-direction:column; gap:.7rem; }
-    .gb-head{ display:flex; align-items:center; justify-content:space-between; gap:1rem; }
-    .gb-title{ margin:0; font:700 1.05rem/1.2 'Satoshi',sans-serif; color:#f6eeda; }
-    .gb-close{ all:unset; cursor:pointer; width:28px; height:28px; border-radius:50%; display:grid; place-items:center; color:rgba(246,238,218,.7); font-size:1.2rem; }
-    .gb-close:hover{ background:rgba(246,238,218,.1); color:#f6eeda; }
-    .gb-draw{
-      width:100%; aspect-ratio:1/1; display:block; border-radius:14px; touch-action:none; cursor:crosshair;
-      background:radial-gradient(rgba(159,180,255,.18) 1px, transparent 1.5px) 0 0/16px 16px, #0d1638;
-      border:1px solid rgba(159,180,255,.25);
+    .cafe-order.on{ opacity:1; transform:translate(-100%, -50%) scale(1); }
+    .cafe-order::after{
+      content:''; position:absolute; left:100%; top:50%; margin:-5px 0 0 2px;
+      border:5px solid transparent; border-left-color:#14202b;
     }
-    .gb-tools{ display:flex; flex-wrap:wrap; align-items:center; gap:.45rem; }
-    /* :where keeps the reset weak, so each button's own look wins */
-    .gb-tools :where(button){ all:unset; cursor:pointer; box-sizing:border-box; }
-    .gb-ink{ width:22px; height:22px; border-radius:50%; background:var(--ink); box-shadow:0 0 0 2px #111c45, 0 0 0 3px rgba(246,238,218,.25); }
-    .gb-ink[aria-pressed="true"]{ box-shadow:0 0 0 2px #111c45, 0 0 0 4px #f6eeda; }
-    .gb-size{ width:26px; height:26px; border-radius:8px; display:grid; place-items:center; background:rgba(246,238,218,.08); }
-    .gb-size::after{ content:''; border-radius:50%; background:#f6eeda; width:var(--d); height:var(--d); }
-    .gb-size[aria-pressed="true"]{ background:rgba(246,238,218,.22); }
-    .gb-tool{ font:600 .78rem/1 'Satoshi',sans-serif; color:rgba(246,238,218,.75); padding:.45rem .6rem; border-radius:8px; background:rgba(246,238,218,.08); }
-    .gb-tool:hover{ color:#f6eeda; background:rgba(246,238,218,.16); }
-    .gb-sep{ flex:1; }
-    .gb-name{
-      width:100%; box-sizing:border-box; font:500 16px/1.2 'Satoshi',sans-serif; color:#f6eeda;
-      background:rgba(246,238,218,.06); border:1px solid rgba(159,180,255,.25); border-radius:10px; padding:.6rem .75rem;
+
+    /* keyboard way in: the same steps as buttons, tucked away until you tab in */
+    .cafe-keys{ position:absolute; right:0; top:0; z-index:4; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.35rem; max-width:min(420px, 80%); }
+    .cafe-keys:not(:focus-within){ clip-path:inset(50%); width:1px; height:1px; overflow:hidden; }
+    .cafe-keys button{
+      all:unset; cursor:pointer; font:500 .78rem/1 'Satoshi',sans-serif; color:#14202b; background:#fbefdc;
+      padding:.4rem .6rem; border-radius:999px; box-shadow:0 2px 0 #3e241b;
     }
-    .gb-name::placeholder{ color:rgba(246,238,218,.45); }
-    .gb-send{
-      all:unset; cursor:pointer; text-align:center; padding:.75rem 1rem; border-radius:999px;
-      background:#ffe45c; color:#111; font:800 .9rem/1 'Satoshi',sans-serif; transition:opacity .2s ease;
-    }
-    .gb-send:disabled{ opacity:.4; cursor:default; }
-    .gb-send:focus-visible, .gb-tools button:focus-visible, .gb-name:focus-visible, .gb-close:focus-visible{ outline:2px solid #ffe45c; outline-offset:2px; }
-    .gb-note{ margin:0; font:500 .78rem/1.35 'Satoshi',sans-serif; color:rgba(246,238,218,.6); }
-    @media (prefers-reduced-motion:reduce){ .gb-sat{ animation:none; } .gb-modal[open]{ animation:none; } }
+    .cafe-keys button:focus-visible{ outline:2px solid #ffe45c; outline-offset:2px; }
 
     .ft-base{
-      display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:.8rem 1.5rem;
-      max-width:980px; margin:2rem auto 0;
-      font-size:.85rem;
+      position:relative; z-index:1; display:flex; justify-content:center; text-align:center;
+      max-width:980px; margin:.9rem auto 0; font-size:.82rem;
     }
-    .ft-base p{ margin:0; opacity:.65; }
-    /* back up to the sky, as a little comic button */
-    .ft-sky{
-      all:unset; cursor:pointer; display:inline-flex; align-items:center; gap:.4rem;
-      padding:.45rem .9rem; background:#ffe45c; color:#111;
-      border:2.5px solid #111; border-radius:999px; box-shadow:3px 3px 0 #111;
-      font:800 .82rem/1 'Satoshi',sans-serif; text-transform:lowercase;
-      transition:transform .12s ease, box-shadow .12s ease;
-    }
-    .ft-sky svg{ width:14px; height:14px; }
-    .ft-sky:hover{ transform:translate(-1px,-1px); box-shadow:4px 4px 0 #111; }
-    .ft-sky:active{ transform:translate(2px,2px); box-shadow:1px 1px 0 #111; }
-    .ft-sky:focus-visible{ outline:2px solid var(--ft-accent); outline-offset:3px; }
-    @media (max-width:640px){
-      .ft-base{ justify-content:center; text-align:center; }
-    }
-    @media (prefers-reduced-motion:reduce){ .ft-sky{ transition:none; } }
+    .ft-base p{ margin:0; opacity:.6; }
+    @media (max-width:640px){ .cafe{ height:320px; } }
+    @media (prefers-reduced-motion:reduce){ .cafe-order{ transition:opacity .18s ease; } }
 
     /* The footer's own social buttons are gone, but this rule stays.
        This file's styles are injected into the shell, and .social-tooltip
@@ -184,59 +114,19 @@
   </style>
 </head>
 <body>
-  <footer id="contact" class="hen-footer gb-space" role="contentinfo">
-    <section class="gb" data-guestbook aria-label="Guestbook: leave a doodle in my orbit">
-      <canvas class="gb-orbit" aria-hidden="true"></canvas>
-      <p class="gb-count" aria-live="polite"></p>
-      <button class="gb-sat" type="button" aria-haspopup="dialog" aria-label="Sign my orbit: draw something for the guestbook">
-        <span class="gb-sat-label">thanks for falling by ✦<br>send something into orbit ✎</span>
-        <canvas class="gb-sat-art" aria-hidden="true"></canvas>
-      </button>
-
-      <div class="ft-base">
-        <p>built by Hen with lots of ❤ and copious amounts of ☕</p>
-        <!-- an attribute, not a listener: this footer is cloned into pages
-             that never run its scripts. off the home page it just goes home,
-             which starts you in the sky anyway -->
-        <button type="button" class="ft-sky"
-                onclick="window.introReplay ? introReplay() : (location.href='/')">
-          <i data-lucide="arrow-up"></i>back up to the sky
-        </button>
-      </div>
+  <footer id="contact" class="hen-footer cafe-foot" role="contentinfo">
+    <canvas class="cafe-canvas" aria-hidden="true"></canvas>
+    <p class="cafe-title">thank you for visiting! take a beverage for the road?</p>
+    <section class="cafe" data-cafe aria-label="a little cafe stall: make yourself a drink">
+      <div class="cafe-keys" role="group" aria-label="Make a drink"></div>
     </section>
-
-    <dialog class="gb-modal" aria-label="Draw something for the orbit">
-      <div class="gb-pad">
-        <div class="gb-head">
-          <h3 class="gb-title">leave something in my orbit</h3>
-          <button class="gb-close" type="button" aria-label="Close">&times;</button>
-        </div>
-        <canvas class="gb-draw" role="img" aria-label="Drawing pad. Draw with your mouse, finger or pen."></canvas>
-        <div class="gb-tools">
-          <button class="gb-ink" aria-label="Yellow" aria-pressed="true"></button>
-          <button class="gb-ink" aria-label="Pink" aria-pressed="false"></button>
-          <button class="gb-ink" aria-label="Teal" aria-pressed="false"></button>
-          <button class="gb-ink" aria-label="Cream" aria-pressed="false"></button>
-          <button class="gb-ink" aria-label="Orange" aria-pressed="false"></button>
-          <span class="gb-sep"></span>
-          <button class="gb-size" style="--d:6px" aria-label="Thin pen" aria-pressed="true"></button>
-          <button class="gb-size" style="--d:12px" aria-label="Thick pen" aria-pressed="false"></button>
-          <button class="gb-tool gb-undo">undo</button>
-          <button class="gb-tool gb-clear">clear</button>
-        </div>
-        <input class="gb-name" type="text" maxlength="24" placeholder="your name (optional)" aria-label="Your name, optional">
-        <button class="gb-send" disabled>send it into orbit ✦</button>
-        <p class="gb-note">your doodle shows up for everyone once I&rsquo;ve had a peek :)</p>
-      </div>
-    </dialog>
+    <p class="cafe-order" aria-live="polite"></p>
+    <div class="ft-base">
+      <p>built by Hen with lots of ❤ and copious amounts of ☕</p>
+    </div>
   </footer>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function(){
-      if (window.lucide && typeof window.lucide.createIcons === 'function') {
-        window.lucide.createIcons();
-      }
-    });
-  </script>
+  <!-- opened on its own, the footer runs the cafe itself -->
+  <script src="/js/cafe.js" defer></script>
 </body>
 </html>
