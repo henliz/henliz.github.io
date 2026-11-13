@@ -867,9 +867,10 @@ a{ color:inherit }
 /* the widest of the cards: this one has a jersey and a paragraph and a
    lot of empty desk to the side of it, so it uses the room */
 #rugby{
-  position:absolute; right:clamp(16px,3vw,44px); top:50%; transform:translate(22px,-50%);
-  max-height:82vh; overflow-y:auto;
-  width:min(620px,calc(100vw - 32px)); opacity:0; pointer-events:none; z-index:8;
+  /* smaller, and lifted so it never runs into the back chip at the bottom */
+  position:absolute; right:clamp(16px,3vw,44px); top:calc(50% - 34px); transform:translate(22px,-50%);
+  max-height:calc(100% - 190px); overflow-y:auto;
+  width:min(440px,calc(100vw - 32px)); opacity:0; pointer-events:none; z-index:8;
   background:var(--card); border:1px solid var(--edge); border-radius:18px;
   padding:clamp(16px,2vw,22px); box-shadow:var(--shadow);
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
@@ -989,43 +990,30 @@ a{ color:inherit }
 }
 #boot.gone{ opacity:0; pointer-events:none }
 
-/* mini hen walking round a little planet while the desk loads. she walks
-   on the spot and the planet turns under her, so she seems to go round.
-   the number underneath is real: preload() reports bytes as they land. */
-.boot-card{ display:grid; justify-items:center; gap:1.9rem; text-align:center }
-.boot-world{ position:relative; width:180px; height:210px }
-.boot-planet{
-  position:absolute; left:50%; bottom:0; width:150px; height:150px; margin-left:-75px;
-  border-radius:50%;
-  background:radial-gradient(circle at 35% 30%, #9fe3cf, #4fb39a 55%, #2f7f74);
-  box-shadow:0 10px 30px rgba(var(--accent-rgb),.18);
+/* her head, bobbing and winking, with a little moon going round it. the
+   number underneath is real: preload() reports bytes as they land. */
+.boot-card{ display:grid; justify-items:center; gap:1.6rem; text-align:center }
+.boot-world{ position:relative; width:190px; height:190px; display:grid; place-items:center }
+.boot-head{ position:relative; width:118px; aspect-ratio:220 / 201; animation:bootBob 2.4s ease-in-out infinite }
+.boot-head img{ position:absolute; inset:0; width:100%; height:100% }
+.boot-head .wink{ opacity:0; animation:bootWink 3.6s steps(1) infinite }
+.boot-head .face{ animation:bootOpen 3.6s steps(1) infinite }
+@keyframes bootBob{ 0%,100%{ translate:0 0 } 50%{ translate:0 -7px } }
+/* open most of the time, a quick wink near the end of each loop */
+@keyframes bootWink{ 0%{ opacity:0 } 86%{ opacity:1 } 94%{ opacity:0 } }
+@keyframes bootOpen{ 0%{ opacity:1 } 86%{ opacity:0 } 94%{ opacity:1 } }
+.boot-orbit{ position:absolute; inset:0; animation:bootSpin 4.5s linear infinite }
+.boot-moon{
+  position:absolute; left:50%; top:4px; width:20px; height:20px; margin-left:-10px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff6dd, #e8d39c 60%, #c9ad6a);
+  box-shadow:0 0 14px rgba(255,226,150,.45);
 }
-/* the light stays put; only the ground turns */
-.boot-planet::after{ content:""; position:absolute; inset:0; border-radius:50%;
-  box-shadow:inset -14px -16px 0 rgba(0,0,0,.12); pointer-events:none }
-.boot-ground{ position:absolute; inset:0; animation:bootSpin 9s linear infinite }
-.boot-ground i{ position:absolute; border-radius:50%; background:rgba(0,0,0,.12) }
-.boot-ground i:nth-child(1){ width:22px; height:22px; left:28px; top:44px }
-.boot-ground i:nth-child(2){ width:12px; height:12px; left:92px; top:96px }
-.boot-ground i:nth-child(3){ width:16px; height:16px; left:62px; top:112px }
-/* a little flag and a tree ride round with the planet, so you can see it turn */
-.boot-ground b{ position:absolute; left:50%; top:50%; width:0; height:0 }
-.boot-ground b::before{ content:""; position:absolute; left:-1px; bottom:75px; width:2px; height:20px; background:#2c3a44 }
-.boot-ground b::after{ content:""; position:absolute; left:1px; bottom:85px; width:13px; height:9px; background:#ff8a65; clip-path:polygon(0 0,100% 50%,0 100%) }
-.boot-ground b:nth-of-type(1){ rotate:110deg }
-.boot-ground b:nth-of-type(2){ rotate:230deg }
-.boot-ground b:nth-of-type(2)::before{ width:3px; height:12px; left:-1.5px; background:#7a5236 }
-.boot-ground b:nth-of-type(2)::after{ left:-8px; bottom:85px; width:16px; height:16px; border-radius:50%; background:#3f8f5a; clip-path:none }
-.boot-hen{
-  position:absolute; left:50%; bottom:142px; width:58px; height:88px; margin-left:-29px;
-  background:url('/sky/chibi-walk.webp') 0 0 / 1600% 100% no-repeat;
-  animation:bootWalk .96s steps(16) infinite;
-}
-@keyframes bootWalk{ to{ background-position:calc(100% * 16 / 15) 0 } }
-@keyframes bootSpin{ to{ rotate:-360deg } }
+.boot-moon::after{ content:""; position:absolute; width:5px; height:5px; left:5px; top:9px; border-radius:50%; background:rgba(0,0,0,.12) }
+.boot-ring{ position:absolute; inset:14px; border-radius:50%; border:1.5px dashed rgba(var(--muted-rgb),.28) }
+@keyframes bootSpin{ to{ rotate:360deg } }
 .boot-msg{ font-family:'Satoshi', sans-serif; font-size:.95rem; color:var(--muted); margin:0 }
 .boot-pct{ font-family:'DotempDemo', monospace; color:var(--accent); margin-left:.35rem }
-@media (prefers-reduced-motion: reduce){ .boot-ground, .boot-hen{ animation:none } }
+@media (prefers-reduced-motion: reduce){ .boot-head, .boot-head img, .boot-orbit{ animation:none } .boot-head .wink{ opacity:0 } }
 
 /* phones: every card is a short sheet along the bottom, and the camera
    (see openPanel) frames the thing you tapped in the top half, so the card
@@ -1352,10 +1340,11 @@ a{ color:inherit }
         <div class="pane notes">
           <div class="note" data-note="me">
           <h3>Hi, I&rsquo;m Hen.</h3>
-          <p>I&rsquo;m a design engineer, and South African Canadian: born here, first generation, to a South African family. I grew up in Breslau, a tiny farm-country township outside Waterloo, and I&rsquo;m finishing Interaction Design &amp; Business at the University of Waterloo.</p>
-          <p>Art came first. I was always buried in books and games, making up my own characters and wanting to draw them, and trying to draw them well gave me a high bar for how things should look.</p>
-          <p>Code came from the half of me that loves a puzzle. My dad and my brother were both into it, so I learned JavaScript in high school and rebuilt the arcade game Asteroids in a course. Later I taught myself Python off forums to sort 60,000 comments for a research job. I wouldn&rsquo;t have called myself a builder at 17. Waterloo changed that.</p>
-          <p>Now I do both: I design the thing, then build it. I&rsquo;m the founding product design engineer at Trove, the founder of Skrimp, and technical director on Path to Menzoberranzan. The case studies are in Finder, in the dock.</p>
+          <p>I&rsquo;m a design engineer and South African Canadian: born here, first generation, to a South African family. I grew up in Breslau, a tiny township outside Waterloo, and I&rsquo;m finishing Interaction Design &amp; Business at the University of Waterloo.</p>
+          <p>Art came first. I was always buried in books and games, making up my own characters and wanting to draw them, and that gave me a pretty high bar for how things should look.</p>
+          <p>Then space. I took physics in high school because space and all its unsolved mysteries fascinated me, and my teacher had worked at NASA. She was lovely, and we still talk sometimes, but I was passing rather than thriving, so I went looking for something that fit better.</p>
+          <p>Code was what stuck. My dad and my brother were both into it, so I learned JavaScript in high school computer science, then took a course that taught Python by rebuilding the arcade game Asteroids. Later I taught myself web scraping off forums to sort 60,000 comments for a research job. I wouldn&rsquo;t have called myself a builder at 17. Waterloo changed that.</p>
+          <p>These days I run Skrimp, lead the tech side of Path to Menzoberranzan, and I&rsquo;m finishing my capstone, Nightingale. Before that I spent five months as Trove&rsquo;s founding product design engineer. The case studies are in Finder, in the dock.</p>
           </div>
           <div class="note" data-note="read" hidden>
           <h3>Reading</h3>
@@ -1474,11 +1463,11 @@ a{ color:inherit }
     <p class="say">I&rsquo;m South African Canadian: born in Canada, first
       generation, to a South African family. That&rsquo;s a Springbok
       jersey. The Springboks are South Africa&rsquo;s national rugby team,
-      and there rugby is bigger than sport. In 1995, a year after the
-      country&rsquo;s first democratic election, Nelson Mandela walked out
-      in the green and gold to hand over the World Cup, and South Africa
-      still tells its story with that picture.</p>
-    <p class="say">This is the 2023 World Cup. The Boks won the quarter final,
+      and rugby is a huge deal there. In 1995, a year after the
+      country&rsquo;s first democratic election, Nelson Mandela wore the
+      jersey to hand over the World Cup, and that photo is still one of the
+      big ones.</p>
+    <p class="say">This clip is the 2023 World Cup. The Boks won the quarter final,
       the semi and the final by one point each (29-28, 16-15,
       12-11) for a record fourth title, and I have not been normal
       about it since.</p>
@@ -1487,8 +1476,9 @@ a{ color:inherit }
   <div id="boot">
     <div class="boot-card">
       <div class="boot-world" aria-hidden="true">
-        <div class="boot-planet"><div class="boot-ground"><i></i><i></i><i></i><b></b><b></b></div></div>
-        <div class="boot-hen"></div>
+        <div class="boot-ring"></div>
+        <div class="boot-orbit"><div class="boot-moon"></div></div>
+        <div class="boot-head"><img class="face" src="/sky/henhead.webp" alt=""><img class="wink" src="/sky/henwink.webp" alt=""></div>
       </div>
       <p class="boot-msg" role="status">setting up my desk<span class="boot-pct" id="bootPct">0%</span></p>
     </div>
@@ -1998,15 +1988,14 @@ const SHELF_BOOKS = [
     img:'/about/media/dracula-cover.jpg', spine:'/about/media/dracula-spine.jpg',
     note:`<p>Adored it. An epistolary novel that is really a stack of
       evidence: letters, diary entries, a ship's log, newspaper
-      clippings. The horror is in what the documents do not quite say
-      to each other.</p>
+      clippings. A lot of the horror is in what the letters leave
+      out.</p>
       <p>Listen to them. The children of the night. What music they make.</p>` },
   { t:'Words of Radiance', a:'Brandon Sanderson', c:'#2f6f68',
     img:'/about/media/wor-cover.jpg', spine:'/about/media/wor-spine.jpg',
     note:`<p>Book two of the Stormlight Archive, Sanderson's huge fantasy
-      series about a world wracked by storms, and the one where the
-      whole thing snaps into focus. A thousand pages of setup paying off
-      at once is its own kind of engineering.</p>
+      series about a world wracked by storms, and the one where it
+      all comes together. A thousand pages of setup pay off at once.</p>
       <p>Journey before destination.</p>` },
   { t:'The Hobbit', a:'J.R.R. Tolkien', c:'#141018',
     img:'/about/media/hobbit-cover.jpg', spine:'/about/media/hobbit-spine.jpg',
@@ -2028,8 +2017,8 @@ const SHELF_BOOKS = [
     note:`<p>A tiny café in Tokyo where you can travel back in time, as
       long as you never leave your seat and you drink your coffee before
       it gets cold. Nothing you do there changes the present.</p>
-      <p>So why go? Four short stories answer that, and it is a quiet book
-      about saying the thing while you still can.</p>` },
+      <p>It&rsquo;s four short stories about the people who sit down in
+      that chair anyway, and why.</p>` },
   { t:'The Great Gatsby', a:'F. Scott Fitzgerald', c:'#123a8a',
     img:'/about/media/gatsby-cover.jpg', spine:'/about/media/gatsby-spine.jpg',
     /* Cugat's 1925 celestial eyes, cut out of a scan of the whole wrap.
@@ -4449,19 +4438,19 @@ const SPOTS = [
   { id:'laptop', label:'what I build', at:() => P.laptop, stage:'seated',
     cam:() => screenCam(), overlay:'mac',
     eyebrow:'What I build',
-    title:'I design things, then build them myself.',
-    html:`<p>I&rsquo;m a design engineer. I do the design and write the code, so nothing gets lost between the mockup and the real thing. Right now that&rsquo;s at Trove, an app that gets to know you through short interactive stories instead of a quiz.</p>
-      <p>A lot of what I make is a game, or works like one. EndoQuest is a story game that screens for endometriosis, because people don&rsquo;t fill out forms about their pain but they do finish games. I&rsquo;ve hidden an alternate reality game inside a university AI chatbot, and written a chat app from scratch so my community&rsquo;s messages stay on our own server.</p>
+    title:'I design things, then I build them.',
+    html:`<p>I&rsquo;m a design engineer, so I design the product and I write the code for it too. That way the real thing actually ends up looking and working like the plan.</p>
+      <p>A lot of what I make is a game, or works like one. EndoQuest is a story game that screens for endometriosis, since people put off forms about their pain but they&rsquo;ll happily finish a game. I&rsquo;ve also hidden an alternate reality game inside a university AI chatbot, and built a chat app from scratch so my community&rsquo;s messages stay on our own server.</p>
       <div class="row"><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Three.js</span><span class="chip">Convex</span><span class="chip">Godot</span><span class="chip">Python</span></div>
-      <p class="meta">Founding product design engineer at Trove. Founder and CEO at Skrimp AI. CTO and Technical Director on Path to Menzoberranzan.</p>` },
+      <p class="meta">Founder and CEO of Skrimp AI. CTO and Technical Director on Path to Menzoberranzan. Before that, founding product design engineer at Trove (April to August 2026).</p>` },
 
   { id:'notes', label:'how I work', at:() => P.notes, stage:'seated',
     cam:() => closeUp(P.notes, 0.3, 34),
     eyebrow:'How I work',
     title:'Every project starts with a question I can&rsquo;t put down.',
-    html:`<p>I was always the kid who found the loophole in a board game and broke it so my team would win. Escape rooms, coding puzzles, unsolved mysteries: if it had a hidden rule, I wanted it.</p>
-      <p>Now it&rsquo;s usually a question about people. Why someone gives up halfway through a form. What they&rsquo;d say if nobody was grading it. What an app is quietly rewarding them for.</p>
-      <p>I look at how a thing is built to see what it actually values, because the structure always tells on it. Then I try to make tools that work for the people using them, and leave them tidy enough that whoever comes after me can pick them up.</p>
+    html:`<p>I was always the kid who found the loophole in a board game and broke it so my team would win. Escape rooms, coding puzzles, unsolved mysteries: if there was a hidden rule, I wanted to find it.</p>
+      <p>These days the questions are mostly about people. Why someone quits a form halfway through. What they&rsquo;d say if nobody was grading them. What an app is nudging them to do without saying so.</p>
+      <p>Then I try to build something that actually helps, and keep it tidy enough that the next person can pick it up without me.</p>
       <ul><li>4A Interaction Design &amp; Business, University of Waterloo</li>
       <li>Writing a novel of my own, slowly</li></ul>` },
 
@@ -4473,8 +4462,8 @@ const SPOTS = [
     /* back far enough for the lid, which now stands right up */
     cam:() => offsetCloseUp(P.deckAim || P.deck, 0.92, 32, 0.20, 0.02), overlay:'audio',
     eyebrow:'What I play',
-    title:'Games are how I learned what a system feels like from the inside.',
-    html:`<p>Baldur's Gate 3 and Disco Elysium are the two I keep going back to, and these days I am helping build a third. Path to Menzoberranzan is a 140 person volunteer studio making a full custom campaign for Baldur&rsquo;s Gate 3, set in the Underdark (the huge underground world of Dungeons &amp; Dragons), and I run its technical direction.</p>
+    title:'I play a lot of games, and now I help make them.',
+    html:`<p>Baldur's Gate 3 and Disco Elysium are the two I keep going back to. Path to Menzoberranzan is a 140 person volunteer studio making a full custom campaign for Baldur&rsquo;s Gate 3, set in the Underdark (the huge underground world of Dungeons &amp; Dragons), and I run its technical direction.</p>
       <p>Equinox came out of my first game jam, a contest where teams make a whole game against the clock. Eighteen days, fourteen people, first place out of eighty eight entries.</p>
       <ul><li>Path to Menzoberranzan, CTO and Technical Director</li>
       <li>Equinox, Comfy Jam Winter 2026 winner</li></ul>` },
@@ -4503,8 +4492,7 @@ const SPOTS = [
       is slightly wrong. ARGs, alternate reality games, hide a story across
       real websites, puzzles and phone numbers for players to dig up
       together.</p>
-      <p>Both hide the story in the gaps, and I build them too, which is a
-      different way of saying I cannot leave a puzzle alone.</p>
+      <p>I love digging through them, and I make them too.</p>
       <p>I am on level 24 of <a class="link" href="https://ae27ff.com/about.php" target="_blank" rel="noopener">AE27FF</a>, an online riddle game. Can you beat me? :^)</p>
       <p class="meta"><a class="link" href="https://ae27ff.com/about.php" target="_blank" rel="noopener">ae27ff.com &nearr;</a></p>` },
 
@@ -4531,18 +4519,15 @@ const SPOTS = [
       a horror audio drama by Rusty Quill: a podcast told like a radio play,
       with actors and sound and no pictures. Each episode is one
       statement, a stranger&rsquo;s account of something terrible that
-      happened to them, read onto tape by the Head Archivist of an odd
-      research institute in London.</p>
+      happened to them, read onto tape by the Head Archivist of a research
+      institute in London.</p>
       <p>I came for the horror and stayed for the Archivist, Jonathan
-      Sims. His whole job is taking other people&rsquo;s accounts and
-      reading them out loud, and he cannot stop at the reading. He has to
-      know, it costs him, and he goes back anyway.</p>
-      <p>That&rsquo;s close to what I build. Trove watches what people
-      choose and hands them back their own patterns, and more than one of
-      my projects rewards whoever reads the output instead of skimming it.
-      There is Magnus in my wardrobe too.</p>
-      <p>No spoilers on the fears. Go in cold. The tape picks up where you
-      left it.</p>` },
+      Sims. He reads strangers&rsquo; statements out loud for a living,
+      can&rsquo;t stop himself digging into them, and it costs him every
+      time.</p>
+      <p>It&rsquo;s a big part of why I like making things you have to
+      pay real attention to. No spoilers though, go in blind. The tape
+      remembers where you stopped.</p>` },
 
   /* leans in, opens the lid, lights it, and starts the reading */
   { id:'zippo', label:'the lighter', at:() => P.zippo, stage:'seated',
@@ -4560,11 +4545,10 @@ const SPOTS = [
       Evening</i> to Arthur.</p>
       <p>About a minute, and it loops, so you can leave it burning while
       you look at the rest of the desk.</p>
-      <p>The poem and the show both changed my life. The poem is the one
-      I go back to when a thing is hard and temporary, which is why it is
-      on the lighter. The show is the reason I keep making things you have
-      to listen to properly, because a voice in the dark turned out to be
-      enough to build a whole world out of.</p>` },
+      <p>The poem and the show both changed my life. The poem is what I
+      go back to when something is hard but won&rsquo;t last, which is
+      also what the lighter says. The show is a big reason I love making
+      things you have to really listen to.</p>` },
 
   /* not a panel. Clicking this pulls the chain. */
   { id:'lamp', label:'the lamp', at:() => P.lamp, stage:'seated', toggle:true },

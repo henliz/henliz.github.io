@@ -4079,6 +4079,10 @@ body::after{
   overflow:visible;
 }
 .hen-chat > *{ overflow:hidden; }
+/* only the log gives up height as she talks; the bar and the compose row
+   keep theirs (overflow:hidden above lets flex squash them otherwise) */
+.hc-bar, .hc-compose{ flex-shrink:0; }
+.hen-chat > .hc-log{ flex:1 1 auto; overflow-y:auto; }
 .hc-bar{ border-bottom-width:3px; padding:.75rem .8rem .7rem .85rem; }
 .hc-bar::before, .hc-bar::after{ border-radius:0; }   /* pixel clouds */
 .hc-av{ border-radius:0; box-shadow:2px 2px 0 var(--hc-line); image-rendering:auto; }
@@ -7887,7 +7891,7 @@ const CASES = {
   // rail stays exactly as it is on the home page: no back button, no
   // contents, the usual nav. Without plainRail a pane gets case-study mode,
   // which on a page with no table of contents just reads as a missing nav.
-  about:      { name: 'About Me',               href: '/about/case.html?v=7e870659',      plainRail: true },
+  about:      { name: 'About Me',               href: '/about/case.html?v=f7c92580',      plainRail: true },
   playground: { name: 'Playground',             href: '/playground/case.html?v=0d46802f', plainRail: true },
   resume:     { name: 'Résumé',   href: '/resume/case.html?v=0db74187',     plainRail: true },
 };
