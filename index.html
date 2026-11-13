@@ -3849,11 +3849,12 @@ body::after{
    along with her without getting mirrored on the walk back.
    her height leaves --bub of room over her head for the bubble, so her and
    the bubble together are what has to fit. less room just means a smaller
-   her, never a bubble poking up into the nav */
+   her, never a bubble poking up into the nav. she tops out at 108px tho,
+   on big desktops she was getting a lil too chonky */
 .walker{
   --reach: 22px;
   --bub: 40px;
-  --h: calc(100cqh - .3rem + var(--reach) - var(--bub));
+  --h: min(calc(100cqh - .3rem + var(--reach) - var(--bub)), 108px);
   --w: calc(var(--h) * 168 / 255);
   position:absolute; left:0; bottom:-2px; height:var(--h); width:var(--w);
   border:0; padding:0; margin:0; background:none; cursor:pointer; pointer-events:auto;
